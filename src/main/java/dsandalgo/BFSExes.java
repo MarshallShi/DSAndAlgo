@@ -27,7 +27,98 @@ public class BFSExes {
                 {1,7},
                 {3,5}
         };
-        exe.pathInZigZagTree1(14);
+        char[][] board = {
+                {'X','X','X','X'},
+                {'X','O','O','X'},
+                {'X','X','O','X'},
+                {'X','O','X','X'}
+        };
+        exe.solve(board);
+    }
+
+    /**Given a 2D board containing 'X' and 'O' (the letter O), capture all regions surrounded by 'X'.
+
+     A region is captured by flipping all 'O's into 'X's in that surrounded region.
+
+     Example:
+
+     X X X X
+     X O O X
+     X X O X
+     X O X X
+     After running your function, the board should be:
+
+     X X X X
+     X X X X
+     X X X X
+     X O X X
+     *
+     * https://leetcode.com/problems/surrounded-regions/
+     * @param board
+     */
+    public void solve(char[][] board) {
+        int m = board.length;
+        int n = board[0].length;
+        Queue<int[]> queue = new LinkedList<int[]>();
+        boolean[][] visited = new boolean[m][n];
+        for (int i=0; i<m; i++) {
+            if (board[i][0] == 'O') {
+                int[] pos = {i, 0};
+                ((LinkedList<int[]>) queue).push(pos);
+                visited[i][0] = true;
+            }
+            if (n>1) {
+                if (board[i][n-1] == 'O') {
+                    int[] pos = {i, n-1};
+                    ((LinkedList<int[]>) queue).push(pos);
+                    visited[i][n-1] = true;
+                }
+            }
+        }
+        for (int j=1; j<n-1; j++) {
+            if (board[0][j] == 'O') {
+                int[] pos = {0, j};
+                ((LinkedList<int[]>) queue).push(pos);
+                visited[0][j] = true;
+            }
+            if (m>1) {
+                if (board[m-1][j] == 'O') {
+                    int[] pos = {m-1, j};
+                    ((LinkedList<int[]>) queue).push(pos);
+                    visited[m-1][j] = true;
+                }
+            }
+        }
+        bfsHelper(queue, board, visited);
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                if (!visited[i][j] && board[i][j] == 'O') {
+                    board[i][j] = 'X';
+                }
+            }
+        }
+    }
+
+
+    public void bfsHelper(Queue<int[]> queue, char[][] board, boolean[][] visited) {
+        int[][] directions = {{0,1},{0,-1},{1,0},{-1,0}};
+        int m = board.length;
+        int n = board[0].length;
+        while (!queue.isEmpty()) {
+            int s = queue.size();
+            for (int i=0; i<s; i++) {
+                int[] cur = queue.poll();
+                for(int[] dir : directions){
+                    int newX = cur[0] + dir[0];
+                    int newY = cur[1] + dir[1];
+                    if (newX < m && newX >= 0 && newY < n && newY >= 0 && !visited[newX][newY] && board[newX][newY] == 'O'){
+                        int[] newPos = {newX, newY};
+                        queue.offer(newPos);
+                        visited[newX][newY] = true;
+                    }
+                }
+            }
+        }
     }
 
     /**

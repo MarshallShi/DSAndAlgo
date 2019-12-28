@@ -1,8 +1,10 @@
 package dsandalgo;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,7 +13,22 @@ public class StringExe {
     public static void main(String[] args) {
         StringExe exe = new StringExe();
         String[] banned = {"hit"};
-        System.out.println(exe.orderlyQueue("cba",2));
+        System.out.println(exe.largeGroupPositions("abbxxxxzzy"));
+    }
+
+    /**
+     * https://leetcode.com/problems/positions-of-large-groups/
+     * @param S
+     * @return
+     */
+    public List<List<Integer>> largeGroupPositions(String S) {
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 0, j = 0; i < S.length(); i = j) {
+            while (j < S.length() && S.charAt(j) == S.charAt(i)) ++j;
+            if (j - i >= 3)
+                res.add(Arrays.asList(i, j - 1));
+        }
+        return res;
     }
 
     /**
