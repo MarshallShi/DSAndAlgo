@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.hashmap;
 
 import java.util.Arrays;
 

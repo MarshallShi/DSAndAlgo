@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.stack;
 
 import java.util.Stack;
 
@@ -18,7 +18,7 @@ public class StackExe {
 
     public static void main(String[] args) {
         StackExe exe = new StackExe();
-        System.out.println(exe.calculate_2("2+4-5 * 5 / 25+100"));
+        System.out.println(exe.decodeAtIndex("l3mtm5weq7ki78c7hck4", 165511));
     }
 
     /**
@@ -131,5 +131,43 @@ public class StackExe {
             }
         }
         return result;
+    }
+
+    public String decodeAtIndex(String S, int K) {
+        if (S == null || S.length() ==0) {
+            return S;
+        }
+        Stack<Character> stack = new Stack<Character>();
+        int counter = 0;
+        for (int i=0; i<S.length(); i++) {
+            char ch = S.charAt(i);
+            int chAsInt = Character.isDigit(ch) ? Integer.parseInt(ch + "") : 0;
+            if (chAsInt > 0 ) {
+                //For numbers, need to get the while string.
+                if (!stack.isEmpty()) {
+                    String toRepeat = "";
+                    while (!stack.isEmpty()) {
+                        toRepeat = stack.pop().toString() + toRepeat;
+                    }
+                    counter = 0;
+                    for (int j = 0; j<chAsInt; j++) {
+                        for (int k=0; k<toRepeat.length(); k++) {
+                            stack.push(toRepeat.charAt(k));
+                            counter++;
+                            if (counter == K) {
+                                return toRepeat.charAt(k) + "";
+                            }
+                        }
+                    }
+                }
+            } else {
+                stack.push(ch);
+                counter++;
+                if (counter == K) {
+                    return ch + "";
+                }
+            }
+        }
+        return "";
     }
 }

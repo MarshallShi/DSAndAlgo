@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.bfs;
 
 import java.util.ArrayList;
 import java.util.HashMap;

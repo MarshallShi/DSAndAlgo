@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.bit;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.sorting;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.greedy;
 
 public class GreedyExe{
 

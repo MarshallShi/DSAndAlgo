@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.priorityqueue;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;

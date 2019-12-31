@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.random;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -11,9 +11,11 @@ public class ArrayExe {
     public static void main(String[] args) {
         ArrayExe exe = new ArrayExe();
         //int[] time = {60,60,60,120,35,25};
-        int[] time = {60,60,60};
-        exe.numPairsDivisibleBy60(time);
+        int[] time = {-1,2147483647};
+        //exe.containsNearbyAlmostDuplicate(time, 1, 2147483647);
     }
+
+
 
     /**
      * Example 1:

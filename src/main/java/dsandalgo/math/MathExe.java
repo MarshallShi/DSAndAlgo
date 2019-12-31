@@ -1,14 +1,8 @@
-package dsandalgo;
+package dsandalgo.math;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class MathExe {
 
@@ -23,7 +17,73 @@ public class MathExe {
 
         int[] rec1 = {0,0,1,1};
         int[] rec2 = {2,2,3,3};
-        exe.constructRectangle(12);
+        System.out.println(exe.primePalindrome(13));
+    }
+
+    //https://www.youtube.com/watch?v=GSBLe8cKu0s
+    //https://leetcode.com/problems/the-skyline-problem/
+    public List<List<Integer>> getSkyline(int[][] buildings) {
+        return null;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/prime-palindrome/
+     * A number is divisible by 11 if sum(even digits) - sum(odd digits) is divisible by 11.
+     * @param N
+     * @return
+     */
+    public int primePalindrome(int N) {
+        int i = N;
+        while (i <= 100000000) {
+            StringBuilder s1 = new StringBuilder();
+            s1.append(i);
+            if (s1.toString().equals(s1.reverse().toString()) && isPrime(i)) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+
+    public Boolean isPrime(int x) {
+        if (x < 2 || x % 2 == 0) {
+            return x == 2;
+        }
+        for (int i = 3; i * i <= x; i += 2) {
+            if (x % i == 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/image-smoother/
+     * @param M
+     * @return
+     */
+    public int[][] imageSmoother(int[][] M) {
+        int m = M.length;
+        int n = M[0].length;
+        int[][] ret = new int[m][n];
+        int[][] directions = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                int counter = 1;
+                int sum = M[i][j];
+                for (int d=0; d<directions.length; d++) {
+                    int newX = i+directions[d][0];
+                    int newY = j+directions[d][1];
+                    if (newX >=0 && newX <m && newY >=0 && newY < n) {
+                        counter++;
+                        sum = sum + M[newX][newY];
+                    }
+                }
+                ret[i][j] = (int)Math.floor((double)sum / counter);
+            }
+        }
+        return ret;
     }
 
     /**
