@@ -413,39 +413,4 @@ public class Coding3 {
         return 0;
     }
 
-    public int[] findRedundantConnection(int[][] edges) {
-        Map<Integer, Integer> parent = new HashMap<Integer, Integer>();
-        int[] ret = new int[2];
-        for (int i=0; i<edges.length; i++) {
-            if (!parent.containsKey(edges[i][0])) {
-                parent.put(edges[i][0], edges[i][0]);
-            }
-            if (!parent.containsKey(edges[i][1])) {
-                parent.put(edges[i][1], edges[i][1]);
-            }
-            if (!connect(parent, edges[i][0], edges[i][1])) {
-                ret = edges[i];
-                break;
-            }
-        }
-        return ret;
-    }
-
-    private boolean connect(Map<Integer, Integer> parent, Integer node1, Integer node2){
-        Integer root1 = findRoot(parent, node1);
-        Integer root2 = findRoot(parent, node2);
-        if (root1 == root2) {
-            return false;
-        } else {
-            parent.put(root2, root1);
-        }
-        return true;
-    }
-
-    private Integer findRoot(Map<Integer, Integer> parent, Integer node) {
-        while (parent.get(node) != node) {
-            node = parent.get(node);
-        }
-        return node;
-    }
 }

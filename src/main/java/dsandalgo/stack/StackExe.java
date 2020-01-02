@@ -18,7 +18,68 @@ public class StackExe {
 
     public static void main(String[] args) {
         StackExe exe = new StackExe();
-        System.out.println(exe.decodeAtIndex("l3mtm5weq7ki78c7hck4", 165511));
+        System.out.println(exe.simplifyPath("/a//b////c/d//././/.."));
+    }
+
+
+    /**
+     * https://leetcode.com/problems/simplify-path/
+     *
+     * Example 1:
+     *
+     * Input: "/home/"
+     * Output: "/home"
+     * Explanation: Note that there is no trailing slash after the last directory name.
+     * Example 2:
+     *
+     * Input: "/../"
+     * Output: "/"
+     * Explanation: Going one level up from the root directory is a no-op, as the root level is the highest level you can go.
+     * Example 3:
+     *
+     * Input: "/home//foo/"
+     * Output: "/home/foo"
+     * Explanation: In the canonical path, multiple consecutive slashes are replaced by a single one.
+     * Example 4:
+     *
+     * Input: "/a/./b/../../c/"
+     * Output: "/c"
+     * Example 5:
+     *
+     * Input: "/a/../../b/../c//.//"
+     * Output: "/c"
+     * Example 6:
+     *
+     * Input: "/a//b////c/d//././/.."
+     * Output: "/a/b/c"
+     *
+     * @param path
+     * @return
+     */
+    public String simplifyPath(String path) {
+        if (path == null) {
+            return null;
+        }
+        String[] str = path.split("/");
+        StringBuilder sb = new StringBuilder();
+        Stack<String> stack = new Stack<String>();
+        for (String s : str) {
+            if (!stack.isEmpty() && "..".equals(s)) {
+                stack.pop();
+            }
+            if ("".equals(s) || ".".equals(s) || "..".equals(s)) {
+                continue;
+            }
+            stack.push(s);
+        }
+        for (String valid : stack) {
+            sb.append("/" + valid);
+        }
+        if (sb.length() == 0) {
+            return "/";
+        } else {
+            return sb.toString();
+        }
     }
 
     /**

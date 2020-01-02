@@ -6,10 +6,90 @@ import java.util.Stack;
 
 public class TreeExe {
 
+
     public static void main(String[] args) {
         TreeExe exe = new TreeExe();
         //exe.insertIntoBST(exe.createANode(), 5);
-        exe.getAllElements(exe.createANode(), exe.createBNode());
+        int[] preorder = {8,5,1,7,10,12};
+        exe.bstFromPreorder(preorder);
+    }
+
+    /**
+     * https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/
+     *
+     * Input: [8,5,1,7,10,12]
+     * Output: [8,5,10,1,7,null,12]
+     *
+     * @param preorder
+     * @return
+     */
+    public TreeNode bstFromPreorder(int[] preorder) {
+        if (preorder == null || preorder.length == 0) {
+            return null;
+        }
+        return bstHelper(preorder, 0, preorder.length - 1);
+    }
+
+    private TreeNode bstHelper(int[] preorder, int start, int end) {
+        TreeNode node = new TreeNode(preorder[start]);
+        if (start == end) {
+            return node;
+        }
+        int leftIdx = -1, rightIdx = -1;
+        if (preorder[start] > preorder[start+1]) {
+            leftIdx = start + 1;
+        }
+        for (int i = start+1; i<=end; i++) {
+            if (preorder[i] > preorder[start]) {
+                rightIdx = i;
+                break;
+            }
+        }
+        if (leftIdx == -1 && rightIdx != -1) {
+            node.right = bstHelper(preorder, rightIdx, end);
+        } else {
+            if (leftIdx != -1 && rightIdx == -1) {
+                node.left = bstHelper(preorder, leftIdx, end);
+            } else {
+                node.left = bstHelper(preorder, leftIdx, rightIdx-1);
+                node.right = bstHelper(preorder, rightIdx, end);
+            }
+        }
+        return node;
+    }
+
+    /**
+     * https://leetcode.com/problems/construct-quad-tree/
+     * @param g
+     * @return
+     */
+    public Node construct(int[][] g) {
+        return build(0, 0, g.length - 1, g.length - 1, g);
+    }
+
+    private Node build(int r1, int c1, int r2, int c2, int[][] g) {
+        if (r1 > r2 || c1 > c2) {
+            return null;
+        }
+        boolean isLeaf = true;
+        int val = g[r1][c1];
+        for (int i = r1; i <= r2; i++) {
+            for (int j = c1; j <= c2; j++) {
+                if (g[i][j] != val) {
+                    isLeaf = false;
+                    break;
+                }
+            }
+        }
+        if (isLeaf) {
+            return new Node(val == 1, true, null, null, null, null);
+        }
+        int rowMid = (r1 + r2) / 2, colMid = (c1 + c2) / 2;
+        return new Node(false, false,
+                build(r1, c1, rowMid, colMid, g),//top left
+                build(r1, colMid + 1, rowMid, c2, g),//top right
+                build(rowMid + 1, c1, r2, colMid, g),//bottom left
+                build(rowMid + 1, colMid + 1, r2, c2, g));//bottom right
     }
 
     private TreeNode createANode() {

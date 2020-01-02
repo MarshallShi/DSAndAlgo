@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.unionfind;
 
 /**
  * For LC 200: Number of islands

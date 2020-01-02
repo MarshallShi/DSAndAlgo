@@ -1,5 +1,8 @@
 package dsandalgo;
 
+import dsandalgo.unionfind.UFForLongestConsecutiveSequence;
+import dsandalgo.unionfind.UnionFind;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -668,81 +671,13 @@ public class Coding2 {
         return ret;
     }
 
-    public int longestConsecutiveUF(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return 0;
-        }
-        Map<Integer, Integer> map = new HashMap<Integer, Integer>(); //<value, index>
-        UFForLongestConsecutiveSequence uf = new UFForLongestConsecutiveSequence(nums.length);
-        for (int i=0; i<nums.length; i++) {
-            if (!map.containsKey(nums[i])) {
-                if (map.containsKey(nums[i] - 1)) {
-                    uf.union(i, map.get(nums[i] - 1));
-                }
-                if (map.containsKey(nums[i] + 1)) {
-                    uf.union(i, map.get(nums[i] + 1));
-                }
-                map.put(nums[i], i);
-            }
-        }
-        return uf.maxUnion();
-    }
 
-    public int longestConsecutive(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return 0;
-        }
-        Map<Integer, Integer> map = new HashMap<Integer, Integer>(); //<value, lengthOfLongest>
-        int longestCon = 0;
-        for (int i=0; i<nums.length; i++) {
-            if (!map.containsKey(nums[i])) {
-                int left = 0;
-                if (map.containsKey(nums[i] - 1)) {
-                    left = map.get(nums[i] - 1);
-                }
-                int right = 0;
-                if (map.containsKey(nums[i] + 1)) {
-                    right = map.get(nums[i] + 1);
-                }
-                int val = left + right + 1;
-                longestCon = Math.max(longestCon, val);
-                map.put(nums[i], val);
-                //Updating current max to the cache
-                map.put(nums[i] - left, val);
-                map.put(nums[i] + right, val);
-            }
-        }
-        return longestCon;
-    }
 
     public boolean exist(char[][] board, String word) {
         return false;
     }
 
-    int[][] distance = {{1,0},{-1,0},{0,1},{0,-1}};
 
-    public int numIslands(char[][] grid) {
-        UnionFind uf = new UnionFind(grid);
-        int m = grid.length;
-        int n = grid[0].length;
-        for (int i=0; i<m; i++) {
-            for (int j=0; j<n; j++) {
-                char cur = grid[i][j];
-                if (cur == '1') {
-                    for (int[] d : distance) {
-                        int x = i + d[0];
-                        int y = j + d[1];
-                        if (x >= 0 && x < m && y >= 0 && y < n && grid[x][y] == '1') {
-                            int id1 = i*n+j;
-                            int id2 = x*n+y;
-                            uf.union(id1, id2);
-                        }
-                    }
-                }
-            }
-        }
-        return uf.count;
-    }
 
     public List<List<Integer>> subsetsWithDup(int[] nums) {
         List<List<Integer>> list = new ArrayList<>();
