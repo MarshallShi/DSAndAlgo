@@ -15,6 +15,45 @@ public class TreeExe {
     }
 
     /**
+     * https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/
+     *
+     * Given a rooted binary tree, return the lowest common ancestor of its deepest leaves.
+     *
+     * Recall that:
+     *
+     * The node of a binary tree is a leaf if and only if it has no children
+     * The depth of the root of the tree is 0, and if the depth of a node is d, the depth of each of its children is d+1.
+     * The lowest common ancestor of a set S of nodes is the node A with the largest depth such that every node in S is in the subtree with root A.
+     *
+     * @param root
+     * @return
+     */
+    public TreeNode lcaDeepestLeaves(TreeNode root) {
+        if (root == null || height(root.right) == height(root.left)) {
+            return root;
+        }
+        int leftHeight = height(root.left);
+        int rightHeight = height(root.right);
+        if (leftHeight == rightHeight) {
+            return root;
+        } else {
+            if (leftHeight < rightHeight) {
+                return lcaDeepestLeaves(root.right);
+            } else {
+                return lcaDeepestLeaves(root.left);
+            }
+        }
+    }
+
+    public int height(TreeNode root){
+        if(root == null) {
+            return 0;
+        }
+        return 1 + Math.max(height(root.left), height(root.right));
+    }
+
+
+    /**
      * https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/
      *
      * Input: [8,5,1,7,10,12]

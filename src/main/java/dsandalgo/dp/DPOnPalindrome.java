@@ -11,6 +11,82 @@ public class DPOnPalindrome {
     }
 
     /**
+     * https://leetcode.com/problems/longest-palindromic-substring/
+     *
+     * Given a string s, find the longest palindromic substring in s. You may assume that the maximum length of s is 1000.
+     *
+     * Example 1:
+     *
+     * Input: "babad"
+     * Output: "bab"
+     * Note: "aba" is also a valid answer.
+     * Example 2:
+     *
+     * Input: "cbbd"
+     * Output: "bb"
+     * @param s
+     * @return
+     */
+    public String longestPalindrome_1(String s) {
+        //a substring start at i, end at j;
+        //dp[i][j] = true then i to j is palindrome.
+        //dp[i][j] = false then i to j is not palindrome.
+
+        int n = s.length();
+        if (n<=1) {
+            return s;
+        }
+        if (n==2) {
+            if (s.charAt(0) == s.charAt(1)) {
+                return s;
+            } else {
+                return s.substring(0,1);
+            }
+        }
+        String res = null;
+
+        boolean[][] dp = new boolean[n][n];
+
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i; j < n; j++) {
+                dp[i][j] = s.charAt(i) == s.charAt(j) && (j - i < 3 || dp[i + 1][j - 1]);
+                if (dp[i][j] && (res == null || j - i + 1 > res.length())) {
+                    res = s.substring(i, j + 1);
+                }
+            }
+        }
+
+        return res;
+    }
+
+    public String longestPalindrome(String s) {
+        // Corner cases.
+        if (s.length() <= 1) return s;
+
+        int len = s.length(), longestPalindromeStart = 0, longestPalindromeLength = 1;
+        // state[i][j] true if s[i, j] is palindrome.
+        boolean[][] state = new boolean[len][len];
+
+        // Base cases.
+        for (int i = 0; i < len; i++) {
+            state[i][i] = true; // dist = 0.
+        }
+
+        for (int i = len - 1; i >= 0; i--) {
+            for (int dist = 1; dist < len - i; dist++) {
+                int j = dist + i;
+                state[i][j] = (dist == 1) ? s.charAt(i) == s.charAt(j) : (s.charAt(i) == s.charAt(j)) && state[i + 1][j - 1];
+                if (state[i][j] && j - i + 1 > longestPalindromeLength) {
+                    longestPalindromeLength = j - i + 1;
+                    longestPalindromeStart = i;
+                }
+            }
+        }
+
+        return s.substring(longestPalindromeStart, longestPalindromeStart + longestPalindromeLength);
+    }
+
+    /**
      * HARD
      * https://leetcode.com/problems/palindrome-partitioning-ii/
      *

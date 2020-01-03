@@ -2,8 +2,10 @@ package dsandalgo.dfsbacktrack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DFSExe {
 
@@ -15,7 +17,7 @@ public class DFSExe {
            {9,9,4},{6,6,8},{2,1,1}
         };
 //        System.out.println(dfs.diffWaysToCompute("2*3-4*5"));
-        System.out.println(dfs.lexicalOrder(13));
+        //System.out.println(dfs.numTilePossibilities("AAB"));
 
     }
 
