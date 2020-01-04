@@ -1,5 +1,6 @@
 package dsandalgo.priorityqueue;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -7,7 +8,50 @@ public class PriorityQueueExe {
 
     public static void main(String[] args) {
         PriorityQueueExe pqexe = new PriorityQueueExe();
-        pqexe.allCellsDistOrder(1,2,0,0);
+        //pqexe.allCellsDistOrder(1,2,0,0);
+        int[] arr = {17,18,5,4,6,1};
+        pqexe.replaceElements(arr);
+    }
+
+    /**
+     * https://leetcode.com/problems/replace-elements-with-greatest-element-on-right-side/
+     *
+     * Given an array arr, replace every element in that array with the greatest element among the elements to its right, and replace the last element with -1.
+     *
+     * After doing so, return the array.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: arr = [17,18,5,4,6,1]
+     * Output: [18,6,6,6,1,-1]
+     *
+     * @param arr
+     * @return
+     */
+    public int[] replaceElements_inEfficient(int[] arr) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+        for (int i=0; i<arr.length; i++) {
+            pq.offer(arr[i]);
+        }
+        for (int i=0; i<arr.length - 1; i++) {
+            pq.remove(arr[i]);
+            arr[i] = pq.peek();
+        }
+        arr[arr.length - 1] = -1;
+        return arr;
+    }
+
+    public int[] replaceElements(int[] arr) {
+        int[] narr = new int[arr.length];
+        narr[arr.length - 1] = -1;
+        int max = arr[arr.length - 1];
+        for (int i=arr.length-2; i>=0; i--) {
+            narr[i] = Math.max(max, arr[i+1]);
+            max = narr[i];
+        }
+        return narr;
     }
 
     public int[][] allCellsDistOrder(int R, int C, int r0, int c0) {

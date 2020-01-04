@@ -17,8 +17,74 @@ public class MathExe {
 
         int[] rec1 = {0,0,1,1};
         int[] rec2 = {2,2,3,3};
-        System.out.println(exe.primePalindrome(13));
+        int[][] shape = {{1,2},{3,4}};
+        System.out.println(exe.matrixReshape(shape, 1, 4));
     }
+
+    /**
+     * https://leetcode.com/problems/distribute-candies-to-people/
+     * We distribute some number of candies, to a row of n = num_people people in the following way:
+     *
+     * We then give 1 candy to the first person, 2 candies to the second person, and so on until we give n candies to the last person.
+     *
+     * Then, we go back to the start of the row, giving n + 1 candies to the first person, n + 2 candies to the second person,
+     * and so on until we give 2 * n candies to the last person.
+     *
+     * This process repeats (with us giving one more candy each time, and moving to the start of the row after we reach the end)
+     * until we run out of candies.  The last person will receive all of our remaining candies (not necessarily one more than the previous gift).
+     *
+     * Return an array (of length num_people and sum candies) that represents the final distribution of candies.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: candies = 7, num_people = 4
+     * Output: [1,2,3,1]
+     * Explanation:
+     * On the first turn, ans[0] += 1, and the array is [1,0,0,0].
+     * On the second turn, ans[1] += 2, and the array is [1,2,0,0].
+     * On the third turn, ans[2] += 3, and the array is [1,2,3,0].
+     * On the fourth turn, ans[3] += 1 (because there is only one candy left), and the final array is [1,2,3,1].
+     * @param candies
+     * @param num_people
+     * @return
+     */
+    public int[] distributeCandies(int candies, int num_people) {
+        return null;
+    }
+
+    /**
+     * https://leetcode.com/problems/divisor-game/submissions/
+     * Alice and Bob take turns playing a game, with Alice starting first.
+     *
+     * Initially, there is a number N on the chalkboard.  On each player's turn, that player makes a move consisting of:
+     *
+     * Choosing any x with 0 < x < N and N % x == 0.
+     * Replacing the number N on the chalkboard with N - x.
+     * Also, if a player cannot make a move, they lose the game.
+     *
+     * Return True if and only if Alice wins the game, assuming both players play optimally.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: 2
+     * Output: true
+     * Explanation: Alice chooses 1, and Bob has no more moves.
+     * Example 2:
+     *
+     * Input: 3
+     * Output: false
+     * Explanation: Alice chooses 1, Bob chooses 1, and Alice has no more moves.
+     * @param N
+     * @return
+     */
+    public boolean divisorGame(int N) {
+        return N %2 == 0;
+    }
+
 
     //https://www.youtube.com/watch?v=GSBLe8cKu0s
     //https://leetcode.com/problems/the-skyline-problem/
@@ -345,5 +411,56 @@ public class MathExe {
      */
     public int bulbSwitch(int n) {
         return (int)Math.sqrt(n);
+    }
+
+    /**
+     * https://leetcode.com/problems/reshape-the-matrix/
+     *
+     * In MATLAB, there is a very useful function called 'reshape', which can reshape a matrix into a
+     * new one with different size but keep its original data.
+     *
+     * You're given a matrix represented by a two-dimensional array, and two positive integers r and c
+     * representing the row number and column number of the wanted reshaped matrix, respectively.
+     *
+     * The reshaped matrix need to be filled with all the elements of the original matrix in the same
+     * row-traversing order as they were.
+     *
+     * If the 'reshape' operation with given parameters is possible and legal, output the new reshaped matrix;
+     * Otherwise, output the original matrix.
+     *
+     * Example 1:
+     * Input:
+     * nums =
+     * [[1,2],
+     *  [3,4]]
+     * r = 1, c = 4
+     * Output:
+     * [[1,2,3,4]]
+     * Explanation:
+     * The row-traversing of nums is [1,2,3,4]. The new reshaped matrix is a 1 * 4 matrix, fill it row by row by using the previous list.
+     *
+     * @param nums
+     * @param r
+     * @param c
+     * @return
+     */
+    public int[][] matrixReshape(int[][] nums, int r, int c) {
+        int m = nums.length;
+        if (nums.length == 0) {
+            return nums;
+        }
+        int n = nums[0].length;
+        if (r*c != m*n) {
+            return nums;
+        }
+        int[][] ret = new int[r][c];
+        for (int i=0; i<r; i++) {
+            for (int j=0; j<c; j++) {
+                int x = (i*c + j)/n;
+                int y = (i*c + j)%n;
+                ret[i][j] = nums[x][y];
+            }
+        }
+        return ret;
     }
 }

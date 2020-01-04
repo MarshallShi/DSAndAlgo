@@ -1,9 +1,135 @@
 package dsandalgo.unionfind;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 
 public class UnionFindExe {
+
+
+    /**
+     * https://leetcode.com/problems/number-of-closed-islands/
+     *
+     * Given a 2D grid consists of 0s (land) and 1s (water).  An island is a maximal 4-directionally connected group of 0s and a closed
+     * island is an island totally (all left, top, right, bottom) surrounded by 1s.
+     *
+     * Return the number of closed islands.
+     *
+     * @param grid
+     * @return
+     */
+
+    int[] directions = new int[] {0, 1, 0, -1, 0};
+
+    public int closedIsland(int[][] g) {
+        int m = g.length;
+        int n = g[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || j == 0 || i == m - 1 || j == n - 1) {
+                    fill(g, i, j);
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (g[i][j] == 0) {
+                    res++;
+                    fill(g, i, j);
+                }
+            }
+        }
+        return res;
+    }
+
+    private void fill(int[][] g, int x, int y) {
+        if (x < 0 || y < 0 || x >= g.length || y >= g[0].length || g[x][y] == 1) {
+            return;
+        }
+        g[x][y] = 1;
+        for (int i = 0; i < directions.length - 1; i++) {
+            fill(g, x + directions[i], y + directions[i + 1]);
+        }
+    }
+
+    //Start of the inefficient version...
+    private int[] father;
+    private int count = 0;
+
+    public int closedIsland_InEfficient(int[][] grid) {
+        int[][] directions = {{0,1},{0,-1},{1,0},{-1,0}};
+        int m = grid.length;
+        int n = grid[0].length;
+        father = new int[m*n];
+        Queue<int[]> queue = new LinkedList<int[]>();
+        boolean[][] visited = new boolean[m][n];
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                if ((i == 0 || j == 0 || i == m - 1 || j == n - 1) && grid[i][j] == 0){
+                    int[] zeroPos = {i, j};
+                    visited[i][j] = true;
+                    queue.offer(zeroPos);
+                }
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            int[] pos = queue.poll();
+            grid[pos[0]][pos[1]] = 1;
+            for (int k = 0; k<directions.length; k++) {
+                int nx = pos[0] + directions[k][0];
+                int ny = pos[1] + directions[k][1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 0 && !visited[nx][ny]) {
+                    int[] npos = {nx,ny};
+                    visited[nx][ny] = true;
+                    queue.offer(npos);
+                }
+            }
+        }
+        //Init the union
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    int id = i * n + j;
+                    father[id] = id;
+                    count++;
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    for (int k = 0; k<directions.length; k++) {
+                        int nx = i + directions[k][0];
+                        int ny = j + directions[k][1];
+                        if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 0) {
+                            unionForClosedIsland(i*n + j, nx*n + ny);
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    public void unionForClosedIsland(int node1, int node2) {
+        int find1 = findForClosedIsland(node1);
+        int find2 = findForClosedIsland(node2);
+        if(find1 != find2) {
+            father[find1] = find2;
+            count--;
+        }
+    }
+    public int findForClosedIsland (int node) {
+        if (father[node] == node) {
+            return node;
+        }
+        father[node] = findForClosedIsland(father[node]);
+        return father[node];
+    }
+    //End
 
     /**
      * https://leetcode.com/problems/longest-consecutive-sequence/
