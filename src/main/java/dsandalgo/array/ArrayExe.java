@@ -20,6 +20,105 @@ public class ArrayExe {
         exe.maxIncreaseKeepingSkyline(grid);
     }
 
+    /**
+     * https://leetcode.com/problems/heaters/
+     * Winter is coming! Your first job during the contest is to design a standard heater with fixed warm
+     * radius to warm all the houses.
+     *
+     * Now, you are given positions of houses and heaters on a horizontal line, find out minimum
+     * radius of heaters so that all houses could be covered by those heaters.
+     *
+     * So, your input will be the positions of houses and heaters seperately, and your expected output
+     * will be the minimum radius standard of heaters.
+     *
+     * Note:
+     *
+     * Numbers of houses and heaters you are given are non-negative and will not exceed 25000.
+     * Positions of houses and heaters you are given are non-negative and will not exceed 10^9.
+     * As long as a house is in the heaters' warm radius range, it can be warmed.
+     * All the heaters follow your radius standard and the warm radius will the same.
+     *
+     *
+     * Example 1:
+     *
+     * Input: [1,2,3],[2]
+     * Output: 1
+     * Explanation: The only heater was placed in the position 2, and if we use the radius 1 standard,
+     * then all the houses can be warmed.
+     *
+     * @param houses
+     * @param heaters
+     * @return
+     */
+    public int findRadius(int[] houses, int[] heaters) {
+        if(houses == null || heaters == null)
+            return Integer.MAX_VALUE;
+        Arrays.sort(heaters);
+        int result = Integer.MIN_VALUE;
+        for(int house : houses){
+            int rad = findRad(house, heaters);
+            result = Math.max(rad, result);
+        }
+        return result;
+    }
+
+    private int findRad(int house, int[] heaters){
+        int low = 0, high = heaters.length-1;
+        int left = Integer.MAX_VALUE , right = Integer.MAX_VALUE ;
+        while (low <= high){
+            int mid = low + (high - low)/2;
+            int heater = heaters[mid];
+            if (heater == house) {
+                return 0;
+            } else {
+                if(heater > house){
+                    right = heater-house;
+                    high = mid-1;
+                } else{
+                    left = house-heater;
+                    low = mid+1;
+                }
+            }
+        }
+        return  Math.min(left, right);
+    }
+
+
+    /**
+     * https://leetcode.com/problems/largest-time-for-given-digits/
+     * Given an array of 4 digits, return the largest 24 hour time that can be made.
+     *
+     * The smallest 24 hour time is 00:00, and the largest is 23:59.  Starting from 00:00, a time is larger if more time has elapsed since midnight.
+     *
+     * Return the answer as a string of length 5.  If no valid time can be made, return an empty string.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [1,2,3,4]
+     * Output: "23:41"
+     * Example 2:
+     *
+     * Input: [5,5,5,5]
+     * Output: ""
+     *
+     * @param A
+     * @return
+     */
+    public String largestTimeFromDigits(int[] A) {
+        String ans = "";
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                for (int k = 0; k < 4; ++k) {
+                    if (i == j || i == k || j == k) continue; // avoid duplicate among i, j & k.
+                    String h = "" + A[i] + A[j], m = "" + A[k] + A[6 - i - j - k], t = h + ":" + m; // hour, minutes, & time.
+                    if (h.compareTo("24") < 0 && m.compareTo("60") < 0 && ans.compareTo(t) < 0) ans = t; // hour < 24; minute < 60; update result.
+                }
+            }
+        }
+        return ans;
+    }
 
     /**
      * https://leetcode.com/problems/max-increase-to-keep-city-skyline/

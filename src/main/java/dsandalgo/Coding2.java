@@ -209,67 +209,7 @@ public class Coding2 {
         return res;
     }
 
-    /**
-     * Input: grid = [[0,6,0],[5,8,7],[0,9,0]]
-     * Output: 24
-     * Explanation:
-     * [[0,6,0],
-     *  [5,8,7],
-     *  [0,9,0]]
-     * Path to get the maximum gold, 9 -> 8 -> 7.
-     * @param grid
-     * @return
-     */
-    public int[][] directions1219 = {{0,1},{0,-1},{1,0},{-1,0}};
-    public int getMaximumGold(int[][] grid) {
-        int ret = 0;
-        boolean[][] visited = new boolean[grid.length][grid[0].length];
-        for (int i=0; i<grid.length; i++) {
-            for (int j=0; j<grid[i].length; j++) {
-                if (grid[i][j] == 0) {
-                    continue;
-                } else {
-                    visited[i][j] = true;
-                    int maxVal = dfs1219(i, j, visited, grid, grid[i][j]);
-                    ret = Math.max(ret, maxVal);
-                    visited = new boolean[grid.length][grid[0].length];
-                }
-            }
-        }
-        return ret;
-    }
 
-    public int dfs1219(int i, int j, boolean[][] visited, int[][] grid, int sum){
-        boolean hasNext = false;
-        for (int k=0; k<directions1219.length; k++) {
-            int nexti = i+directions1219[k][0];
-            int nextj = j+directions1219[k][1];
-            if (nexti >=0 && nexti < grid.length && nextj>=0 && nextj<grid[0].length) {
-                //next element in range of grid
-                if (grid[nexti][nextj] != 0 && !visited[nexti][nextj]) {
-                    hasNext = true;
-                    break;
-                }
-            }
-        }
-        if (hasNext) {
-            int maxNext = 0;
-            for (int k=0; k<directions1219.length; k++) {
-                int nexti = i+directions1219[k][0];
-                int nextj = j+directions1219[k][1];
-                if (nexti >=0 && nexti < grid.length && nextj>=0 && nextj<grid[0].length) {
-                    //next element in range of grid
-                    if (grid[nexti][nextj] != 0 && !visited[nexti][nextj]) {
-                        visited[nexti][nextj] = true;
-                        maxNext = Math.max(maxNext, dfs1219(nexti, nextj, visited, grid, sum + grid[nexti][nextj]));
-                    }
-                }
-            }
-            return maxNext;
-        } else {
-            return sum;
-        }
-    }
 
     private int ret996 = 0;
 

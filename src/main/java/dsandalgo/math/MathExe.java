@@ -1,5 +1,6 @@
 package dsandalgo.math;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +19,206 @@ public class MathExe {
         int[] rec1 = {0,0,1,1};
         int[] rec2 = {2,2,3,3};
         int[][] shape = {{1,2},{3,4}};
-        System.out.println(exe.matrixReshape(shape, 1, 4));
+        int[] primes = {2,7,13,19};
+        System.out.println(exe.nthUglyNumber(5, 2, 11, 13));
     }
+
+
+    /**
+     * https://leetcode.com/problems/sum-of-square-numbers/
+     *
+     * Given a non-negative integer c, your task is to decide whether there're two integers a and b such that a2 + b2 = c.
+     *
+     * Example 1:
+     *
+     * Input: 5
+     * Output: True
+     * Explanation: 1 * 1 + 2 * 2 = 5
+     *
+     *
+     * Example 2:
+     *
+     * Input: 3
+     * Output: False
+     *
+     * @param c
+     * @return
+     */
+    public boolean judgeSquareSum(int c) {
+        if (c < 0) {
+            return false;
+        }
+        int left = 0, right = (int)Math.sqrt(c);
+        while (left <= right) {
+            int cur = left * left + right * right;
+            if (cur < c) {
+                left++;
+            } else if (cur > c) {
+                right--;
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * https://leetcode.com/problems/super-ugly-number/
+     *
+     * Write a program to find the nth super ugly number.
+     *
+     * Super ugly numbers are positive numbers whose all prime factors
+     * are in the given prime list primes of size k.
+     *
+     * Example:
+     *
+     * Input: n = 12, primes = [2,7,13,19]
+     * Output: 32
+     * Explanation: [1,2,4,7,8,13,14,16,19,26,28,32] is the sequence of the first 12
+     *              super ugly numbers given primes = [2,7,13,19] of size 4.
+     *
+     * @param n
+     * @param primes
+     * @return
+     */
+    public int nthSuperUglyNumber(int n, int[] primes) {
+        if (n==1) return 1;
+        int[] dp = new int[n];
+        dp[0] = 1;
+        Arrays.sort(primes);
+        //indexes arr holds how many times the prime has been used.
+        int[] indexes = new int[primes.length];
+        for (int i=1; i<n; i++) {
+            int possibleNext = Integer.MAX_VALUE;
+            for(int j=0; j<primes.length; j++){
+                possibleNext = Math.min(dp[indexes[j]]*primes[j], possibleNext);
+            }
+            dp[i] = possibleNext;
+            for (int j=0; j<primes.length; j++) {
+                if(dp[i]%primes[j]==0) indexes[j]++;
+            }
+        }
+        return dp[n-1];
+    }
+
+    /**
+     * https://leetcode.com/problems/ugly-number-ii/
+     *
+     * Write a program to find the n-th ugly number.
+     *
+     * Ugly numbers are positive numbers whose prime factors only include 2, 3, 5.
+     *
+     * Example:
+     *
+     * Input: n = 10
+     * Output: 12
+     * Explanation: 1, 2, 3, 4, 5, 6, 8, 9, 10, 12 is the sequence of the first 10 ugly numbers.
+     * Note:
+     *
+     * 1 is typically treated as an ugly number.
+     * n does not exceed 1690.
+     * @param n
+     * @return
+     */
+    public int nthUglyNumber(int n) {
+        if (n==1) return 1;
+        int[] dp = new int[n];
+        int i2 = 0, i3 = 0, i5 = 0;
+        dp[0] = 1;
+        for (int i=1; i<n; i++) {
+            int possibleNext = Integer.MAX_VALUE;
+            if (dp[i2]*2 > dp[i-1] && dp[i2]*2 < possibleNext) {
+                possibleNext = dp[i2]*2;
+            }
+            if (dp[i3]*3 > dp[i-1] && dp[i3]*3 < possibleNext) {
+                possibleNext = dp[i3]*3;
+            }
+            if (dp[i5]*5 > dp[i-1] && dp[i5]*5 < possibleNext) {
+                possibleNext = dp[i5]*5;
+            }
+            if (possibleNext == dp[i2]*2) {
+                i2++;
+            }
+            if (possibleNext == dp[i3]*3) {
+                i3++;
+            }
+            if (possibleNext ==  dp[i5]*5) {
+                i5++;
+            }
+            dp[i] = possibleNext;
+        }
+        return dp[n-1];
+    }
+
+    /**
+     * https://leetcode.com/problems/ugly-number-iii/
+     * Write a program to find the n-th ugly number.
+     *
+     * Ugly numbers are positive integers which are divisible by a or b or c.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: n = 3, a = 2, b = 3, c = 5
+     * Output: 4
+     * Explanation: The ugly numbers are 2, 3, 4, 5, 6, 8, 9, 10... The 3rd is 4.
+     * Example 2:
+     *
+     * Input: n = 4, a = 2, b = 3, c = 4
+     * Output: 6
+     * Explanation: The ugly numbers are 2, 3, 4, 6, 8, 9, 10, 12... The 4th is 6.
+     * Example 3:
+     *
+     * Input: n = 5, a = 2, b = 11, c = 13
+     * Output: 10
+     * Explanation: The ugly numbers are 2, 4, 6, 8, 10, 11, 12, 13... The 5th is 10.
+     * Example 4:
+     *
+     * Input: n = 1000000000, a = 2, b = 217983653, c = 336916467
+     * Output: 1999999984
+     *
+     * @param n
+     * @param a
+     * @param b
+     * @param c
+     * @return
+     */
+    public int nthUglyNumber(int n, int a, int b, int c) {
+        int low = 1, high = Integer.MAX_VALUE, mid;
+
+        while (low < high) {
+            mid = low + (high - low) / 2;
+
+            if (count((a), b, c, mid) < n)
+                low = mid + 1;
+            else
+                high = mid;
+        }
+
+        return high;
+    }
+
+    private long gcd(long a, long b) {
+        if (a == 0)
+            return b;
+
+        return gcd(b % a, a);
+    }
+
+    private long lcm(long a, long b) {
+        return (a * b) / gcd(a, b);
+    }
+
+    private int count(long a, long b, long c, long num) {
+        return (int) ((num / a) + (num / b) + (num / c)
+                - (num / lcm(a, b))
+                - (num / lcm(b, c))
+                - (num / lcm(a, c))
+                + (num / lcm(a, lcm(b, c)))); // lcm(a,b,c) = lcm(a,lcm(b,c))
+    }
+
+
 
     /**
      * https://leetcode.com/problems/distribute-candies-to-people/

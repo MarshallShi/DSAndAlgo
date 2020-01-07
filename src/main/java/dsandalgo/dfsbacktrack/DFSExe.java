@@ -16,9 +16,192 @@ public class DFSExe {
         int[][] nums = {
            {9,9,4},{6,6,8},{2,1,1}
         };
+        int[][] nums2 = {
+                {0,0,0,0,0,0,32,0,0,20},
+                {0,0,2,0,0,0,0,40,0,32},
+                {13,20,36,0,0,0,20,0,0,0},
+                {0,31,27,0,19,0,0,25,18,0},
+                {0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,18,0,6},
+                {0,0,0,25,0,0,0,0,0,0},
+                {0,0,0,21,0,30,0,0,0,0},
+                {19,10,0,0,34,0,2,0,0,27},
+                {0,0,0,0,0,34,0,0,0,0}
+        };
 //        System.out.println(dfs.diffWaysToCompute("2*3-4*5"));
-        //System.out.println(dfs.numTilePossibilities("AAB"));
+        //System.out.println(dfs.getMaximumGold(nums2));
+        int[] arr = {5,4,0,3,1,6,2};
+        System.out.println(dfs.arrayNesting(arr));
 
+    }
+
+    /**
+     * https://leetcode.com/problems/array-nesting/
+     * A zero-indexed array A of length N contains all integers from 0 to N-1. Find and return the longest length of set S,
+     * where S[i] = {A[i], A[A[i]], A[A[A[i]]], ... } subjected to the rule below.
+     *
+     * Suppose the first element in S starts with the selection of element A[i] of index = i, the next element in S should be A[A[i]],
+     * and then A[A[A[i]]]… By that analogy, we stop adding right before a duplicate element occurs in S.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: A = [5,4,0,3,1,6,2]
+     * Output: 4
+     * Explanation:
+     * A[0] = 5, A[1] = 4, A[2] = 0, A[3] = 3, A[4] = 1, A[5] = 6, A[6] = 2.
+     *
+     * One of the longest S[K]:
+     * S[0] = {A[0], A[5], A[6], A[2]} = {5, 6, 2, 0}
+     *
+     *
+     * Note:
+     *
+     * N is an integer within the range [1, 20,000].
+     * The elements of A are all distinct.
+     * Each element of A is an integer within the range [0, N-1].
+     *
+     * Key to the solution is: if we iterate through one set, that set is in a cycle,
+     * any other elements in this set won't need to be visited, hence set to -1.
+     *
+     * @param nums
+     * @return
+     */
+    public int arrayNesting(int[] nums) {
+        int max = Integer.MIN_VALUE;
+        for (int i=0; i<nums.length; i++) {
+            if (nums[i] == -1) {
+                continue;
+            }
+            int k = i;
+            int count = 0;
+            while (nums[k] != -1) {
+                int val = nums[k];
+                nums[k] = -1;
+                k = val;
+                count++;
+            }
+            max = Math.max(max, count);
+        }
+        return max;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/jump-game-iii/
+     * Given an array of non-negative integers arr, you are initially positioned at start index of the array.
+     * When you are at index i, you can jump to i + arr[i] or i - arr[i], check if you can reach to any index with value 0.
+     *
+     * Notice that you can not jump outside of the array at any time.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: arr = [4,2,3,0,3,1,2], start = 5
+     * Output: true
+     * Explanation:
+     * All possible ways to reach at index 3 with value 0 are:
+     * index 5 -> index 4 -> index 1 -> index 3
+     * index 5 -> index 6 -> index 4 -> index 1 -> index 3
+     * Example 2:
+     *
+     * Input: arr = [4,2,3,0,3,1,2], start = 0
+     * Output: true
+     * Explanation:
+     * One possible way to reach at index 3 with value 0 is:
+     * index 0 -> index 4 -> index 1 -> index 3
+     * Example 3:
+     *
+     * Input: arr = [3,0,2,1,2], start = 2
+     * Output: false
+     * Explanation: There is no way to reach at index 1 with value 0.
+     * @param arr
+     * @param start
+     * @return
+     */
+    public boolean canReach(int[] arr, int start) {
+        boolean[] visited = new boolean[arr.length];
+        visited[start] = true;
+        Map<Integer,Boolean> cachedMap = new HashMap<Integer,Boolean>();
+        return canReachHelper(arr, visited, cachedMap, start);
+    }
+
+    private boolean canReachHelper(int[] arr, boolean[] visited, Map<Integer,Boolean> cachedResult, int start) {
+        if (cachedResult.containsKey(start)) {
+            return cachedResult.get(start);
+        }
+        if (arr[start] == 0) {
+            cachedResult.put(start, true);
+            return true;
+        } else {
+            boolean leftReach = false, rightReach = false;
+            int left = start - arr[start];
+            int right = start + arr[start];
+            if (right < arr.length && !visited[right]) {
+                visited[right] = true;
+                rightReach = canReachHelper(arr, visited, cachedResult, right);
+                visited[right] = false;
+            }
+            if (left >= 0 && !visited[left]) {
+                visited[left] = true;
+                leftReach = canReachHelper(arr, visited, cachedResult, left);
+                visited[left] = false;
+            }
+            boolean ret = leftReach || rightReach;
+            cachedResult.put(start, ret);
+            return ret;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/path-with-maximum-gold
+     *
+     * Input: grid = [[0,6,0],[5,8,7],[0,9,0]]
+     * Output: 24
+     * Explanation:
+     * [[0,6,0],
+     *  [5,8,7],
+     *  [0,9,0]]
+     * Path to get the maximum gold, 9 -> 8 -> 7.
+     * @param grid
+     * @return
+     */
+    public int[][] dir = {{0,1},{0,-1},{1,0},{-1,0}};
+    public int getMaximumGold(int[][] grid) {
+        int ret = 0;
+        for (int i=0; i<grid.length; i++) {
+            for (int j=0; j<grid[i].length; j++) {
+                if (grid[i][j] == 0) {
+                    continue;
+                } else {
+                    int maxVal = dfs1219(i, j, grid, grid[i][j]);
+                    ret = Math.max(ret, maxVal);
+                }
+            }
+        }
+        return ret;
+    }
+
+    public int dfs1219(int i, int j, int[][] grid, int sum){
+        int temp = grid[i][j];
+        grid[i][j] = 0;
+        int maxNext = Integer.MIN_VALUE;
+        for (int k = 0; k< dir.length; k++) {
+            int nexti = i+ dir[k][0];
+            int nextj = j+ dir[k][1];
+            if (nexti >=0 && nexti < grid.length && nextj>=0 && nextj<grid[0].length) {
+                //next element in range of grid
+                if (grid[nexti][nextj] > 0) {
+                    maxNext = Math.max(maxNext, dfs1219(nexti, nextj, grid, grid[nexti][nextj]));
+                } else {
+                    maxNext = Math.max(maxNext, 0);
+                }
+            }
+        }
+        grid[i][j] = temp;
+        return sum + maxNext;
     }
 
     /**

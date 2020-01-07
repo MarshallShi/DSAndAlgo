@@ -18,7 +18,71 @@ public class StackExe {
 
     public static void main(String[] args) {
         StackExe exe = new StackExe();
-        System.out.println(exe.simplifyPath("/a//b////c/d//././/.."));
+        System.out.println(exe.reverseParentheses("f(ed(et(oc))el)w"));
+    }
+
+    /**
+     * https://leetcode.com/problems/reverse-substrings-between-each-pair-of-parentheses/
+     * You are given a string s that consists of lower case English letters and brackets.
+     *
+     * Reverse the strings in each pair of matching parentheses, starting from the innermost one.
+     *
+     * Your result should not contain any brackets.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: s = "(abcd)"
+     * Output: "dcba"
+     * Example 4:
+     *
+     * Input: s = "a(bcdefghijkl(mno)p)q"
+     * Output: "apmnolkjihgfedcbq"
+     *
+     * @param s
+     * @return
+     */
+    public String reverseParentheses(String s) {
+        char[] arr = s.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        Stack<Character> stack = new Stack<Character>();
+        int j = 0, firstIdx = -1;
+        while (arr[j] != '(') {
+            sb.append(arr[j]);
+            j++;
+        }
+        if (j != arr.length) {
+            firstIdx = j;
+        }
+        for (int i = j; i<arr.length; i++) {
+            if (arr[i] != ')') {
+                stack.push(arr[i]);
+            } else {
+                int poppoedChars = 0;
+                while (!stack.isEmpty()) {
+                    if (stack.peek() != '(') {
+                        sb.append(stack.pop());
+                        poppoedChars++;
+                    } else {
+                        stack.pop();
+                        if (!stack.isEmpty() && stack.size() > firstIdx) {
+                            for (int k = poppoedChars; k>0; k--) {
+                                stack.push(sb.charAt(sb.length() - k));
+                            }
+                            sb.setLength(sb.length() - poppoedChars);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        StringBuilder temp = new StringBuilder();
+        while (!stack.isEmpty()){
+            temp.append(stack.pop());
+        }
+        sb.append(temp.reverse());
+        return sb.toString();
     }
 
 
