@@ -24,8 +24,7 @@ public class BFSExes {
         //System.out.println(exe.openLock(deadends, "0202"));
         int[][] grid= {{0,0,0}, {0,0,0}, {0,0,1}};
         int[][] routes = {
-                {1,7},
-                {3,5}
+                {1,1,1,1,1},{1,0,0,0,1},{1,0,1,0,1},{1,0,0,0,1},{1,1,1,1,1}
         };
         char[][] board = {
                 {'X','X','X','X'},
@@ -33,7 +32,149 @@ public class BFSExes {
                 {'X','X','O','X'},
                 {'X','O','X','X'}
         };
-        exe.solve(board);
+        System.out.println(exe.shortestBridge(routes));
+    }
+
+    /**
+     * https://leetcode.com/problems/keys-and-rooms/
+     * There are N rooms and you start in room 0.  Each room has a distinct number in 0, 1, 2, ..., N-1,
+     * and each room may have some keys to access the next room.
+     *
+     * Formally, each room i has a list of keys rooms[i], and each key rooms[i][j] is an integer in [0, 1, ..., N-1]
+     * where N = rooms.length.  A key rooms[i][j] = v opens the room with number v.
+     *
+     * Initially, all the rooms start locked (except for room 0).
+     *
+     * You can walk back and forth between rooms freely.
+     *
+     * Return true if and only if you can enter every room.
+     *
+     * Example 1:
+     *
+     * Input: [[1],[2],[3],[]]
+     * Output: true
+     * Explanation:
+     * We start in room 0, and pick up key 1.
+     * We then go to room 1, and pick up key 2.
+     * We then go to room 2, and pick up key 3.
+     * We then go to room 3.  Since we were able to go to every room, we return true.
+     * Example 2:
+     *
+     * Input: [[1,3],[3,0,1],[2],[0]]
+     * Output: false
+     * Explanation: We can't enter the room with number 2.
+     * Note:
+     *
+     * 1 <= rooms.length <= 1000
+     * 0 <= rooms[i].length <= 1000
+     * The number of keys in all rooms combined is at most 3000.
+     * @param rooms
+     * @return
+     */
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        boolean[] seen = new boolean[rooms.size()];
+        Queue<Integer> queue = new LinkedList<Integer>();
+        seen[0] = true;
+        int counter = 1;
+        queue.offer(0);
+        while (!queue.isEmpty()) {
+            int curRoom = queue.poll();
+            List<Integer> toVisit = rooms.get(curRoom);
+            if (toVisit.size() > 0) {
+                for (int i=0; i<toVisit.size(); i++) {
+                    if (!seen[toVisit.get(i)]) {
+                        queue.offer(toVisit.get(i));
+                        seen[toVisit.get(i)] = true;
+                        counter++;
+                    }
+                }
+            }
+        }
+        return counter == rooms.size();
+    }
+
+    /**
+     * https://leetcode.com/problems/shortest-bridge/
+     * In a given 2D binary array A, there are two islands.
+     * (An island is a 4-directionally connected group of 1s not connected to any other 1s.)
+     *
+     * Now, we may change 0s to 1s so as to connect the two islands together to form 1 island.
+     *
+     * Return the smallest number of 0s that must be flipped.  (It is guaranteed that the answer is at least 1.)
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [[0,1],[1,0]]
+     * Output: 1
+     * @param A
+     * @return
+     */
+    private int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+    public int shortestBridge(int[][] A) {
+        Queue<int[]> queue = new LinkedList<int[]>();
+        int m = A.length;
+        int n = A[0].length;
+        boolean[][] visited = new boolean[m][n];
+        boolean toBreak = false;
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                if (A[i][j] == 1) {
+                    floodFill(queue, A, i, j, visited);
+                    toBreak = true;
+                    break;
+                }
+            }
+            if (toBreak) {
+                break;
+            }
+        }
+        int level = 0;
+        while (!queue.isEmpty()) {
+            int s = queue.size();
+            for (int i=0; i<s; i++) {
+                int[] pos = queue.poll();
+                boolean foundNextIsland = false;
+                for (int d=0; d < dirs.length; d++) {
+                    int nx = pos[0] + dirs[d][0];
+                    int ny = pos[1] + dirs[d][1];
+                    if (nx >= 0 && nx < A.length && ny >= 0 && ny < A[0].length && visited[nx][ny] == false) {
+                        if (A[nx][ny] == 1) {
+                            foundNextIsland = true;
+                            break;
+                        } else {
+                            int[] npos = {nx,ny};
+                            visited[nx][ny] = true;
+                            queue.offer(npos);
+                        }
+                    }
+                }
+                if (foundNextIsland) {
+                    return level;
+                }
+            }
+            level++;
+        }
+        return level;
+    }
+
+    private void floodFill(Queue<int[]> queue, int[][] A, int x, int y, boolean[][] visited ) {
+        if (x < 0 || x >= A.length || y < 0 || y >= A[0].length) {
+            return;
+        }
+        if (A[x][y] == 0) {
+            return;
+        }
+        if (A[x][y] == 1 && visited[x][y] == false) {
+            int[] pos = {x, y};
+            visited[x][y] = true;
+            queue.offer(pos);
+            floodFill(queue, A, x+1, y, visited);
+            floodFill(queue, A, x-1, y, visited);
+            floodFill(queue, A, x, y+1, visited);
+            floodFill(queue, A, x, y-1, visited);
+        }
     }
 
     /**Given a 2D board containing 'X' and 'O' (the letter O), capture all regions surrounded by 'X'.

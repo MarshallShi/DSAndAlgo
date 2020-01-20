@@ -3,8 +3,15 @@ package dsandalgo.tree;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Stack;
+import java.util.TreeMap;
 
 public class TreeExe {
 
@@ -13,7 +20,366 @@ public class TreeExe {
         TreeExe exe = new TreeExe();
         //exe.insertIntoBST(exe.createANode(), 5);
         int[] preorder = {8,5,1,7,10,12};
-        exe.bstFromPreorder(preorder);
+        exe.distributeCoins(exe.createCNode());
+    }
+
+    /**
+     * https://leetcode.com/problems/construct-binary-tree-from-preorder-and-postorder-traversal/
+     *
+     * Return any binary tree that matches the given preorder and postorder traversals.
+     *
+     * Values in the traversals pre and post are distinct positive integers.
+     *
+     * Example 1:
+     *
+     * Input: pre = [1,2,4,5,3,6,7], post = [4,5,2,6,7,3,1]
+     * Output: [1,2,3,4,5,6,7]
+     *
+     * Note:
+     *
+     * 1 <= pre.length == post.length <= 30
+     * pre[] and post[] are both permutations of 1, 2, ..., pre.length.
+     * It is guaranteed an answer exists. If there exists multiple answers, you can return any of them.
+     *
+     * @param pre
+     * @param post
+     * @return
+     */
+    public TreeNode constructFromPrePost(int[] pre, int[] post) {
+        if (pre.length == 1) {
+            return new TreeNode(pre[0]);
+        }
+        return constructHelper(pre, 0, pre.length - 1, post, 0, post.length - 1);
+    }
+
+    private TreeNode constructHelper(int[] pre, int preStart, int preEnd, int[] post, int postStart, int postEnd) {
+        if (preStart > preEnd) {
+            return null;
+        }
+        if (preStart == preEnd) {
+            return new TreeNode(pre[preStart]);
+        }
+        // Build root.
+        TreeNode root = new TreeNode(pre[preStart]);
+        // Locate left subtree.
+        int leftSubRootInPre = preStart + 1;
+        int leftSubRootInPost = findLeftSubRootInPost(pre[leftSubRootInPre], post, postStart, postEnd);
+        int leftSubEndInPre = leftSubRootInPre + (leftSubRootInPost - postStart);
+        // Build left and right.
+        root.left = constructHelper(pre, leftSubRootInPre, leftSubEndInPre, post, postStart, leftSubRootInPost);
+        root.right = constructHelper(pre, leftSubEndInPre + 1, preEnd, post, leftSubRootInPost + 1, postEnd - 1);
+        return root;
+    }
+
+    private int findLeftSubRootInPost(int leftSubRootVal, int[] post, int postStart, int postEnd) {
+        for (int i = postStart; i <= postEnd; i++) {
+            if (post[i] == leftSubRootVal) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+
+
+    /**
+     * https://leetcode.com/problems/distribute-coins-in-binary-tree/
+     * Given the root of a binary tree with N nodes, each node in the tree has node.val coins, and there are N coins total.
+     *
+     * In one move, we may choose two adjacent nodes and move one coin from one node to another.
+     * (The move may be from parent to child, or from child to parent.)
+     *
+     * Return the number of moves required to make every node have exactly one coin.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: [3,0,0]
+     * Output: 2
+     * Explanation: From the root of the tree, we move one coin to its left child, and one coin to its right child.
+     */
+    int moves = 0;
+    public int distributeCoins(TreeNode root) {
+        getNumAndCoins(root);
+        return moves;
+    }
+
+    /*
+     * return [number_of_nodes_in_subtree, number_of_total_coins_in_subtree]
+     */
+    private int[] getNumAndCoins(TreeNode node) {
+        if (node == null) return new int[] {0, 0};
+        int[] left = getNumAndCoins(node.left);
+        int[] right = getNumAndCoins(node.right);
+        moves += Math.abs(left[0] - left[1]) + Math.abs(right[0] - right[1]);
+        return new int[] {left[0] + right[0] + 1, left[1] + right[1] + node.val};
+    }
+    /**
+     * https://leetcode.com/problems/all-possible-full-binary-trees/
+     * A full binary tree is a binary tree where each node has exactly 0 or 2 children.
+     *
+     * Return a list of all possible full binary trees with N nodes.  Each element of the answer is the root node of one possible tree.
+     *
+     * Each node of each tree in the answer must have node.val = 0.
+     *
+     * You may return the final list of trees in any order.
+     *
+     * @param N
+     * @return
+     */
+    public List<TreeNode> allPossibleFBT(int N) {
+        // Recursive: build all possible FBT of leftSubTree and rightSubTree with number n
+        if(N <= 0 || N % 2 == 0) return new ArrayList<>();
+
+        //1. if N = 3 , the number of nodes combination are as follows
+        //      left    root    right
+        //       1       1        1
+        //--------------N = 3, res = 1----------
+
+        //2. if N = 5 , the number of nodes combination are as follows
+        //      left    root    right
+        //       1       1        3 (recursion)
+        //       3       1        1
+        //  --------------N = 5, res = 1 + 1 = 2----------
+
+        //3. if N = 7 , the number of nodes combination are as follows
+        //      left    root    right
+        //       1       1        5 (recursion)
+        //       3       1        3
+        //       5       1        1
+        //  --------------N = 7, res = 2 + 1 + 2 = 5----------
+
+        //4. in order to make full binary tree, the node number must increase by 2
+        List<TreeNode> res = new ArrayList<>();
+        if(N == 1) {
+            res.add(new TreeNode(0));
+            return res;
+        }
+        for(int i = 1; i < N; i += 2) {
+            List<TreeNode> leftSubTrees = allPossibleFBT(i);
+            List<TreeNode> rightSubTrees = allPossibleFBT(N - i - 1);
+            for(TreeNode l : leftSubTrees) {
+                for(TreeNode r : rightSubTrees) {
+                    TreeNode root = new TreeNode(0);
+                    root.left = l;
+                    root.right = r;
+                    res.add(root);
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-difference-between-node-and-ancestor/
+     * Given the root of a binary tree, find the maximum value V for which there exists different
+     * nodes A and B where V = |A.val - B.val| and A is an ancestor of B.
+     *
+     * (A node A is an ancestor of B if either: any child of A is equal to B, or any child of A is an ancestor of B.)
+     * @param root
+     * @return
+     */
+    public int maxAncestorDiff(TreeNode root) {
+        return dfs(root, root.val, root.val); // initialize both max and min with root.val.
+    }
+    private int dfs(TreeNode n, int max, int min) {
+        if (n == null) { return 0; } // base case.
+        max = Math.max(n.val, max); // update max.
+        min = Math.min(n.val, min); // update min.
+        int l = dfs(n.left, max, min); // recurse down.
+        int r = dfs(n.right, max, min); // recurse down.
+        return Math.max(max - min, Math.max(l, r)); // compare all super/sub differences to get result.
+    }
+
+    private int ret = 0;
+    public int maxAncestorDiff_Slow(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left != null) {
+            ret = Math.max(ret, getMaxDiffHelper(root.left, root.val));
+            maxAncestorDiff(root.left);
+        }
+        if (root.right != null) {
+            ret = Math.max(ret, getMaxDiffHelper(root.right, root.val));
+            maxAncestorDiff(root.right);
+        }
+        return ret;
+    }
+
+    private int getMaxDiffHelper(TreeNode node, int val) {
+        int diff = Math.abs(node.val - val);
+        int ldiff = 0, rdiff = 0;
+        if (node.left != null) {
+            ldiff = getMaxDiffHelper(node.left, val);
+        }
+        if (node.right != null) {
+            rdiff = getMaxDiffHelper(node.right, val);
+        }
+        return Math.max(diff, Math.max(ldiff, rdiff));
+    }
+
+    /**
+     * https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
+     *
+     */
+
+    class CompositeTreeNode{
+        TreeNode node;
+        int x;
+        int y;
+        public CompositeTreeNode(TreeNode _node, int _x, int _y) {
+            node = _node;
+            x = _x;
+            y = _y;
+        }
+    }
+    public List<List<Integer>> verticalTraversal(TreeNode root) {
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        if (root == null) {
+            return ret;
+        }
+        TreeMap<Integer, PriorityQueue<CompositeTreeNode>> map = new TreeMap<Integer, PriorityQueue<CompositeTreeNode>>();
+        traversalHelper(root, 0, 0, map);
+        for (PriorityQueue<CompositeTreeNode> pq : map.values()) {
+            List<Integer> list = new ArrayList<Integer>();
+            while (!pq.isEmpty()) {
+                list.add(pq.poll().node.val);
+            }
+            ret.add(list);
+        }
+        return ret;
+    }
+
+    private void traversalHelper(TreeNode node, int x, int y, TreeMap<Integer, PriorityQueue<CompositeTreeNode>> map) {
+        PriorityQueue<CompositeTreeNode> pq = map.getOrDefault(x, new PriorityQueue<CompositeTreeNode>(new Comparator<CompositeTreeNode>() {
+            @Override
+            public int compare(CompositeTreeNode o1, CompositeTreeNode o2) {
+                if (o1.y == o2.y) {
+                    return o1.node.val - o2.node.val;
+                }
+                return o1.y - o2.y;
+            }
+        }));
+        CompositeTreeNode cnode = new CompositeTreeNode(node, x, y);
+        pq.offer(cnode);
+        map.put(x, pq);
+        if (node.left != null) {
+            traversalHelper(node.left, x-1, y-1, map);
+        }
+        if (node.right != null) {
+            traversalHelper(node.right, x+1, y-1, map);
+        }
+    }
+
+
+    /**
+     * https://leetcode.com/problems/check-completeness-of-a-binary-tree/
+     * Given a binary tree, determine if it is a complete binary tree.
+     *
+     * Definition of a complete binary tree from Wikipedia:
+     * In a complete binary tree every level, except possibly the last, is completely filled, and all nodes
+     * in the last level are as far left as possible. It can have between 1 and 2h nodes inclusive at the last level h.
+     * @param root
+     * @return
+     */
+    public boolean isCompleteTree(TreeNode root) {
+        if (root == null) {
+            return false;
+        }
+        int height = getTreeHeight(root);
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        queue.offer(root);
+        int level = 1;
+        while (!queue.isEmpty() && level < height) {
+            int s = queue.size();
+            boolean foundLeft = false;
+            for (int i=0; i<s; i++) {
+                TreeNode node = queue.poll();
+                if (level != height - 1) {
+                    if (node.left == null || node.right == null) {
+                        return false;
+                    }
+                } else {
+                    if ((node.left != null || node.right != null) && foundLeft) {
+                        return false;
+                    }
+                    if (node.left == null && node.right != null) {
+                        return false;
+                    }
+                    if (((node.left != null && node.right == null) || (node.left == null && node.right == null)) && i != s-1) {
+                        foundLeft = true;
+                    }
+                }
+                if (node.left != null) {
+                    queue.offer(node.left);
+                }
+                if (node.right != null) {
+                    queue.offer(node.right);
+                }
+            }
+            level++;
+        }
+        return true;
+    }
+
+    private int getTreeHeight(TreeNode root){
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return 1;
+        } else {
+            return 1 + Math.max(getTreeHeight(root.left), getTreeHeight(root.right));
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/sum-of-nodes-with-even-valued-grandparent/
+     * Given a binary tree, return the sum of values of nodes with even-valued grandparent.
+     * (A grandparent of a node is the parent of its parent, if it exists.)
+     *
+     * If there are no nodes with an even-valued grandparent, return 0.
+     * @param root
+     * @return
+     */
+    private int sum = 0;
+    public int sumEvenGrandparent(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        sumEvenGrandparentHelper(root);
+        return sum;
+    }
+
+    private void sumEvenGrandparentHelper(TreeNode root) {
+        if (root.val % 2 == 0) {
+            if (root.left != null) {
+                sum = sum + getNodeVal(root.left.left) + getNodeVal(root.left.right);
+                sumEvenGrandparentHelper(root.left);
+            }
+            if (root.right != null) {
+                sum = sum + getNodeVal(root.right.left) + getNodeVal(root.right.right);
+                sumEvenGrandparentHelper(root.right);
+            }
+        } else {
+            if (root.left != null) {
+                sumEvenGrandparentHelper(root.left);
+            }
+            if (root.right != null) {
+                sumEvenGrandparentHelper(root.right);
+            }
+        }
+    }
+
+    private int getNodeVal(TreeNode node) {
+        if (node != null) {
+            return node.val;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -257,6 +623,26 @@ public class TreeExe {
 //        TreeNode node4 = new TreeNode(10);
 //        node2.right = node4;
         return root;
+    }
+
+    private TreeNode createCNode() {
+
+        TreeNode node1 = new TreeNode(3);
+
+        TreeNode node2 = new TreeNode(0);
+        node1.left = node2;
+        TreeNode node3 = new TreeNode(0);
+        node1.right = node3;
+//
+//        TreeNode node4 = new TreeNode(4);
+//        node2.left = node4;
+//        TreeNode node5 = new TreeNode(5);
+//        node2.right = node5;
+//
+//        TreeNode node6 = new TreeNode(6);
+//        node3.left = node6;
+
+        return node1;
     }
 
     /**

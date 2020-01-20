@@ -13,7 +13,120 @@ public class BitExe {
         int[][] input = {{0,0,1,1},
                 {1,0,1,0},
                 {1,1,0,0}};
-        System.out.println(exe.matrixScore(input));
+
+        int[] arr = {4,8,2,10};
+        int[][] queries = {{2,3},{1,3},{0,0},{0,3}};
+        System.out.println(exe.circularPermutation(2, 3));
+    }
+
+    /**
+     * https://leetcode.com/problems/circular-permutation-in-binary-representation/
+     *
+     * NOTE: GRAY CODE
+     * https://www.geeksforgeeks.org/generate-n-bit-gray-codes-set-2/
+     *
+     * @param n
+     * @param start
+     * @return
+     */
+    public List<Integer> circularPermutation(int n, int start) {
+        List<Integer> res = new ArrayList<Integer>();
+        for (int i = 0; i < 1 << n; ++i)
+            res.add(start ^ i ^ i >> 1);
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-flips-to-make-a-or-b-equal-to-c/
+     * Given 3 positives numbers a, b and c. Return the minimum flips required in
+     * some bits of a and b to make ( a OR b == c ). (bitwise OR operation).
+     * Flip operation consists of change any single bit 1 to 0 or change the bit
+     * 0 to 1 in their binary representation.
+     *
+     * Example 1:
+     * Input: a = 2, b = 6, c = 5
+     * Output: 3
+     * Explanation: After flips a = 1 , b = 4 , c = 5 such that (a OR b == c)
+     * Example 2:
+     *
+     * Input: a = 4, b = 2, c = 7
+     * Output: 1
+     * Example 3:
+     *
+     * Input: a = 1, b = 2, c = 3
+     * Output: 0
+     * @param a
+     * @param b
+     * @param c
+     * @return
+     */
+    public int minFlips(int a, int b, int c) {
+        int ans = 0, ab = a | b, equal = ab ^ c;
+        for (int i = 0; i < 31; ++i) { // to 32 bit, maximum number tested.
+            int mask = 1 << i;
+            // i-th bits of a | b and c are not same, need at least 1 flip.
+            if ((equal & mask) > 0) {
+                // if i-th bits of a | b and c are not same, then only if ith bits of a and b are both 1 and that of c is 0, we need 2 flips;
+                // otherwise only 1 flip needed.
+                ans += (a & mask) == (b & mask) && (c & mask) == 0 ? 2 : 1;
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/xor-queries-of-a-subarray/
+     * Given the array arr of positive integers and the array queries where queries[i] = [Li, Ri],
+     * for each query i compute the XOR of elements from Li to Ri (that is, arr[Li] xor arr[Li+1] xor ... xor arr[Ri] ).
+     * Return an array containing the result for the given queries.
+     *
+     *
+     * Example 1:
+     *
+     * Input: arr = [1,3,4,8], queries = [[0,1],[1,2],[0,3],[3,3]]
+     * Output: [2,7,14,8]
+     * Explanation:
+     * The binary representation of the elements in the array are:
+     * 1 = 0001
+     * 3 = 0011
+     * 4 = 0100
+     * 8 = 1000
+     * The XOR values for queries are:
+     * [0,1] = 1 xor 3 = 2
+     * [1,2] = 3 xor 4 = 7
+     * [0,3] = 1 xor 3 xor 4 xor 8 = 14
+     * [3,3] = 8
+     *
+     * Example 2:
+     *
+     * Input: arr = [4,8,2,10], queries = [[2,3],[1,3],[0,0],[0,3]]
+     * Output: [8,0,4,4]
+     * @param arr
+     * @param queries
+     * @return
+     */
+    public int[] xorQueries(int[] arr, int[][] queries) {
+        int[] ret = new int[queries.length];
+        //n ^ n = 0
+        //n ^ 0 = n
+        //-> x ^ x ^ y = y
+        int[] xorSum = new int[arr.length];
+        xorSum[0] = arr[0];
+        for (int i=1; i<arr.length; i++) {
+            xorSum[i] = arr[i] ^ xorSum[i-1];
+        }
+        for (int i=0; i<ret.length; i++) {
+            if (queries[i][0] == queries[i][1]) {
+                ret[i] = arr[queries[i][0]];
+                continue;
+            }
+            if (queries[i][0] == 0) {
+                ret[i] = xorSum[queries[i][1]];
+            } else {
+                ret[i] = xorSum[queries[i][0] - 1] ^ xorSum[queries[i][1]];;
+            }
+        }
+        return ret;
     }
 
     /**

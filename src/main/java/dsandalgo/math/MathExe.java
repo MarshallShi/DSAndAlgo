@@ -1,6 +1,8 @@
 package dsandalgo.math;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,101 @@ public class MathExe {
         int[] rec2 = {2,2,3,3};
         int[][] shape = {{1,2},{3,4}};
         int[] primes = {2,7,13,19};
-        System.out.println(exe.nthUglyNumber(5, 2, 11, 13));
+        System.out.println(exe.fractionToDecimal(2, 3));
+    }
+
+
+    /**
+     * https://leetcode.com/problems/minimum-time-difference/
+     *
+     * Given a list of 24-hour clock time points in "Hour:Minutes" format,
+     * find the minimum minutes difference between any two time points in the list.
+     *
+     * Example 1:
+     * Input: ["23:59","00:00"]
+     * Output: 1
+     *
+     * Note:
+     * The number of time points in the given list is at least 2 and won't exceed 20000.
+     * The input time is legal and ranges from 00:00 to 23:59.
+     *
+     * @param timePoints
+     *
+     * @return
+     */
+    public int findMinDifference(List<String> timePoints) {
+        int minDiff = Integer.MAX_VALUE;
+        int totalMinutes = 1440;
+        List<Integer> time = new ArrayList<Integer>();
+
+        for (int i = 0; i < timePoints.size(); i++) {
+            Integer h = Integer.valueOf(timePoints.get(i).substring(0, 2));
+            time.add(60 * h + Integer.valueOf(timePoints.get(i).substring(3, 5)));
+        }
+
+        Collections.sort(time, (Integer a, Integer b) -> a - b);
+
+        for (int i = 1; i < time.size(); i++) {
+            minDiff = Math.min(minDiff, time.get(i) - time.get(i-1));
+        }
+
+        int corner = time.get(0) + (totalMinutes - time.get(time.size()-1));
+        return Math.min(minDiff, corner);
+    }
+
+    /**
+     * https://leetcode.com/problems/fraction-to-recurring-decimal/
+     *
+     * Given two integers representing the numerator and denominator of a fraction, return the fraction in string format.
+     *
+     * If the fractional part is repeating, enclose the repeating part in parentheses.
+     *
+     * Example 1:
+     *
+     * Input: numerator = 1, denominator = 2
+     * Output: "0.5"
+     *
+     * Example 2:
+     *
+     * Input: numerator = 2, denominator = 1
+     * Output: "2"
+     *
+     * Example 3:
+     *
+     * Input: numerator = 2, denominator = 3
+     * Output: "0.(6)"
+     *
+     * @param numerator
+     * @param denominator
+     * @return
+     */
+    public String fractionToDecimal(int numerator, int denominator) {
+        StringBuilder result = new StringBuilder();
+
+        String sign = (numerator < 0 == denominator < 0 || numerator == 0) ? "" : "-";
+
+        long num = Math.abs((long) numerator);
+        long den = Math.abs((long) denominator);
+
+        result.append(sign);
+        result.append(num / den);
+        long remainder = num % den;
+        if (remainder == 0) {
+            return result.toString();
+        }
+        result.append(".");
+
+        HashMap<Long, Integer> hashMap = new HashMap<Long, Integer>();
+        while (!hashMap.containsKey(remainder)) {
+            hashMap.put(remainder, result.length());
+            result.append(10 * remainder / den);
+            remainder = 10 * remainder % den;
+        }
+
+        int index = hashMap.get(remainder);
+        result.insert(index, "(");
+        result.append(")");
+        return result.toString().replace("(0)", "");
     }
 
 

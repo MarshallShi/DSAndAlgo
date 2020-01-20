@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class ArrayExe {
 
@@ -14,10 +15,333 @@ public class ArrayExe {
     public static void main(String[] args) {
         ArrayExe exe = new ArrayExe();
         //int[] time = {60,60,60,120,35,25};
-        int[][] grid = {{3,0,8,4},{2,4,5,7},{9,2,6,3},{0,3,1,0}};
+        int[][] queens = {{0,1},{1,0},{4,0},{0,4},{3,3},{2,4}};
+        int[] king = {0,0};
 
         int[] time = {-1, 0, 1, 2, -1, -4};
-        exe.maxIncreaseKeepingSkyline(grid);
+        int[] nums = {1,2,3,4,4,3,2,1};
+        char[] ch = {'a','b','b','b','b'};
+
+        int[] A = {3,5,1,2,3}, B = {3,6,3,3,4};
+
+        System.out.println(exe.minDominoRotations(A, B));
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-domino-rotations-for-equal-row/
+     *
+     * @param A
+     * @param B
+     * @return
+     */
+    public int minDominoRotations(int[] A, int[] B) {
+        int len = A.length;
+        int[] countForA = new int[6];
+        int[] countForB = new int[6];
+        int[] duplicates = new int[6];
+        for (int i=0; i<len; i++) {
+            if (A[i] != B[i]) {
+                countForA[A[i] - 1]++;
+                countForB[B[i] - 1]++;
+            } else {
+                duplicates[A[i] - 1]++;
+            }
+        }
+
+        for (int i=0; i<6; i++) {
+            if (countForA[i] + countForB[i] + duplicates[i] == len) {
+                return Math.min(countForA[i], countForB[i]);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * https://leetcode.com/problems/queens-that-can-attack-the-king/
+     *
+     * On an 8x8 chessboard, there can be multiple Black Queens and one White King.
+     *
+     * Given an array of integer coordinates queens that represents the positions of the Black Queens,
+     * and a pair of coordinates king that represent the position of the White King, return the coordinates
+     * of all the queens (in any order) that can attack the King.
+     *
+     * @param queens
+     * @param king
+     * @return
+     */
+    public List<List<Integer>> queensAttacktheKing(int[][] queens, int[] king) {
+        boolean[][] seen = new boolean[8][8];
+        for (int i=0; i<queens.length; i++) {
+            seen[queens[i][0]][queens[i][1]] = true;
+        }
+        int[][] directions = {{0,1},{0,-1},{1,0},{-1,0},{1,1},{-1,1},{1,-1},{-1,-1}};
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        for (int[] dir : directions) {
+            int r = king[0] + dir[0];
+            int c = king[1] + dir[1];
+            while (r >= 0 && c >= 0 && r < 8 && c < 8) {
+                if (seen[r][c]) {
+                    List<Integer> lis = new ArrayList<Integer>();
+                    lis.add(r);
+                    lis.add(c);
+                    ret.add(lis);
+                    break;
+                } else {
+                    r = r + dir[0];
+                    c = c + dir[1];
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/matrix-block-sum/
+     *
+     * @param mat
+     * @param K
+     * @return
+     */
+    public int[][] matrixBlockSum(int[][] mat, int K) {
+        int m = mat.length;
+        int n = mat[0].length;
+        int[][] sumMatrix = new int[m][n];
+        sumMatrix[0][0] = mat[0][0];
+        for (int i=1; i<m; i++) {
+            sumMatrix[i][0] = mat[i][0] + sumMatrix[i-1][0];
+        }
+        for (int j=1; j<n; j++) {
+            sumMatrix[0][j] = mat[0][j] + sumMatrix[0][j-1];
+        }
+        for (int i=1; i<m; i++) {
+            for (int j=1; j<n; j++) {
+                sumMatrix[i][j] = sumMatrix[i-1][j] + sumMatrix[i][j-1] - sumMatrix[i-1][j-1] + mat[i][j];
+            }
+        }
+        int[][] ans = new int[m][n];
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                int leftR = Math.max(0, i - K);
+                int leftC = Math.max(0, j - K);
+                int rightR = Math.min(m - 1, i + K);
+                int rightC = Math.min(n - 1, j + K);
+                int overlap = 0;
+                if (leftR - 1 >= 0 && leftC - 1 >= 0) {
+                    overlap = sumMatrix[leftR-1][leftC-1];
+                }
+                int leftOver = 0;
+                if (leftC - 1 >= 0) {
+                    leftOver = sumMatrix[rightR][leftC-1];
+                }
+                int topOver = 0;
+                if (leftR - 1 >= 0) {
+                    topOver = sumMatrix[leftR - 1][rightC];
+                }
+                ans[i][j] = sumMatrix[rightR][rightC] -  leftOver - topOver + overlap;
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/distribute-candies-to-people/
+     * We distribute some number of candies, to a row of n = num_people people in the following way:
+     *
+     * We then give 1 candy to the first person, 2 candies to the second person, and so on until we
+     * give n candies to the last person.
+     *
+     * Then, we go back to the start of the row, giving n + 1 candies to the first person, n + 2 candies to
+     * the second person, and so on until we give 2 * n candies to the last person.
+     *
+     * This process repeats (with us giving one more candy each time, and moving to the start of the row after
+     * we reach the end) until we run out of candies.  The last person will receive all of our remaining candies
+     * (not necessarily one more than the previous gift).
+     *
+     * Return an array (of length num_people and sum candies) that represents the final distribution of candies.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: candies = 7, num_people = 4
+     * Output: [1,2,3,1]
+     * Explanation:
+     * On the first turn, ans[0] += 1, and the array is [1,0,0,0].
+     * On the second turn, ans[1] += 2, and the array is [1,2,0,0].
+     * On the third turn, ans[2] += 3, and the array is [1,2,3,0].
+     * On the fourth turn, ans[3] += 1 (because there is only one candy left), and the final array is [1,2,3,1].
+     *
+     * Example 2:
+     *
+     * Input: candies = 10, num_people = 3
+     * Output: [5,2,3]
+     * Explanation:
+     * On the first turn, ans[0] += 1, and the array is [1,0,0].
+     * On the second turn, ans[1] += 2, and the array is [1,2,0].
+     * On the third turn, ans[2] += 3, and the array is [1,2,3].
+     * On the fourth turn, ans[0] += 4, and the final array is [5,2,3].
+     *
+     * @param candies
+     * @param num_people
+     * @return
+     */
+    public int[] distributeCandies(int candies, int num_people) {
+        int[] ret = new int[num_people];
+        int nextAllocation = 1;
+        int i = 0;
+        while (candies > 0) {
+            if (i >= num_people) {
+                i = i%num_people;
+            }
+            if (candies > nextAllocation) {
+                ret[i] = ret[i] + nextAllocation;
+                candies = candies - nextAllocation;
+            } else {
+                ret[i] = ret[i] + candies;
+                break;
+            }
+            i++;
+            nextAllocation++;
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/
+     *
+     * @param deck
+     * @return
+     */
+    public boolean hasGroupsSizeX(int[] deck) {
+        Map<Integer, Integer> count = new HashMap<>();
+        int res = 0;
+        for (int i : deck) count.put(i, count.getOrDefault(i, 0) + 1);
+        for (int i : count.values()) res = gcd(i, res);
+        return res > 1;
+    }
+
+    public int gcd(int a, int b) {
+        return b > 0 ? gcd(b, a % b) : a;
+    }
+
+    /**
+     * https://leetcode.com/problems/string-compression/
+     * Given an array of characters, compress it in-place.
+     *
+     * The length after compression must always be smaller than or equal to the original array.
+     *
+     * Every element of the array should be a character (not int) of length 1.
+     *
+     * After you are done modifying the input array in-place, return the new length of the array.
+     *
+     *
+     * Follow up:
+     * Could you solve it using only O(1) extra space?
+     *
+     *
+     * Example 1:
+     *
+     * Input:
+     * ["a","a","b","b","c","c","c"]
+     *
+     * Output:
+     * Return 6, and the first 6 characters of the input array should be: ["a","2","b","2","c","3"]
+     *
+     * Explanation:
+     * "aa" is replaced by "a2". "bb" is replaced by "b2". "ccc" is replaced by "c3".
+     *
+     * @param chars
+     * @return
+     */
+    public int compress(char[] chars) {
+        int i = 0, j = 0;
+        while (i<chars.length) {
+            int len = 1;
+            while (i+1 < chars.length && chars[i] == chars[i+1]) {
+                i++;
+                len++;
+            }
+            chars[j] = chars[i];
+            if (len > 1) {
+                String strOfInt = String.valueOf(len);
+                for (int k=1; k<=strOfInt.length(); k++) {
+                    chars[j+k] = strOfInt.charAt(k-1);
+                }
+                j = j + strOfInt.length() + 1;
+            } else {
+                j++;
+            }
+            i++;
+        }
+        return j;
+    }
+
+    /**
+     * https://leetcode.com/problems/decrypt-string-from-alphabet-to-integer-mapping/
+     * Given a string s formed by digits ('0' - '9') and '#' . We want to map s
+     * to English lowercase characters as follows:
+     *
+     * Characters ('a' to 'i') are represented by ('1' to '9') respectively.
+     * Characters ('j' to 'z') are represented by ('10#' to '26#') respectively.
+     * Return the string formed after mapping.
+     *
+     * It's guaranteed that a unique mapping will always exist.
+     *
+     * Example 1:
+     *
+     * Input: s = "10#11#12"
+     * Output: "jkab"
+     * Explanation: "j" -> "10#" , "k" -> "11#" , "a" -> "1" , "b" -> "2".
+     *
+     * Example 2:
+     *
+     * Input: s = "1326#"
+     * Output: "acz"
+     *
+     * Example 3:
+     *
+     * Input: s = "25#"
+     * Output: "y"
+     *
+     * Example 4:
+     *
+     * Input: s = "12345678910#11#12#13#14#15#16#17#18#19#20#21#22#23#24#25#26#"
+     * Output: "abcdefghijklmnopqrstuvwxyz"
+     * @param s
+     * @return
+     */
+    public String freqAlphabets(String s) {
+        StringBuilder sb=new StringBuilder();
+        char[] charry = s.toCharArray();
+        for (int i=0; i<charry.length; i++) {
+            if ( i < charry.length-2 && charry[i+2]=='#') {
+                int n=(charry[i]-'0')*10+(charry[i+1]-'0');
+                sb.append((char)('j'+n-10));
+                i+=2;
+            } else {
+                sb.append((char)('a'+charry[i]-'1'));
+            }
+        }
+        return sb.toString();
+    }
+    /**
+     * https://leetcode.com/problems/decompress-run-length-encoded-list/
+     * @param nums
+     * @return
+     */
+    public int[] decompressRLElist(int[] nums) {
+        List<Integer> ret = new ArrayList<Integer>();
+        int len = nums.length / 2;
+        for (int i=0; i<len; i++) {
+            for (int j=0; j<nums[2*i]; j++) {
+                ret.add(nums[2*i + 1]);
+            }
+        }
+        int[] ans = new int[ret.size()];
+        for (int i=0; i<ans.length; i++) {
+            ans[i] = ret.get(i);
+        }
+        return ans;
     }
 
     /**

@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.unionfind;
 
 public class FriendCircles {
 

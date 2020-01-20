@@ -7,6 +7,21 @@ import java.util.Queue;
 
 public class UnionFindExe {
 
+    public static void main(String[] args) {
+        UnionFindExe exe = new UnionFindExe();
+        String[] grid = {};
+    }
+
+    /**
+     * https://leetcode.com/problems/regions-cut-by-slashes/
+     *
+     * @param grid
+     * @return
+     */
+    public int regionsBySlashes(String[] grid) {
+        return 0;
+    }
+
 
     /**
      * https://leetcode.com/problems/number-of-closed-islands/

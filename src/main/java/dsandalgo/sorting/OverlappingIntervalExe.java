@@ -1,25 +1,158 @@
 package dsandalgo.sorting;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 
 public class OverlappingIntervalExe {
 
     //https://en.wikipedia.org/wiki/Interval_scheduling#Interval_Scheduling_Maximization
 
-    /**
-     * 435 Non-overlapping Intervals
-     * 56 Merge Intervals
-     * 252 Meeting Rooms
-     * 253 Meeting Rooms II
-     *
-     */
-
     public static void main(String[] args) {
         OverlappingIntervalExe exe = new OverlappingIntervalExe();
 
-        int[][] input = {{10,16},{2,8},{1,6},{7,12}};
-        System.out.println(exe.findMinArrowShots(input));
+        int[][] input = {{2,15},{36,45},{9,29},{16,23},{4,9}};
+        int[][] ar = {{1,4},{3,6},{2,8}};
+        System.out.println(exe.minMeetingRooms(input));
+    }
+
+    /**
+     * https://leetcode.com/problems/meeting-rooms-ii/
+     *
+     * Given an array of meeting time intervals consisting of start and end times
+     * [[s1,e1],[s2,e2],...] (si < ei), find the minimum number of conference rooms required.
+     *
+     * Example 1:
+     *
+     * Input: [[0, 30],[5, 10],[15, 20]]
+     * Output: 2
+     *
+     * Example 2:
+     *
+     * Input: [[7,10],[2,4]]
+     * Output: 1
+     * NOTE: input types have been changed on April 15, 2019. Please reset to default code definition to get new method signature.
+     *
+     * @param intervals
+     * @return
+     */
+    public int minMeetingRooms(int[][] intervals) {
+        if (intervals == null || intervals.length == 0) {
+            return 0;
+        }
+        if (intervals.length == 1) {
+            return 1;
+        }
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0];
+            }
+        });
+        //here int[0] = s or e, numeric value; int[1] = 0 when it is s, 1 when it is e.
+        PriorityQueue<int[]> queue = new PriorityQueue<int[]>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[1] - o2[1];
+            }
+        });
+        int count  = 1;
+        queue.offer(intervals[0]);
+        for (int i=1; i<intervals.length; i++) {
+            if (!queue.isEmpty()) {
+                int[] pre = queue.peek();
+                if (intervals[i][0] >= pre[1]) {
+                    queue.poll();
+                } else {
+                    count++;
+                }
+            }
+            queue.offer(intervals[i]);
+        }
+        return count;
+    }
+
+    /**
+     * https://leetcode.com/problems/meeting-rooms/
+     *
+     * Given an array of meeting time intervals consisting of start and end times
+     * [[s1,e1],[s2,e2],...] (si < ei), determine if a person could attend all meetings.
+     *
+     * Example 1:
+     *
+     * Input: [[0,30],[5,10],[15,20]]
+     * Output: false
+     * Example 2:
+     *
+     * Input: [[7,10],[2,4]]
+     * Output: true
+     * NOTE: input types have been changed on April 15, 2019. Please reset to default code definition to get new method signature.
+     * @param intervals
+     * @return
+     */
+    public boolean canAttendMeetings(int[][] intervals) {
+        if (intervals == null || intervals.length < 2) {
+            return true;
+        }
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[0] == o2[0]) {
+                    return o2[1] - o1[1];
+                }
+                return o1[0] - o2[0];
+            }
+        });
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] < intervals[i-1][1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/merge-intervals/
+     *
+     * @param intervals
+     * @return
+     */
+    public int[][] merge(int[][] intervals) {
+        List<int[]> list = new ArrayList<int[]>();
+        for (int i=0; i<intervals.length; i++) {
+            list.add(intervals[i]);
+        }
+        list.sort(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0];
+            }
+        });
+        List<int[]> resultList = new ArrayList<int[]>();
+        for (int i=0; i<list.size(); i++) {
+            int[] cur = list.get(i);
+            while (i != list.size() - 1) {
+                if (cur[1] >= list.get(i+1)[1]) {
+                    i++;
+                } else {
+                    if ((cur[1] >= list.get(i+1)[0]) && (cur[1] <= list.get(i+1)[1]))  {
+                        cur[1] = list.get(i+1)[1];
+                        i++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            resultList.add(cur);
+        }
+        int[][] ret = new int[resultList.size()][2];
+        for (int i=0; i<resultList.size(); i++) {
+            ret[i] = resultList.get(i);
+        }
+        return ret;
     }
 
     /**
@@ -107,6 +240,56 @@ public class OverlappingIntervalExe {
             //overlap happened.
             if (intervals[i][0] >= end) {
                 end = intervals[i][1];
+                count++;
+            }
+        }
+        return intervals.length - count;
+    }
+
+    /**
+     * https://leetcode.com/problems/remove-covered-intervals/
+     * Given a list of intervals, remove all intervals that are covered by another interval in the list.
+     * Interval [a,b) is covered by interval [c,d) if and only if c <= a and b <= d.
+     *
+     * After doing so, return the number of remaining intervals.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: intervals = [[1,4],[3,6],[2,8]]
+     * Output: 2
+     * Explanation: Interval [3,6] is covered by [2,8], therefore it is removed.
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= intervals.length <= 1000
+     * 0 <= intervals[i][0] < intervals[i][1] <= 10^5
+     * intervals[i] != intervals[j] for all i != j
+     * @param intervals
+     * @return
+     */
+    public int removeCoveredIntervals(int[][] intervals) {
+        if (intervals.length == 0) {
+            return 0;
+        }
+        //Sort according to the end position.
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0];
+            }
+        });
+
+        int[] base = intervals[0];
+        int count = 0;
+
+        for (int i = 1; i < intervals.length; i++) {
+            //overlap happened.
+            if (intervals[i][1] > base[1]) {
+                base = intervals[i];
+            } else {
                 count++;
             }
         }
