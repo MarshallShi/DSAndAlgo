@@ -24,7 +24,85 @@ public class ArrayExe {
 
         int[] A = {3,5,1,2,3}, B = {3,6,3,3,4};
 
-        System.out.println(exe.minDominoRotations(A, B));
+        int[][] arrr = {{1,2},{1,2},{1,1},{2,2},{1,2}};
+        int[] tempArr = {1,2,3,3,4,5};
+       // System.out.println(exe.isPossible(tempArr));
+    }
+
+    /**
+     * https://leetcode.com/problems/trapping-rain-water/
+     * Given n non-negative integers representing an elevation map where the width of each bar is 1,
+     * compute how much water it is able to trap after raining.
+     *
+     *
+     * The above elevation map is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. In this case,
+     * 6 units of rain water (blue section) are being trapped. Thanks Marcos for contributing this image!
+     *
+     * Example:
+     *
+     * Input: [0,1,0,2,1,0,1,3,2,1,2,1]
+     * Output: 6
+     * @param height
+     * @return
+     */
+    public int trap(int[] height) {
+        int n = height.length;
+        if(n == 0) {
+            return 0;
+        }
+        int[] leftMax = new int[n];
+        int[] rightMax = new int[n];
+        leftMax[0] = height[0];
+        rightMax[n-1] = height[n-1];
+        for(int i = 1; i <n; i++ ) {
+            leftMax[i] = Math.max(leftMax[i-1], height[i]);
+        }
+        for(int i = n-2; i >= 0; i--) {
+            rightMax[i] = Math.max(rightMax[i+1], height[i]);
+        }
+        int water=0;
+        for(int i=0; i < n; i++) {
+            water += Math.min(rightMax[i], leftMax[i]) - height[i];
+        }
+        return water;
+    }
+
+    public int trap_oneLoop(int A[], int n) {
+        int left=0; int right=n-1;
+        int res=0;
+        int maxleft=0, maxright=0;
+        while(left<=right){
+            if(A[left]<=A[right]){
+                if(A[left]>=maxleft) maxleft=A[left];
+                else res+=maxleft-A[left];
+                left++;
+            }
+            else{
+                if(A[right]>=maxright) maxright= A[right];
+                else res+=maxright-A[right];
+                right--;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-equivalent-domino-pairs/
+     *
+     * @param dominoes
+     * @return
+     */
+    public int numEquivDominoPairs(int[][] dominoes) {
+        Map<Integer, Integer> count = new HashMap<>();
+        int res = 0;
+        for (int[] d : dominoes) {
+            int k = Math.min(d[0], d[1]) * 10 + Math.max(d[0], d[1]);
+            count.put(k, count.getOrDefault(k, 0) + 1);
+        }
+        for (int v : count.values()) {
+            res += v * (v - 1) / 2;
+        }
+        return res;
     }
 
     /**

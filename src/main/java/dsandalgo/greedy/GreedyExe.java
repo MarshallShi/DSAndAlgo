@@ -14,7 +14,227 @@ public class GreedyExe{
 
         int[] values = {5,4,3,2,1};
         int[] labels = {1,3,3,3,2};
-        System.out.println(exe.largestValsFromLabels(values, labels, 3, 2));
+        //System.out.println(exe.largestValsFromLabels(values, labels, 3, 2));
+
+        int[] tempArr = {3,2,1,2,3,4,3,4,5,9,10,11};
+        System.out.println(exe.isPossibleDivide(tempArr, 3));
+    }
+
+    /**
+     * https://leetcode.com/problems/divide-array-in-sets-of-k-consecutive-numbers/
+     *
+     * Given an array of integers nums and a positive integer k, find whether it's possible to divide this array into sets of k consecutive numbers
+     * Return True if its possible otherwise return False.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: nums = [1,2,3,3,4,4,5,6], k = 4
+     * Output: true
+     * Explanation: Array can be divided into [1,2,3,4] and [3,4,5,6].
+     * Example 2:
+     *
+     * Input: nums = [3,2,1,2,3,4,3,4,5,9,10,11], k = 3
+     * Output: true
+     * Explanation: Array can be divided into [1,2,3] , [2,3,4] , [3,4,5] and [9,10,11].
+     * Example 3:
+     *
+     * Input: nums = [3,3,2,2,1,1], k = 3
+     * Output: true
+     * Example 4:
+     *
+     * Input: nums = [1,2,3,4], k = 3
+     * Output: false
+     * Explanation: Each array should be divided in subarrays of size 3.
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= nums.length <= 10^5
+     * 1 <= nums[i] <= 10^9
+     * 1 <= k <= nums.length
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public boolean isPossibleDivide(int[] nums, int k) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int i : nums) {
+            freq.put(i, freq.getOrDefault(i,0) + 1);
+        }
+        for (int i : nums) {
+            if (freq.get(i) == 0) {
+                //The number has been all used, move on to next
+                continue;
+            } else {
+                int j = 1;
+                while (j < k) {
+                    if (freq.containsKey(i+j)) {
+                        if (freq.get(i+j) <= 0) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                    freq.put(i+j, freq.get(i+j) - 1);
+                    j++;
+                }
+            }
+            freq.put(i, freq.get(i) - 1);
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/split-array-into-consecutive-subsequences/
+     *
+     * Given an array nums sorted in ascending order, return true if and only if you can split it into 1 or more subsequences such
+     * that each subsequence consists of consecutive integers and has length at least 3.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [1,2,3,3,4,5]
+     * Output: True
+     * Explanation:
+     * You can split them into two consecutive subsequences :
+     * 1, 2, 3
+     * 3, 4, 5
+     *
+     * Example 2:
+     *
+     * Input: [1,2,3,3,4,4,5,5]
+     * Output: True
+     * Explanation:
+     * You can split them into two consecutive subsequences :
+     * 1, 2, 3, 4, 5
+     * 3, 4, 5
+     *
+     * Example 3:
+     *
+     * Input: [1,2,3,4,4,5]
+     * Output: False
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= nums.length <= 10000
+     *
+     * @param nums
+     * @return
+     */
+    public boolean isPossible(int[] nums) {
+        //We iterate through the array once to get the frequency of all the elements in the array
+        //We iterate through the array once more and for each element we either see
+        // if it can be appended to a previously constructed consecutive sequence or if it can be the start of a new consecutive sequence.
+        // If neither are true, then we return false.
+
+        //        eg: [1,2,3,4, 5]
+        //// i =1
+        //        we fall in 3 case "start of a new subsequence"
+        //        we make 2, 3 freq 0
+        //        and put <4, 1> in appendfreq, this mean I have 1 subsequence can continue from 4
+        //
+        ////i =2, 3
+        //        we continue
+        //
+        ////i = 4
+        //                we fall in 2 case since <4, 1> is in appendfreq
+        //        now this subsequence should end in 5
+        //        so we decreace <4, 1> to <4, 0> since we no longer have subsequence can continue from 4
+        //        and we put <5, 1> in appendfreq since now we have a subsequence can continue from 5
+        Map<Integer, Integer> freq = new HashMap<>(), appendfreq = new HashMap<>();
+        for (int i : nums) {
+            freq.put(i, freq.getOrDefault(i,0) + 1);
+        }
+        for (int i : nums) {
+            if (freq.get(i) == 0) {
+                //The number has been all used, move on to next
+                continue;
+            } else {
+                if (appendfreq.getOrDefault(i,0) > 0) {
+                    //this number can be the first of a new sequence already, decrease the freq from appendfreq, and add the next
+                    appendfreq.put(i, appendfreq.get(i) - 1);
+                    appendfreq.put(i+1, appendfreq.getOrDefault(i+1,0) + 1);
+                } else {
+                    if (freq.getOrDefault(i+1,0) > 0 && freq.getOrDefault(i+2,0) > 0) {
+                        freq.put(i+1, freq.get(i+1) - 1);
+                        freq.put(i+2, freq.get(i+2) - 1);
+                        appendfreq.put(i+3, appendfreq.getOrDefault(i+3,0) + 1);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            freq.put(i, freq.get(i) - 1);
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/shortest-way-to-form-string/
+     *
+     * From any string, we can form a subsequence of that string by deleting some number of characters
+     * (possibly no deletions).
+     *
+     * Given two strings source and target, return the minimum number of subsequences of source such that
+     * their concatenation equals target. If the task is impossible, return -1.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: source = "abc", target = "abcbc"
+     * Output: 2
+     * Explanation: The target "abcbc" can be formed by "abc" and "bc", which are subsequences of source "abc".
+     * Example 2:
+     *
+     * Input: source = "abc", target = "acdbc"
+     * Output: -1
+     * Explanation: The target string cannot be constructed from the subsequences of source string due to the character "d" in target string.
+     * Example 3:
+     *
+     * Input: source = "xyz", target = "xzyxz"
+     * Output: 3
+     * Explanation: The target string can be constructed as follows "xz" + "y" + "xz".
+     *
+     *
+     * Constraints:
+     *
+     * Both the source and target strings consist of only lowercase English letters from "a"-"z".
+     * The lengths of source and target string are between 1 and 1000.
+     *
+     * @param source
+     * @param target
+     * @return
+     */
+    //https://leetcode.com/problems/shortest-way-to-form-string/discuss/330938/Accept-is-not-enough-to-get-a-hire.-Interviewee-4-follow-up
+    public int shortestWay(String source, String target) {
+        char[] sourceCharArr = source.toCharArray(), targetArr = target.toCharArray();
+        boolean[] sourceChar = new boolean[26];
+        for (int i = 0; i < sourceCharArr.length; i++) {
+            sourceChar[sourceCharArr[i] - 'a'] = true;
+        }
+        int j = 0, res = 1;
+        for (int i = 0; i < targetArr.length; i++,j++) {
+            if (!sourceChar[targetArr[i] - 'a']) {
+                //If target contain any unexpected char, no way, return -1.
+                return -1;
+            }
+            while (j < sourceCharArr.length && sourceCharArr[j] != targetArr[i]) {
+                j++;
+            }
+            //Once source reaches the end, it is one sub-sequence required.
+            if (j == sourceCharArr.length) {
+                j = -1;
+                res++;
+                i--;
+            }
+        }
+        return res;
     }
 
     /**

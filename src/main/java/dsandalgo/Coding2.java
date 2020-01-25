@@ -470,68 +470,6 @@ public class Coding2 {
         return ret;
     }
 
-    //[["JFK","SFO"],["JFK","ATL"],["SFO","ATL"],["ATL","JFK"],["ATL","SFO"]]
-    public List<String> findItinerary(List<List<String>> tickets) {
-        LinkedList<String> ret = new LinkedList<String>();
-        Map<String, PriorityQueue<String>> map = new HashMap<String, PriorityQueue<String>>();
-        Stack<String> stack = new Stack<String>();
-        for(List<String> t : tickets) {
-            if(!map.containsKey(t.get(0))) {
-                map.put(t.get(0), new PriorityQueue<String>());
-            }
-            map.get(t.get(0)).offer(t.get(1));
-        }
-        stack.push("JFK");
-        while(!stack.isEmpty()) {
-            String next = stack.peek();
-            if(map.containsKey(next) && map.get(next).size() > 0) {
-                stack.push(map.get(next).poll());
-            } else {
-                ret.addFirst(stack.pop());
-            }
-        }
-        return ret;
-    }
-
-    public boolean canFinish(int numCourses, int[][] prerequisites) {
-        int[] ret = new int[numCourses];
-        int[] indegrees = new int[numCourses];
-        Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>();
-        for (int i=0; i<prerequisites.length; i++) {
-            map.putIfAbsent(prerequisites[i][1], new ArrayList<Integer>());
-            map.get(prerequisites[i][1]).add(prerequisites[i][0]);
-            indegrees[prerequisites[i][0]]++;
-        }
-        Queue<Integer> queue = new LinkedList<Integer>();
-        for (int i=0; i<indegrees.length; i++) {
-            if (indegrees[i] == 0) {
-                queue.add(i);
-            }
-        }
-        if (queue.isEmpty()) {
-            return false;
-        }
-        int counter = 0;
-        while (!queue.isEmpty()) {
-            int cur = ((LinkedList<Integer>) queue).peek();
-            indegrees[cur] = -1;
-            ret[counter] = ((LinkedList<Integer>) queue).pop();
-            counter++;
-            List<Integer> curChildren = map.get(cur);
-            if (curChildren != null) {
-                for (Integer child: curChildren) {
-                    indegrees[child]--;
-                    if (indegrees[child] == 0) {
-                        queue.add(child);
-                    }
-                }
-            }
-        }
-        if (!queue.isEmpty() || counter != numCourses) {
-            return false;
-        }
-        return true;
-    }
 
     public int[] findOrder(int numCourses, int[][] prerequisites) {
         int[] ret = new int[numCourses];
@@ -610,14 +548,6 @@ public class Coding2 {
         }
         return ret;
     }
-
-
-
-    public boolean exist(char[][] board, String word) {
-        return false;
-    }
-
-
 
     public List<List<Integer>> subsetsWithDup(int[] nums) {
         List<List<Integer>> list = new ArrayList<>();

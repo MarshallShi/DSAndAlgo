@@ -1,7 +1,12 @@
 package dsandalgo.graph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Stack;
 
 public class GraphExe {
 
@@ -11,6 +16,30 @@ public class GraphExe {
                 {1,2},{3},{3},{}
         };
         exe.allPathsSourceTarget(graph);
+    }
+
+    /**
+     * https://leetcode.com/problems/find-the-celebrity/
+     *
+     * @param n
+     * @return
+     */
+    public int findCelebrity(int n) {
+        int candidate = 0;
+        // one pass to find the potential candidate, it has to come from the know relation.
+        // a knows b, a is not but b is potential.
+        for(int i = 1; i < n; i++){
+            if(knows(candidate, i))
+                candidate = i;
+        }
+        for(int i = 0; i < n; i++){
+            if(i != candidate && (knows(candidate, i) || !knows(i, candidate))) return -1;
+        }
+        return candidate;
+    }
+
+    boolean knows(int a, int b){
+        return true;
     }
 
     /**
@@ -59,5 +88,52 @@ public class GraphExe {
             dfsHelper(temp, result, graph, nextNode);
             temp.remove(temp.size() - 1);
         }
+    }
+
+    /**
+     * https://leetcode.com/problems/reconstruct-itinerary/
+     *
+     * Given a list of airline tickets represented by pairs of departure and arrival airports [from, to],
+     * reconstruct the itinerary in order. All of the tickets belong to a man who departs from JFK. Thus, the itinerary must begin with JFK.
+     *
+     * Note:
+     *
+     * If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical
+     * order when read as a single string. For example, the itinerary ["JFK", "LGA"] has a smaller lexical order than ["JFK", "LGB"].
+     * All airports are represented by three capital letters (IATA code).
+     * You may assume all tickets form at least one valid itinerary.
+     * Example 1:
+     *
+     * Input: [["MUC", "LHR"], ["JFK", "MUC"], ["SFO", "SJC"], ["LHR", "SFO"]]
+     * Output: ["JFK", "MUC", "LHR", "SFO", "SJC"]
+     * Example 2:
+     *
+     * Input: [["JFK","SFO"],["JFK","ATL"],["SFO","ATL"],["ATL","JFK"],["ATL","SFO"]]
+     * Output: ["JFK","ATL","JFK","SFO","ATL","SFO"]
+     * Explanation: Another possible reconstruction is ["JFK","SFO","ATL","JFK","ATL","SFO"].
+     *              But it is larger in lexical order.
+     * @param tickets
+     * @return
+     */
+    public List<String> findItinerary(List<List<String>> tickets) {
+        LinkedList<String> ret = new LinkedList<String>();
+        Map<String, PriorityQueue<String>> map = new HashMap<String, PriorityQueue<String>>();
+        Stack<String> stack = new Stack<String>();
+        for(List<String> t : tickets) {
+            if(!map.containsKey(t.get(0))) {
+                map.put(t.get(0), new PriorityQueue<String>());
+            }
+            map.get(t.get(0)).offer(t.get(1));
+        }
+        stack.push("JFK");
+        while(!stack.isEmpty()) {
+            String next = stack.peek();
+            if(map.containsKey(next) && map.get(next).size() > 0) {
+                stack.push(map.get(next).poll());
+            } else {
+                ret.addFirst(stack.pop());
+            }
+        }
+        return ret;
     }
 }

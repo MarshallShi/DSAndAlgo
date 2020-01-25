@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 public class DFSExe {
@@ -30,10 +31,12 @@ public class DFSExe {
         };
 //        System.out.println(dfs.diffWaysToCompute("2*3-4*5"));
         //System.out.println(dfs.getMaximumGold(nums2));
-        int[] arr = {5,4,0,3,1,6,2};
-        System.out.println(dfs.arrayNesting(arr));
+        int[][] arr = {{2,0,2,3,1},{0,2,2,3,3},{2,3,0,2,3},{1,1,2,3,1},{2,2,0,0,1}};
+        //System.out.println(dfs.maximumMinimumPath(arr));
 
     }
+
+
 
     /**
      * https://leetcode.com/problems/array-nesting/

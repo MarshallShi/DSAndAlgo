@@ -20,7 +20,222 @@ public class TreeExe {
         TreeExe exe = new TreeExe();
         //exe.insertIntoBST(exe.createANode(), 5);
         int[] preorder = {8,5,1,7,10,12};
-        exe.distributeCoins(exe.createCNode());
+        TreeNode node = exe.sortedListToBST(exe.createTestNode());
+        System.out.println(node);
+    }
+
+    public class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x; }
+    }
+
+    /**
+     * https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/
+     *
+     * Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
+     *
+     * For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two
+     * subtrees of every node never differ by more than 1.
+     *
+     * Example:
+     *
+     * Given the sorted linked list: [-10,-3,0,5,9],
+     *
+     * One possible answer is: [0,-3,9,-10,null,5], which represents the following height balanced BST:
+     *
+     *       0
+     *      / \
+     *    -3   9
+     *    /   /
+     *  -10  5
+     *
+     * @param head
+     * @return
+     */
+    public TreeNode sortedListToBST(ListNode head) {
+        ListNode root = head;
+        while (head.next != null) {
+            head = head.next;
+        }
+        return sortedListToBSTHelper(root, head);
+    }
+
+    private TreeNode sortedListToBSTHelper(ListNode head, ListNode tail) {
+        if (head == null && tail == null) {
+            return null;
+        }
+        if (head == tail) {
+            return new TreeNode(head.val);
+        } else {
+            if (head == null) {
+                return new TreeNode(tail.val);
+            } else {
+                if (tail == null) {
+                    return new TreeNode(head.val);
+                }
+            }
+        }
+        ListNode root = head;
+        ListNode mid = head;
+        ListNode pre = null;
+        while (head != null && head.next != null) {
+            head = head.next.next;
+            pre = mid;
+            mid = mid.next;
+        }
+        TreeNode ret = new TreeNode(mid.val);
+        if (pre != null) {
+            pre.next = null;
+            ret.left = sortedListToBSTHelper(root, pre);
+        }
+        ListNode head2nd = mid.next;
+        if (head2nd != null) {
+            mid.next = null;
+            ret.right = sortedListToBSTHelper(head2nd, tail);
+        }
+        return ret;
+    }
+
+    private ListNode createTestNode(){
+        ListNode node1 = new ListNode(-10);
+        ListNode node2 = new ListNode(-3);
+        node1.next = node2;
+
+        ListNode node3 = new ListNode(0);
+        node2.next = node3;
+//
+//        ListNode node4 = new ListNode(5);
+//        node3.next = node4;
+//
+//        ListNode node5 = new ListNode(9);
+//        node4.next = node5;
+//
+//        ListNode node6 = new ListNode(10);
+//        node5.next = node6;
+        return node1;
+    }
+    /**
+     * https://leetcode.com/problems/closest-binary-search-tree-value-ii/
+     *
+     * Given a non-empty binary search tree and a target value, find k values in the BST that are closest to the target.
+     *
+     * Note:
+     *
+     * Given target value is a floating point.
+     * You may assume k is always valid, that is: k ≤ total nodes.
+     * You are guaranteed to have only one unique set of k values in the BST that are closest to the target.
+     * Example:
+     *
+     * Input: root = [4,2,5,1,3], target = 3.714286, and k = 2
+     *
+     *     4
+     *    / \
+     *   2   5
+     *  / \
+     * 1   3
+     *
+     * Output: [4,3]
+     * Follow up:
+     * Assume that the BST is balanced, could you solve it in less than O(n) runtime (where n = total nodes)?
+     *
+     * @param root
+     * @param target
+     * @param k
+     * @return
+     */
+    public List<Integer> closestKValues(TreeNode root, double target, int k) {
+        List<Integer> res = new ArrayList<>();
+
+        Stack<Integer> stackLower = new Stack<>();
+        Stack<Integer> stackHigher = new Stack<>();
+
+        inorder(root, target, false, stackLower);
+        inorder(root, target, true, stackHigher);
+
+        while (k-- > 0) {
+            if (stackLower.isEmpty()) {
+                res.add(stackHigher.pop());
+            } else {
+                if (stackHigher.isEmpty()){
+                    res.add(stackLower.pop());
+                } else {
+                    if (Math.abs(stackLower.peek() - target) < Math.abs(stackHigher.peek() - target)) {
+                        res.add(stackLower.pop());
+                    } else {
+                        res.add(stackHigher.pop());
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+
+    // inorder traversal
+    private void inorder(TreeNode root, double target, boolean reverse, Stack<Integer> stack) {
+        if (root == null) {
+            return;
+        }
+        inorder(reverse ? root.right : root.left, target, reverse, stack);
+        // early terminate, no need to traverse the whole tree
+        if ((reverse && root.val <= target) || (!reverse && root.val > target)) {
+            return;
+        }
+        // track the value of current node
+        stack.push(root.val);
+        inorder(reverse ? root.left : root.right, target, reverse, stack);
+    }
+
+    private TreeNode createDNode() {
+
+        TreeNode root = new TreeNode(4);
+
+        TreeNode node1 = new TreeNode(2);
+        root.left = node1;
+        TreeNode node2 = new TreeNode(5);
+        root.right = node2;
+
+        TreeNode node4 = new TreeNode(1);
+        node1.left = node4;
+        TreeNode node5 = new TreeNode(3);
+        node1.right = node5;
+        return root;
+    }
+
+    /**
+     * https://leetcode.com/problems/closest-binary-search-tree-value/
+     * Given a non-empty binary search tree and a target value, find the value in the BST that is closest to the target.
+     *
+     * Note:
+     *
+     * Given target value is a floating point.
+     * You are guaranteed to have only one unique value in the BST that is closest to the target.
+     * Example:
+     *
+     * Input: root = [4,2,5,1,3], target = 3.714286
+     *
+     *     4
+     *    / \
+     *   2   5
+     *  / \
+     * 1   3
+     *
+     * Output: 4
+     *
+     * @param root
+     * @param target
+     * @return
+     */
+    public int closestValue(TreeNode root, double target) {
+        int ret = root.val;
+        while (root != null) {
+            if (Math.abs(target - root.val) < Math.abs(target - ret)) {
+                ret = root.val;
+            }
+            root = root.val > target? root.left : root.right;
+        }
+        return ret;
     }
 
     /**

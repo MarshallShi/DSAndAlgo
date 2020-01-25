@@ -1,9 +1,13 @@
 package dsandalgo.trie;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class TrieExes {
 
@@ -70,7 +74,7 @@ public class TrieExes {
 
     public static void main(String[] args) {
         TrieExes exe = new TrieExes();
-        String[] dict = {"a","b","ab","abc"};
+        String[] dict = {"havana"};
         char[][] board = {
                 {'o','a','a','n'},
                 {'e','t','a','e'},
@@ -81,14 +85,56 @@ public class TrieExes {
                 {'c','d'}};
         String[] words = {"oath","pea","eat","rain"};
         String[] words1 = {"acdb"};
-        //System.out.println(exe.findWords(board1, words1));
+        System.out.println(exe.suggestedProducts(dict, "tatiana"));
 
-        TrieExes ex = new TrieExes(1);
-        ex.insert("a", 10);
-        ex.insert("apple", 4);
-        ex.insert("app", 5);
-        System.out.println(ex.sum("ap"));
-        System.out.println(ex.sum("a"));
+//        TrieExes ex = new TrieExes(1);
+//        ex.insert("a", 10);
+//        ex.insert("apple", 4);
+//        ex.insert("app", 5);
+//        System.out.println(ex.sum("ap"));
+//        System.out.println(ex.sum("a"));
+    }
+
+    class ProductTrieNode {
+        ProductTrieNode[] children;
+        LinkedList<String> suggestion = new LinkedList<>(); //Each level will store all the suggestions, but keep top 3.
+        ProductTrieNode() {
+            children = new ProductTrieNode[26];
+        }
+    }
+    /**
+     * https://leetcode.com/problems/search-suggestions-system/
+     * @param products
+     * @param searchWord
+     * @return
+     */
+
+    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        ProductTrieNode root = new ProductTrieNode();
+        for (String word : products) {
+            char[] arr = word.toCharArray();
+            ProductTrieNode node = root;
+            for (int i=0; i<arr.length; i++) {
+                if (node.children[arr[i]-'a'] == null) {
+                    ProductTrieNode nnode = new ProductTrieNode();
+                    node.children[arr[i]-'a'] = nnode;
+                }
+                node = node.children[arr[i]-'a'];
+                node.suggestion.offer(word); // put products with same prefix into suggestion list.
+                Collections.sort(node.suggestion); // sort products.
+                if (node.suggestion.size() > 3) {
+                    node.suggestion.pollLast(); // maintain 3 lexicographically minimum strings.
+                }
+            }
+        }
+        List<List<String>> ans = new ArrayList<>();
+        for (char c : searchWord.toCharArray()) { // search product.
+            if (root != null) {
+                root = root.children[c - 'a'];
+            }
+            ans.add(root == null ? Arrays.asList() : root.suggestion); // add it if there exist products with current prefix.
+        }
+        return ans;
     }
 
     /**
