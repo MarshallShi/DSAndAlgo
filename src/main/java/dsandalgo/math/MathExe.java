@@ -4,25 +4,256 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MathExe {
 
     public static void main(String[] args) {
         MathExe exe = new MathExe();
-
         int[][] points = {{0,0},{94911151,94911150},{94911152,94911151}};
-        //[[0,0],[94911151,94911150],[94911152,94911151]]
-        //[[3,10],[0,2],[0,2],[3,10]]
-
-        //System.out.println(exe.maxPoints(points));
-
         int[] rec1 = {0,0,1,1};
         int[] rec2 = {2,2,3,3};
         int[][] shape = {{1,2},{3,4}};
         int[] primes = {2,7,13,19};
-        System.out.println(exe.fractionToDecimal(2, 3));
+        System.out.println(exe.intToRoman(222));
+    }
+
+    /**
+     * https://leetcode.com/problems/valid-square/
+     * @param p1
+     * @param p2
+     * @param p3
+     * @param p4
+     * @return
+     */
+    public boolean validSquare(int[] p1, int[] p2, int[] p3, int[] p4) {
+        Set<Integer> set = new HashSet<Integer>();
+        if (samePos(p1, p2) || samePos(p1, p3) || samePos(p2, p3) || samePos(p2, p4) || samePos(p3, p4) || samePos(p1, p4)) {
+            return false;
+        }
+        set.add(distBetween(p1, p2));
+        set.add(distBetween(p1, p3));
+        set.add(distBetween(p1, p4));
+        set.add(distBetween(p2, p3));
+        set.add(distBetween(p2, p4));
+        set.add(distBetween(p3, p4));
+        return set.size() == 2;
+    }
+
+    private boolean samePos(int[] p1, int[] p2) {
+        if (p1[0] == p2[0] && p1[1] == p2[1]) {
+            return true;
+        }
+        return false;
+    }
+
+    private int distBetween(int[] p1, int[] p2) {
+        return  (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]);
+    }
+
+    /**
+     * https://leetcode.com/problems/integer-to-roman/
+     *
+     * Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+     *
+     * Symbol       Value
+     * I             1
+     * V             5
+     * X             10
+     * L             50
+     * C             100
+     * D             500
+     * M             1000
+     *
+     * For example, two is written as II in Roman numeral, just two one's added together.
+     * Twelve is written as, XII, which is simply X + II. The number twenty seven is written as XXVII, which is XX + V + II.
+     *
+     * Roman numerals are usually written largest to smallest from left to right.
+     * However, the numeral for four is not IIII. Instead, the number four is written as IV.
+     * Because the one is before the five we subtract it making four.
+     * The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
+     *
+     * I can be placed before V (5) and X (10) to make 4 and 9.
+     * X can be placed before L (50) and C (100) to make 40 and 90.
+     * C can be placed before D (500) and M (1000) to make 400 and 900.
+     * Given an integer, convert it to a roman numeral. Input is guaranteed to be within the range from 1 to 3999.
+     *
+     * Example 1:
+     *
+     * Input: 3
+     * Output: "III"
+     *
+     * Example 2:
+     *
+     * Input: 4
+     * Output: "IV"
+     *
+     * Example 3:
+     *
+     * Input: 9
+     * Output: "IX"
+     *
+     * Example 4:
+     *
+     * Input: 58
+     * Output: "LVIII"
+     * Explanation: L = 50, V = 5, III = 3.
+     *
+     * Example 5:
+     *
+     * Input: 1994
+     * Output: "MCMXCIV"
+     * Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
+     *
+     * @param num
+     * @return
+     */
+    public String intToRoman(int num) {
+        //Map all possible values from M, C, X, I to decimal values.
+        String M[] = {"", "M", "MM", "MMM"};
+        String C[] = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+        String X[] = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+        String I[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+        return M[num/1000] + C[(num%1000)/100] + X[(num%100)/10] + I[num%10];
+    }
+
+
+    /**
+     * https://leetcode.com/problems/hexspeak/
+     * A decimal number can be converted to its Hexspeak representation by first converting it to an uppercase hexadecimal string,
+     * then replacing all occurrences of the digit 0 with the letter O, and the digit 1 with the letter I.
+     * Such a representation is valid if and only if it consists only of the letters in the set {"A", "B", "C", "D", "E", "F", "I", "O"}.
+     *
+     * Given a string num representing a decimal integer N, return the Hexspeak representation of N if it is valid, otherwise return "ERROR".
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: num = "257"
+     * Output: "IOI"
+     * Explanation:  257 is 101 in hexadecimal.
+     * Example 2:
+     *
+     * Input: num = "3"
+     * Output: "ERROR"
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= N <= 10^12
+     * There are no leading zeros in the given string.
+     * All answers must be in uppercase letters.
+     *
+     * @param num
+     * @return
+     */
+    public String toHexspeak(String num) {
+        Map<Integer, Character> values = new HashMap<Integer, Character>();
+        values.put(0, '0');
+        values.put(1, '1');
+        values.put(2, '2');
+        values.put(3, '3');
+        values.put(4, '4');
+        values.put(5, '5');
+        values.put(6, '6');
+        values.put(7, '7');
+        values.put(8, '8');
+        values.put(9, '9');
+        values.put(10, 'A');
+        values.put(11, 'B');
+        values.put(12, 'C');
+        values.put(13, 'D');
+        values.put(14, 'E');
+        values.put(15, 'F');
+        Set<Character> validChar = new HashSet<Character>();
+        validChar.add('A');
+        validChar.add('B');
+        validChar.add('C');
+        validChar.add('D');
+        validChar.add('E');
+        validChar.add('F');
+        validChar.add('I');
+        validChar.add('O');
+        long n = Long.parseLong(num);
+        StringBuilder sb = new StringBuilder();
+        while (n != 0) {
+            int one = (int)(n%16);
+            sb.append(values.get(one));
+            n = n/16;
+        }
+        String res = sb.toString().replace("1", "I").replace("0", "O");
+        for (int i = 0; i<res.length(); i++) {
+            if (!validChar.contains(res.charAt(i))) {
+                return "ERROR";
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Given an array A of positive integers, let S be the sum of the digits of the minimal element of A.
+     *
+     * Return 0 if S is odd, otherwise return 1.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [34,23,1,24,75,33,54,8]
+     * Output: 0
+     * Explanation:
+     * The minimal element is 1, and the sum of those digits is S = 1 which is odd, so the answer is 0.
+     * Example 2:
+     *
+     * Input: [99,77,33,66,55]
+     * Output: 1
+     * Explanation:
+     * The minimal element is 33, and the sum of those digits is S = 3 + 3 = 6 which is even, so the answer is 1.
+     * @param A
+     * @return
+     */
+    public int sumOfDigits(int[] A) {
+        int minVal = Integer.MAX_VALUE;
+        for (int i=0; i<A.length; i++) {
+            minVal = Math.min(minVal, A[i]);
+        }
+        int sum = 0;
+        while (minVal != 0) {
+            sum = sum + minVal%10;
+            minVal = minVal/10;
+        }
+        if (sum % 2 == 0) {
+            return 1;
+        }
+        return 0;
+    }
+
+    public int maximum69Number (int num) {
+        String val = String.valueOf(num);
+        char[] arr = val.toCharArray();
+        for (int i=0; i<arr.length; i++) {
+            if (arr[i] == '6') {
+                arr[i] = '9';
+                break;
+            }
+        }
+        return Integer.parseInt(new String(arr));
+    }
+
+    public boolean isArmstrong(int N) {
+        int k = String.valueOf(N).length();
+        int orig = N;
+        int sum = 0;
+        while (N != 0) {
+            int one = N%10;
+            sum = sum + (int)Math.pow(one, k);
+            N = N/10;
+        }
+        return orig == sum;
     }
 
 

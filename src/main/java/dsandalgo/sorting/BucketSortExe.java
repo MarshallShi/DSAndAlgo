@@ -5,6 +5,58 @@ import java.util.Arrays;
 public class BucketSortExe {
 
     /**
+     * https://leetcode.com/problems/height-checker/
+     *
+     * Students are asked to stand in non-decreasing order of heights for an annual photo.
+     *
+     * Return the minimum number of students that must move in order for all students to be standing in non-decreasing order of height.
+     *
+     * Example 1:
+     *
+     * Input: heights = [1,1,4,2,1,3]
+     * Output: 3
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= heights.length <= 100
+     * 1 <= heights[i] <= 100
+     *
+     *
+     * The heightToFreq will be [0,3,1,1,1] (the index of this array are the height values). This array is another format of a sorted array (ignore 0) [1,1,1,2,3,4].
+     *
+     * The second for loop does the following things:
+     *
+     * Find a valid height value (as an index) in the sorted heights array [0,3,1,1,1].
+     * If the valid height value is not equal to heights[i], it means there is a wrong position. Hence increment result by 1.
+     * Regardless, we have compared this person's height, hence decrement the value by 1.
+     *
+     */
+    public int heightChecker(int[] heights) {
+        int[] heightToFreq = new int[101];
+
+        for (int height : heights) {
+            heightToFreq[height]++;
+        }
+
+        int result = 0;
+        int curHeight = 0;
+
+        for (int i = 0; i < heights.length; i++) {
+            while (heightToFreq[curHeight] == 0) {
+                curHeight++;
+            }
+            //One mismatch, then there is one person need to be moved.
+            if (curHeight != heights[i]) {
+                result++;
+            }
+            heightToFreq[curHeight]--;
+        }
+
+        return result;
+    }
+
+    /**
      * https://leetcode.com/problems/maximum-gap/
      *
      * Given an unsorted array, find the maximum difference between the successive elements in its sorted form.

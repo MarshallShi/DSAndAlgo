@@ -2,8 +2,10 @@ package dsandalgo.bit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class BitExe {
@@ -14,12 +16,292 @@ public class BitExe {
                 {1,0,1,0},
                 {1,1,0,0}};
 
-        int[] arr = {4,8,2,10};
+        int[] arr = {1,2,1,3,2,5};
         int[][] queries = {{2,3},{1,3},{0,0},{0,3}};
-        System.out.println(exe.circularPermutation(2, 3));
+        System.out.println(exe.similarRGB("#12f23d"));
+    }
+
+    /**
+     * https://leetcode.com/problems/utf-8-validation/
+     *
+     * A character in UTF8 can be from 1 to 4 bytes long, subjected to the following rules:
+     *
+     * For 1-byte character, the first bit is a 0, followed by its unicode code.
+     * For n-bytes character, the first n-bits are all one's, the n+1 bit is 0, followed by n-1 bytes with most significant 2 bits being 10.
+     * This is how the UTF-8 encoding would work:
+     *
+     *    Char. number range  |        UTF-8 octet sequence
+     *       (hexadecimal)    |              (binary)
+     *    --------------------+---------------------------------------------
+     *    0000 0000-0000 007F | 0xxxxxxx
+     *    0000 0080-0000 07FF | 110xxxxx 10xxxxxx
+     *    0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
+     *    0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+     * Given an array of integers representing the data, return whether it is a valid utf-8 encoding.
+     *
+     * Note:
+     * The input is an array of integers. Only the least significant 8 bits of each integer is used to store the data.
+     * This means each integer represents only 1 byte of data.
+     *
+     * Example 1:
+     *
+     * data = [197, 130, 1], which represents the octet sequence: 11000101 10000010 00000001.
+     *
+     * Return true.
+     * It is a valid utf-8 encoding for a 2-bytes character followed by a 1-byte character.
+     *
+     * Example 2:
+     *
+     * data = [235, 140, 4], which represented the octet sequence: 11101011 10001100 00000100.
+     *
+     * Return false.
+     *
+     * The first 3 bits are all one's and the 4th bit is 0 means it is a 3-bytes character.
+     * The next byte is a continuation byte which starts with 10 and that's correct.
+     * But the second continuation byte does not start with 10, so it is invalid.
+     * @param data
+     * @return
+     */
+    public boolean validUtf8(int[] data) {
+        int cnt = 0; //count of invalid input number
+        for (int d : data) {
+            if (cnt == 0) {
+                if((d>>5) == 0b110){
+                    cnt = 1; //110 pattern, which need next 1 number to complete the char.
+                } else {
+                    if((d>>4) == 0b1110) {
+                        cnt=2; //1110 pattern, which need next 2 number to complete the char.
+                    } else {
+                        if((d>>3) == 0b11110) {
+                            cnt=3; //11110 pattern, which need next 3 number to complete the char.
+                        } else {
+                            if((d>>7) != 0) {
+                                return false; //Even not matching with first one, fail.
+                            }
+                        }
+                    }
+                }
+            } else {
+                if((d>>6) != 0b10) { //must be the supplement of incomplete char, pattern be 10.
+                    return false;
+                }
+                cnt--;
+            }
+        }
+        return cnt == 0;
+    }
+
+    /**
+     * https://leetcode.com/problems/ip-to-cidr/
+     *
+     * https://leetcode.com/problems/ip-to-cidr/discuss/151348/Java-Solution-with-Very-Detailed-Explanation-8ms
+     *
+     * Given a start IP address ip and a number of ips we need to cover n,
+     * return a representation of the range as a list (of smallest possible length) of CIDR blocks.
+     *
+     * A CIDR block is a string consisting of an IP, followed by a slash, and then the prefix length.
+     * For example: "123.45.67.89/20". That prefix length "20" represents the number of common prefix bits in the specified range.
+     *
+     * @param ip
+     * @param n
+     * @return
+     */
+    public List<String> ipToCIDR(String ip, int n) {
+        int cur = toInt(ip);
+        List<String> res = new ArrayList<>();
+        while(n>0){
+            int maxBits = Integer.numberOfTrailingZeros(cur);
+            int maxAmount = 1<<maxBits;
+            int bitVal = 1;
+            int count = 0;
+            while(bitVal< n && count< maxBits){
+                bitVal<<=1;
+                ++count;
+            }
+            if(bitVal>n){
+                bitVal>>=1;
+                --count;
+            }
+            res.add(toString(cur,32-count));
+            n-= bitVal;
+            cur+=(bitVal);
+        }
+        return res;
+    }
+    private String toString(int number, int range){
+        //convert every 8 into an integer
+        final int WORD_SIZE = 8;
+        StringBuilder sb = new StringBuilder();
+        for(int i=3; i>=0; --i){
+            sb.append(Integer.toString(((number>>(i*WORD_SIZE))&255)));
+            sb.append(".");
+        }
+        sb.setLength(sb.length()-1);
+        sb.append("/");
+        sb.append(Integer.toString(range));
+        return sb.toString();
+    }
+    private int toInt(String ip){
+        String [] sep = ip.split("\\.");
+        int sum = 0;
+        for(int i=0; i<sep.length;++i){
+            sum*=256;
+            sum+=Integer.parseInt(sep[i]);
+        }
+        return sum;
+    }
+
+    /**
+     * https://leetcode.com/problems/similar-rgb-color/
+     * @param color
+     * @return
+     */
+    Map<Character, Integer> values = new HashMap<Character, Integer>();
+    Map<Integer, Character> reverse = new HashMap<Integer, Character>();
+    public String similarRGB(String color) {
+        values.put('0', 0);
+        values.put('1', 1);
+        values.put('2', 2);
+        values.put('3', 3);
+        values.put('4', 4);
+        values.put('5', 5);
+        values.put('6', 6);
+        values.put('7', 7);
+        values.put('8', 8);
+        values.put('9', 9);
+        values.put('a', 10);
+        values.put('b', 11);
+        values.put('c', 12);
+        values.put('d', 13);
+        values.put('e', 14);
+        values.put('f', 15);
+        reverse.put(0, '0');
+        reverse.put(1, '1');
+        reverse.put(2, '2');
+        reverse.put(3, '3');
+        reverse.put(4, '4');
+        reverse.put(5, '5');
+        reverse.put(6, '6');
+        reverse.put(7, '7');
+        reverse.put(8, '8');
+        reverse.put(9, '9');
+        reverse.put(10, 'a');
+        reverse.put(11, 'b');
+        reverse.put(12, 'c');
+        reverse.put(13, 'd');
+        reverse.put(14, 'e');
+        reverse.put(15, 'f');
+        String sub1 = "";
+        String sub2 = "";
+        String sub3 = "";
+        if (color.length() < 7) {
+            sub1 = color.substring(1,2) + color.substring(1,2);
+            sub2 = color.substring(2,3) + color.substring(2,3);
+            sub3 = color.substring(3,4) + color.substring(3,4);
+        } else {
+            sub1 = color.substring(1,3);
+            sub2 = color.substring(3,5);
+            sub3 = color.substring(5, 7);
+        }
+        String ret1 = getClosest(sub1);
+        String ret2 = getClosest(sub2);
+        String ret3 = getClosest(sub3);
+        return "#"+ret1+ret2+ret3;
+    }
+
+    private String getClosest(String s) {
+        if (s.charAt(0) == s.charAt(1)) {
+            return s;
+        }
+        int s1 = values.get(s.charAt(0)) * 16 + values.get(s.charAt(1));
+        int toChange = 1;
+        while ((s1 - toChange)/16 != (s1 - toChange)%16 && (s1 + toChange)/16 != (s1 + toChange)%16) {
+            toChange++;
+        }
+        if ((s1 - toChange)/16 == (s1 - toChange)%16) {
+            return String.valueOf(reverse.get((s1 - toChange)/16)) + String.valueOf(reverse.get((s1 - toChange)/16));
+        } else {
+            return String.valueOf(reverse.get((s1 + toChange)/16)) + String.valueOf(reverse.get((s1 + toChange)/16));
+        }
     }
 
 
+    /**
+     * https://leetcode.com/problems/single-number-iii/
+     * Given an array of numbers nums, in which exactly two elements appear only
+     * once and all the other elements appear exactly twice. Find the two elements that appear only once.
+     *
+     * Example:
+     *
+     * Input:  [1,2,1,3,2,5]
+     * Output: [3,5]
+     * Note:
+     *
+     * The order of the result is not important. So in the above example, [5, 3] is also correct.
+     * Your algorithm should run in linear runtime complexity.
+     * Could you implement it using only constant space complexity?
+     *
+     * Let a and b be the two unique numbers
+     * XORing all numbers gets you (a xor b)
+     * (a xor b) must be non-zero otherwise they are equal
+     * If bit_i in (a xor b) is 1, bit_i at a and b are different.
+     * Find bit_i using the low bit formula m & -m
+     * Partition the numbers into two groups: one group with bit_i == 1 and the other group with bit_i == 0.
+     * a is in one group and b is in the other.
+     * a is the only single number in its group.
+     * b is also the only single number in its group.
+     * XORing all numbers in a's group to get a
+     * XORing all numbers in b's group to get b
+     * Alternatively, XOR (a xor b) with a gets you b.
+     *
+     * The two numbers that appear only once must differ at some bit, this is how we can distinguish between them. Otherwise, they will be one of the duplicate numbers.
+     *
+     * One important point is that by XORing all the numbers, we actually get the XOR of the two target numbers (because XORing two duplicate numbers always results in 0). Consider the XOR result of the two target numbers; if some bit of the XOR result is 1, it means that the two target numbers differ at that location.
+     *
+     * Let’s say the at the ith bit, the two desired numbers differ from each other. which means one number has bit i equaling: 0, the other number has bit i equaling 1.
+     *
+     * Thus, all the numbers can be partitioned into two groups according to their bits at location i.
+     * the first group consists of all numbers whose bits at i is 0.
+     * the second group consists of all numbers whose bits at i is 1.
+     *
+     * Notice that, if a duplicate number has bit i as 0, then, two copies of it will belong to the first group. Similarly, if a duplicate number has bit i as 1, then, two copies of it will belong to the second group.
+     *
+     * by XoRing all numbers in the first group, we can get the first number.
+     * by XoRing all numbers in the second group, we can get the second number.
+     *
+     * @param nums
+     * @return
+     */
+    public int[] singleNumber(int[] nums) {
+        // Pass 1 :
+        // Get the XOR of the two numbers we need to find
+        int diff = 0;
+        for (int num : nums) {
+            diff ^= num;
+        }
+        int counter = 1;
+        while (diff != 0) {
+            if (diff%2 == 0) {
+                diff = diff / 2;
+                counter = counter*2;
+            } else {
+                break;
+            }
+        }
+        // Get its last set bit
+        //diff &= -diff;
+
+        // Pass 2 :
+        int[] rets = {0, 0}; // this array stores the two numbers we will return
+        for (int num : nums){
+            if ((num & counter) == 0) { // the bit is not set
+                rets[0] ^= num;
+            } else{// the bit is set
+                rets[1] ^= num;
+            }
+        }
+        return rets;
+    }
 
     /**
      * https://leetcode.com/problems/convert-a-number-to-hexadecimal/

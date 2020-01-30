@@ -5,11 +5,13 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
 
@@ -20,8 +22,8 @@ public class TreeExe {
         TreeExe exe = new TreeExe();
         //exe.insertIntoBST(exe.createANode(), 5);
         int[] preorder = {8,5,1,7,10,12};
-        TreeNode node = exe.sortedListToBST(exe.createTestNode());
-        System.out.println(node);
+        //TreeNode node = exe.sortedListToBST(exe.createTestNode());
+
     }
 
     public class ListNode {
@@ -29,6 +31,115 @@ public class TreeExe {
         ListNode next;
         ListNode(int x) { val = x; }
     }
+
+    /**
+     * https://leetcode.com/problems/maximum-average-subtree/
+     * Given the root of a binary tree, find the maximum average value of any subtree of that tree.
+     *
+     * (A subtree of a tree is any node of that tree plus all its descendants.
+     * The average value of a tree is the sum of its values, divided by the number of nodes.)
+     *
+     * Example 1:
+     * Input: [5,6,1]
+     * Output: 6.00000
+     *
+     * Explanation:
+     * For the node with value = 5 we have an average of (5 + 6 + 1) / 3 = 4.
+     * For the node with value = 6 we have an average of 6 / 1 = 6.
+     * For the node with value = 1 we have an average of 1 / 1 = 1.
+     * So the answer is 6 which is the maximum.
+     *
+     *
+     * Note:
+     *
+     * The number of nodes in the tree is between 1 and 5000.
+     * Each node will have a value between 0 and 100000.
+     * Answers will be accepted as correct if they are within 10^-5 of the correct answer.
+     */
+    class Pair2{
+        int nodeCount;
+        int sum;
+        Pair2(int _nc, int _s){
+            nodeCount = _nc;
+            sum = _s;
+        }
+    }
+    double maxAverage = Double.MIN_VALUE;
+    public double maximumAverageSubtree(TreeNode root) {
+        if (root == null) {
+            return 0d;
+        }
+        traverseHelper2(root);
+        return maxAverage;
+    }
+
+    public Pair2 traverseHelper2(TreeNode root){
+        if (root == null) {
+            return null;
+        }
+        if (root.left == null && root.right == null) {
+            maxAverage = Math.max(maxAverage, root.val);
+            return new Pair2(1, root.val);
+        } else {
+            Pair2 left = traverseHelper2(root.left);
+            Pair2 right = traverseHelper2(root.right);
+            int cout = (left == null ? 0 : left.nodeCount) + (right == null ? 0:right.nodeCount);
+            int sum = (left == null ? 0 : left.sum) + (right == null ? 0:right.sum);
+            maxAverage = Math.max(maxAverage, (double)(sum + root.val)/(cout+1));
+            return new Pair2(cout+1, sum + root.val);
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/two-sum-bsts/
+     * Given two binary search trees, return True if and only if there is a node in the first tree and a node in the second tree whose values sum up to a given integer target.
+     *
+     * Example 1:
+     *
+     * Input: root1 = [2,1,4], root2 = [1,0,3], target = 5
+     * Output: true
+     * Explanation: 2 and 3 sum up to 5.
+     *
+     * Example 2:
+     * Input: root1 = [0,-10,10], root2 = [5,1,7,0,2], target = 18
+     * Output: false
+     *
+     * Constraints:
+     * Each tree has at most 5000 nodes.
+     * -10^9 <= target, node.val <= 10^9
+     *
+     * @param root1
+     * @param root2
+     * @param target
+     * @return
+     */
+    //Idea: traverse one tree to get the already seen value in a map.
+    public boolean twoSumBSTs(TreeNode root1, TreeNode root2, int target) {
+        Set<Integer> seen = new HashSet<Integer>();
+        inOrderTraverseWithTarget(root1, seen, target);
+        return inOrderTraverse(root2, seen);
+    }
+
+    private boolean inOrderTraverse(TreeNode root, Set<Integer> seen) {
+        if (root == null) {
+            return false;
+        }
+        if (seen.contains(root.val)) {
+            return true;
+        } else {
+            return inOrderTraverse(root.left, seen) || inOrderTraverse(root.right, seen);
+        }
+    }
+
+    private void inOrderTraverseWithTarget(TreeNode root, Set<Integer> seen, int target) {
+        if (root == null) {
+            return;
+        }
+        inOrderTraverseWithTarget(root.left, seen, target);
+        seen.add(target - root.val);
+        inOrderTraverseWithTarget(root.right, seen, target);
+    }
+
 
     /**
      * https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/

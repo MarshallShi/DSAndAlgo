@@ -15,8 +15,112 @@ public class BacktrackExe {
         int[][] nums = {
                 {9,9,4},{6,6,8},{2,1,1}
         };
-        System.out.println(backtrack.allPossibleFBT(7));
+        System.out.println(backtrack.restoreIpAddresses("25525511135"));
 
+    }
+
+    /**
+     * https://leetcode.com/problems/restore-ip-addresses/
+     *
+     * Given a string containing only digits, restore it by returning all possible valid IP address combinations.
+     *
+     * Example:
+     *
+     * Input: "25525511135"
+     * Output: ["255.255.11.135", "255.255.111.35"]
+     *
+     * @param s
+     * @return
+     */
+    public List<String> restoreIpAddresses(String s) {
+        List<String> ans = new ArrayList<String>(); //final answer
+        if (s.length() < 4 || s.length() > 12) {
+            return ans;
+        }
+        List<String> temp = new ArrayList<String>(); //list of xx,yy,oo,zz where ip is formated as xx.yy.oo.zz
+        backtrackRIP(s, 0, ans, temp);
+        System.out.println(ans);
+        return ans;
+    }
+
+    private void backtrackRIP(String s, int begin, List<String> ans, List<String> temp) {
+        if (temp.size() == 4 && begin == s.length()) {
+            if (!ans.contains(getIP(temp))) {
+                ans.add(getIP(temp));
+            }
+            return;
+        }
+        if (temp.size() >= 4 && begin != s.length() ) {
+            return;
+        }
+        for (int i=begin; i<s.length(); i++) {
+            for (int j=0; j<3; j++) {
+                if (begin+j+1 > s.length()) {
+                    continue;
+                }
+                String t = s.substring(begin, begin+j+1);
+                if (t.length() > 1 && t.charAt(0) == '0') {
+                    continue;
+                }
+                int val = Integer.parseInt(t);
+                if (val > 255) {
+                    continue;
+                }
+                temp.add(t);
+                backtrackRIP(s, begin+j+1, ans, temp);
+                temp.remove(temp.size() - 1);
+            }
+        }
+    }
+
+    private String getIP(List<String> lst) {
+        String ret = "";
+        for (int i=0; i<4; i++) {
+            ret = ret + lst.get(i);
+            if (i != 3) {
+                ret = ret + ".";
+            }
+        }
+        return ret;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/permutations/
+     * Given a collection of distinct integers, return all possible permutations.
+     *
+     * Example:
+     *
+     * Input: [1,2,3]
+     * Output:
+     * [
+     *   [1,2,3],
+     *   [1,3,2],
+     *   [2,1,3],
+     *   [2,3,1],
+     *   [3,1,2],
+     *   [3,2,1]
+     * ]
+     */
+    private List<List<Integer>> ret;
+    public List<List<Integer>> permute(int[] nums) {
+        ret = new ArrayList<List<Integer>>();
+        backtrack(nums, new ArrayList<Integer>());
+        return ret;
+    }
+
+    public void backtrack(int[] nums, List<Integer> temp) {
+        if (temp.size() == nums.length) {
+            ret.add(new ArrayList<Integer>(temp));
+            return;
+        }
+        for (int i=0; i<nums.length;i++){
+            if (!temp.contains(Integer.valueOf(nums[i]))) {
+                temp.add(nums[i]);
+                backtrack(nums, temp);
+                temp.remove(Integer.valueOf(nums[i]));
+            }
+        }
     }
 
     /**

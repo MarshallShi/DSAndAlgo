@@ -2,12 +2,14 @@ package dsandalgo.array;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 public class ArrayExe {
 
@@ -25,8 +27,421 @@ public class ArrayExe {
         int[] A = {3,5,1,2,3}, B = {3,6,3,3,4};
 
         int[][] arrr = {{1,2},{1,2},{1,1},{2,2},{1,2}};
-        int[] tempArr = {1,2,3,3,4,5};
-       // System.out.println(exe.isPossible(tempArr));
+        //[-10,-5,-2,0,4,5,6,7,8,9,10]
+
+        int[] c = {1,0,1,2,1,1,7,5};
+        int[] g = {0,1,0,1,0,1,0,1};
+        int X = 3;
+        System.out.println(exe.lastRemaining_TLE(4012));
+    }
+
+    /**
+     * https://leetcode.com/problems/missing-ranges/
+     *
+     * Given a sorted integer array nums, where the range of elements are in the
+     * inclusive range [lower, upper], return its missing ranges.
+     *
+     * Example:
+     *
+     * Input: nums = [0, 1, 3, 50, 75], lower = 0 and upper = 99,
+     * Output: ["2", "4->49", "51->74", "76->99"]
+     *
+     * @param nums
+     * @param lower
+     * @param upper
+     * @return
+     */
+    public List<String> findMissingRanges(int[] nums, int lower, int upper) {
+        List<String> res = new ArrayList<String>();
+
+        // the next number we need to find
+        long next = (long)lower;
+
+        for (int i = 0; i < nums.length; i++) {
+            // not within the range yet
+            if ((long)nums[i] < next){
+                continue;
+            }
+
+            // continue to find the next one
+            if ((long)nums[i] == next) {
+                next++;
+                continue;
+            }
+
+            // get the missing range string format
+            res.add(getRange(next, (long)nums[i] - 1));
+
+            // now we need to find the next number
+            next = (long)nums[i] + 1;
+        }
+
+        // do a final check
+        if (next <= upper) {
+            res.add(getRange(next, upper));
+        }
+
+        return res;
+    }
+
+    String getRange(long n1, long n2) {
+        return (n1 == n2) ? String.valueOf(n1) : String.format("%d->%d", n1, n2);
+    }
+
+    /**
+     * https://leetcode.com/problems/elimination-game/
+     *
+     * There is a list of sorted integers from 1 to n. Starting from left to right,
+     * remove the first number and every other number afterward until you reach the end of the list.
+     *
+     * Repeat the previous step again, but this time from right to left, remove the right most number and every other number from the remaining numbers.
+     *
+     * We keep repeating the steps again, alternating left to right and right to left, until a single number remains.
+     *
+     * Find the last number that remains starting with a list of length n.
+     *
+     * Example:
+     *
+     * Input:
+     * n = 9,
+     * 1 2 3 4 5 6 7 8 9
+     * 2 4 6 8
+     * 2 6
+     * 6
+     *
+     * Output:
+     * 6
+     */
+    /**
+     * After first elimination, all the numbers left are even numbers.
+     * Divide by 2, we get a continuous new sequence from 1 to n / 2.
+     * For this sequence we start from right to left as the first elimination.
+     * Then the original result should be two times the mirroring result of lastRemaining(n / 2)
+     *
+     * https://leetcode.com/problems/elimination-game/discuss/355060/C%2B%2B-simple-explanation-with-pictures
+     *
+     */
+    public int lastRemaining(int n) {
+        return leftToRight(n);
+    }
+
+    private static int leftToRight(int n) {
+        if(n <= 2) return n;
+        return 2 * rightToLeft(n / 2);
+    }
+
+    private static int rightToLeft(int n) {
+        if(n <= 2) return 1;
+        if(n % 2 == 1) return 2 * leftToRight(n / 2);
+        return 2 * leftToRight(n / 2) - 1;
+    }
+
+    public int lastRemaining_TLE(int n) {
+        LinkedList<Integer> lst = new LinkedList<Integer>();
+        for (int i=1; i<=n; i++) {
+            lst.add(i);
+        }
+        boolean forward = true;
+        while (lst.size() > 1) {
+            LinkedList<Integer> temp = new LinkedList<Integer>();
+            for (int i=1; i<=lst.size(); i++) {
+                if (forward) {
+                    if (i % 2 == 0) {
+                        temp.add(lst.get(i-1));
+                    }
+                } else {
+                    if (i % 2 == 0) {
+                        temp.addFirst(lst.get(lst.size() - i));
+                    }
+                }
+            }
+            lst = temp;
+            forward = !forward;
+        }
+        return lst.get(0);
+    }
+
+    /**
+     * https://leetcode.com/problems/grumpy-bookstore-owner/
+     *
+     * @param customers
+     * @param grumpy
+     * @param X
+     * @return
+     */
+    public int maxSatisfied(int[] customers, int[] grumpy, int X) {
+        int sum = 0;
+        //Get the inital value.
+        for (int i=0; i<X; i++) {
+            sum = sum + customers[i];
+        }
+        for (int i=X; i<customers.length; i++) {
+            if (grumpy[i] == 0) {
+                sum = sum + customers[i];
+            }
+        }
+        int maxSatisfied = sum;
+        //Move the window of X length.
+        for (int i=X; i< grumpy.length; i++) {
+            if (grumpy[i] == 1) {
+                sum = sum + customers[i];
+            }
+            if (grumpy[i - X] == 1) {
+                sum = sum - customers[i - X];
+            }
+            maxSatisfied = Math.max(maxSatisfied, sum);
+        }
+        return maxSatisfied;
+    }
+
+    /**
+     * https://leetcode.com/problems/contiguous-array/
+     *
+     * Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.
+     *
+     * Example 1:
+     * Input: [0,1]
+     * Output: 2
+     * Explanation: [0, 1] is the longest contiguous subarray with equal number of 0 and 1.
+     *
+     * Example 2:
+     * Input: [0,1,0]
+     * Output: 2
+     * Explanation: [0, 1] (or [1, 0]) is a longest contiguous subarray with equal number of 0 and 1.
+     *
+     * Note: The length of the given binary array will not exceed 50,000.
+     *
+     * @param nums
+     * @return
+     */
+    public int findMaxLength(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 0) {
+                nums[i] = -1;
+            }
+        }
+        Map<Integer, Integer> sumToIndex = new HashMap<Integer, Integer>();
+        sumToIndex.put(0, -1); //To handle edge case where whole arr is contiguous
+        int sum = 0, max = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (sumToIndex.containsKey(sum)) {
+                max = Math.max(max, i - sumToIndex.get(sum));
+            } else {
+                sumToIndex.put(sum, i);
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Given an array A of integers, for each integer A[i] we need to choose either x = -K or x = K, and add x to A[i] (only once).
+     *
+     * After this process, we have some array B.
+     *
+     * Return the smallest possible difference between the maximum value of B and the minimum value of B.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: A = [1], K = 0
+     * Output: 0
+     * Explanation: B = [1]
+     * Example 2:
+     *
+     * Input: A = [0,10], K = 2
+     * Output: 6
+     * Explanation: B = [2,8]
+     * Example 3:
+     *
+     * Input: A = [1,3,6], K = 3
+     * Output: 3
+     * Explanation: B = [4,6,3]
+     *
+     *
+     * Note:
+     *
+     * 1 <= A.length <= 10000
+     * 0 <= A[i] <= 10000
+     * 0 <= K <= 10000
+     * @param A
+     * @param K
+     * @return
+     */
+    public int smallestRangeII(int[] A, int K) {
+        //The problem is the same as we are adding 2K or 0 to each number and find the diff.
+        Arrays.sort(A);
+        int n = A.length, mx = A[n - 1], mn = A[0], res = mx - mn;
+        for (int i = 0; i < n - 1; ++i) {
+            mx = Math.max(mx, A[i] + 2 * K);
+            mn = Math.min(A[i + 1], A[0] + 2 * K);
+            res = Math.min(res, mx - mn);
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/pour-water/
+     *
+     * We are given an elevation map, heights[i] representing the height of the terrain at that index. The width at each index is 1.
+     * After V units of water fall at index K, how much water is at each index?
+     *
+     * Water first drops at index K and rests on top of the highest terrain or water at that index. Then, it flows according to the following rules:
+     *
+     * If the droplet would eventually fall by moving left, then move left.
+     * Otherwise, if the droplet would eventually fall by moving right, then move right.
+     * Otherwise, rise at it's current position.
+     * Here, "eventually fall" means that the droplet will eventually be at a lower level if it moves in that direction.
+     * Also, "level" means the height of the terrain plus any water in that column.
+     * We can assume there's infinitely high terrain on the two sides out of bounds of the array. Also, there could not
+     * be partial water being spread out evenly on more than 1 grid block - each unit of water has to be in exactly one block.
+     *
+     * @param heights
+     * @param V
+     * @param K
+     * @return
+     */
+    public int[] pourWater(int[] heights, int V, int K) {
+        if (heights == null || heights.length == 0 || V == 0) {
+            return heights;
+        }
+        int index;
+        while (V > 0) {
+            index = K;
+            for (int i = K - 1; i >= 0; i--) {
+                if (heights[i] > heights[index]) {
+                    break;
+                } else if (heights[i] < heights[index]) {
+                    index = i;
+                }
+            }
+            if (index != K) {
+                heights[index]++;
+                V--;
+                continue;
+            }
+            for (int i = K + 1; i < heights.length; i++) {
+                if (heights[i] > heights[index]) {
+                    break;
+                } else if (heights[i] < heights[index]) {
+                    index = i;
+                }
+            }
+            heights[index]++;
+            V--;
+        }
+        return heights;
+    }
+
+    /**
+     * https://leetcode.com/problems/rank-transform-of-an-array/
+     *
+     * @param arr
+     * @return
+     */
+    public int[] arrayRankTransform(int[] arr) {
+        int[] sortedArr = Arrays.copyOf(arr, arr.length);
+        Arrays.sort(sortedArr);
+        HashMap<Integer, Integer> rank = new HashMap<Integer, Integer>();
+        for (int x : sortedArr) {
+            //To skip the duplicated numbers, we use putIfAbsent.
+            rank.putIfAbsent(x, rank.size() + 1);
+        }
+        for (int i = 0; i < arr.length; ++i) {
+            arr[i] = rank.get(arr[i]);
+        }
+        return arr;
+    }
+
+
+    /**
+     * Given an array of integers A, return the largest integer that only occurs once.
+     *
+     * If no integer occurs once, return -1.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [5,7,3,9,4,9,8,3,1]
+     * Output: 8
+     * Explanation:
+     * The maximum integer in the array is 9 but it is repeated. The number 8 occurs only once, so it's the answer.
+     * Example 2:
+     *
+     * Input: [9,9,8,8]
+     * Output: -1
+     * Explanation:
+     * There is no number that occurs only once.
+     *
+     * @param A
+     * @return
+     */
+    public int largestUniqueNumber(int[] A) {
+        int res = -1;
+        int[] temp = new int[1001];
+        for(int i = 0; i < A.length; i++) {
+            temp[A[i]]++;
+        }
+        for(int i = temp.length-1; i >= 0; i--) {
+            if(temp[i] == 1) {
+                res = i;
+                break;
+            }
+        }
+        return res;
+    }
+
+    public int fixedPoint(int[] A) {
+        int low = 0, high = A.length - 1;
+        int candidate = -1;
+        while (low <= high) {
+            int mid = low + (high - low)/2;
+            if (A[mid] == mid) {
+                candidate = A[mid];
+                high = mid - 1;
+            } else {
+                if (A[mid] < mid) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+        }
+        return candidate;
+    }
+
+    public int[][] indexPairs(String text, String[] words) {
+        int[] pair = new int[2];
+        List<int[]> lst = new ArrayList<int[]>();
+        for (String word : words) {
+            int fromIdx = 0;
+            while (text.indexOf(word, fromIdx) != -1) {
+                int idx = text.indexOf(word, fromIdx);
+                pair[0] = idx;
+                pair[1] = idx + word.length() - 1;
+                lst.add(pair);
+                pair = new int[2];
+                fromIdx = idx + 1;
+            }
+        }
+        Collections.sort(lst, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[0] == o2[0]) {
+                    return o1[1] - o2[1];
+                }
+                return o1[0] - o2[0];
+            }
+        });
+        int[][] ans = new int[lst.size()][2];
+        int i = 0;
+        for (int[] one : lst) {
+            ans[i] = one;
+            i++;
+        }
+        return ans;
     }
 
     /**

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class BFSExes {
 
@@ -34,6 +35,215 @@ public class BFSExes {
                 {'X','O','X','X'}
         };
         System.out.println(exe.shortestBridge(routes));
+    }
+
+    /**
+     * https://leetcode.com/problems/graph-valid-tree/
+     *
+     * Given n nodes labeled from 0 to n-1 and a list of undirected edges (each edge is a pair of nodes),
+     * write a function to check whether these edges make up a valid tree.
+     *
+     * Example 1:
+     *
+     * Input: n = 5, and edges = [[0,1], [0,2], [0,3], [1,4]]
+     * Output: true
+     * Example 2:
+     *
+     * Input: n = 5, and edges = [[0,1], [1,2], [2,3], [1,3], [1,4]]
+     * Output: false
+     * Note: you can assume that no duplicate edges will appear in edges. Since all edges are undirected,
+     * [0,1] is the same as [1,0] and thus will not appear together in edges.
+     *
+     * @param n
+     * @param edges
+     * @return
+     */
+    public boolean validTree(int n, int[][] edges) {
+        // n must be at least 1
+        if (n < 1) return false;
+
+        // create hashmap to store info of edges
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) map.put(i, new HashSet<>());
+        for (int[] edge : edges) {
+            map.get(edge[0]).add(edge[1]);
+            map.get(edge[1]).add(edge[0]);
+        }
+
+        // bfs starts with node in label "0"
+        Set<Integer> set = new HashSet<>();
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(0);
+        while (!queue.isEmpty()) {
+            int top = queue.remove();
+            // if set already contains top, then the graph has cycle
+            // hence return false
+            if (set.contains(top)) return false;
+
+            for (int node : map.get(top)) {
+                queue.add(node);
+                // we should remove the edge: node -> top
+                // after adding a node into set to avoid duplicate
+                // since we already consider top -> node
+                map.get(node).remove(top);
+            }
+            set.add(top);
+        }
+        return set.size() == n;
+    }
+
+    //    BFS, put node, col into queue at the same time
+    //    Every left child access col - 1 while right child col + 1
+    //    This maps node into different col buckets
+    //    Get col boundary min and max on the fly
+    //    Retrieve result from cols
+
+    /**
+     * https://leetcode.com/problems/binary-tree-vertical-order-traversal/
+     * Given a binary tree, return the vertical order traversal of its nodes' values. (ie, from top to bottom, column by column).
+     *
+     * If two nodes are in the same row and column, the order should be from left to right.
+     *
+     * Examples 1:
+     *
+     * Input: [3,9,20,null,null,15,7]
+     *
+     *    3
+     *   /\
+     *  /  \
+     *  9  20
+     *     /\
+     *    /  \
+     *   15   7
+     *
+     * Output:
+     *
+     * [
+     *   [9],
+     *   [3,15],
+     *   [20],
+     *   [7]
+     * ]
+     * Examples 2:
+     *
+     * Input: [3,9,8,4,0,1,7]
+     *
+     *      3
+     *     /\
+     *    /  \
+     *    9   8
+     *   /\  /\
+     *  /  \/  \
+     *  4  01   7
+     *
+     * Output:
+     *
+     * [
+     *   [4],
+     *   [9],
+     *   [3,0,1],
+     *   [8],
+     *   [7]
+     * ]
+     * Examples 3:
+     *
+     * Input: [3,9,8,4,0,1,7,null,null,null,2,5] (0's right child is 2 and 1's left child is 5)
+     *
+     *      3
+     *     /\
+     *    /  \
+     *    9   8
+     *   /\  /\
+     *  /  \/  \
+     *  4  01   7
+     *     /\
+     *    /  \
+     *    5   2
+     *
+     * Output:
+     *
+     * [
+     *   [4],
+     *   [9,5],
+     *   [3,0,1],
+     *   [8,2],
+     *   [7]
+     * ]
+     */
+    class TreeNodeAndCol{
+        TreeNode node;
+        int col;
+        public TreeNodeAndCol(TreeNode _node, int _col){
+            this.node = _node;
+            this.col = _col;
+        }
+    }
+    public List<List<Integer>> verticalOrder(TreeNode root) {
+        List<List<Integer>> ans = new ArrayList<List<Integer>>();
+        if (root == null) {
+            return ans;
+        }
+        //Key is the col number, note it started from 0, then for left will be 0-1, right 0+1.
+        TreeMap<Integer, List<Integer>> verticalData = new TreeMap<Integer, List<Integer>>();
+        Queue<TreeNodeAndCol> queue = new LinkedList<TreeNodeAndCol>();
+        queue.offer(new TreeNodeAndCol(root, 0));
+        while (!queue.isEmpty()) {
+            int s = queue.size();
+            for (int i=0; i<s; i++) {
+                TreeNodeAndCol oneNode = queue.poll();
+                verticalData.putIfAbsent(oneNode.col, new ArrayList<Integer>());
+                verticalData.get(oneNode.col).add(oneNode.node.val);
+                if (oneNode.node.left != null) {
+                    queue.offer(new TreeNodeAndCol(oneNode.node.left, oneNode.col - 1));
+                }
+                if (oneNode.node.right != null) {
+                    queue.offer(new TreeNodeAndCol(oneNode.node.right, oneNode.col + 1));
+                }
+            }
+        }
+
+        for (Map.Entry<Integer, List<Integer>> entry : verticalData.entrySet()) {
+            ans.add(entry.getValue());
+        }
+        return ans;
+    }
+
+    class HtmlParser {
+        public List<String> getUrls(String url) {
+            return null;
+        }
+    }
+    /**
+     * https://leetcode.com/problems/web-crawler/
+     * @param startUrl
+     * @param htmlParser
+     * @return
+     */
+    //BFS solution
+    public List<String> crawl(String startUrl, HtmlParser htmlParser) {
+        Set<String> set = new HashSet<>();
+        Queue<String> queue = new LinkedList<>();
+        String hostname = getHostname(startUrl);
+        queue.offer(startUrl);
+        set.add(startUrl);
+        //start from the start url, from the htmlParser result of current url,
+        //push all of them into the queue, and re-apply the same logic,
+        //until there is no more can be pushed into the queue.
+        while (!queue.isEmpty()) {
+            String currentUrl = queue.poll();
+            for (String url : htmlParser.getUrls(currentUrl)) {
+                if (url.contains(hostname) && !set.contains(url)) {
+                    queue.offer(url);
+                    set.add(url);
+                }
+            }
+        }
+        return new ArrayList<String>(set);
+    }
+
+    private String getHostname(String Url) {
+        String[] ss = Url.split("/");
+        return ss[2];
     }
 
     /**

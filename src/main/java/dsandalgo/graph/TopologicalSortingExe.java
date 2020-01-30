@@ -70,6 +70,7 @@ public class TopologicalSortingExe {
      * @return
      */
     public String alienOrder(String[] words) {
+        //using topological sorting, implementation based on BFS.
         Map<Character, List<Character>> map = new HashMap<Character, List<Character>>();
         int[] indegree = new int[26];
         Set<Character> set = new HashSet<Character>();

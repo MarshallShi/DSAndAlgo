@@ -13,8 +13,121 @@ public class StringExe {
 
     public static void main(String[] args) {
         StringExe exe = new StringExe();
-        String[] banned = {"hello","hi","helo"};
-        System.out.println(exe.expressiveWords("heeellooo", banned));
+        String[] banned = {"ab", "bc"};
+    }
+
+
+    /**
+     * https://leetcode.com/problems/count-substrings-with-only-one-distinct-letter/
+     *
+     * @param S
+     * @return
+     */
+    public int countLetters(String S) {
+        int ans = 0, repeat = 1;
+        for (int i = 1; i < S.length(); ++i, ++repeat) {
+            if (S.charAt(i) != S.charAt(i - 1)) { // previous char is re-occurring for 'repeat' times.
+                ans += repeat * (repeat + 1) / 2;
+                repeat = 0;
+            }
+        }
+        return ans + repeat * (repeat + 1) / 2;
+    }
+
+    public boolean validWordAbbreviation_1(String word, String abbr) {
+        int i = 0, j = 0;
+        while (i < word.length() && j < abbr.length()) {
+            if (word.charAt(i) == abbr.charAt(j)) {
+                ++i;++j;
+                continue;
+            }
+            if (abbr.charAt(j) <= '0' || abbr.charAt(j) > '9') {
+                return false;
+            }
+            int start = j;
+            while (j < abbr.length() && abbr.charAt(j) >= '0' && abbr.charAt(j) <= '9') {
+                ++j;
+            }
+            int num = Integer.valueOf(abbr.substring(start, j));
+            i += num;
+        }
+        return i == word.length() && j == abbr.length();
+    }
+
+    public boolean validWordAbbreviation(String word, String abbr) {
+        int i = 0, j = 0;
+        String temp = "";
+        while (i < abbr.length() && j < word.length()) {
+            if (Character.isAlphabetic(abbr.charAt(i))) {
+                if (abbr.charAt(i) != word.charAt(j)) {
+                    return false;
+                }
+                i++;
+                j++;
+            } else {
+                if (abbr.charAt(i) <= '0' || abbr.charAt(i) > '9') {
+                    return false;
+                } else {
+                    while (i<abbr.length() && Character.isDigit(abbr.charAt(i))) {
+                        temp = temp + abbr.charAt(i);
+                        i++;
+                    }
+                    j = j + Integer.parseInt(temp);
+                    temp = "";
+                }
+            }
+        }
+        if (i != abbr.length() || j != word.length()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/bold-words-in-string/
+     *
+     * Same as: https://leetcode.com/problems/add-bold-tag-in-string/
+     *
+     * Given a set of keywords words and a string S, make all appearances of all keywords in S bold.
+     * Any letters between <b> and </b> tags become bold.
+     *
+     * The returned string should use the least number of tags possible, and of course the tags should form a valid combination.
+     *
+     * For example, given that words = ["ab", "bc"] and S = "aabcd", we should return "a<b>abc</b>d".
+     * Note that returning "a<b>a<b>b</b>c</b>d" would use more tags, so it is incorrect.
+     *
+     * Note:
+     *
+     * words has length in range [0, 50].
+     * words[i] has length in range [1, 10].
+     * S has length in range [0, 500].
+     * All characters in words[i] and S are lowercase letters.
+     * @param words
+     * @param S
+     * @return
+     */
+    public String boldWords(String[] words, String S) {
+        boolean[] bold = new boolean[S.length() + 1];
+        for (String w : words) {
+            int start = S.indexOf(w, 0);
+            while (start != -1) {
+                Arrays.fill(bold, start, start + w.length(), true);
+                //Here to cover the repeated words in S.
+                start = S.indexOf(w, start + 1);
+            }
+        }
+        StringBuilder r = new StringBuilder().append(bold[0] ? "<b>" : "");
+        for (int i = 0; i < bold.length - 1; i++) {
+            r.append(S.charAt(i));
+            if (!bold[i] && bold[i + 1]) {
+                r.append("<b>");
+            } else {
+                if (bold[i] && !bold[i + 1]) {
+                    r.append("</b>");
+                }
+            }
+        }
+        return r.toString();
     }
 
     /**

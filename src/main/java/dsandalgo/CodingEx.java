@@ -62,7 +62,49 @@ public class CodingEx {
         //System.out.println(ex.findLHS(A));
         String[] queries1 = {"bba","abaaaaaa","aaaaaa","bbabbabaab","aba","aa","baab","bbbbbb","aab","bbabbaabb"};
         String[] words = {"aaabbb","aab","babbab","babbbb","b","bbbbbbbbab","a","bbbbbbbbbb","baaabbaab","aa"};
-        System.out.println(ex.numSmallerByFrequency(queries1,words));
+        System.out.println(ex.isStrobogrammatic("23"));
+    }
+
+    public boolean confusingNumber(int N) {
+        String orgin = String.valueOf(N);
+        StringBuilder sb = new StringBuilder();
+        while (N != 0) {
+            int num = N % 10;
+            if (num == 2 || num == 3 || num == 4 || num == 5 || num == 7) {
+                return false;
+            }
+            if (num == 6) {
+                sb.append(9+"");
+            } else {
+                if (num == 9) {
+                    sb.append(6+"");
+                } else {
+                    sb.append(num+"");
+                }
+            }
+            N = N / 10;
+        }
+        boolean equ = sb.toString().equalsIgnoreCase(orgin);
+        return !equ;
+    }
+
+    public boolean isStrobogrammatic(String numstr) {
+        StringBuilder sb = new StringBuilder();
+        for (int i=numstr.length() - 1; i>=0; i--) {
+            char ch = numstr.charAt(i);
+            if(ch != '0' && ch != '1' && ch != '6' && ch != '8' && ch != '9'){
+                return false;
+            }
+            if(ch == '6' || ch == '9'){
+                sb.append(ch == '6' ? '9' : '6');
+            } else {
+                sb.append(ch);
+            }
+        }
+        if (sb.toString().equals(numstr)) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -1102,46 +1144,6 @@ public class CodingEx {
         return counter;
     }
 
-    public static boolean canPartition(int[] nums) {
-        int sum = 0;
-        for (int i=0; i<nums.length; i++) {
-            sum = sum + nums[i];
-        }
-        if (sum % 2 != 0) {
-            return false;
-        }
-        return helper(nums, sum/2);
-    }
-
-    public static boolean helper(int[] nums, int sum) {
-        int numsLen = nums.length;
-        boolean[][] dp = new boolean[numsLen + 1][sum + 1];
-        int i,j;
-        for (i=0; i<=numsLen; i++) {
-            dp[i][0] = false;
-        }
-        for (i=0; i<=sum; i++) {
-            dp[0][i] = false;
-        }
-        for (j=1;j<=sum;j++) {
-            for (i=1;i<=numsLen;i++) {
-                if (j==nums[i-1]) {
-                    dp[i][j] = true;
-                } else {
-                    if (j > nums[i-1]) {
-                        dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i-1]];
-                    } else {
-                        dp[i][j] = dp[i-1][j];
-                    }
-                }
-                if ((j==sum) && dp[i][j]) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public static int maximalRectangle(char[][] matrix) {
         int n = matrix.length;
         if (n == 0) return 0;
@@ -1815,37 +1817,6 @@ public class CodingEx {
             ret.add(str);
         }
         return ret;
-    }
-
-    public static int coinChange(int[] coins, int amount) {
-        if (coins == null || amount < 0) {
-            return -1;
-        }
-        if (amount == 0) {
-            return 0;
-        }
-
-        if (coins.length == 0 && amount != 0) {
-            return -1;
-        }
-        int[] dp = new int[amount+1];
-        dp[0] = 0;
-        for (int i=1; i<=amount; i++) {
-            int min = -1;
-            for (int j=0; j<coins.length; j++) {
-                if (coins[j] <= i && dp[i - coins[j]] != -1) {
-                    int temp = 1 + dp[i - coins[j]];
-                    if (min < 0) {
-                        min = temp;
-                    }
-                    if (temp < min) {
-                        min = temp;
-                    }
-                }
-            }
-            dp[i] = min;
-        }
-        return dp[amount];
     }
 
     public static int findMaxDP(String[] strs, int m, int n){

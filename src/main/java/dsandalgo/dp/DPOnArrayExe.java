@@ -4,10 +4,92 @@ public class DPOnArrayExe {
 
     public static void main(String[] args) {
         DPOnArrayExe exe = new DPOnArrayExe();
-        int[] arr = {1,15,7,9,2,5,10};
-        exe.maxSumAfterPartitioning(arr, 3);
+        int[] arr = {16,69,88,85,79,87,37,33,39,34};
+        exe.numSubarrayBoundedMax(arr, 55, 57);
     }
 
+    /**
+     * https://leetcode.com/problems/delete-and-earn/
+     *
+     * @param nums
+     * @return
+     */
+    public int deleteAndEarn(int[] nums) {
+        int[] sum = new int[10002];
+
+        //summary all the number's sum for the values.
+        for(int i = 0; i < nums.length; i++){
+            sum[nums[i]] += nums[i];
+        }
+
+        //the formula from observation.
+        for(int i = 2; i < sum.length; i++){
+            sum[i] = Math.max(sum[i-1], sum[i-2] + sum[i]);
+        }
+        return sum[10001];
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-subarrays-with-bounded-maximum/
+     * We are given an array A of positive integers, and two positive integers L and R (L <= R).
+     *
+     * Return the number of (contiguous, non-empty) subarrays such that the value of the maximum
+     * array element in that subarray is at least L and at most R.
+     *
+     * Example :
+     * Input:
+     * A = [2, 1, 4, 3]
+     * L = 2
+     * R = 3
+     * Output: 3
+     * Explanation: There are three subarrays that meet the requirements: [2], [2, 1], [3].
+     * Note:
+     *
+     * L, R  and A[i] will be an integer in the range [0, 10^9].
+     * The length of A will be in the range of [1, 50000].
+     */
+
+    /**
+     * Suppose dp[i] denotes the max number of valid sub-array ending with A[i]. We use following example to illustrate the idea:
+     *
+     * A = [2, 1, 4, 2, 3], L = 2, R = 3
+     *
+     * if A[i] < L
+     * For example, i = 1. We can only append A[i] to a valid sub-array ending with A[i-1] to create new sub-array. So we have dp[i] = dp[i-1] (for i > 0)
+     *
+     * if A[i] > R:
+     * For example, i = 2. No valid sub-array ending with A[i] exist. So we have dp[i] = 0.
+     * We also record the position of the invalid number 4 here as prev.
+     *
+     * if L <= A[i] <= R
+     * For example, i = 4. In this case any sub-array starts after the previous invalid number to A[i] (A[prev+1..i], A[prev+2..i]) is a new valid sub-array. So dp[i] += i - prev
+     * @param A
+     * @param L
+     * @param R
+     * @return
+     */
+    public int numSubarrayBoundedMax(int[] A, int L, int R) {
+        int[] dp = new int[A.length];
+        int prevInvalidPos = -1;
+        int sum = 0;
+        for (int i=0; i<A.length; i++) {
+            if (A[i] < L) {
+                if (i>0) {
+                    dp[i] = dp[i-1];
+                    sum = sum + dp[i];
+                }
+            } else {
+                if (A[i] > R) {
+                    prevInvalidPos = i;
+                    dp[i] = 0;
+                } else {
+                    dp[i] = i - prevInvalidPos;
+                    sum = sum + dp[i];
+                }
+            }
+        }
+        return sum;
+    }
 
     /**
      * https://leetcode.com/problems/house-robber/

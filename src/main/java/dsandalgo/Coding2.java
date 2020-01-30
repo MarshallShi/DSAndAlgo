@@ -1740,27 +1740,6 @@ public class Coding2 {
         }
     }
 
-    private List<List<Integer>> ret;
-    public List<List<Integer>> permute(int[] nums) {
-        ret = new ArrayList<List<Integer>>();
-        backtrack(nums, new ArrayList<Integer>());
-        return ret;
-    }
-
-    public void backtrack(int[] nums, List<Integer> temp) {
-        if (temp.size() == nums.length) {
-            ret.add(new ArrayList<Integer>(temp));
-            return;
-        }
-        for (int i=0; i<nums.length;i++){
-            if (!temp.contains(Integer.valueOf(nums[i]))) {
-                temp.add(nums[i]);
-                backtrack(nums, temp);
-                temp.remove(Integer.valueOf(nums[i]));
-            }
-        }
-    }
-
     public int longestCommonSubsequence(String text1, String text2) {
         int len1 = text1.length();
         int len2 = text2.length();

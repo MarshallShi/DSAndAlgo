@@ -5,6 +5,40 @@ import java.util.Random;
 
 public class WiggleSort {
 
+    public static void main(String[] args){
+        WiggleSort ws = new WiggleSort();
+        int[] nums = {3,5,2,1,6,4};
+        ws.wiggleSort(nums);
+    }
+    /**
+     * https://leetcode.com/problems/wiggle-sort/
+     *
+     * Given an unsorted array nums, reorder it in-place such that nums[0] <= nums[1] >= nums[2] <= nums[3]....
+     *
+     * Example:
+     *
+     * Input: nums = [3,5,2,1,6,4]
+     * Output: One possible answer is [3,5,1,6,2,4]
+     * @param nums
+     */
+    public void wiggleSort(int[] nums) {
+        for (int i=0; i<nums.length; i++){
+            if(i%2 == 1){
+                if(nums[i-1] > nums[i]){
+                    int tmp = nums[i-1];
+                    nums[i-1] = nums[i];
+                    nums[i] = tmp;
+                }
+            } else {
+                if(i > 0 && nums[i-1] < nums[i]){
+                    int tmp = nums[i-1];
+                    nums[i-1] = nums[i];
+                    nums[i] = tmp;
+                }
+            }
+        }
+    }
+
     //https://leetcode.com/problems/wiggle-sort-ii/
 
     //https://leetcode.com/problems/wiggle-sort-ii/discuss/77684/Summary-of-the-various-solutions-to-Wiggle-Sort-for-your-reference

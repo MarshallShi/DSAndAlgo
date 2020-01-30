@@ -1,11 +1,11 @@
 package dsandalgo.dfsbacktrack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 
 public class DFSExe {
@@ -32,14 +32,173 @@ public class DFSExe {
 //        System.out.println(dfs.diffWaysToCompute("2*3-4*5"));
         //System.out.println(dfs.getMaximumGold(nums2));
         int[][] arr = {{2,0,2,3,1},{0,2,2,3,3},{2,3,0,2,3},{1,1,2,3,1},{2,2,0,0,1}};
-        //System.out.println(dfs.maximumMinimumPath(arr));
+        System.out.println(dfs.findLeaves(dfs.creaeBOneTree()));
 
     }
 
+    /**
+     * https://leetcode.com/problems/knight-dialer/
+     * A chess knight can move as indicated in the chess diagram below:
+     *
+     *  1  2  3
+     *  4  5  6
+     *  7  8  9
+     *     0
+     *
+     * This time, we place our chess knight on any numbered key of a phone pad (indicated above),
+     * and the knight makes N-1 hops.  Each hop must be from one key to another numbered key.
+     *
+     * Each time it lands on a key (including the initial placement of the knight), it presses the number of that key, pressing N digits total.
+     *
+     * How many distinct numbers can you dial in this manner?
+     *
+     * Since the answer may be large, output the answer modulo 10^9 + 7.
+     *
+     * Example 1:
+     *
+     * Input: 1
+     * Output: 10
+     *
+     * Example 2:
+     *
+     * Input: 2
+     * Output: 20
+     *
+     * Example 3:
+     *
+     * Input: 3
+     * Output: 46
+     */
+    public static final int MOD = 1000000007;
+    public int knightDialer(int N) {
+        //possible jumping target..., from the index to.
+        int[][] graph = new int[][]{{4,6},{6,8},{7,9},{4,8},{3,9,0},{},{1,7,0},{2,6},{1,3},{2,4}};
+        int cnt = 0;
+        Integer[][] memo = new Integer[N+1][10];
+        for (int i = 0; i <= 9; i++) {
+            cnt = (cnt + helper(N-1, i, graph, memo)) % MOD;
+        }
+        return cnt;
+    }
+    private int helper(int N, int cur, int[][] graph, Integer[][] memo) {
+        if (N == 0) {
+            return 1;
+        }
+        if (memo[N][cur] != null) {
+            return memo[N][cur];
+        }
+        int cnt = 0;
+        for (int nei : graph[cur]) {
+            cnt = (cnt + helper(N-1, nei, graph, memo)) % MOD;
+        }
+        memo[N][cur] = cnt;
+        return cnt;
+    }
 
+    public int knightDialer_logn(int N) {
+        if (N == 1) return 10;
+        long mod = 1000000007;
+        long[] pre = new long[10];  // to record previous result. It is needed because if we only use cur, the cur array itself is changed during calculation.
+        long[] cur = new long[10];  // to record current result.
+        Arrays.fill(pre,1);
+        while (--N > 0) {
+            cur[0]=(pre[4] + pre[6])%mod;
+            cur[1]=(pre[6] + pre[8])%mod;
+            cur[2]=(pre[7] + pre[9])%mod;
+            cur[3]=(pre[4] + pre[8])%mod;
+            cur[4]=(pre[3] + pre[9] + pre[0])%mod;
+            cur[6]=(pre[1] + pre[7] + pre[0])%mod;
+            cur[7]=(pre[2] + pre[6])%mod;
+            cur[8]=(pre[1] + pre[3])%mod;
+            cur[9]=(pre[2] + pre[4])%mod;
+            for(int i=0; i<10; i++) {
+                pre[i] = cur[i];
+            }
+        }
+        long sum = 0;
+        for(int i=0; i<10; i++){
+            sum = (sum + cur[i])%mod;
+        }
+        return (int)sum;
+    }
+
+
+    public TreeNode creaeBOneTree(){
+        TreeNode node1 = new TreeNode(1);
+        TreeNode node2 = new TreeNode(2);
+        TreeNode node3 = new TreeNode(3);
+        node1.left = node2;
+        node1.right = node3;
+
+        TreeNode node4 = new TreeNode(4);
+        TreeNode node5 = new TreeNode(5);
+        node2.left = node4;
+        node2.right = node5;
+
+        return node1;
+    }
+
+    /**
+     * https://leetcode.com/problems/find-leaves-of-binary-tree/
+     * Given a binary tree, collect a tree's nodes as if you were doing this:
+     *
+     * Collect and remove all leaves, repeat until the tree is empty.
+     *
+     * Example:
+     *
+     * Input: [1,2,3,4,5]
+     *
+     *           1
+     *          / \
+     *         2   3
+     *        / \
+     *       4   5
+     *
+     * Output: [[4,5,3],[2],[1]]
+     *
+     * @param root
+     * @return
+     */
+
+    public List<List<Integer>> findLeaves(TreeNode root) {
+        List<List<Integer>> answer = new ArrayList<List<Integer>>();
+        if (root == null) {
+            return answer;
+        }
+        while (root.left != null || root.right != null) {
+            List<Integer> temp = new ArrayList<Integer>();
+            Set<TreeNode> seen = new HashSet<TreeNode>();
+            leavesDFS(root, null, null, temp, seen);
+            answer.add(temp);
+        }
+        List<Integer> rootRet = new ArrayList<Integer>();
+        rootRet.add(root.val);
+        answer.add(rootRet);
+        return answer;
+    }
+
+    private void leavesDFS(TreeNode node, TreeNode prev, String leftOrRight, List<Integer> temp, Set<TreeNode> seen) {
+        if (node.left != null) {
+            leavesDFS(node.left, node, "L", temp, seen);
+        }
+        if (node.right != null) {
+            leavesDFS(node.right, node, "R", temp, seen);
+        }
+        if (node.left == null && node.right == null && !seen.contains(node)) {
+            temp.add(node.val);
+            if (leftOrRight == "L" && prev != null) {
+                prev.left = null;
+            }
+            if (leftOrRight == "R" && prev != null) {
+                prev.right = null;
+            }
+            seen.add(prev);
+        }
+    }
 
     /**
      * https://leetcode.com/problems/array-nesting/
+     *
      * A zero-indexed array A of length N contains all integers from 0 to N-1. Find and return the longest length of set S,
      * where S[i] = {A[i], A[A[i]], A[A[A[i]]], ... } subjected to the rule below.
      *

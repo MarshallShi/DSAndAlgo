@@ -1,15 +1,242 @@
 package dsandalgo.unionfind;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 public class UnionFindExe {
 
     public static void main(String[] args) {
-        UnionFindExe exe = new UnionFindExe();
         String[] grid = {};
+
+        UnionFindExe exe = new UnionFindExe();
+
+        /**
+         * ["great","acting","skills"]
+         * ["fine","painting","talent"]
+         * [["great","fine"],["drama","acting"],["skills","talent"]]
+         */
+        String[] words1 = {"great", "acting", "skills"};
+        String[] words2 = {"fine", "painting", "talent"};
+        List<List<String>> pairs = new ArrayList<List<String>>();
+        List<String> ls = new ArrayList<String>();
+        ls.add("great");
+        ls.add("fine");
+        pairs.add(ls);
+        ls = new ArrayList<String>();
+        ls.add("drama");
+        ls.add("acting");
+        pairs.add(ls);
+        ls = new ArrayList<String>();
+        ls.add("skills");
+        ls.add("talent");
+        pairs.add(ls);
+        System.out.println(exe.areSentencesSimilarTwo(words1, words2, pairs));
+    }
+
+    /**
+     * https://leetcode.com/problems/sentence-similarity-ii/
+     *
+     * Given two sentences words1, words2 (each represented as an array of strings), and a list of similar word pairs pairs, determine if two sentences are similar.
+     *
+     * For example,
+     * words1 = ["great", "acting", "skills"] and
+     * words2 = ["fine", "drama", "talent"] are similar,
+     * if the similar word pairs are pairs = [["great", "good"], ["fine", "good"], ["acting","drama"], ["skills","talent"]].
+     *
+     * Note that the similarity relation is transitive. For example, if "great" and "good" are similar, and "fine" and "good" are similar, then "great" and "fine" are similar.
+     *
+     * Similarity is also symmetric. For example, "great" and "fine" being similar is the same as "fine" and "great" being similar.
+     *
+     * Also, a word is always similar with itself. For example, the sentences words1 = ["great"], words2 = ["great"], pairs = [] are similar, even though there are no specified similar word pairs.
+     *
+     * Finally, sentences can only be similar if they have the same number of words. So a sentence like words1 = ["great"] can never be similar to words2 = ["doubleplus","good"].
+     *
+     * Note:
+     *
+     * The length of words1 and words2 will not exceed 1000.
+     * The length of pairs will not exceed 2000.
+     * The length of each pairs[i] will be 2.
+     * The length of each words[i] and pairs[i][j] will be in the range [1, 20].
+     *
+     * @param words1
+     * @param words2
+     * @param pairs
+     * @return
+     */
+    public boolean areSentencesSimilarTwo(String[] words1, String[] words2, List<List<String>> pairs) {
+        int n = words1.length;
+        int m = words2.length;
+        if (n != m) {
+            return false;
+        }
+        Map<String, Integer> wordsParent = new HashMap<String, Integer>();
+        int counter = 0;
+        for (List<String> lst : pairs) {
+            if (!wordsParent.containsKey(lst.get(0))) {
+                wordsParent.put(lst.get(0), counter);
+                counter++;
+            }
+            if (!wordsParent.containsKey(lst.get(1))) {
+                wordsParent.put(lst.get(1), counter);
+                counter++;
+            }
+        }
+        UnionFindSentencesSimilar uf = new UnionFindSentencesSimilar(counter);
+        for (List<String> lst : pairs) {
+            uf.union(wordsParent.get(lst.get(0)), wordsParent.get(lst.get(1)));
+        }
+        for (int i=0; i<n; i++) {
+            if (words1[i].equals(words2[i])) {
+                continue;
+            }
+            if ( !wordsParent.containsKey(words1[i]) || !wordsParent.containsKey(words2[i])) {
+                return false;
+            }
+            if (uf.find(wordsParent.get(words1[i])) != uf.find(wordsParent.get(words2[i]))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    class UnionFindSentencesSimilar {
+        int size;
+        int[] parent;
+        public UnionFindSentencesSimilar(int size) {
+            this.size = size;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public void union(int a, int b) {
+            parent[find(b)] = parent[find(a)];
+        }
+
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/accounts-merge/
+     *
+     * Given a list accounts, each element accounts[i] is a list of strings, where the first element accounts[i][0] is a name,
+     * and the rest of the elements are emails representing emails of the account.
+     *
+     * Now, we would like to merge these accounts.
+     * Two accounts definitely belong to the same person if there is some email
+     * that is common to both accounts. Note that even if two accounts have the same name, they may belong to different people as people could
+     * have the same name. A person can have any number of accounts initially, but all of their accounts definitely have the same name.
+     *
+     * After merging the accounts, return the accounts in the following format:
+     * the first element of each account is the name,
+     *      * and the rest of the elements are emails in sorted order.
+     *      * The accounts themselves can be returned in any order.
+     *      *
+     *      * Example 1:
+     *      * Input:
+     *      * accounts = [["John", "johnsmith@mail.com", "john00@mail.com"], ["John", "johnnybravo@mail.com"], ["John", "johnsmith@mail.com", "john_newyork@mail.com"], ["Mary", "mary@mail.com"]]
+     *      * Output: [["John", 'john00@mail.com', 'john_newyork@mail.com', 'johnsmith@mail.com'],  ["John", "johnnybravo@mail.com"], ["Mary", "mary@mail.com"]]
+     *      * Explanation:
+     *      * The first and third John's are the same person as they have the common email "johnsmith@mail.com".
+     *      * The second John and Mary are different people as none of their email addresses are used by other accounts.
+     *      * We could return these lists in any order, for example the answer [['Mary', 'mary@mail.com'], ['John', 'johnnybravo@mail.com'],
+     *      * ['John', 'john00@mail.com', 'john_newyork@mail.com', 'johnsmith@mail.com']] would still be accepted.
+     *      *
+     *      * Note:
+     *      *
+     *      * The length of accounts will be in the range [1, 1000].
+     *      * The length of accounts[i] will be in the range [1, 10].
+     *      * The length of accounts[i][j] will be in the range [1, 30].
+     *      * @param accounts
+     *      * @return
+     */
+    public List<List<String>> accountsMerge(List<List<String>> accounts) {
+        if (accounts.size() == 0) {
+            return new ArrayList<List<String>>();
+        }
+
+        int n = accounts.size();
+        UnionFindAccountsMerge uf = new UnionFindAccountsMerge(n);
+
+        // Step 1: traverse all emails except names, if we have not seen an email before, put it with its index into map.
+        // Otherwise, union the email to its parent index.
+        Map<String, Integer> mailToIndex = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j < accounts.get(i).size(); j++) {
+                String curMail = accounts.get(i).get(j);
+                if (mailToIndex.containsKey(curMail)) {
+                    int preIndex = mailToIndex.get(curMail);
+                    uf.union(preIndex, i);
+                } else {
+                    mailToIndex.put(curMail, i);
+                }
+            }
+        }
+
+        // Step 2: traverse every email list, find the parent of current list index and put all emails into the set list
+        // that belongs to key of its parent index
+        Map<Integer, Set<String>> disjointSet = new HashMap<Integer, Set<String>>();
+        for (int i = 0; i < n; i++) {
+            // find parent index of current list index in parent array
+            int parentIndex = uf.find(i);
+            disjointSet.putIfAbsent(parentIndex, new HashSet<String>());
+
+            Set<String> curSet = disjointSet.get(parentIndex);
+            for (int j = 1; j < accounts.get(i).size(); j++) {
+                curSet.add(accounts.get(i).get(j));
+            }
+            disjointSet.put(parentIndex, curSet);
+        }
+
+        // step 3: traverse ket set of disjoint set group, retrieve all emails from each parent index, and then SORT
+        // them, as well as adding the name at index 0 of every sublist
+        List<List<String>> result = new ArrayList<>();
+        for (int index : disjointSet.keySet()) {
+            List<String> curList = new ArrayList<>();
+            if (disjointSet.containsKey(index)) {
+                curList.addAll(disjointSet.get(index));
+            }
+            Collections.sort(curList);
+            curList.add(0, accounts.get(index).get(0));
+            result.add(curList);
+        }
+        return result;
+    }
+
+    class UnionFindAccountsMerge {
+        int size;
+        int[] parent;
+        public UnionFindAccountsMerge(int size) {
+            this.size = size;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public void union(int a, int b) {
+            parent[find(a)] = parent[find(b)];
+        }
+
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
     }
 
     /**

@@ -1,5 +1,7 @@
 package dsandalgo.stack;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Stack;
 
 public class StackExe {
@@ -18,7 +20,33 @@ public class StackExe {
 
     public static void main(String[] args) {
         StackExe exe = new StackExe();
-        System.out.println(exe.reverseParentheses("f(ed(et(oc))el)w"));
+        System.out.println(exe.lengthLongestPath("dir\n\tsubdir1\n\t\\tfile1.ext\n\t\\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext"));
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-absolute-file-path/
+     *
+     * @param input
+     * @return
+     */
+    public int lengthLongestPath(String input) {
+        Stack<Integer> stack = new Stack<Integer>();
+        stack.push(0); // "dummy" length
+        int maxLen = 0;
+        String[] tokens = input.split("\n");
+        for (String s : tokens) {
+            int lev = s.lastIndexOf("\t") + 1; // number of "\t"
+            while (lev+1 < stack.size()) {
+                stack.pop(); // find parent
+            }
+            int len = stack.peek() + s.length() - lev + 1; // remove "/t", add"/"
+            stack.push(len);
+            // check if it is file
+            if (s.contains(".")) {
+                maxLen = Math.max(maxLen, len-1);
+            }
+        }
+        return maxLen;
     }
 
     /**
@@ -144,118 +172,6 @@ public class StackExe {
         } else {
             return sb.toString();
         }
-    }
-
-    /**
-     * Implement a basic calculator to evaluate a simple expression string.
-     *
-     * The expression string may contain open ( and closing parentheses ),
-     * the plus + or minus sign -, non-negative integers and empty spaces .
-     *
-     * Example 1:
-     *
-     * Input: "1 + 1"
-     * Output: 2
-     *
-     * https://leetcode.com/problems/basic-calculator/
-     *
-     * @param s
-     * @return
-     */
-    public int calculate(String s) {
-        int len = s.length(), sign = 1, result = 0;
-        Stack<Integer> stack = new Stack<Integer>();
-        for (int i = 0; i < len; i++) {
-            if (Character.isDigit(s.charAt(i))) {
-                int sum = s.charAt(i) - '0';
-                while (i + 1 < len && Character.isDigit(s.charAt(i + 1))) {
-                    sum = sum * 10 + s.charAt(i + 1) - '0';
-                    i++;
-                }
-                result += sum * sign;
-            } else if (s.charAt(i) == '+')
-                sign = 1;
-            else if (s.charAt(i) == '-')
-                sign = -1;
-            else if (s.charAt(i) == '(') {
-                //Key is to push the current result and reset to 0.
-                stack.push(result);
-                stack.push(sign);
-                result = 0;
-                sign = 1;
-            } else if (s.charAt(i) == ')') {
-                result = result * stack.pop() + stack.pop();
-            }
-
-        }
-        return result;
-    }
-
-    /**
-     *
-     * Implement a basic calculator to evaluate a simple expression string.
-     *
-     * The expression string contains only non-negative integers, +, -, *, / operators and empty spaces .
-     * The integer division should truncate toward zero.
-     *
-     * Example 1:
-     *
-     * Input: "3+2*2"
-     * Output: 7
-     *
-     * https://leetcode.com/problems/basic-calculator-ii/
-     *
-     * @param s
-     * @return
-     */
-    public int calculate_2(String s) {
-        int len = s.length(), sign = 1, result = 0;
-        Stack<Integer> stack = new Stack<Integer>();
-        for (int i = 0; i < len; i++) {
-            if (Character.isDigit(s.charAt(i))) {
-                int sum = s.charAt(i) - '0';
-                while (i + 1 < len && Character.isDigit(s.charAt(i + 1))) {
-                    sum = sum * 10 + s.charAt(i + 1) - '0';
-                    i++;
-                }
-                while (i+1 < len && Character.isSpaceChar(s.charAt(i+1))){
-                    i++;
-                }
-                if (i+1 < len && (s.charAt(i+1) == '*' || s.charAt(i+1) == '/')) {
-                    stack.push(result);
-                    stack.push(sign);
-                    result = sum;
-                } else {
-                    result = result + sum * sign;
-                }
-            } else if (s.charAt(i) == '+')
-                sign = 1;
-            else if (s.charAt(i) == '-')
-                sign = -1;
-            else if (s.charAt(i) == '*' || s.charAt(i) == '/') {
-                char cur = s.charAt(i);
-                while (!Character.isDigit(s.charAt(i))){
-                    i++;
-                }
-                int sum = s.charAt(i) - '0';
-                while (i + 1 < len && Character.isDigit(s.charAt(i + 1))) {
-                    sum = sum * 10 + s.charAt(i + 1) - '0';
-                    i++;
-                }
-                if (cur == '*') {
-                    result = result * sum;
-                } else {
-                    result = result / sum;
-                }
-                while (i+1 < len && Character.isSpaceChar(s.charAt(i+1))){
-                    i++;
-                }
-                if ((i+1 < len && (s.charAt(i+1) != '*' && s.charAt(i+1) != '/')) || i+1 == len) {
-                    result = result * stack.pop() + stack.pop();
-                }
-            }
-        }
-        return result;
     }
 
     public String decodeAtIndex(String S, int K) {
