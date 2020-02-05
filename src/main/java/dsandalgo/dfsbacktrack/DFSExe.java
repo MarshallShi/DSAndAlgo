@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 public class DFSExe {
@@ -18,22 +20,237 @@ public class DFSExe {
            {9,9,4},{6,6,8},{2,1,1}
         };
         int[][] nums2 = {
-                {0,0,0,0,0,0,32,0,0,20},
-                {0,0,2,0,0,0,0,40,0,32},
-                {13,20,36,0,0,0,20,0,0,0},
-                {0,31,27,0,19,0,0,25,18,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,18,0,6},
-                {0,0,0,25,0,0,0,0,0,0},
-                {0,0,0,21,0,30,0,0,0,0},
-                {19,10,0,0,34,0,2,0,0,27},
-                {0,0,0,0,0,34,0,0,0,0}
+                {1,2,2,3,5},
+                {3,2,3,4,4},
+                {2,4,5,3,1},
+                {6,7,1,4,5},
+                {5,1,1,2,4}
         };
 //        System.out.println(dfs.diffWaysToCompute("2*3-4*5"));
         //System.out.println(dfs.getMaximumGold(nums2));
-        int[][] arr = {{2,0,2,3,1},{0,2,2,3,3},{2,3,0,2,3},{1,1,2,3,1},{2,2,0,0,1}};
-        System.out.println(dfs.findLeaves(dfs.creaeBOneTree()));
 
+        System.out.println(dfs.pacificAtlantic(nums2));
+
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-knight-moves/
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public int minKnightMoves(int x, int y) {
+        int MOD = Math.abs(y) + 2;
+        return dfs(Math.abs(x), Math.abs(y), new HashMap<>(), MOD);
+    }
+
+    public int dfs(int x, int y, Map<Integer, Integer> map, int MOD) {
+        int index = x * MOD + y;
+        if (map.containsKey(index)) {
+            return map.get(index);
+        }
+        int ans = 0;
+        if (x + y == 0) {
+            ans = 0;
+        } else if (x + y == 2) {
+            ans = 2;
+        } else {
+            ans = Math.min(dfs(Math.abs(x - 1), Math.abs(y - 2), map, MOD),
+                    dfs(Math.abs(x - 2), Math.abs(y - 1), map, MOD)) + 1;
+        }
+        map.put(index, ans);
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/pacific-atlantic-water-flow/
+     *
+     * Given an m x n matrix of non-negative integers representing the height of each unit cell in a continent, the "Pacific ocean" touches the left and top edges of the matrix and the "Atlantic ocean" touches the right and bottom edges.
+     *
+     * Water can only flow in four directions (up, down, left, or right) from a cell to another one with height equal or lower.
+     *
+     * Find the list of grid coordinates where water can flow to both the Pacific and Atlantic ocean.
+     *
+     * Note:
+     *
+     * The order of returned grid coordinates does not matter.
+     * Both m and n are less than 150.
+     *
+     *
+     * Example:
+     *
+     * Given the following 5x5 matrix:
+     *
+     *   Pacific ~   ~   ~   ~   ~
+     *        ~  1   2   2   3  (5) *
+     *        ~  3   2   3  (4) (4) *
+     *        ~  2   4  (5)  3   1  *
+     *        ~ (6) (7)  1   4   5  *
+     *        ~ (5)  1   1   2   4  *
+     *           *   *   *   *   * Atlantic
+     *
+     * Return:
+     *
+     * [[0, 4], [1, 3], [1, 4], [2, 2], [3, 0], [3, 1], [4, 0]] (positions with parentheses in above matrix).
+     *
+     * @param matrix
+     * @return
+     */
+    public List<List<Integer>> pacificAtlantic(int[][] matrix) {
+        List<List<Integer>> res = new LinkedList<List<Integer>>();
+        if(matrix == null || matrix.length == 0 || matrix[0].length == 0){
+            return res;
+        }
+        int m = matrix.length, n = matrix[0].length;
+        boolean[][] pacific = new boolean[m][n];
+        boolean[][] atlantic = new boolean[m][n];
+        for (int i=0; i<m; i++){
+            dfs(matrix, pacific, Integer.MIN_VALUE, i, 0);
+            dfs(matrix, atlantic, Integer.MIN_VALUE, i, n-1);
+        }
+        for (int i=0; i<n; i++){
+            dfs(matrix, pacific, Integer.MIN_VALUE, 0, i);
+            dfs(matrix, atlantic, Integer.MIN_VALUE, m-1, i);
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (pacific[i][j] && atlantic[i][j]) {
+                    List<Integer> oneRes = new ArrayList<Integer>();
+                    oneRes.add(i);
+                    oneRes.add(j);
+                    res.add(oneRes);
+                }
+            }
+        }
+        return res;
+    }
+
+    int[][] dirPA = new int[][]{{0,1},{0,-1},{1,0},{-1,0}};
+
+    public void dfs(int[][]matrix, boolean[][]visited, int height, int x, int y){
+        int n = matrix.length, m = matrix[0].length;
+        if (x<0 || x>=n || y<0 || y>=m || visited[x][y] || matrix[x][y] < height){
+            return;
+        }
+        visited[x][y] = true;
+        for (int[] d : dirPA) {
+            dfs(matrix, visited, matrix[x][y], x+d[0], y+d[1]);
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/minesweeper/
+     * Let's play the minesweeper game (Wikipedia, online game)!
+     *
+     * You are given a 2D char matrix representing the game board. 'M' represents an unrevealed mine,
+     * 'E' represents an unrevealed empty square, 'B' represents a revealed blank square that has no adjacent (above, below, left, right,
+     * and all 4 diagonals) mines, digit ('1' to '8') represents how many mines are adjacent to this revealed square, and finally 'X' represents a revealed mine.
+     *
+     * Now given the next click position (row and column indices) among all the unrevealed squares ('M' or 'E'),
+     * return the board after revealing this position according to the following rules:
+     *
+     * If a mine ('M') is revealed, then the game is over - change it to 'X'.
+     * If an empty square ('E') with no adjacent mines is revealed, then change it to revealed blank ('B') and all of its adjacent unrevealed
+     * squares should be revealed recursively.
+     * If an empty square ('E') with at least one adjacent mine is revealed, then change it to a digit ('1' to '8') representing the number of adjacent mines.
+     * Return the board when no more squares will be revealed.
+     *
+     *
+     * Example 1:
+     *
+     * Input:
+     *
+     * [['E', 'E', 'E', 'E', 'E'],
+     *  ['E', 'E', 'M', 'E', 'E'],
+     *  ['E', 'E', 'E', 'E', 'E'],
+     *  ['E', 'E', 'E', 'E', 'E']]
+     *
+     * Click : [3,0]
+     *
+     * Output:
+     *
+     * [['B', '1', 'E', '1', 'B'],
+     *  ['B', '1', 'M', '1', 'B'],
+     *  ['B', '1', '1', '1', 'B'],
+     *  ['B', 'B', 'B', 'B', 'B']]
+     *
+     * Explanation:
+     *
+     * Example 2:
+     *
+     * Input:
+     *
+     * [['B', '1', 'E', '1', 'B'],
+     *  ['B', '1', 'M', '1', 'B'],
+     *  ['B', '1', '1', '1', 'B'],
+     *  ['B', 'B', 'B', 'B', 'B']]
+     *
+     * Click : [1,2]
+     *
+     * Output:
+     *
+     * [['B', '1', 'E', '1', 'B'],
+     *  ['B', '1', 'X', '1', 'B'],
+     *  ['B', '1', '1', '1', 'B'],
+     *  ['B', 'B', 'B', 'B', 'B']]
+     *
+     * Explanation:
+     *
+     *
+     *
+     * Note:
+     *
+     * The range of the input matrix's height and width is [1,50].
+     * The click position will only be an unrevealed square ('M' or 'E'), which also means the input board contains at least one clickable square.
+     * The input board won't be a stage when game is over (some mines have been revealed).
+     * For simplicity, not mentioned rules should be ignored in this problem. For example, you don't need to reveal all the unrevealed mines when
+     * the game is over, consider any cases that you will win the game or flag any squares.
+     *
+     * @param board
+     * @param click
+     * @return
+     */
+    public char[][] updateBoard(char[][] board, int[] click) {
+        int x = click[0], y = click[1];
+        if (board[x][y] == 'M') {
+            board[x][y] = 'X';
+            return board;
+        }
+
+        dfs(board, x, y);
+        return board;
+    }
+
+    int[] dx = {-1, 0, 1, -1, 1, 0, 1, -1};
+    int[] dy = {-1, 1, 1, 0, -1, -1, 0, 1};
+    private void dfs(char[][] board, int x, int y) {
+        if (x < 0 || x >= board.length || y < 0 || y >= board[0].length || board[x][y] != 'E')  return;
+
+        int num = getNumsOfBombs(board, x, y);
+
+        if (num == 0) {
+            board[x][y] = 'B';
+            for (int i = 0; i < 8; i++) {
+                int nx = x + dx[i], ny = y + dy[i];
+                dfs(board, nx, ny);
+            }
+        } else {
+            board[x][y] = (char)('0' + num);
+        }
+
+    }
+
+    private int getNumsOfBombs(char[][] board, int x, int y) {
+        int num = 0;
+        for (int i = 0; i < 8; i++) {
+            int nx = x + dx[i], ny = y + dy[i];
+            if (nx < 0 || nx >= board.length || ny < 0 || ny >= board[0].length)    continue;
+            if (board[nx][ny] == 'M' || board[nx][ny] == 'X') {
+                num++;
+            }
+        }
+        return num;
     }
 
     /**

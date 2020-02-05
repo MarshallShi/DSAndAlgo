@@ -1,7 +1,9 @@
 package dsandalgo.unionfind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,24 +24,388 @@ public class UnionFindExe {
          * ["fine","painting","talent"]
          * [["great","fine"],["drama","acting"],["skills","talent"]]
          */
-        String[] words1 = {"great", "acting", "skills"};
-        String[] words2 = {"fine", "painting", "talent"};
-        List<List<String>> pairs = new ArrayList<List<String>>();
-        List<String> ls = new ArrayList<String>();
-        ls.add("great");
-        ls.add("fine");
-        pairs.add(ls);
-        ls = new ArrayList<String>();
-        ls.add("drama");
-        ls.add("acting");
-        pairs.add(ls);
-        ls = new ArrayList<String>();
-        ls.add("skills");
-        ls.add("talent");
-        pairs.add(ls);
-        System.out.println(exe.areSentencesSimilarTwo(words1, words2, pairs));
+        int[][] stones = {{1,1},{0,1},{1,0}};
+        System.out.println(exe.removeStones(stones));
     }
 
+    /**
+     * https://leetcode.com/problems/lexicographically-smallest-equivalent-string/
+     *
+     * Given strings A and B of the same length, we say A[i] and B[i] are equivalent characters. For example, if A = "abc" and B = "cde",
+     * then we have 'a' == 'c', 'b' == 'd', 'c' == 'e'.
+     *
+     * Equivalent characters follow the usual rules of any equivalence relation:
+     *
+     * Reflexivity: 'a' == 'a'
+     * Symmetry: 'a' == 'b' implies 'b' == 'a'
+     * Transitivity: 'a' == 'b' and 'b' == 'c' implies 'a' == 'c'
+     * For example, given the equivalency information from A and B above, S = "eed", "acd", and "aab" are equivalent strings, and "aab" is
+     * the lexicographically smallest equivalent string of S.
+     *
+     * Return the lexicographically smallest equivalent string of S by using the equivalency information from A and B.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: A = "parker", B = "morris", S = "parser"
+     * Output: "makkek"
+     * Explanation: Based on the equivalency information in A and B, we can group their characters as [m,p], [a,o], [k,r,s], [e,i].
+     * The characters in each group are equivalent and sorted in lexicographical order. So the answer is "makkek".
+     * Example 2:
+     *
+     * Input: A = "hello", B = "world", S = "hold"
+     * Output: "hdld"
+     * Explanation:  Based on the equivalency information in A and B, we can group their characters as [h,w], [d,e,o], [l,r].
+     * So only the second letter 'o' in S is changed to 'd', the answer is "hdld".
+     * Example 3:
+     *
+     * Input: A = "leetcode", B = "programs", S = "sourcecode"
+     * Output: "aauaaaaada"
+     * Explanation:  We group the equivalent characters in A and B as [a,o,e,r,s,c], [l,p], [g,t] and [d,m], thus all letters in
+     * S except 'u' and 'd' are transformed to 'a', the answer is "aauaaaaada".
+     *
+     *
+     * Note:
+     *
+     * String A, B and S consist of only lowercase English letters from 'a' - 'z'.
+     * The lengths of string A, B and S are between 1 and 1000.
+     * String A and B are of the same length.
+     *
+     * @param A
+     * @param B
+     * @param S
+     * @return
+     */
+    public String smallestEquivalentString(String A, String B, String S) {
+        int[] graph = new int[26];
+        for(int i = 0; i < 26; i++) {
+            graph[i] = i;
+        }
+        for(int i = 0; i < A.length(); i++) {
+            int a = A.charAt(i) - 'a';
+            int b = B.charAt(i) - 'a';
+            int end1 = find(graph, b);
+            int end2 = find(graph, a);
+            if (end1 < end2) {
+                graph[end2] = end1;
+            } else {
+                graph[end1] = end2;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < S.length(); i++) {
+            char c = S.charAt(i);
+            sb.append((char)('a' + find(graph, c - 'a')));
+        }
+        return sb.toString();
+    }
+
+    private int find(int[] graph, int idx) {
+        while (graph[idx] != idx) {
+            idx = graph[idx];
+        }
+        return idx;
+    }
+
+    /**
+     * https://leetcode.com/problems/regions-cut-by-slashes/
+     */
+    //Approach 1: union found, split one cell into 4 sub cell, union cells based on position, and the slashes directions.
+    //https://leetcode.com/problems/regions-cut-by-slashes/discuss/205680/JavaC%2B%2BPython-Split-4-parts-and-Union-Find
+    int count, n;
+    int[] f;
+    public int regionsBySlashes(String[] grid) {
+        n = grid.length;
+        f = new int[n * n * 4];
+        count = n * n * 4;
+        for (int i = 0; i < n * n * 4; ++i)
+            f[i] = i;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i > 0) union(g(i - 1, j, 2), g(i, j, 0));
+                if (j > 0) union(g(i , j - 1, 1), g(i , j, 3));
+                if (grid[i].charAt(j) != '/') {
+                    union(g(i , j, 0), g(i , j,  1));
+                    union(g(i , j, 2), g(i , j,  3));
+                }
+                if (grid[i].charAt(j) != '\\') {
+                    union(g(i , j, 0), g(i , j,  3));
+                    union(g(i , j, 2), g(i , j,  1));
+                }
+            }
+        }
+        return count;
+    }
+
+    public int find(int x) {
+        if (x != f[x]) {
+            f[x] = find(f[x]);
+        }
+        return f[x];
+    }
+    public void union(int x, int y) {
+        x = find(x); y = find(y);
+        if (x != y) {
+            f[x] = y;
+            count--;
+        }
+    }
+    public int g(int i, int j, int k) {
+        return (i * n + j) * 4 + k;
+    }
+
+    //Approach 2: DFS, but one trick is to upscale the cell to 3*n. So each slash or anti-slash can be represented by 3 sub cells.
+    //https://leetcode.com/problems/regions-cut-by-slashes/discuss/205674/C%2B%2B-with-picture-DFS-on-upscaled-grid
+    int ans = 0;
+    public int regionsBySlashes_DFS(String[] grid) {
+        int n = grid.length;
+        // Transform grid into map
+        boolean[][] map = new boolean[3*n][3*n];
+        for (int i = 0; i < 3*n; i++) {
+            //by default all sub cells are true.
+            Arrays.fill(map[i], true);
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i].charAt(j) == '/') {
+                    map[3*i+2][3*j] = map[3*i+1][3*j+1] = map[3*i][3*j+2] = false;
+                }
+                if (grid[i].charAt(j) == '\\') {
+                    map[3*i][3*j] = map[3*i+1][3*j+1] = map[3*i+2][3*j+2] = false;
+                }
+            }
+        }
+        // DFS
+        for (int i = 0; i < 3*n; i++) {
+            for (int j = 0; j < 3*n; j++) {
+                if (map[i][j]) {
+                    ans++;
+                    dfs(map, i, j);
+                }
+            }
+        }
+        return ans;
+    }
+
+    private void dfs(boolean[][] map, int i, int j) {
+        if(0 <= i && i < map.length && 0 <= j && j < map[0].length && map[i][j]) {
+            map[i][j] = false;
+            dfs(map, i-1, j);
+            dfs(map, i+1, j);
+            dfs(map, i, j-1);
+            dfs(map, i, j+1);
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/lonely-pixel-i/
+     *
+     * @param picture
+     * @return
+     */
+    public int findLonelyPixel(char[][] picture) {
+        int m = picture.length;
+        int n = picture[0].length;
+        //check row by row
+        int total = 0;
+        UnionFindLonelyPixel uf = new UnionFindLonelyPixel(m*n);
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                if (picture[i][j] == 'B') {
+                    uf.parent[i*n + j] = i*n + j;
+                    total++;
+                }
+            }
+        }
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                if (picture[i][j] == 'B') {
+                    for (int k=j+1; k<n;k++) {
+                        if (picture[i][k] == 'B') {
+                            uf.union(i*n + j, i*n + k);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        for (int j=0; j<n; j++) {
+            for (int i=0; i<m; i++) {
+                if (picture[i][j] == 'B') {
+                    for (int k=i+1; k<m;k++) {
+                        if (picture[k][j] == 'B') {
+                            uf.union(i*n + j, k*n + j);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        return total - uf.findTheNotLonely();
+    }
+
+    class UnionFindLonelyPixel {
+        public int size;
+        public int[] parent;
+        public UnionFindLonelyPixel(int size) {
+            this.size = size;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = -1;
+            }
+        }
+
+        public void union(int a, int b) {
+            int parB = find(b);
+            int parA = find(a);
+            if (parB != parA) {
+                parent[parB] = parent[parA];
+                size--;
+            }
+        }
+
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+
+        public int findTheNotLonely(){
+            Set<Integer> notLonely = new HashSet<Integer>();
+            for (int i=0; i<parent.length; i++) {
+                if (parent[i] != -1 && parent[i] != i) {
+                    notLonely.add(i);
+                    notLonely.add(parent[i]);
+                }
+            }
+            return notLonely.size();
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/the-earliest-moment-when-everyone-become-friends/
+     *
+     * @param logs
+     * @param N
+     * @return
+     */
+    public int earliestAcq(int[][] logs, int N) {
+        UnionFindEarliestAcq uf = new UnionFindEarliestAcq(N);
+        Arrays.sort(logs, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0];
+            }
+        });
+        int ans = 0;
+        for (int i=0; i<logs.length; i++) {
+            uf.union(logs[i][1], logs[i][2]);
+            if (uf.size == 1) {
+                ans = logs[i][0];
+                break;
+            }
+        }
+        return ans;
+    }
+
+    class UnionFindEarliestAcq {
+        public int size;
+        public int[] parent;
+        public UnionFindEarliestAcq(int size) {
+            this.size = size;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public void union(int a, int b) {
+            int parB = find(b);
+            int parA = find(a);
+            if (parB != parA) {
+                parent[parB] = parent[parA];
+                size--;
+            }
+        }
+
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/
+     *
+     * On a 2D plane, we place stones at some integer coordinate points.  Each coordinate point may have at most one stone.
+     *
+     * Now, a move consists of removing a stone that shares a column or row with another stone on the grid.
+     *
+     * What is the largest possible number of moves we can make?
+     *
+     * Example 1:
+     *
+     * Input: stones = [[0,0],[0,1],[1,0],[1,2],[2,1],[2,2]]
+     * Output: 5
+     *
+     * Example 2:
+     *
+     * Input: stones = [[0,0],[0,2],[1,1],[2,0],[2,2]]
+     * Output: 3
+     *
+     * Example 3:
+     *
+     * Input: stones = [[0,0]]
+     * Output: 0
+     *
+     *
+     * Note:
+     *
+     * 1 <= stones.length <= 1000
+     * 0 <= stones[i][j] < 10000
+     *
+     * @param stones
+     * @return
+     */
+    int countRS = 0;
+    public int removeStones(int[][] stones) {
+        Map<String, String> parent = new HashMap<>();
+        countRS = stones.length;
+        for (int[] stone : stones) {
+            String s = stone[0] + " " + stone[1];
+            parent.put(s, s);
+        }
+        for (int[] s1 : stones) {
+            String ss1 = s1[0] + " " + s1[1];
+            for (int[] s2 : stones) {
+                if (s1[0] == s2[0] || s1[1] == s2[1]) {
+                    String ss2 = s2[0] + " " + s2[1];
+                    union(parent, ss1, ss2);
+                }
+            }
+        }
+        return stones.length - countRS;
+    }
+
+    private void union(Map<String, String> parent, String s1, String s2) {
+        String r1 = find(parent, s1), r2 = find(parent, s2);
+        if (r1.equals(r2)) {
+            return;
+        }
+        parent.put(r1, r2);
+        countRS--;//after union we know the answer, no need to check the unique parent again.
+    }
+
+    private String find(Map<String, String> parent, String s) {
+        if (!parent.get(s).equals(s)) {
+            parent.put(s, find(parent, parent.get(s)));
+        }
+        return parent.get(s);
+    }
     /**
      * https://leetcode.com/problems/sentence-similarity-ii/
      *
@@ -240,17 +606,6 @@ public class UnionFindExe {
     }
 
     /**
-     * https://leetcode.com/problems/regions-cut-by-slashes/
-     *
-     * @param grid
-     * @return
-     */
-    public int regionsBySlashes(String[] grid) {
-        return 0;
-    }
-
-
-    /**
      * https://leetcode.com/problems/number-of-closed-islands/
      *
      * Given a 2D grid consists of 0s (land) and 1s (water).  An island is a maximal 4-directionally connected group of 0s and a closed
@@ -297,81 +652,81 @@ public class UnionFindExe {
     }
 
     //Start of the inefficient version...
-    private int[] father;
-    private int count = 0;
-
-    public int closedIsland_InEfficient(int[][] grid) {
-        int[][] directions = {{0,1},{0,-1},{1,0},{-1,0}};
-        int m = grid.length;
-        int n = grid[0].length;
-        father = new int[m*n];
-        Queue<int[]> queue = new LinkedList<int[]>();
-        boolean[][] visited = new boolean[m][n];
-        for (int i=0; i<m; i++) {
-            for (int j=0; j<n; j++) {
-                if ((i == 0 || j == 0 || i == m - 1 || j == n - 1) && grid[i][j] == 0){
-                    int[] zeroPos = {i, j};
-                    visited[i][j] = true;
-                    queue.offer(zeroPos);
-                }
-            }
-        }
-
-        while (!queue.isEmpty()) {
-            int[] pos = queue.poll();
-            grid[pos[0]][pos[1]] = 1;
-            for (int k = 0; k<directions.length; k++) {
-                int nx = pos[0] + directions[k][0];
-                int ny = pos[1] + directions[k][1];
-                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 0 && !visited[nx][ny]) {
-                    int[] npos = {nx,ny};
-                    visited[nx][ny] = true;
-                    queue.offer(npos);
-                }
-            }
-        }
-        //Init the union
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 0) {
-                    int id = i * n + j;
-                    father[id] = id;
-                    count++;
-                }
-            }
-        }
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (grid[i][j] == 0) {
-                    for (int k = 0; k<directions.length; k++) {
-                        int nx = i + directions[k][0];
-                        int ny = j + directions[k][1];
-                        if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 0) {
-                            unionForClosedIsland(i*n + j, nx*n + ny);
-                        }
-                    }
-                }
-            }
-        }
-        return count;
-    }
-
-    public void unionForClosedIsland(int node1, int node2) {
-        int find1 = findForClosedIsland(node1);
-        int find2 = findForClosedIsland(node2);
-        if(find1 != find2) {
-            father[find1] = find2;
-            count--;
-        }
-    }
-    public int findForClosedIsland (int node) {
-        if (father[node] == node) {
-            return node;
-        }
-        father[node] = findForClosedIsland(father[node]);
-        return father[node];
-    }
-    //End
+//    private int[] father;
+//    private int count = 0;
+//
+//    public int closedIsland_InEfficient(int[][] grid) {
+//        int[][] directions = {{0,1},{0,-1},{1,0},{-1,0}};
+//        int m = grid.length;
+//        int n = grid[0].length;
+//        father = new int[m*n];
+//        Queue<int[]> queue = new LinkedList<int[]>();
+//        boolean[][] visited = new boolean[m][n];
+//        for (int i=0; i<m; i++) {
+//            for (int j=0; j<n; j++) {
+//                if ((i == 0 || j == 0 || i == m - 1 || j == n - 1) && grid[i][j] == 0){
+//                    int[] zeroPos = {i, j};
+//                    visited[i][j] = true;
+//                    queue.offer(zeroPos);
+//                }
+//            }
+//        }
+//
+//        while (!queue.isEmpty()) {
+//            int[] pos = queue.poll();
+//            grid[pos[0]][pos[1]] = 1;
+//            for (int k = 0; k<directions.length; k++) {
+//                int nx = pos[0] + directions[k][0];
+//                int ny = pos[1] + directions[k][1];
+//                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 0 && !visited[nx][ny]) {
+//                    int[] npos = {nx,ny};
+//                    visited[nx][ny] = true;
+//                    queue.offer(npos);
+//                }
+//            }
+//        }
+//        //Init the union
+//        for (int i = 0; i < m; i++) {
+//            for (int j = 0; j < n; j++) {
+//                if (grid[i][j] == 0) {
+//                    int id = i * n + j;
+//                    father[id] = id;
+//                    count++;
+//                }
+//            }
+//        }
+//        for (int i = 0; i < m; i++) {
+//            for (int j = 0; j < n; j++) {
+//                if (grid[i][j] == 0) {
+//                    for (int k = 0; k<directions.length; k++) {
+//                        int nx = i + directions[k][0];
+//                        int ny = j + directions[k][1];
+//                        if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 0) {
+//                            unionForClosedIsland(i*n + j, nx*n + ny);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return count;
+//    }
+//
+//    public void unionForClosedIsland(int node1, int node2) {
+//        int find1 = findForClosedIsland(node1);
+//        int find2 = findForClosedIsland(node2);
+//        if(find1 != find2) {
+//            father[find1] = find2;
+//            count--;
+//        }
+//    }
+//    public int findForClosedIsland (int node) {
+//        if (father[node] == node) {
+//            return node;
+//        }
+//        father[node] = findForClosedIsland(father[node]);
+//        return father[node];
+//    }
+//    //End
 
     /**
      * https://leetcode.com/problems/longest-consecutive-sequence/

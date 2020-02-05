@@ -2,7 +2,10 @@ package dsandalgo.sorting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 public class SortingExe {
 
@@ -10,6 +13,39 @@ public class SortingExe {
         SortingExe exe = new SortingExe();
         int[] input = {17,13,11,2,3,5,7};
         exe.deckRevealedIncreasing(input);
+    }
+
+    /**
+     * https://leetcode.com/problems/sort-the-matrix-diagonally/
+     * Given a m * n matrix mat of integers, sort it diagonally in ascending order from the top-left to the bottom-right then return the sorted array.
+     * Example 1:
+     * Input: mat = [[3,3,1,1],[2,2,1,2],[1,1,1,2]]
+     * Output: [[1,1,1,1],[1,2,2,2],[1,2,3,3]]
+     * Constraints:
+     * m == mat.length
+     * n == mat[i].length
+     * 1 <= m, n <= 100
+     * 1 <= mat[i][j] <= 100
+     * @param A
+     * @return
+     */
+    //The trick is to use the fact that same diagonal will have the same diff of i and j.
+    //Use that and push the values to the same PQ.
+    public int[][] diagonalSort(int[][] A) {
+        int m = A.length, n = A[0].length;
+        Map<Integer, PriorityQueue<Integer>> d = new HashMap<Integer, PriorityQueue<Integer>>();
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                d.putIfAbsent(i - j, new PriorityQueue<Integer>());
+                d.get(i - j).offer(A[i][j]);
+            }
+        }
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                A[i][j] = d.get(i - j).poll();
+            }
+        }
+        return A;
     }
 
     /**
@@ -267,69 +303,6 @@ public class SortingExe {
             }
         }
         return false;
-    }
-
-    /**
-     * Example:
-     *
-     * Input: [5,2,6,1]
-     * Output: [2,1,1,0]
-     * Explanation:
-     * To the right of 5 there are 2 smaller elements (2 and 1).
-     * To the right of 2 there is only 1 smaller element (1).
-     * To the right of 6 there is 1 smaller element (1).
-     * To the right of 1 there is 0 smaller element.
-     *
-     * https://leetcode.com/problems/count-of-smaller-numbers-after-self/
-     *
-     * The smaller numbers on the right of a number are exactly those that jump from its right to its left during
-     * a stable sort. So I do mergesort with added tracking of those right-to-left jumps.
-     *
-     * https://leetcode.com/problems/count-of-smaller-numbers-after-self/discuss/76584/Mergesort-solution
-     */
-    class Pair {
-        int index;
-        int val;
-        public Pair(int index, int val) {
-            this.index = index;
-            this.val = val;
-        }
-    }
-
-    public List<Integer> countSmaller(int[] nums) {
-        List<Integer> res = new ArrayList<>();
-        if (nums == null || nums.length == 0) {
-            return res;
-        }
-        Pair[] arr = new Pair[nums.length];
-        Integer[] smaller = new Integer[nums.length];
-        Arrays.fill(smaller, 0);
-        for (int i = 0; i < nums.length; i++) {
-            arr[i] = new Pair(i, nums[i]);
-        }
-        mergeSort(arr, smaller);
-        res.addAll(Arrays.asList(smaller));
-        return res;
-    }
-
-    private Pair[] mergeSort(Pair[] arr, Integer[] smaller) {
-        if (arr.length <= 1) {
-            return arr;
-        }
-        int mid = arr.length / 2;
-        Pair[] left = mergeSort(Arrays.copyOfRange(arr, 0, mid), smaller);
-        Pair[] right = mergeSort(Arrays.copyOfRange(arr, mid, arr.length), smaller);
-        for (int i = 0, j = 0; i < left.length || j < right.length;) {
-            if (j == right.length || i < left.length && left[i].val <= right[j].val) {
-                arr[i + j] = left[i];
-                smaller[left[i].index] += j;
-                i++;
-            } else {
-                arr[i + j] = right[j];
-                j++;
-            }
-        }
-        return arr;
     }
 
 

@@ -3,9 +3,17 @@ package dsandalgo.dfsbacktrack;
 import dsandalgo.tree.TreeNode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class BacktrackExe {
 
@@ -15,9 +23,27 @@ public class BacktrackExe {
         int[][] nums = {
                 {9,9,4},{6,6,8},{2,1,1}
         };
-        System.out.println(backtrack.restoreIpAddresses("25525511135"));
+
+        List<List<String>> inputs = new ArrayList<List<String>>();
+        List<String> one = new ArrayList<String>();
+        one.add("happy");
+        one.add("joy");
+        inputs.add(one);
+
+        one = new ArrayList<String>();
+        one.add("sad");
+        one.add("sorrow");
+        inputs.add(one);
+
+        one = new ArrayList<String>();
+        one.add("joy");
+        one.add("cheerful");
+        inputs.add(one);
+
+        //System.out.println(backtrack.generateSentences(inputs, "I am happy today but was sad yesterday"));
 
     }
+
 
     /**
      * https://leetcode.com/problems/restore-ip-addresses/

@@ -32,7 +32,90 @@ public class HardDFSExe {
         exe.findLadders("cet","ism",wordlist);
 
         int[][] tes = {{0,1},{2,0}};
-        System.out.println(exe.uniquePathsIII(tes));
+        char[][] b = {{'5','3','.','.','7','.','.','.','.'},
+                {'6','.','.','1','9','5','.','.','.'},
+                {'.','9','8','.','.','.','.','6','.'},
+                {'8','.','.','.','6','.','.','.','3'},
+                {'4','.','.','8','.','3','.','.','1'},
+                {'7','.','.','.','2','.','.','.','6'},
+                {'.','6','.','.','.','.','2','8','.'},
+                {'.','.','.','4','1','9','.','.','5'},
+                {'.','.','.','.','8','.','.','7','9'}};
+        exe.solveSudoku(b);
+    }
+
+    /**
+     * https://leetcode.com/problems/sudoku-solver/
+     *
+     * Write a program to solve a Sudoku puzzle by filling the empty cells.
+     *
+     * A sudoku solution must satisfy all of the following rules:
+     *
+     * Each of the digits 1-9 must occur exactly once in each row.
+     * Each of the digits 1-9 must occur exactly once in each column.
+     * Each of the the digits 1-9 must occur exactly once in each of the 9 3x3 sub-boxes of the grid.
+     * Empty cells are indicated by the character '.'.
+     *
+     * Note:
+     *
+     * The given board contain only digits 1-9 and the character '.'.
+     * You may assume that the given Sudoku puzzle will have a single unique solution.
+     * The given board size is always 9x9.
+     *
+     */
+    public void solveSudoku(char[][] board) {
+        backtrackSudoku(board);
+    }
+
+    private boolean backtrackSudoku(char[][] board) {
+        for (int i = 0; i<9; i++) {
+            for (int j = 0; j<9; j++) {
+                if (board[i][j] == '.') {
+                    for (char c = '1'; c <= '9'; c++) {
+                        if (isValidMove(board, i, j, c)) {
+                            board[i][j] = c;
+                            if (backtrackSudoku(board)) {
+                                return true;
+                            } else {
+                                board[i][j] = '.';
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean isValidMove(char[][] board, int i, int j, char c) {
+        for (int x=0; x<9; x++) {
+            if (board[i][x] == c) {
+                return false;
+            }
+        }
+        for (int x=0; x<9; x++) {
+            if (board[x][j] == c) {
+                return false;
+            }
+        }
+        for (int x=0; x<3; x++) {
+            for (int y=0; y<3; y++) {
+                Set<Character> seen = new HashSet<Character>();
+                for (int dx = 0; dx < 3; dx++) {
+                    for (int dy = 0; dy < 3; dy++) {
+                        if (board[x*3 + dx][y*3 + dy] <= '9' && board[x*3 + dx][y*3 + dy] >= '1') {
+                            if (!seen.contains(board[x*3 + dx][y*3 + dy])) {
+                                seen.add(board[x*3 + dx][y*3 + dy]);
+                            } else {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**

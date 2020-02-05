@@ -13,7 +13,213 @@ public class StringExe {
 
     public static void main(String[] args) {
         StringExe exe = new StringExe();
-        String[] banned = {"ab", "bc"};
+        String[] words3 = {"Science","is","what","we","understand","well","enough","to","explain","to","a","computer.","Art","is","everything","else","we","do"};
+        System.out.println(exe.fullJustify(words3, 20));
+    }
+
+
+
+    /**
+     * https://leetcode.com/problems/palindrome-pairs/
+     *
+     * Given a list of unique words, find all pairs of distinct indices (i, j) in the given list, so that the concatenation
+     * of the two words, i.e. words[i] + words[j] is a palindrome.
+     *
+     * Example 1:
+     *
+     * Input: ["abcd","dcba","lls","s","sssll"]
+     * Output: [[0,1],[1,0],[3,2],[2,4]]
+     * Explanation: The palindromes are ["dcbaabcd","abcddcba","slls","llssssll"]
+     *
+     * Example 2:
+     *
+     * Input: ["bat","tab","cat"]
+     * Output: [[0,1],[1,0]]
+     * Explanation: The palindromes are ["battab","tabbat"]
+     *
+     * @param words
+     * @return
+     */
+    public List<List<Integer>> palindromePairs(String[] words) {
+        List<List<Integer>> ret = new ArrayList<>();
+        if (words == null || words.length < 2) {
+            return ret;
+        }
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        for (int i=0; i<words.length; i++) {
+            map.put(words[i], i);
+        }
+        for (int i=0; i<words.length; i++) {
+            for (int j=0; j<=words[i].length(); j++) {
+                String str1 = words[i].substring(0, j);
+                //leverage if str1 is palindrome, then str2 must be forming the palindrome with another word, so reversed value must be existing.
+                String str2 = words[i].substring(j);
+                if (isPalindrome(str1)) {
+                    String str2rvs = new StringBuilder(str2).reverse().toString();
+                    if (map.containsKey(str2rvs) && map.get(str2rvs) != i) {
+                        List<Integer> list = new ArrayList<Integer>();
+                        list.add(map.get(str2rvs));
+                        list.add(i);
+                        ret.add(list);
+                    }
+                }
+                if (isPalindrome(str2)) {
+                    String str1rvs = new StringBuilder(str1).reverse().toString();
+                    // check "str.length() != 0" to avoid duplicates
+                    if (map.containsKey(str1rvs) && map.get(str1rvs) != i && str2.length()!=0) {
+                        List<Integer> list = new ArrayList<Integer>();
+                        list.add(i);
+                        list.add(map.get(str1rvs));
+                        ret.add(list);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    private boolean isPalindrome(String str) {
+        int left = 0;
+        int right = str.length() - 1;
+        while (left <= right) {
+            if (str.charAt(left++) !=  str.charAt(right--)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/text-justification/
+     *
+     * Given an array of words and a width maxWidth, format the text such that each line has exactly maxWidth characters and is fully (left and right) justified.
+     *
+     * You should pack your words in a greedy approach; that is, pack as many words as you can in each line. Pad extra spaces ' ' when necessary
+     * so that each line has exactly maxWidth characters.
+     *
+     * Extra spaces between words should be distributed as evenly as possible. If the number of spaces on a line do not divide evenly between words,
+     * the empty slots on the left will be assigned more spaces than the slots on the right.
+     *
+     * For the last line of text, it should be left justified and no extra space is inserted between words.
+     *
+     * Note:
+     *
+     * A word is defined as a character sequence consisting of non-space characters only.
+     * Each word's length is guaranteed to be greater than 0 and not exceed maxWidth.
+     * The input array words contains at least one word.
+     *
+     * Example 1:
+     *
+     * Input:
+     * words = ["This", "is", "an", "example", "of", "text", "justification."]
+     * maxWidth = 16
+     * Output:
+     * [
+     *    "This    is    an",
+     *    "example  of text",
+     *    "justification.  "
+     * ]
+     *
+     * Example 2:
+     *
+     * Input:
+     * words = ["What","must","be","acknowledgment","shall","be"]
+     * maxWidth = 16
+     * Output:
+     * [
+     *   "What   must   be",
+     *   "acknowledgment  ",
+     *   "shall be        "
+     * ]
+     * Explanation: Note that the last line is "shall be    " instead of "shall     be",
+     *              because the last line must be left-justified instead of fully-justified.
+     *              Note that the second line is also left-justified becase it contains only one word.
+     *
+     * Example 3:
+     *
+     * Input:
+     * words = ["Science","is","what","we","understand","well","enough","to","explain",
+     *          "to","a","computer.","Art","is","everything","else","we","do"]
+     * maxWidth = 20
+     * Output:
+     * [
+     *   "Science  is  what we",
+     *   "understand      well",
+     *   "enough to explain to",
+     *   "a  computer.  Art is",
+     *   "everything  else  we",
+     *   "do                  "
+     * ]
+     * @param words
+     * @param maxWidth
+     * @return
+     */
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        List<String> ans = new ArrayList<String>();
+        List<String> wordPerLine = new ArrayList<String>();
+        int wordTotalLenPerLine = 0;
+        int idx = 0;
+        while (idx < words.length) {
+            if (wordTotalLenPerLine + words[idx].length() <= maxWidth) {
+                wordTotalLenPerLine = wordTotalLenPerLine + words[idx].length() + 1;
+                wordPerLine.add(words[idx]);
+                if (idx == words.length - 1) {
+                    ans.add(generateLine(wordPerLine, wordTotalLenPerLine, maxWidth, true));
+                    break;
+                } else {
+                    idx++;
+                }
+            } else {
+                ans.add(generateLine(wordPerLine, wordTotalLenPerLine, maxWidth, false));
+                wordPerLine = new ArrayList<String>();
+                wordTotalLenPerLine = 0;
+            }
+        }
+        return ans;
+    }
+
+    private String generateLine(List<String> words, int curWordLen, int maxWidth, boolean endingLine) {
+        StringBuilder sb = new StringBuilder();
+        int eachInterval = 0;
+        int endingExtra = 0;
+        if (!endingLine) {
+            if (words.size() == 1) {
+                endingExtra = maxWidth - curWordLen + words.size();
+                sb.append(words.get(0));
+                for (int j=0; j<endingExtra; j++) {
+                    sb.append(" ");
+                }
+            } else {
+                eachInterval = (maxWidth - curWordLen + words.size()) / (words.size() - 1);
+                endingExtra = (maxWidth - curWordLen + words.size()) % (words.size() - 1);
+                for (int i=0; i<words.size(); i++) {
+                    sb.append(words.get(i));
+                    //Not the last word
+                    if (i != words.size() - 1) {
+                        for (int j=0; j<eachInterval; j++) {
+                            sb.append(" ");
+                        }
+                        if (endingExtra != 0) {
+                            sb.append(" ");
+                            endingExtra--;
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int i=0; i<words.size(); i++) {
+                sb.append(words.get(i));
+                if (i != words.size() - 1) {
+                    sb.append(" ");
+                } else {
+                    int endSpaceCount = maxWidth - sb.length();
+                    for (int j=0; j<endSpaceCount; j++) {
+                        sb.append(" ");
+                    }
+                }
+            }
+        }
+        return sb.toString();
     }
 
 

@@ -15,9 +15,120 @@ public class HardBFSExe {
 
     public static void main(String[] args) {
         HardBFSExe exe = new HardBFSExe();
-        int[][] edges = {{0,1},{0,2},{2,3},{2,4},{2,5}};
-        int[][] blue_edges = {{2,1}};
-        exe.sumOfDistancesInTree(6,edges);
+        int[][] edges = {{1,2,3},{5,4,0}};
+        System.out.println(exe.slidingPuzzle(edges));
+    }
+
+    /**
+     * https://leetcode.com/problems/sliding-puzzle/
+     *
+     * On a 2x3 board, there are 5 tiles represented by the integers 1 through 5, and an empty square represented by 0.
+     *
+     * A move consists of choosing 0 and a 4-directionally adjacent number and swapping it.
+     *
+     * The state of the board is solved if and only if the board is [[1,2,3],[4,5,0]].
+     *
+     * Given a puzzle board, return the least number of moves required so that the state of the board is solved. If it is impossible for the state of the board to be solved, return -1.
+     *
+     * Examples:
+     *
+     * Input: board = [[1,2,3],[4,0,5]]
+     * Output: 1
+     * Explanation: Swap the 0 and the 5 in one move.
+     *
+     * Input: board = [[1,2,3],[5,4,0]]
+     * Output: -1
+     * Explanation: No number of moves will make the board solved.
+     *
+     * Input: board = [[4,1,2],[5,0,3]]
+     * Output: 5
+     * Explanation: 5 is the smallest number of moves that solves the board.
+     *
+     * An example path:
+     * After move 0: [[4,1,2],[5,0,3]]
+     * After move 1: [[4,1,2],[0,5,3]]
+     * After move 2: [[0,1,2],[4,5,3]]
+     * After move 3: [[1,0,2],[4,5,3]]
+     * After move 4: [[1,2,0],[4,5,3]]
+     * After move 5: [[1,2,3],[4,5,0]]
+     * Input: board = [[3,2,4],[1,5,0]]
+     * Output: 14
+     * Note:
+     *
+     * board will be a 2 x 3 array as described above.
+     * board[i][j] will be a permutation of [0, 1, 2, 3, 4, 5].
+     *
+     * @param board
+     * @return
+     */
+    public int slidingPuzzle(int[][] board) {
+        int[][] dirs = {{0,1}, {0, -1}, {1, 0}, {-1, 0}};
+        int[][] target = {{1,2,3},{4,5,0}};
+        String targetKey = getPositionKey(target);
+        Queue<int[][]> q = new LinkedList<int[][]>();
+        Set<String> seen = new HashSet<String>();
+        seen.add(getPositionKey(board));
+        q.offer(board);
+        int level = 0;
+        while (!q.isEmpty()) {
+            int s = q.size();
+            for (int i=0; i<s; i++) {
+                int[][] curBoard = q.poll();
+                if (targetKey.equals(getPositionKey(curBoard))) {
+                    return level;
+                } else {
+                    int[] zeroPos = findZeroPos(curBoard);
+                    for (int d=0; d<dirs.length; d++) {
+                        int nx = zeroPos[0] + dirs[d][0];
+                        int ny = zeroPos[1] + dirs[d][1];
+                        if (nx >= 0 && nx < 2 && ny >= 0 && ny < 3) {
+                            int[][] nextBoard = getNewBoard(curBoard, zeroPos[0], zeroPos[1], nx, ny);
+                            if (!seen.contains(getPositionKey(nextBoard))) {
+                                q.offer(nextBoard);
+                                seen.add(getPositionKey(nextBoard));
+                            }
+                        }
+                    }
+                }
+            }
+            level++;
+        }
+        return -1;
+    }
+
+    private int[][] getNewBoard(int[][] curBoard, int zeroPo, int zeroPo1, int nx, int ny) {
+        int[][] newBoard = new int[2][3];
+        for (int i=0; i<2; i++) {
+            for (int j=0; j<3; j++) {
+                newBoard[i][j] = curBoard[i][j];
+            }
+        }
+        newBoard[zeroPo][zeroPo1] = curBoard[nx][ny];
+        newBoard[nx][ny] = 0;
+        return newBoard;
+    }
+
+    private int[] findZeroPos(int[][] board) {
+        int[] ret = new int[2];
+        for (int i=0; i<2; i++) {
+            for (int j=0; j<3; j++) {
+                if (board[i][j] == 0) {
+                    ret[0] = i;
+                    ret[1] = j;
+                }
+            }
+        }
+        return ret;
+    }
+
+    private String getPositionKey(int[][] board) {
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i<board.length; i++) {
+            for (int j=0; j<board[i].length; j++) {
+                sb.append(i + "," + j + ":" + board[i][j] + ";");
+            }
+        }
+        return sb.toString();
     }
 
     /**

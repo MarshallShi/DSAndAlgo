@@ -1,12 +1,17 @@
 package dsandalgo.sorting.overlap;
 
+import sun.util.resources.cldr.vai.CalendarData_vai_Latn_LR;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Stack;
 import java.util.TreeMap;
 
 public class OverlappingIntervalExe {
@@ -17,11 +22,207 @@ public class OverlappingIntervalExe {
         OverlappingIntervalExe exe = new OverlappingIntervalExe();
 
         int[][] input = {{2,15},{36,45},{9,29},{16,23},{4,9}};
-        int[][] ar = {{1,2},{3,5},{6,7},{8,10},{12,16}};
+
         int[] interval = {4, 8};
         //[[[1,2],[5,6]],[[1,3]],[[4,10]]]
+        List<String> lst = new ArrayList<String>();
+        //[[1,3,2],[2,4,3],[0,2,-2]]
 
-        System.out.println(exe.employeeFreeTime(exe.createInterval()));
+        int[][] ar = {{1,3,2},{2,4,3},{0,2,-2}};
+
+        System.out.println(exe.getModifiedArray(5,ar));
+    }
+
+    /**
+     * https://leetcode.com/problems/range-addition/
+     *
+     * Assume you have an array of length n initialized with all 0's and are given k update operations.
+     *
+     * Each operation is represented as a triplet: [startIndex, endIndex, inc] which increments each element of
+     * subarray A[startIndex ... endIndex] (startIndex and endIndex inclusive) with inc.
+     *
+     * Return the modified array after all k operations were executed.
+     *
+     * Example:
+     *
+     * Input: length = 5, updates = [[1,3,2],[2,4,3],[0,2,-2]]
+     * Output: [-2,0,3,5,3]
+     * Explanation:
+     *
+     * Initial state:
+     * [0,0,0,0,0]
+     *
+     * After applying operation [1,3,2]:
+     * [0,2,2,2,0]
+     *
+     * After applying operation [2,4,3]:
+     * [0,2,5,5,3]
+     *
+     * After applying operation [0,2,-2]:
+     * [-2,0,3,5,3]
+     *
+     */
+    class ValuePair {
+        public int val;
+        public boolean isStart;
+        public ValuePair(int _val, boolean _isS) {
+            this.val = _val;
+            this.isStart = _isS;
+        }
+    }
+    public int[] getModifiedArray(int length, int[][] updates) {
+        TreeMap<Integer, List<ValuePair>> map = new TreeMap<Integer, List<ValuePair>>();
+        for (int i=0; i<updates.length; i++) {
+            map.putIfAbsent(updates[i][0], new ArrayList<ValuePair>());
+            map.get(updates[i][0]).add(new ValuePair(updates[i][2], true));
+            map.putIfAbsent(updates[i][1], new ArrayList<ValuePair>());
+            map.get(updates[i][1]).add(new ValuePair(updates[i][2], false));
+        }
+        int[] res = new int[length];
+        int curContextSum = 0;
+        for (int i=0; i<length; i++) {
+            List<ValuePair> vpLst = map.get(i);
+            if (vpLst != null) {
+                for (ValuePair vp : vpLst) {
+                    if (vp.isStart) {
+                        curContextSum = curContextSum + vp.val;
+                    }
+                }
+            }
+            res[i] = curContextSum;
+            if (vpLst != null) {
+                for (ValuePair vp : vpLst) {
+                    if (!vp.isStart) {
+                        curContextSum = curContextSum - vp.val;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/meeting-scheduler/
+     *
+     * Given the availability time slots arrays slots1 and slots2 of two people and a meeting duration duration,
+     * return the earliest time slot that works for both of them and is of duration duration.
+     *
+     * If there is no common time slot that satisfies the requirements, return an empty array.
+     *
+     * The format of a time slot is an array of two elements [start, end] representing an inclusive time range from start to end.
+     *
+     * It is guaranteed that no two availability slots of the same person intersect with each other. That is, for any
+     * two time slots [start1, end1] and [start2, end2] of the same person, either start1 > end2 or start2 > end1.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: slots1 = [[10,50],[60,120],[140,210]], slots2 = [[0,15],[60,70]], duration = 8
+     * Output: [60,68]
+     *
+     * Example 2:
+     *
+     * Input: slots1 = [[10,50],[60,120],[140,210]], slots2 = [[0,15],[60,70]], duration = 12
+     * Output: []
+     *
+     * Constraints:
+     *
+     * 1 <= slots1.length, slots2.length <= 10^4
+     * slots1[i].length, slots2[i].length == 2
+     * slots1[i][0] < slots1[i][1]
+     * slots2[i][0] < slots2[i][1]
+     * 0 <= slots1[i][j], slots2[i][j] <= 10^9
+     * 1 <= duration <= 10^6
+     *
+     * @param slots1
+     * @param slots2
+     * @param duration
+     * @return
+     */
+    public List<Integer> minAvailableDuration(int[][] slots1, int[][] slots2, int duration) {
+        PriorityQueue<int[]> minHeap = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for(int[] slot: slots1) {
+            //filter those unsuitable slot
+            if (slot[1] - slot[0] >= duration) {
+                minHeap.offer(slot);
+            }
+        }
+        for(int[] slot: slots2) {
+            //filter those unsuitable slot
+            if (slot[1] - slot[0] >= duration) {
+                minHeap.offer(slot);
+            }
+        }
+        int[] prev = minHeap.poll();
+        while(!minHeap.isEmpty()) {
+            int[] next = minHeap.poll();
+            if (next[0] + duration <= prev[1]) {
+                return new LinkedList<Integer>(Arrays.asList(next[0], next[0] + duration));
+            }
+            prev = next;
+        }
+        return new LinkedList<Integer>();
+    }
+
+    /**
+     * https://leetcode.com/problems/exclusive-time-of-functions/
+     *
+     * On a single threaded CPU, we execute some functions.  Each function has a unique id between 0 and N-1.
+     *
+     * We store logs in timestamp order that describe when a function is entered or exited.
+     *
+     * Each log is a string with this format: "{function_id}:{"start" | "end"}:{timestamp}".  For example,
+     * "0:start:3" means the function with id 0 started at the beginning of timestamp 3.
+     * "1:end:2" means the function with id 1 ended at the end of timestamp 2.
+     *
+     * A function's exclusive time is the number of units of time spent in this function.  Note that this does not include any recursive calls to child functions.
+     *
+     * The CPU is single threaded which means that only one function is being executed at a given time unit.
+     *
+     * Return the exclusive time of each function, sorted by their function id.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input:
+     * n = 2
+     * logs = ["0:start:0","1:start:2","1:end:5","0:end:6"]
+     * Output: [3, 4]
+     * Explanation:
+     * Function 0 starts at the beginning of time 0, then it executes 2 units of time and reaches the end of time 1.
+     * Now function 1 starts at the beginning of time 2, executes 4 units of time and ends at time 5.
+     * Function 0 is running again at the beginning of time 6, and also ends at the end of time 6, thus executing for 1 unit of time.
+     * So function 0 spends 2 + 1 = 3 units of total time executing, and function 1 spends 4 units of total time executing.
+     * @param n
+     * @param logs
+     * @return
+     */
+    //stack based solution: push all the previous unfinished function id into the stack, when a new function start, or end, update the sum of total for
+    //the stack top function id.
+    public int[] exclusiveTime(int n, List<String> logs) {
+        int[] res = new int[n];
+        Stack<Integer> stack = new Stack<>();//store id, not timestamp
+        int prev = 0;//store timestamp
+        for (String log : logs){
+            String[] strs = log.split(":");
+            int id = Integer.parseInt(strs[0]);
+            int curr = Integer.parseInt(strs[2]);
+            if (strs[1].equals("start")){
+                if (!stack.isEmpty()){
+                    res[stack.peek()] += curr - prev;
+                }
+                stack.push(id);
+                prev = curr;
+            }else{
+                res[stack.pop()] += curr - prev + 1;
+                prev = curr + 1;
+            }
+        }
+        return res;
     }
 
     private List<List<Interval>> createInterval() {

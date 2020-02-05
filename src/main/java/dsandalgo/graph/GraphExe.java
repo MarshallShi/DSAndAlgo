@@ -19,6 +19,73 @@ public class GraphExe {
     }
 
     /**
+     * https://leetcode.com/problems/tree-diameter/
+     *
+     * Given an undirected tree, return its diameter: the number of edges in a longest path in that tree.
+     *
+     * The tree is given as an array of edges where edges[i] = [u, v] is a bidirectional edge between nodes u and v.
+     * Each node has labels in the set {0, 1, ..., edges.length}.
+     *
+     * Example 1:
+     *
+     * Input: edges = [[0,1],[0,2]]
+     * Output: 2
+     * Explanation:
+     * A longest path of the tree is the path 1 - 0 - 2.
+     *
+     * Example 2:
+     * Input: edges = [[0,1],[1,2],[2,3],[1,4],[4,5]]
+     * Output: 4
+     * Explanation:
+     * A longest path of the tree is the path 3 - 2 - 1 - 4 - 5.
+     *
+     * Constraints:
+     *
+     * 0 <= edges.length < 10^4
+     * edges[i][0] != edges[i][1]
+     * 0 <= edges[i][j] <= edges.length
+     * The given edges form an undirected tree.
+     */
+    private int diameter = 0;
+    public int treeDiameter(int[][] edges) {
+        int n = edges.length + 1;
+        LinkedList<Integer>[] adjacencyList = new LinkedList[n];
+        for (int i = 0; i < n; ++i) {
+            adjacencyList[i] = new LinkedList<>();
+        }
+        for (int[] edge : edges) {
+            adjacencyList[edge[0]].add(edge[1]);
+            adjacencyList[edge[1]].add(edge[0]);
+        }
+        depth(0, -1, adjacencyList);
+        return diameter;
+    }
+
+    private int depth(int root, int parent, LinkedList<Integer>[] adjacencyList) {
+        int maxDepth1st = 0, maxDepth2nd = 0;
+        for (int child : adjacencyList[root]) {
+            // Only one way from root node to child node, don't allow child node go to root node again!
+            if (child != parent) {
+                int childDepth = depth(child, root, adjacencyList);
+                //maintaining two of the longest path value.
+                if (childDepth > maxDepth1st) {
+                    maxDepth2nd = maxDepth1st;
+                    maxDepth1st = childDepth;
+                } else {
+                    if (childDepth > maxDepth2nd) {
+                        maxDepth2nd = childDepth;
+                    }
+                }
+            }
+        }
+        // Sum of the top 2 highest depths is the longest path through this root
+        // This is the trick to get the longest path, as a path through root only need first two longest path from its children
+        int longestPathThroughRoot = maxDepth1st + maxDepth2nd;
+        diameter = Math.max(diameter, longestPathThroughRoot);
+        return maxDepth1st + 1;
+    }
+
+    /**
      * https://leetcode.com/problems/find-the-celebrity/
      *
      * @param n

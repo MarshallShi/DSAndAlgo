@@ -23,7 +23,231 @@ public class TreeExe {
         //exe.insertIntoBST(exe.createANode(), 5);
         int[] preorder = {8,5,1,7,10,12};
         //TreeNode node = exe.sortedListToBST(exe.createTestNode());
+    }
 
+    /**
+     * https://leetcode.com/problems/binary-tree-upside-down/
+     *
+     * Given a binary tree where all the right nodes are either leaf nodes with a sibling (a left node that shares the same parent node) or empty, flip it upside down and turn it into a tree where the original right nodes turned into left leaf nodes. Return the new root.
+     *
+     * Example:
+     *
+     * Input: [1,2,3,4,5]
+     *
+     *     1
+     *    / \
+     *   2   3
+     *  / \
+     * 4   5
+     *
+     * Output: return the root of the binary tree [4,5,2,#,#,3,1]
+     *
+     *    4
+     *   / \
+     *  5   2
+     *     / \
+     *    3   1
+     *
+     *
+     *
+     *
+     * Trick:
+     * The transform of the base three-node case is like below:
+     *
+     *                          Root                   L
+     *                          /  \                  /  \
+     *                         L    R                R   Root
+     * You can image you grab the L to the top, then the Root becomes it's right node, and the R becomes its left node.
+     *
+     * Knowing the base case, you can solve it recursively.
+     *
+     * How? You keep finding the left most node, make it upside-down, then make its parent to be its right most subtree recursively.
+     *
+     * Here is a small point to be noticed, when you connect the root to the right subtree, you need to make sure you are not
+     * copying the original root, otherwise it will become cyclic!
+     */
+    public TreeNode upsideDownBinaryTree(TreeNode root) {
+        if (root == null || root.left == null) {
+            return root;
+        }
+        TreeNode newRoot = upsideDownBinaryTree(root.left);
+        TreeNode rightMostIterator = newRoot;
+        while (rightMostIterator.right != null) {
+            rightMostIterator = rightMostIterator.right;
+        }
+        rightMostIterator.left = root.right;
+        rightMostIterator.right = new TreeNode(root.val);
+        return newRoot;
+    }
+
+    /**
+     * https://leetcode.com/problems/kill-process/
+     *
+     * @param pid
+     * @param ppid
+     * @param kill
+     * @return
+     */
+    public List<Integer> killProcess(List<Integer> pid, List<Integer> ppid, int kill) {
+        Map<Integer, List<Integer>> processAndChildren = new HashMap<Integer, List<Integer>>();
+        for (int i=0; i<ppid.size(); i++) {
+            processAndChildren.putIfAbsent(ppid.get(i), new ArrayList<Integer>());
+            processAndChildren.get(ppid.get(i)).add(pid.get(i));
+        }
+        List<Integer> ans = new ArrayList<Integer>();
+        Set<Integer> toKill = new HashSet<Integer>();
+        findChildToKill(processAndChildren, kill, toKill);
+        for (Integer val : toKill) {
+            ans.add(val);
+        }
+        ans.add(kill);
+        return ans;
+    }
+
+    private void findChildToKill(Map<Integer, List<Integer>> processAndChildren, int kill, Set<Integer> toKill) {
+        if (processAndChildren.containsKey(kill)) {
+            List<Integer> lst = processAndChildren.get(kill);
+            for (Integer val : lst) {
+                toKill.add(val);
+                findChildToKill(processAndChildren, val, toKill);
+            }
+        }
+    }
+
+
+    /**
+     * https://leetcode.com/problems/delete-leaves-with-a-given-value/
+     *
+     * @param root
+     * @param target
+     * @return
+     */
+
+    public TreeNode removeLeafNodes(TreeNode root, int target) {
+        if (root.left != null){
+            root.left = removeLeafNodes(root.left, target);
+        }
+        if (root.right != null) {
+            root.right = removeLeafNodes(root.right, target);
+        }
+        return root.left == root.right && root.val == target ? null : root;
+    }
+
+    public TreeNode removeLeafNodes_SLOW(TreeNode root, int target) {
+        if (root == null) {
+            return null;
+        }
+        boolean result = removeLeafHelper(root, null, null, target);
+        while (result) {
+            result = removeLeafHelper(root, null, null, target);
+            if (root != null && root.left == null && root.right == null && root.val == target) {
+                return null;
+            }
+        }
+        return root;
+    }
+
+    private boolean removeLeafHelper(TreeNode node, TreeNode parent, String leftOrRight, int target) {
+        if (node == null) {
+            return false;
+        }
+        if (node.left == null && node.right == null && node.val == target) {
+            if (parent != null) {
+                if (leftOrRight == "L") {
+                    parent.left = null;
+                } else {
+                    parent.right = null;
+                }
+            } else {
+                return true;
+            }
+            return true;
+        }
+        return removeLeafHelper(node.left, node, "L", target) || removeLeafHelper(node.right, node, "R", target);
+    }
+
+    /**
+     * https://leetcode.com/problems/inorder-successor-in-bst/
+     *
+     * Given a binary search tree and a node in it, find the in-order successor of that node in the BST.
+     *
+     * The successor of a node p is the node with the smallest key greater than p.val.
+     *
+     * Example 1:
+     * Input: root = [2,1,3], p = 1
+     * Output: 2
+     *
+     * Explanation: 1's in-order successor node is 2. Note that both p and the return value is of TreeNode type.
+     *
+     * Example 2:
+     * Input: root = [5,3,6,2,4,null,null,1], p = 6
+     * Output: null
+     *
+     * Explanation: There is no in-order successor of the current node, so the answer is null.
+     *
+     * Note:
+     *
+     * If the given node has no in-order successor in the tree, return null.
+     * It's guaranteed that the values of the tree are unique.
+     *
+     * @param root
+     * @param p
+     * @return
+     */
+    //https://leetcode.com/problems/inorder-successor-in-bst/discuss/72653/Share-my-Java-recursive-solution
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        if (root == null) {
+            return null;
+        }
+        if (root.val <= p.val) {
+            return inorderSuccessor(root.right, p);
+        } else {
+            TreeNode left = inorderSuccessor(root.left, p);
+            return (left != null) ? left : root;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/count-univalue-subtrees/
+     *
+     * Given a binary tree, count the number of uni-value subtrees.
+     *
+     * A Uni-value subtree means all nodes of the subtree have the same value.
+     *
+     * Example :
+     *
+     * Input:  root = [5,1,5,5,5,null,5]
+     *
+     *               5
+     *              / \
+     *             1   5
+     *            / \   \
+     *           5   5   5
+     *
+     * Output: 4
+     *
+     * @param root
+     * @return
+     */
+    public int countUnivalSubtrees(TreeNode root) {
+        if(root == null) {
+            return 0;
+        }
+        int count = isUnivalue(root) ? 1 : 0;
+        return count + countUnivalSubtrees(root.left) + countUnivalSubtrees(root.right);
+    }
+
+    private boolean isUnivalue(TreeNode node){
+        boolean isUni = true;
+        if(node.left != null){
+            isUni &= node.val == node.left.val;
+            isUni &= isUnivalue(node.left);
+        }
+        if(node.right != null){
+            isUni &= node.val == node.right.val;
+            isUni &= isUnivalue(node.right);
+        }
+        return isUni;
     }
 
     public class ListNode {

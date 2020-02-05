@@ -9,7 +9,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class ArrayExe {
 
@@ -17,7 +19,7 @@ public class ArrayExe {
     public static void main(String[] args) {
         ArrayExe exe = new ArrayExe();
         //int[] time = {60,60,60,120,35,25};
-        int[][] queens = {{0,1},{1,0},{4,0},{0,4},{3,3},{2,4}};
+
         int[] king = {0,0};
 
         int[] time = {-1, 0, 1, 2, -1, -4};
@@ -30,9 +32,169 @@ public class ArrayExe {
         //[-10,-5,-2,0,4,5,6,7,8,9,10]
 
         int[] c = {1,0,1,2,1,1,7,5};
-        int[] g = {0,1,0,1,0,1,0,1};
+        int[] g = {9,77,63,22,92,9,14,54,8,38,18,19,38,68,58,19};
         int X = 3;
-        System.out.println(exe.lastRemaining_TLE(4012));
+
+        int[][] mat = {{1,2,3,4,5},{2,4,5,8,10},{3,5,7,9,11},{1,3,5,7,9}};
+        //System.out.println(exe.minSetSize(g));
+    }
+
+    /**
+     * https://leetcode.com/problems/find-permutation/
+     *
+     * By now, you are given a secret signature consisting of character 'D' and 'I'. 'D' represents a decreasing
+     * relationship between two numbers, 'I' represents an increasing relationship between two numbers.
+     * And our secret signature was constructed by a special integer array, which contains uniquely all the different number
+     * from 1 to n (n is the length of the secret signature plus 1). For example, the secret signature "DI" can be constructed by array [2,1,3]
+     * or [3,1,2], but won't be constructed by array [3,2,4] or [2,1,3,4], which are both illegal constructing special string that can't represent the "DI" secret signature.
+     *
+     * On the other hand, now your job is to find the lexicographically smallest permutation of [1, 2, ... n] could refer to the given secret signature in the input.
+     *
+     * Example 1:
+     * Input: "I"
+     * Output: [1,2]
+     * Explanation: [1,2] is the only legal initial spectial string can construct secret signature "I", where the number 1 and 2 construct an increasing relationship.
+     *
+     * Example 2:
+     * Input: "DI"
+     * Output: [2,1,3]
+     * Explanation: Both [2,1,3] and [3,1,2] can construct the secret signature "DI", but since we want to find the one with the smallest lexicographical permutation, you need to output [2,1,3]
+     *
+     * Note:
+     *
+     * The input string will only contain the character 'D' and 'I'.
+     * The length of input string is a positive integer and will not exceed 10,000
+     *
+     *
+     * Idea: For example, given IDIIDD we start with sorted sequence 1234567
+     * Then for each k continuous D starting at index i we need to reverse [i, i+k] portion of the sorted sequence.
+     *
+     * Example:  IDIIDD
+     *      1234567 // sorted
+     *      1324765 // answer
+     *
+     */
+    public int[] findPermutation(String s) {
+        int n = s.length(), arr[] = new int[n + 1];
+        for (int i = 0; i <= n; i++) {
+            arr[i] = i + 1; // sorted
+        }
+        for (int h = 0; h < n; h++) {
+            if (s.charAt(h) == 'D') {
+                int l = h;
+                while (h < n && s.charAt(h) == 'D') {
+                    h++;
+                }
+                reverse(arr, l, h);
+            }
+        }
+        return arr;
+    }
+
+    private void reverse(int[] arr, int l, int h) {
+        while (l < h) {
+            arr[l] ^= arr[h];
+            arr[h] ^= arr[l];
+            arr[l] ^= arr[h];
+            l++; h--;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/pour-water/
+     *
+     * We are given an elevation map, heights[i] representing the height of the terrain at that index. The width at each index is 1.
+     * After V units of water fall at index K, how much water is at each index?
+     *
+     * Water first drops at index K and rests on top of the highest terrain or water at that index. Then, it flows according to the following rules:
+     *
+     * If the droplet would eventually fall by moving left, then move left.
+     * Otherwise, if the droplet would eventually fall by moving right, then move right.
+     * Otherwise, rise at it's current position.
+     * Here, "eventually fall" means that the droplet will eventually be at a lower level if it moves in that direction.
+     * Also, "level" means the height of the terrain plus any water in that column.
+     * We can assume there's infinitely high terrain on the two sides out of bounds of the array. Also, there could not
+     * be partial water being spread out evenly on more than 1 grid block - each unit of water has to be in exactly one block.
+     *
+     */
+    public int[] pourWater(int[] heights, int V, int K) {
+        //for each drop, find the target column to add this drop in.
+        //always start from the k col to search according to the condition
+        for(int i = 0; i < V; i++) {
+            int cur = K;
+            // Move left
+            while(cur > 0 && heights[cur] >= heights[cur - 1]) {
+                cur--;
+            }
+            // Move right
+            while(cur < heights.length - 1 && heights[cur] >= heights[cur + 1]) {
+                cur++;
+            }
+            // Move left to K
+            while(cur > K && heights[cur] >= heights[cur - 1]) {
+                cur--;
+            }
+            heights[cur]++;
+        }
+        return heights;
+    }
+
+    /**
+     * https://leetcode.com/problems/sparse-matrix-multiplication/
+     *
+     * NOTES: preprocessing to skip those 0 values in both matrix.
+     */
+    class Node {
+        int x,y;
+        Node(int x, int y) {
+            this.x=x;
+            this.y=y;
+        }
+    }
+    public int[][] multiply(int[][] A, int[][] B) {
+        int[][] result = new int[A.length][B[0].length];
+        List<Node> listA = new ArrayList<>();
+        List<Node> listB = new ArrayList<>();
+        for (int i=0;i<A.length;i++) {
+            for (int j=0; j<A[0].length; j++) {
+                if (A[i][j]!=0) listA.add(new Node(i,j));
+            }
+        }
+        for (int i=0;i<B.length;i++) {
+            for (int j=0;j<B[0].length;j++) {
+                if (B[i][j]!=0) listB.add(new Node(i,j));
+            }
+        }
+        for (Node nodeA : listA) {
+            for (Node nodeB: listB) {
+                if (nodeA.y == nodeB.x) {
+                    result[nodeA.x][nodeB.y] += A[nodeA.x][nodeA.y] * B[nodeB.x][nodeB.y];
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-corner-rectangles/
+     *
+     * @param grid
+     * @return
+     */
+    public int countCornerRectangles(int[][] grid) {
+        int ans = 0;
+        for (int i = 0; i < grid.length - 1; i++) {
+            for (int j = i + 1; j < grid.length; j++) {
+                int counter = 0;
+                for (int k = 0; k < grid[0].length; k++) {
+                    if (grid[i][k] == 1 && grid[j][k] == 1) {
+                        counter++;
+                    }
+                }
+                ans = ans + counter * (counter - 1) / 2;
+            }
+        }
+        return ans;
     }
 
     /**
@@ -279,59 +441,6 @@ public class ArrayExe {
             res = Math.min(res, mx - mn);
         }
         return res;
-    }
-
-    /**
-     * https://leetcode.com/problems/pour-water/
-     *
-     * We are given an elevation map, heights[i] representing the height of the terrain at that index. The width at each index is 1.
-     * After V units of water fall at index K, how much water is at each index?
-     *
-     * Water first drops at index K and rests on top of the highest terrain or water at that index. Then, it flows according to the following rules:
-     *
-     * If the droplet would eventually fall by moving left, then move left.
-     * Otherwise, if the droplet would eventually fall by moving right, then move right.
-     * Otherwise, rise at it's current position.
-     * Here, "eventually fall" means that the droplet will eventually be at a lower level if it moves in that direction.
-     * Also, "level" means the height of the terrain plus any water in that column.
-     * We can assume there's infinitely high terrain on the two sides out of bounds of the array. Also, there could not
-     * be partial water being spread out evenly on more than 1 grid block - each unit of water has to be in exactly one block.
-     *
-     * @param heights
-     * @param V
-     * @param K
-     * @return
-     */
-    public int[] pourWater(int[] heights, int V, int K) {
-        if (heights == null || heights.length == 0 || V == 0) {
-            return heights;
-        }
-        int index;
-        while (V > 0) {
-            index = K;
-            for (int i = K - 1; i >= 0; i--) {
-                if (heights[i] > heights[index]) {
-                    break;
-                } else if (heights[i] < heights[index]) {
-                    index = i;
-                }
-            }
-            if (index != K) {
-                heights[index]++;
-                V--;
-                continue;
-            }
-            for (int i = K + 1; i < heights.length; i++) {
-                if (heights[i] > heights[index]) {
-                    break;
-                } else if (heights[i] < heights[index]) {
-                    index = i;
-                }
-            }
-            heights[index]++;
-            V--;
-        }
-        return heights;
     }
 
     /**

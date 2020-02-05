@@ -4,12 +4,16 @@ import java.util.HashMap;
 
 /**
  * https://leetcode.com/problems/lfu-cache/
+ *
  * Design and implement a data structure for Least Frequently Used (LFU) cache. It should support the following operations: get and put.
  *
  * get(key) - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
- * put(key, value) - Set or insert the value if the key is not already present. When the cache reaches its capacity, it should invalidate the least frequently used item before inserting a new item. For the purpose of this problem, when there is a tie (i.e., two or more keys that have the same frequency), the least recently used key would be evicted.
+ * put(key, value) - Set or insert the value if the key is not already present. When the cache reaches its capacity, it should invalidate
+ * the least frequently used item before inserting a new item. For the purpose of this problem, when there is a tie (i.e., two or more keys
+ * that have the same frequency), the least recently used key would be evicted.
  *
- * Note that the number of times an item is used is the number of calls to the get and put functions for that item since it was inserted. This number is set to zero when the item is removed.
+ * Note that the number of times an item is used is the number of calls to the get and put functions for that item since it was inserted.
+ * This number is set to zero when the item is removed.
  *
  *
  *
@@ -21,7 +25,7 @@ public class LFUCache {
 
     private int capacity;
     private int count;
-    private HashMap<Integer, Tuple> map1; // whether appeared
+    private HashMap<Integer, Tuple> data; // whether appeared
     private HashMap<Integer, Tuple> finalNodes; // value : the final node of key times
     private Tuple dummyHead;
     private Tuple dummyEnd;
@@ -29,8 +33,8 @@ public class LFUCache {
     public LFUCache(int capacity) {
         this.capacity = capacity;
         count = 0;
-        map1 = new HashMap<Integer, Tuple>();
-        finalNodes = new HashMap<>();
+        data = new HashMap<Integer, Tuple>();
+        finalNodes = new HashMap<Integer, Tuple>();
         dummyHead = new Tuple(0, 0, 0);
         dummyEnd = new Tuple(0, 0, 0);
         dummyHead.next = dummyEnd;
@@ -38,20 +42,20 @@ public class LFUCache {
     }
 
     public int get(int key) {
-        if (capacity == 0 || !map1.containsKey(key)) {
+        if (capacity == 0 || !data.containsKey(key)) {
             return -1;
         }
-        Tuple old = map1.get(key);
-        set(key, old.value);
+        Tuple old = data.get(key);
+        put(key, old.value);
         return old.value;
     }
 
-    public void set(int key, int value) {
+    public void put(int key, int value) {
         if (capacity == 0) {
             return;
         }
-        if (map1.containsKey(key)) { // this key has appeared
-            Tuple cur = map1.get(key);
+        if (data.containsKey(key)) { // this key has appeared
+            Tuple cur = data.get(key);
             if (finalNodes.get(cur.times) == cur && finalNodes.get(cur.times + 1) == null) { // the position should not change
                 finalNodes.put(cur.times, cur.prev.times == cur.times ? cur.prev : null);
                 cur.times++;
@@ -71,7 +75,7 @@ public class LFUCache {
         } else if (count == capacity) { // reach limt of the cache
             Tuple head = dummyHead.next;
             removeNode(head); //remove the first which appeared least times and is the least Used
-            map1.remove(head.key);
+            data.remove(head.key);
             if (finalNodes.get(head.times) == head) {
                 finalNodes.remove(head.times);
             }
@@ -83,7 +87,7 @@ public class LFUCache {
                 insertNode(finalNode, cur);
             }
             finalNodes.put(1, cur);
-            map1.put(key, cur);
+            data.put(key, cur);
         } else {
             count++;
             Tuple cur = new Tuple(key, value, 1);
@@ -94,7 +98,7 @@ public class LFUCache {
                 insertNode(finalNode, cur);
             }
             finalNodes.put(1, cur);
-            map1.put(key, cur);
+            data.put(key, cur);
         }
     }
 

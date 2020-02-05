@@ -18,7 +18,33 @@ public class BitExe {
 
         int[] arr = {1,2,1,3,2,5};
         int[][] queries = {{2,3},{1,3},{0,0},{0,3}};
-        System.out.println(exe.similarRGB("#12f23d"));
+        System.out.println(exe.encode(66));
+    }
+
+    /**
+     * https://leetcode.com/problems/encode-number/
+     */
+    public String encode(int num) {
+        if (num == 0) {
+            return "";
+        }
+        int c = 0;
+        int temp = 1;
+        int total = 0;
+        while (total + temp <= num) {
+            total = total + temp;
+            c++;
+            temp = temp * 2;
+        }
+        int decimalVal = num - total;
+        String result = String.valueOf(Integer.toBinaryString(decimalVal));
+        StringBuilder sb = new StringBuilder();
+        if (c > result.length()) {
+            for (int i=0; i<c-result.length(); i++) {
+                sb.append("0");
+            }
+        }
+        return sb.append(result).toString();
     }
 
     /**

@@ -85,15 +85,9 @@ public class TrieExes {
                 {'c','d'}};
         String[] words = {"oath","pea","eat","rain"};
         String[] words1 = {"acdb"};
-        System.out.println(exe.suggestedProducts(dict, "tatiana"));
-
-//        TrieExes ex = new TrieExes(1);
-//        ex.insert("a", 10);
-//        ex.insert("apple", 4);
-//        ex.insert("app", 5);
-//        System.out.println(ex.sum("ap"));
-//        System.out.println(ex.sum("a"));
+        //System.out.println(exe.lastSubstring("abab"));
     }
+
 
     class ProductTrieNode {
         ProductTrieNode[] children;

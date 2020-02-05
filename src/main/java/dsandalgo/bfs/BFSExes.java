@@ -1,6 +1,7 @@
 package dsandalgo.bfs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -10,6 +11,8 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class BFSExes {
 
@@ -25,17 +28,216 @@ public class BFSExes {
         String[] deadends = {"0201","0101","0102","1212","2002"};
         //System.out.println(exe.openLock(deadends, "0202"));
         int[][] grid= {{0,0,0}, {0,0,0}, {0,0,1}};
-        int[][] routes = {
-                {1,1,1,1,1},{1,0,0,0,1},{1,0,1,0,1},{1,0,0,0,1},{1,1,1,1,1}
-        };
+
         char[][] board = {
                 {'X','X','X','X'},
                 {'X','O','O','X'},
                 {'X','X','O','X'},
                 {'X','O','X','X'}
         };
-        System.out.println(exe.shortestBridge(routes));
+
+        System.out.println(exe.minKnightMoves(-45, -102));
     }
+
+    /**
+     * https://leetcode.com/problems/synonymous-sentences/
+     *
+     * Given a list of pairs of equivalent words synonyms and a sentence text, Return all possible synonymous sentences sorted lexicographically.
+     *
+     * Example 1:
+     *
+     * Input:
+     * synonyms = [["happy","joy"],["sad","sorrow"],["joy","cheerful"]],
+     * text = "I am happy today but was sad yesterday"
+     * Output:
+     * ["I am cheerful today but was sad yesterday",
+     * ​​​​​​​"I am cheerful today but was sorrow yesterday",
+     * "I am happy today but was sad yesterday",
+     * "I am happy today but was sorrow yesterday",
+     * "I am joy today but was sad yesterday",
+     * "I am joy today but was sorrow yesterday"]
+     *
+     *
+     * Constraints:
+     *
+     * 0 <= synonyms.length <= 10
+     * synonyms[i].length == 2
+     * synonyms[0] != synonyms[1]
+     * All words consist of at most 10 English letters only.
+     * text is a single space separated sentence of at most 10 words.
+     *
+     * @param synonyms
+     * @param text
+     * @return
+     */
+    public List<String> generateSentences(List<List<String>> synonyms, String text) {
+        Map<String, List<String>> graph = new HashMap<>();
+        for (List<String> synonymPair : synonyms) {
+            String w1 = synonymPair.get(0), w2 = synonymPair.get(1);
+            connect(graph, w1, w2);
+            connect(graph, w2, w1);
+        }
+        // BFS
+        Set<String> ans = new TreeSet<String>();
+        Queue<String> q = new LinkedList<String>();
+        q.add(text);
+        while (!q.isEmpty()) {
+            String out = q.remove();
+            ans.add(out); // Add to result
+            String[] words = out.split("\\s");
+            for (int i = 0; i < words.length; i++) {
+                String word = words[i];
+                if (graph.get(word) == null) {
+                    continue;
+                }
+                for (String neighbor : graph.get(word)) {
+                    words[i] = neighbor;
+                    String newText = Arrays.stream(words).collect(Collectors.joining(" "));
+                    if (!ans.contains(newText)) {
+                        q.add(newText);
+                    }
+                }
+            }
+        }
+        return new ArrayList<>(ans);
+    }
+
+    private void connect(Map<String, List<String>> graph, String v1, String v2) {
+        if (graph.get(v1) == null) {
+            graph.put(v1, new LinkedList<String>());
+        }
+        graph.get(v1).add(v2);
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-knight-moves/
+     *
+     * In an infinite chess board with coordinates from -infinity to +infinity, you have a knight at square [0, 0].
+     *
+     * A knight has 8 possible moves it can make, as illustrated below.
+     * Each move is two squares in a cardinal direction, then one square in an orthogonal direction.
+     *
+     * Return the minimum number of steps needed to move the knight to the square [x, y].  It is guaranteed the answer exists.
+     *
+     * Example 1:
+     *
+     * Input: x = 2, y = 1
+     * Output: 1
+     * Explanation: [0, 0] → [2, 1]
+     *
+     * Example 2:
+     *
+     * Input: x = 5, y = 5
+     * Output: 4
+     * Explanation: [0, 0] → [2, 1] → [4, 2] → [3, 4] → [5, 5]
+     *
+     *
+     * Constraints:
+     *
+     * |x| + |y| <= 300
+     * @param x
+     * @param y
+     * @return
+     */
+    public int minKnightMoves(int x, int y) {
+        //Leverage the symetric, always go with the positive coordinates
+        x = Math.abs(x);
+        y = Math.abs(y);
+        Set<String> seenSet = new HashSet<String>();
+        int[][] directions = {{1,2},{1,-2},{2,1},{2,-1},{-1,2},{-1,-2},{-2,1},{-2,-1}};
+        int level = 0;
+        Queue<int[]> q = new LinkedList<int[]>();
+        int[] start = {0,0};
+        q.offer(start);
+        while (!q.isEmpty()) {
+            int s = q.size();
+            for (int k=0; k<s; k++) {
+                int[] cur = q.poll();
+                if (cur[0] == x && cur[1] == y) {
+                    return level;
+                }
+                for (int d=0; d<directions.length; d++) {
+                    int nextx = cur[0] + directions[d][0];
+                    int nexty = cur[1] + directions[d][1];
+                    if (nextx >= -1 && nexty >= -1 && !seenSet.contains(String.valueOf(nextx) + "&" + String.valueOf(nexty))) {
+                        int[] nx = {nextx, nexty};
+                        seenSet.add(String.valueOf(nextx) + "&" + String.valueOf(nexty));
+                        q.offer(nx);
+                    }
+                }
+            }
+            level++;
+        }
+        return -1;
+    }
+
+    /**
+     * https://leetcode.com/problems/walls-and-gates/
+     *
+     * You are given a m x n 2D grid initialized with these three possible values.
+     *
+     * -1 - A wall or an obstacle.
+     * 0 - A gate.
+     * INF - Infinity means an empty room. We use the value 231 - 1 = 2147483647 to represent INF as you may assume that the distance to a gate is less than 2147483647.
+     * Fill each empty room with the distance to its nearest gate. If it is impossible to reach a gate, it should be filled with INF.
+     *
+     * Example:
+     *
+     * Given the 2D grid:
+     *
+     * INF  -1  0  INF
+     * INF INF INF  -1
+     * INF  -1 INF  -1
+     *   0  -1 INF INF
+     * After running your function, the 2D grid should be:
+     *
+     *   3  -1   0   1
+     *   2   2   1  -1
+     *   1  -1   2  -1
+     *   0  -1   3   4
+     * @param rooms
+     */
+    //instead, just push all the gates into the queue first, then bfs.
+    public int[][] dirPA = {{0,1},{0,-1},{1,0},{-1,0}};
+
+    public void wallsAndGates(int[][] rooms) {
+        int m = rooms.length;
+        if (m == 0) {
+            return;
+        }
+        int n = rooms[0].length;
+        Queue<int[]> q = new LinkedList<int[]>();
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                if (rooms[i][j] == 0) {
+                    int[] gate = {i, j};
+                    q.offer(gate);
+                }
+            }
+        }
+        boolean[][] seen = new boolean[m][n];
+        int level = 0;
+        while (!q.isEmpty()) {
+            int s = q.size();
+            for (int k=0; k<s; k++) {
+                int[] cur = q.poll();
+                if (rooms[cur[0]][cur[1]] > level) {
+                    rooms[cur[0]][cur[1]] = level;
+                }
+                for (int d=0; d<dirPA.length; d++) {
+                    int nextx = cur[0] + dirPA[d][0];
+                    int nexty = cur[1] + dirPA[d][1];
+                    if (nextx >= 0 && nextx < m && nexty >= 0 && nexty < n && rooms[nextx][nexty] > level + 1 && !seen[nextx][nexty]) {
+                        int[] nx = {nextx, nexty};
+                        seen[nextx][nexty] = true;
+                        q.offer(nx);
+                    }
+                }
+            }
+            level++;
+        }
+    }
+
 
     /**
      * https://leetcode.com/problems/graph-valid-tree/
