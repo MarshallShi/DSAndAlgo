@@ -31,6 +31,7 @@ public class UnionFind {
             count--;
         }
     }
+
     public int find (int node) {
         if (father[node] == node) {
             return node;

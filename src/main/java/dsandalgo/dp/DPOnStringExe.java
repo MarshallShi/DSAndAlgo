@@ -13,6 +13,7 @@ public class DPOnStringExe {
         exe.longestStrChain(input);
     }
 
+
     /**
      * https://leetcode.com/problems/longest-string-chain/
      *

@@ -1,10 +1,14 @@
 package dsandalgo.hashmap;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 public class HashMapExe {
@@ -14,7 +18,263 @@ public class HashMapExe {
 
         int[] groupSizes = {2,1,3,3,3,2};
         String[] input = {"root/a 1.txt(abcd) 2.txt(efgh)", "root/c 3.txt(abcd)", "root/c/d 4.txt(efgh)", "root 4.txt(efgh)"};
-        exe.findDuplicate(input);
+        int[][] richer = {{1,2},{2,1},{1,0},{0,1}};
+        int[] quiet = {3,2,5,4,6,1,7,0};
+
+        exe.minAreaFreeRect(richer);
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-area-rectangle/
+     */
+    public int minAreaRect(int[][] points) {
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        for (int[] p : points) {
+            map.putIfAbsent(p[0], new HashSet<Integer>());
+            map.get(p[0]).add(p[1]);
+        }
+        int min = Integer.MAX_VALUE;
+        for (int[] p1 : points) {
+            for (int[] p2 : points) {
+                // if have the same x or y, skip
+                if (p1[0] == p2[0] || p1[1] == p2[1]) {
+                    continue;
+                }
+                // find other two points in the rectangle
+                if (map.get(p1[0]).contains(p2[1]) && map.get(p2[0]).contains(p1[1])) {
+                    min = Math.min(min, Math.abs(p1[0] - p2[0]) * Math.abs(p1[1] - p2[1]));
+                }
+            }
+        }
+        return min == Integer.MAX_VALUE ? 0 : min;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-area-rectangle/
+     */
+    //Trick is to identify the intersect of each pair of points.
+    public double minAreaFreeRect(int[][] points) {
+        Map<String, List<int[][]>> processed = new HashMap<String, List<int[][]>>();
+        for (int i=0; i<points.length-1; i++) {
+            int[] p1 = points[i];
+            for (int j=i+1; j<points.length; j++){
+                int[] p2 = points[j];
+                String p1p2Center = (double)(p1[0] + p2[0])/2.0 + "." + (double)(p1[1] + p2[1])/2.0;
+                int[][] halfRec = new int[2][2];
+                halfRec[0] = p1;
+                halfRec[1] = p2;
+                processed.putIfAbsent(p1p2Center, new ArrayList<int[][]>());
+                processed.get(p1p2Center).add(halfRec);
+            }
+        }
+        long minArea = Long.MAX_VALUE;
+        for (Map.Entry<String, List<int[][]>> entry : processed.entrySet()) {
+            List<int[][]> data = entry.getValue();
+            if (data.size() >= 2) {
+                for (int i=0; i<data.size() - 1; i++) {
+                    int[][] firstHalfRec = data.get(i);
+                    for (int j=i+1; j<data.size(); j++) {
+                        int[][] secondHalfRec = data.get(j);
+                        if (formTriangle(firstHalfRec[0], secondHalfRec[0], secondHalfRec[1])) {
+                            long a = dist(firstHalfRec[0], secondHalfRec[0]);
+                            long b = dist(firstHalfRec[0], secondHalfRec[1]);
+                            minArea = Math.min(minArea, a*b);
+                        }
+                    }
+                }
+            }
+        }
+        return minArea == Long.MAX_VALUE ? 0 : Math.sqrt(minArea);
+    }
+
+    private long dist(int[] p1, int[] p2) {
+        return (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]);
+    }
+
+    private boolean formTriangle(int[] p1, int[] p2, int[] p3) {
+        long a = dist(p1, p2);
+        long b = dist(p1, p3);
+        long c = dist(p2, p3);
+        return a + b == c;
+    }
+
+    /**
+     * https://leetcode.com/problems/brick-wall/
+     * There is a brick wall in front of you. The wall is rectangular and has several rows of bricks. The bricks have the
+     * same height but different width. You want to draw a vertical line from the top to the bottom and cross the least bricks.
+     *
+     * The brick wall is represented by a list of rows. Each row is a list of integers representing the width of each brick in
+     * this row from left to right.
+     *
+     * If your line go through the edge of a brick, then the brick is not considered as crossed. You need to find out how to
+     * draw the line to cross the least bricks and return the number of crossed bricks.
+     *
+     * You cannot draw a line just along one of the two vertical edges of the wall, in which case the line will
+     * obviously cross no bricks.
+     *
+     * Example:
+     *
+     * Input: [[1,2,2,1],
+     *         [3,1,2],
+     *         [1,3,2],
+     *         [2,4],
+     *         [3,1,2],
+     *         [1,3,1,1]]
+     *
+     * Output: 2
+     *
+     * Note:
+     *
+     * The width sum of bricks in different rows are the same and won't exceed INT_MAX.
+     * The number of bricks in each row is in range [1,10,000]. The height of wall is in range [1,10,000]. Total number of bricks of the wall won't exceed 20,000.
+     *
+     * @param wall
+     * @return
+     */
+    public int leastBricks(List<List<Integer>> wall) {
+        Map<Integer, Integer> brickPosition = new HashMap<Integer, Integer>();
+        int maxBrick = 0;
+        for (int i=0; i<wall.size(); i++) {
+            int indSum = 0;
+            for (int j=0; j<wall.get(i).size() - 1; j++) {
+                indSum = indSum + wall.get(i).get(j);
+                if (brickPosition.containsKey(indSum)) {
+                    brickPosition.put(indSum, brickPosition.get(indSum) + 1);
+                    maxBrick = Math.max(maxBrick, brickPosition.get(indSum));
+                } else {
+                    brickPosition.put(indSum, 1);
+                    maxBrick = Math.max(maxBrick, 1);
+                }
+            }
+        }
+        return wall.size() - maxBrick;
+    }
+
+    /**
+     * https://leetcode.com/problems/loud-and-rich/
+     *
+     * In a group of N people (labelled 0, 1, 2, ..., N-1), each person has different amounts of money, and different levels of quietness.
+     *
+     * For convenience, we'll call the person with label x, simply "person x".
+     *
+     * We'll say that richer[i] = [x, y] if person x definitely has more money than person y.  Note that richer may only be a subset of
+     * valid observations.
+     *
+     * Also, we'll say quiet[x] = q if person x has quietness q.
+     *
+     * Now, return answer, where answer[x] = y if y is the least quiet person (that is, the person y with the smallest value of quiet[y]),
+     * among all people who definitely have equal to or more money than person x.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: richer = [[1,0],[2,1],[3,1],[3,7],[4,3],[5,3],[6,3]], quiet = [3,2,5,4,6,1,7,0]
+     * Output: [5,5,2,5,4,5,6,7]
+     * Explanation:
+     * answer[0] = 5.
+     * Person 5 has more money than 3, which has more money than 1, which has more money than 0.
+     * The only person who is quieter (has lower quiet[x]) is person 7, but
+     * it isn't clear if they have more money than person 0.
+     *
+     * answer[7] = 7.
+     * Among all people that definitely have equal to or more money than person 7
+     * (which could be persons 3, 4, 5, 6, or 7), the person who is the quietest (has lower quiet[x])
+     * is person 7.
+     *
+     * The other answers can be filled out with similar reasoning.
+     * Note:
+     *
+     * 1 <= quiet.length = N <= 500
+     * 0 <= quiet[i] < N, all quiet[i] are different.
+     * 0 <= richer.length <= N * (N-1) / 2
+     * 0 <= richer[i][j] < N
+     * richer[i][0] != richer[i][1]
+     * richer[i]'s are all different.
+     * The observations in richer are all logically consistent.
+     *
+     * @param richer
+     * @param quiet
+     * @return
+     */
+
+    Map<Integer, List<Integer>> richer2 = new HashMap<>();
+    int res[];
+
+    public int[] loudAndRich(int[][] richer, int[] quiet) {
+        int n = quiet.length;
+        for (int i = 0; i < n; ++i) {
+            richer2.put(i, new ArrayList<Integer>());
+        }
+        for (int[] v : richer) {
+            richer2.get(v[1]).add(v[0]);
+        }
+        res = new int[n];
+        Arrays.fill(res, -1);
+        for (int i = 0; i < n; i++) {
+            dfs(i, quiet);
+        }
+        return res;
+    }
+
+    private int dfs(int i, int[] quiet) {
+        if (res[i] >= 0) {
+            return res[i];
+        }
+        res[i] = i;
+        for (int j : richer2.get(i)) {
+            if (quiet[res[i]] > quiet[dfs(j, quiet)]) {
+                res[i] = res[j];
+            }
+        }
+        return res[i];
+    }
+
+    public int[] loudAndRich_TLE(int[][] richer, int[] quiet) {
+        int n = quiet.length;
+        Map<Integer, List<Integer>> richerMap = new HashMap<Integer, List<Integer>>();
+        for (int[] r : richer) {
+            richerMap.putIfAbsent(r[1], new ArrayList<Integer>());
+            richerMap.get(r[1]).add(r[0]);
+        }
+        //int[] in the list will be [0]: idex of person, [1]: quiet value.
+        Map<Integer, List<int[]>> data = new HashMap<Integer, List<int[]>>();
+        for (int i=0; i<n; i++) {
+            List<int[]> lst = new ArrayList<int[]>();
+            findRicher(i, richerMap, quiet, lst);
+            int[] a = new int[2];
+            a[0] = i;
+            a[1] = quiet[i];
+            lst.add(a);
+            Collections.sort(lst, new Comparator<int[]>() {
+                @Override
+                public int compare(int[] o1, int[] o2) {
+                    return o1[1] - o2[1];
+                }
+            });
+            data.put(i, lst);
+        }
+        int[] ans = new int[n];
+        for (int i=0; i<n; i++) {
+            List<int[]> lst = data.get(i);
+            ans[i] = lst.get(0)[0];
+        }
+        return ans;
+    }
+
+    private void findRicher(int x, Map<Integer, List<Integer>> richerMap, int[] quiet, List<int[]> res) {
+        if (richerMap.containsKey(x)) {
+            List<Integer> ls = richerMap.get(x);
+            for (Integer v : ls) {
+                int[] a = new int[2];
+                a[0] = v;
+                a[1] = quiet[v];
+                res.add(a);
+            }
+            for (Integer val : ls) {
+                findRicher(val, richerMap, quiet, res);
+            }
+        }
     }
 
     /**

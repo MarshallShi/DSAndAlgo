@@ -18,6 +18,36 @@ public class PriorityQueueExe {
         pqexe.replaceElements(arr);
     }
 
+    public int[] kWeakestRows(int[][] mat, int k) {
+        PriorityQueue<int[]> pq = new PriorityQueue<int[]>(new Comparator<int[]>(){
+            @Override
+            public int compare(int[] o1, int[] o2){
+                if (o1[1] == o2[1]) {
+                    return o1[0] - o2[0];
+                }
+                return o1[1] - o2[1];
+            }
+        });
+        for (int i=0; i<mat.length; i++) {
+            int j = 0;
+            while (mat[i][j] != 0) {
+                j++;
+            }
+            int[] rowD = {i, j};
+            pq.offer(rowD);
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+        int[] res = new int[k];
+        int i = 0;
+        while (!pq.isEmpty()) {
+            res[i] = pq.poll()[0];
+            i++;
+        }
+        return res;
+    }
+
     /**
      * https://leetcode.com/problems/minimum-cost-to-connect-sticks/
      * You have some sticks with positive integer lengths.

@@ -97,8 +97,9 @@ public class BucketSortExe {
         Arrays.fill(bucketsMAX, Integer.MIN_VALUE);
         // put numbers into buckets
         for (int i:num) {
-            if (i == min || i == max)
+            if (i == min || i == max) {
                 continue;
+            }
             int idx = (i - min) / gap; // index of the right position in the buckets
             bucketsMIN[idx] = Math.min(i, bucketsMIN[idx]);
             bucketsMAX[idx] = Math.max(i, bucketsMAX[idx]);

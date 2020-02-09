@@ -20,18 +20,186 @@ public class DFSExe {
            {9,9,4},{6,6,8},{2,1,1}
         };
         int[][] nums2 = {
-                {1,2,2,3,5},
-                {3,2,3,4,4},
-                {2,4,5,3,1},
-                {6,7,1,4,5},
-                {5,1,1,2,4}
+                {1,2,2},
+                {2,3,2}
         };
-//        System.out.println(dfs.diffWaysToCompute("2*3-4*5"));
-        //System.out.println(dfs.getMaximumGold(nums2));
 
-        System.out.println(dfs.pacificAtlantic(nums2));
+        System.out.println(dfs.colorBorder(nums2, 0, 1, 3));
 
     }
+
+    /**
+     * https://leetcode.com/problems/closest-leaf-in-a-binary-tree/
+     *
+     * Given a binary tree where every node has a unique value, and a target key k, find the value of the nearest leaf node to target k in the tree.
+     *
+     * Here, nearest to a leaf means the least number of edges travelled on the binary tree to reach any leaf of the tree. Also, a node is called a leaf if it has no children.
+     *
+     * In the following examples, the input tree is represented in flattened form row by row. The actual root tree given will be a TreeNode object.
+     *
+     * Example 1:
+     * Input:
+     * root = [1, 3, 2], k = 1
+     * Diagram of binary tree:
+     *           1
+     *          / \
+     *         3   2
+     *
+     * Output: 2 (or 3)
+     * Explanation: Either 2 or 3 is the nearest leaf node to the target of 1.
+     *
+     * Example 2:
+     * Input:
+     * root = [1], k = 1
+     * Output: 1
+     * Explanation: The nearest leaf node is the root node itself.
+     *
+     * Example 3:
+     * Input:
+     * root = [1,2,3,4,null,null,null,5,null,6], k = 2
+     * Diagram of binary tree:
+     *              1
+     *             / \
+     *            2   3
+     *           /
+     *          4
+     *         /
+     *        5
+     *       /
+     *      6
+     *
+     * Output: 3
+     * Explanation: The leaf node with value 3 (and not the leaf node with value 6) is nearest to the node with value 2.
+     *
+     * Note:
+     * root represents a binary tree with at least 1 node and at most 1000 nodes.
+     * Every node has a unique node.val in range [1, 1000].
+     * There exists some node in the given binary tree for which node.val == k.
+     *
+     */
+    public int findClosestLeaf(TreeNode root, int k) {
+        Map<TreeNode, TreeNode> parentMap = new HashMap<>();   // store all edges that trace node back to its parent
+        Queue<TreeNode> queue = new LinkedList<>();          // the queue used in BFS
+        Set<TreeNode> visited = new HashSet<>();             // store all visited nodes
+
+        // DFS: search for node whoes val == k
+        TreeNode kNode = findKDFS(root, k, parentMap);
+        queue.add(kNode);
+        visited.add(kNode);
+
+        // BFS: find the shortest path
+        while(!queue.isEmpty()) {
+            TreeNode curr = queue.poll();
+            if(curr.left == null && curr.right == null) {
+                return curr.val;
+            }
+            if(curr.left != null && visited.add(curr.left)) {
+                queue.add(curr.left);
+            }
+            if(curr.right != null && visited.add(curr.right)) {
+                queue.add(curr.right);
+            }
+            if(parentMap.containsKey(curr) && visited.add(parentMap.get(curr))) {  // go alone the back edge
+                queue.add(parentMap.get(curr));
+            }
+        }
+        return -1; // never hit
+    }
+
+    private TreeNode findKDFS(TreeNode root, int k, Map<TreeNode, TreeNode> backMap) {
+        if (root.val == k) {
+            return root;
+        }
+        if (root.left != null) {
+            backMap.put(root.left, root);        // add back edge
+            TreeNode left = findKDFS(root.left, k, backMap);
+            if (left != null) {
+                return left;
+            }
+        }
+        if (root.right != null) {
+            backMap.put(root.right, root);       // add back edge
+            TreeNode right = findKDFS(root.right, k, backMap);
+            if (right != null) {
+                return right;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * https://leetcode.com/problems/coloring-a-border/
+     *
+     * Given a 2-dimensional grid of integers, each value in the grid represents the color of the grid square at that location.
+     *
+     * Two squares belong to the same connected component if and only if they have the same color and are next to
+     * each other in any of the 4 directions.
+     *
+     * The border of a connected component is all the squares in the connected component that are either 4-directionally
+     * adjacent to a square not in the component, or on the boundary of the grid (the first or last row or column).
+     *
+     * Given a square at location (r0, c0) in the grid and a color, color the border of the connected component of that
+     * square with the given color, and return the final grid.
+     *
+     * Example 1:
+     *
+     * Input: grid = [[1,1],[1,2]], r0 = 0, c0 = 0, color = 3
+     * Output: [[3, 3], [3, 2]]
+     *
+     * Example 2:
+     *
+     * Input: grid = [[1,2,2],[2,3,2]], r0 = 0, c0 = 1, color = 3
+     * Output: [[1, 3, 3], [2, 3, 3]]
+     *
+     * Example 3:
+     *
+     * Input: grid = [[1,1,1],[1,1,1],[1,1,1]], r0 = 1, c0 = 1, color = 2
+     * Output: [[2, 2, 2], [2, 1, 2], [2, 2, 2]]
+     *
+     *
+     * Note:
+     *
+     * 1 <= grid.length <= 50
+     * 1 <= grid[0].length <= 50
+     * 1 <= grid[i][j] <= 1000
+     * 0 <= r0 < grid.length
+     * 0 <= c0 < grid[0].length
+     * 1 <= color <= 1000
+     */
+    public int[][] colorBorder(int[][] grid, int r0, int c0, int color) {
+        int prevColor = grid[r0][c0];
+        boolean[][] seen = new boolean[grid.length][grid[0].length];
+        colorBorderDFS(grid, grid.length, grid[0].length, r0, c0, prevColor, color, seen);
+        return grid;
+    }
+
+    int[][] directionsCB = {{0,1},{0,-1},{1,0},{-1,0}};
+    private void colorBorderDFS(int[][] grid, int m, int n, int r, int c, int prevColor, int color, boolean[][] seen) {
+        for (int i=0; i<directionsCB.length; i++) {
+            int nx = r + directionsCB[i][0];
+            int ny = c + directionsCB[i][1];
+            if (nx < 0 || nx >= m || ny < 0 || ny >= n) {
+                grid[r][c] = color;
+                break;
+            }
+            if (seen[nx][ny]) {
+                continue;
+            }
+            if (grid[nx][ny] != prevColor) {
+                grid[r][c] = color;
+                break;
+            }
+        }
+        seen[r][c] = true;
+        for (int i=0; i<directionsCB.length; i++) {
+            int nx = r + directionsCB[i][0];
+            int ny = c + directionsCB[i][1];
+            if (nx >= 0 && nx < m && ny >= 0 && ny < n && !seen[nx][ny] && grid[nx][ny] == prevColor) {
+                colorBorderDFS(grid, m, n, nx, ny, prevColor, color, seen);
+            }
+        }
+    }
+
 
     /**
      * https://leetcode.com/problems/minimum-knight-moves/

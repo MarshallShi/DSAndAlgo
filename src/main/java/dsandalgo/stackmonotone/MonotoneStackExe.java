@@ -44,11 +44,248 @@ import java.util.Stack;
  */
 public class MonotoneStackExe {
 
+    class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x; }
+    }
+
     public static void main(String[] args) {
         MonotoneStackExe exe = new MonotoneStackExe();
-        int[] nums = {1,2,1};
-        System.out.println(exe.removeDuplicateLetters("cbacdcbc"));
+        int[] nums = {2,1,5,6,2,3};
+        System.out.println(exe.largestRectangleArea(nums));
+    }
 
+    /**
+     * https://leetcode.com/problems/largest-rectangle-in-histogram/
+     */
+    //https://leetcode.com/problems/largest-rectangle-in-histogram/discuss/28900/O(n)-stack-based-JAVA-solution
+    //http://www.geeksforgeeks.org/largest-rectangle-under-histogram/
+    public static int largestRectangleArea(int[] height) {
+        if (height == null || height.length == 0) {
+            return 0;
+        }
+        // idx of the first bar the left that is lower than current
+        int[] lessFromLeft = new int[height.length];
+        // idx of the first bar the right that is lower than current
+        int[] lessFromRight = new int[height.length];
+
+        lessFromRight[height.length - 1] = height.length;
+        lessFromLeft[0] = -1;
+        //Trick: reuse the previous calculated result in lessFromLeft arr, so it can be used by new idx.
+        for (int i = 1; i < height.length; i++) {
+            int p = i - 1;
+            while (p >= 0 && height[p] >= height[i]) {
+                p = lessFromLeft[p];
+            }
+            lessFromLeft[i] = p;
+        }
+        //Same trick applied to lessFromRight.
+        for (int i = height.length - 2; i >= 0; i--) {
+            int p = i + 1;
+            while (p < height.length && height[p] >= height[i]) {
+                p = lessFromRight[p];
+            }
+            lessFromRight[i] = p;
+        }
+        int maxArea = 0;
+        for (int i = 0; i < height.length; i++) {
+            maxArea = Math.max(maxArea, height[i] * (lessFromRight[i] - lessFromLeft[i] - 1));
+        }
+        return maxArea;
+    }
+
+    public int largestRectangleArea_stack(int[] height) {
+        int len = height.length;
+        Stack<Integer> stack = new Stack<Integer>();
+        int maxArea = 0;
+        for(int idx = 0; idx <= len; idx++){
+            int h = (idx == len ? 0 : height[idx]);
+            if (stack.isEmpty() || h >= height[stack.peek()]){
+                stack.push(idx);
+            } else {
+                int popped = stack.pop();
+                maxArea = Math.max(maxArea, height[popped] * (stack.isEmpty() ? idx : idx - 1 - stack.peek()));
+                //revert the for loop's increment, back to check again in next round
+                idx--;
+            }
+        }
+        return maxArea;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximal-rectangle/
+     *
+     * Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.
+     *
+     * Example:
+     *
+     * Input:
+     * [
+     *   ["1","0","1","0","0"],
+     *   ["1","0","1","1","1"],
+     *   ["1","1","1","1","1"],
+     *   ["1","0","0","1","0"]
+     * ]
+     *
+     * Output: 6
+     */
+    //https://leetcode.com/problems/maximal-rectangle/discuss/29064/A-O(n2)-solution-based-on-Largest-Rectangle-in-Histogram
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return 0;
+        }
+        int m = matrix.length;
+        int n = matrix[0].length;
+        // row based height array, next row's height will change base on previous row.
+        int[] heights = new int[n+1];
+        int max = 0;
+
+        for (int row=0; row<m; row++) {
+            Stack<Integer> stack = new Stack<Integer>();
+            for (int i=0; i<n+1; i++) {
+                //update the heights in for current new row.
+                if (i < n) {
+                    if (matrix[row][i] == '1') {
+                        heights[i] = heights[i] + 1;
+                    } else {
+                        //reset to 0.
+                        heights[i] = 0;
+                    }
+                }
+                //apply largestRectangleArea algo.
+                if (stack.isEmpty() || heights[stack.peek()] <= heights[i]) {
+                    stack.push(i);
+                } else {
+                    while (!stack.isEmpty() && heights[i] < heights[stack.peek()]) {
+                        int top = stack.pop();
+                        int area = heights[top] * (stack.isEmpty() ? i : (i - stack.peek() - 1));
+                        if (area > max) {
+                            max = area;
+                        }
+                    }
+                    stack.push(i);
+                }
+            }
+        }
+        return max;
+    }
+
+    //https://leetcode.com/problems/maximal-rectangle/discuss/29054/Share-my-DP-solution
+    public int maximalRectangle_DP(char[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0] == null || matrix[0].length == 0) return 0;
+        int m = matrix.length, n = matrix[0].length, maxArea = 0;
+        int[] left = new int[n];
+        int[] right = new int[n];
+        int[] height = new int[n];
+        Arrays.fill(right, n - 1);
+        for (int i = 0; i < m; i++) {
+            int rB = n - 1;
+            for (int j = n - 1; j >= 0; j--) {
+                if (matrix[i][j] == '1') {
+                    right[j] = Math.min(right[j], rB);
+                } else {
+                    right[j] = n - 1;
+                    rB = j - 1;
+                }
+            }
+            int lB = 0;
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == '1') {
+                    left[j] = Math.max(left[j], lB);
+                    height[j]++;
+                    maxArea = Math.max(maxArea, height[j] * (right[j] - left[j] + 1));
+                } else {
+                    height[j] = 0;
+                    left[j] = 0;
+                    lB = j + 1;
+                }
+            }
+        }
+        return maxArea;
+    }
+
+    public int maximalRectangle_TLE(char[][] matrix) {
+        if (matrix.length == 0) {
+            return 0;
+        }
+        int rows = matrix.length, cols = matrix[0].length, maxArea = 0;
+        // For each point top-left
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                boolean[][] isValid = new boolean[rows][cols];
+                // For each point bottom right
+                for (int x = i; x < rows; x++) {
+                    for (int y = j; y < cols; y++) {
+                        if (matrix[x][y] != '1') continue;
+                        // Check if valid matrix
+                        isValid[x][y] = true;
+                        if (x > i) isValid[x][y] = isValid[x][y] && isValid[x - 1][y];
+                        if (y > j) isValid[x][y] = isValid[x][y] && isValid[x][y - 1];
+                        // If valid, calculate area and update max
+                        if (isValid[x][y]) {
+                            int area = (x - i + 1) * (y - j + 1);
+                            maxArea = Math.max(maxArea, area);
+                        }
+                    }
+                }
+            }
+        }
+        return maxArea;
+    }
+
+    /**
+     * https://leetcode.com/problems/next-greater-node-in-linked-list/
+     *
+     * We are given a linked list with head as the first node.  Let's number the nodes in the list: node_1, node_2, node_3, ... etc.
+     *
+     * Each node may have a next larger value: for node_i, next_larger(node_i) is the node_j.val such that j > i, node_j.val > node_i.val,
+     * and j is the smallest possible choice.  If such a j does not exist, the next larger value is 0.
+     *
+     * Return an array of integers answer, where answer[i] = next_larger(node_{i+1}).
+     *
+     * Note that in the example inputs (not outputs) below, arrays such as [2,1,5] represent the serialization of a linked list with a head
+     * node value of 2, second node value of 1, and third node value of 5.
+     *
+     * Example 1:
+     *
+     * Input: [2,1,5]
+     * Output: [5,5,0]
+     *
+     * Example 2:
+     *
+     * Input: [2,7,4,3,5]
+     * Output: [7,0,5,5,0]
+     *
+     * Example 3:
+     *
+     * Input: [1,7,5,1,9,2,5,1]
+     * Output: [7,9,9,9,0,5,0,0]
+     *
+     * Note:
+     * 1 <= node.val <= 10^9 for each node in the linked list.
+     * The given list has length in the range [0, 10000].
+     * @param head
+     * @return
+     */
+    //Trick is the stack...
+    public int[] nextLargerNodes(ListNode head) {
+        List<Integer> list = new ArrayList<Integer>();
+        while (head != null) {
+            list.add(head.val);
+            head = head.next;
+        }
+        int[] res = new int[list.size()];
+        //Stack going to track index the decreasing numbers, once have a bigger number,
+        //We'll can conclude the stack top's element's next greater number is this bigger number, till we can't pop.
+        Stack<Integer> stack = new Stack<Integer>();
+        for (int i = 0; i < list.size(); ++i) {
+            while (!stack.isEmpty() && list.get(stack.peek()) < list.get(i)) {
+                res[stack.pop()] = list.get(i);
+            }
+            stack.push(i);
+        }
+        return res;
     }
 
     /**
@@ -257,80 +494,18 @@ public class MonotoneStackExe {
      *
      * Since the answer may be large, return the answer modulo 10^9 + 7.
      *
-     *
-     *
      * Example 1:
-     *
      * Input: [3,1,2,4]
      * Output: 17
      * Explanation: Subarrays are [3], [1], [2], [4], [3,1], [1,2], [2,4], [3,1,2], [1,2,4], [3,1,2,4].
      * Minimums are 3, 1, 2, 4, 1, 1, 2, 1, 1, 1.  Sum is 17.
-     *
-     *
      * Note:
-     *
      * 1 <= A.length <= 30000
      * 1 <= A[i] <= 30000
-     * @param A
-     * @return
      */
     public int sumSubarrayMins(int[] A) {
         return 0;
     }
-
-
-    /**
-     * https://leetcode.com/problems/online-stock-span/
-     * Write a class StockSpanner which collects daily price quotes for some stock, and returns the span of that stock's price for the current day.
-     *
-     * The span of the stock's price today is defined as the maximum number of consecutive days (starting from today and going backwards) for which the price of the stock was less than or equal to today's price.
-     *
-     * For example, if the price of a stock over the next 7 days were [100, 80, 60, 70, 60, 75, 85], then the stock spans would be [1, 1, 1, 2, 1, 4, 6].
-     *
-     *
-     *
-     * Example 1:
-     *
-     * Input: ["StockSpanner","next","next","next","next","next","next","next"], [[],[100],[80],[60],[70],[60],[75],[85]]
-     * Output: [null,1,1,1,2,1,4,6]
-     * Explanation:
-     * First, S = StockSpanner() is initialized.  Then:
-     * S.next(100) is called and returns 1,
-     * S.next(80) is called and returns 1,
-     * S.next(60) is called and returns 1,
-     * S.next(70) is called and returns 2,
-     * S.next(60) is called and returns 1,
-     * S.next(75) is called and returns 4,
-     * S.next(85) is called and returns 6.
-     *
-     * Note that (for example) S.next(75) returned 4, because the last 4 prices
-     * (including today's price of 75) were less than or equal to today's price.
-     *
-     * Note:
-     *
-     * Calls to StockSpanner.next(int price) will have 1 <= price <= 10^5.
-     * There will be at most 10000 calls to StockSpanner.next per test case.
-     * There will be at most 150000 calls to StockSpanner.next across all test cases.
-     * The total time limit for this problem has been reduced by 75% for C++, and 50% for all other languages.
-     */
-
-    private Stack<int[]> stack = new Stack<int[]>();
-//    public void StockSpanner() {
-//        list = new ArrayList<Integer>();
-//        stack = new Stack<Integer>();
-//    }
-
-    public int next(int price) {
-        int ret = 1;
-        while (!stack.isEmpty() && stack.peek()[0] <= price) {
-            int[] pre = stack.pop();
-            ret = ret + pre[1];
-        }
-        int[] cur = {price, ret};
-        stack.push(cur);
-        return ret;
-    }
-
 
 
 }

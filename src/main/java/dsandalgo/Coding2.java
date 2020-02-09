@@ -1740,44 +1740,6 @@ public class Coding2 {
         }
     }
 
-    public int longestCommonSubsequence(String text1, String text2) {
-        int len1 = text1.length();
-        int len2 = text2.length();
-        int[][] dp = new int[len1][len2];
-        int i, j;
-        int max = 0;
-        for (i=0; i<len1; i++) {
-            if (text1.charAt(i) == text2.charAt(0)) {
-                dp[i][0] = 1;
-            } else {
-                if (i != 0) {
-                    dp[i][0] = Math.max(0, dp[i - 1][0]);
-                }
-            }
-        }
-        for (j=0; j<len2; j++) {
-            if (text2.charAt(j) == text1.charAt(0)) {
-                dp[0][j] = 1;
-            }else {
-                if (j!=0) {
-                    dp[0][j] = Math.max(0, dp[0][j-1]);
-                }
-            }
-        }
-
-        for (i=1; i<len1; i++) {
-            for (j=1; j<len2; j++) {
-                if (text1.charAt(i) == text2.charAt(j)) {
-                    dp[i][j] = 1 + dp[i-1][j-1];
-                } else {
-                    dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
-                }
-            }
-        }
-
-        return dp[len1-1][len2-1];
-    }
-
     public String removeOuterParentheses(String S) {
         String ret = "";
         int skipIdx = 0;

@@ -18,7 +18,124 @@ public class MathExe {
         int[] rec2 = {2,2,3,3};
         int[][] shape = {{1,2},{3,4}};
         int[] primes = {2,7,13,19};
-        System.out.println(exe.intToRoman(222));
+        //System.out.println(exe.angleClock(12, 30));
+    }
+
+    /**
+     * https://leetcode.com/problems/integer-replacement/
+     *
+     * Given a positive integer n and you can do operations as follow:
+     *
+     * If n is even, replace n with n/2.
+     * If n is odd, you can replace n with either n + 1 or n - 1.
+     * What is the minimum number of replacements needed for n to become 1?
+     *
+     * Example 1:
+     * Input:
+     * 8
+     * Output:
+     * 3
+     * Explanation:
+     * 8 -> 4 -> 2 -> 1
+     *
+     * Example 2:
+     * Input:
+     * 7
+     * Output:
+     * 4
+     * Explanation:
+     * 7 -> 8 -> 4 -> 2 -> 1
+     * or
+     * 7 -> 6 -> 3 -> 2 -> 1
+     */
+    public int integerReplacement(int n) {
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        map.put(1, 0);
+        map.put(2, 1);
+        return helper(n, map);
+    }
+
+    private int helper(int n, Map<Integer, Integer> map) {
+        if (map.containsKey(n)) {
+            return map.get(n);
+        }
+        int steps = -1;
+        if (n % 2 == 0) {
+            steps = helper(n / 2, map) + 1;
+        } else {
+            //Trick is to aggressively push down the number.
+            //NOTE: Math.min(helper((n - 1), map) + 1, helper(n + 1, map) + 1); will stack overflow.
+            steps = Math.min(helper((n - 1), map) + 1, helper(1 + (n - 1) / 2, map) + 2);
+        }
+
+        map.put(n, steps);
+
+        return steps;
+    }
+
+    /**
+     * https://leetcode.com/problems/sort-transformed-array/
+     *
+     * Given a sorted array of integers nums and integer values a, b and c. Apply a quadratic function of the form f(x) = ax2 + bx + c to each element x in the array.
+     *
+     * The returned array must be in sorted order.
+     *
+     * Expected time complexity: O(n)
+     *
+     * Example 1:
+     *
+     * Input: nums = [-4,-2,2,4], a = 1, b = 3, c = 5
+     * Output: [3,9,15,33]
+     *
+     * Example 2:
+     *
+     * Input: nums = [-4,-2,2,4], a = -1, b = 3, c = 5
+     * Output: [-23,-5,1,7]
+     *
+     * @param nums
+     * @param a
+     * @param b
+     * @param c
+     * @return
+     */
+    public int[] sortTransformedArray(int[] nums, int a, int b, int c) {
+        int n = nums.length;
+        int[] sorted = new int[n];
+        int i = 0, j = n - 1;
+        int index = a >= 0 ? n - 1 : 0;
+        while (i <= j) {
+            //based on a, 抛物线(Parabola)向上，或者向下
+            if (a >= 0) {
+                //down, closer to mid, is the lowest
+                int leftHand = quad(nums[i], a, b, c);
+                int rightHand = quad(nums[j], a, b, c);
+                if (leftHand >= rightHand) {
+                    sorted[index] = leftHand;
+                    i++;
+                } else {
+                    sorted[index] = rightHand;
+                    j--;
+                }
+                index--;
+            } else {
+                //up, closer to mid, is the highest
+                int leftHand = quad(nums[i], a, b, c);
+                int rightHand = quad(nums[j], a, b, c);
+                if (leftHand >= rightHand) {
+                    sorted[index] = rightHand;
+                    j--;
+                } else {
+                    sorted[index] = leftHand;
+                    i++;
+                }
+                index++;
+            }
+        }
+        return sorted;
+    }
+
+    private int quad(int x, int a, int b, int c) {
+        return a * x * x + b * x + c;
     }
 
     /**

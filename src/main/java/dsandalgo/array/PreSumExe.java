@@ -1,19 +1,92 @@
 package dsandalgo.array;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PreSumExe {
 
     public static void main(String[] args) {
         PreSumExe exe = new PreSumExe();
         //int[] A = {3,8,1,3,2,1,8,9,0};
         //System.out.println(exe.maxSumTwoNoOverlap(A, 3, 2));
-        int[] A = {0,6,5,2,2,5,1,9,4};
-        System.out.println(exe.maxSumTwoNoOverlap(A, 1, 2));
+        int[] A = {6,5,2,2,5,1,9,4};
+        System.out.println(exe.subarraySum(A, 10));
 
         int[] B = {3,8,1,3,2,1,8,9,0};
-        System.out.println(exe.maxSumTwoNoOverlap(B, 3, 2));
+        //System.out.println(exe.maxSumTwoNoOverlap(B, 3, 2));
 
-        int[] C = {2,1,5,6,0,9,5,0,3,8};
-        System.out.println(exe.maxSumTwoNoOverlap(C, 4, 3));
+        int[] C = {9,9,6,0,6,6,9};
+        //System.out.println(exe.longestWPI(C));
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-well-performing-interval/
+     *
+     * We are given hours, a list of the number of hours worked per day for a given employee.
+     *
+     * A day is considered to be a tiring day if and only if the number of hours worked is (strictly) greater than 8.
+     *
+     * A well-performing interval is an interval of days for which the number of tiring days is strictly
+     * larger than the number of non-tiring days.
+     *
+     * Return the length of the longest well-performing interval.
+     *
+     * Example 1:
+     * Input: hours = [9,9,6,0,6,6,9]
+     * Output: 3
+     * Explanation: The longest well-performing interval is [9,9,6].
+     * Constraints:
+     * 1 <= hours.length <= 10000
+     * 0 <= hours[i] <= 16
+     */
+    public int longestWPI(int[] hours) {
+        int res = 0, total = 0, n = hours.length;
+        Map<Integer, Integer> previousData = new HashMap<>();
+        for (int i = 0; i < n; ++i) {
+            //total is the sum of all previous element.
+            total += hours[i] > 8 ? 1 : -1;
+            if (total > 0) {
+                res = i + 1;
+            } else {
+                //record current data in the map, only put when absent, so it is the very first index.
+                previousData.putIfAbsent(total, i);
+                if (previousData.containsKey(total - 1)) {
+                    //get one value and compare to the final result.
+                    res = Math.max(res, i - previousData.get(total - 1));
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/subarray-sum-equals-k/description/
+     *
+     * Given an array of integers and an integer k, you need to find the total number of
+     * continuous subarrays whose sum equals to k.
+     *
+     * Example 1:
+     * Input:nums = [1,1,1], k = 2
+     * Output: 2
+     *
+     * Note:
+     * The length of the array is in range [1, 20,000].
+     * The range of numbers in the array is [-1000, 1000] and the range of the integer k is [-1e7, 1e7].
+     */
+    public int subarraySum(int[] nums, int k) {
+        int sum = 0, result = 0;
+        Map<Integer, Integer> preSum = new HashMap<>();
+        preSum.put(0, 1);
+
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (preSum.containsKey(sum - k)) {
+                result += preSum.get(sum - k);
+            }
+            preSum.put(sum, preSum.getOrDefault(sum, 0) + 1);
+        }
+
+        return result;
     }
 
     /**
@@ -52,11 +125,6 @@ public class PreSumExe {
      * M >= 1
      * L + M <= A.length <= 1000
      * 0 <= A[i] <= 1000
-     *
-     * @param A
-     * @param L
-     * @param M
-     * @return
      */
     public int maxSumTwoNoOverlap(int[] A, int L, int M) {
         int[] presum = new int[A.length];

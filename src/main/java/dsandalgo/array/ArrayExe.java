@@ -18,7 +18,6 @@ public class ArrayExe {
 
     public static void main(String[] args) {
         ArrayExe exe = new ArrayExe();
-        //int[] time = {60,60,60,120,35,25};
 
         int[] king = {0,0};
 
@@ -37,6 +36,179 @@ public class ArrayExe {
 
         int[][] mat = {{1,2,3,4,5},{2,4,5,8,10},{3,5,7,9,11},{1,3,5,7,9}};
         //System.out.println(exe.minSetSize(g));
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-line-of-consecutive-one-in-matrix/
+     * @param M
+     * @return
+     */
+    public int longestLine(int[][] M) {
+        return 0;
+    }
+
+    /**
+     * https://leetcode.com/problems/squirrel-simulation/
+     *
+     * There's a tree, a squirrel, and several nuts. Positions are represented by the cells in a 2D grid. Your goal is to find the minimal
+     * distance for the squirrel to collect all the nuts and put them under the tree one by one. The squirrel can only take at most one nut at one time and can move in four directions - up, down, left and right, to the adjacent cell. The distance is represented by the number of moves.
+     * Example 1:
+     *
+     * Input:
+     * Height : 5
+     * Width : 7
+     * Tree position : [2,2]
+     * Squirrel : [4,4]
+     * Nuts : [[3,0], [2,5]]
+     * Output: 12
+     * Explanation:
+     * ​​​​​
+     * Note:
+     *
+     * All given positions won't overlap.
+     * The squirrel can take at most one nut at one time.
+     * The given positions of nuts have no order.
+     * Height and width are positive integers. 3 <= height * width <= 10,000.
+     * The given positions contain at least one nut, only one tree and one squirrel.
+     *
+     * @param height
+     * @param width
+     * @param tree
+     * @param squirrel
+     * @param nuts
+     * @return
+     */
+    public int minDistance(int height, int width, int[] tree, int[] squirrel, int[][] nuts) {
+        int sum = 0;
+        int minextra = Integer.MAX_VALUE;
+        for (int[] nut : nuts) {
+            int nut2tree = getManhattanDistance(nut, tree);
+            int nut2squirrel = getManhattanDistance(nut, squirrel);
+            sum = sum + nut2tree;
+            minextra = Math.min(minextra, nut2squirrel - nut2tree);
+        }
+        return 2 * sum + minextra;
+    }
+
+    private int getManhattanDistance(int[] x, int[] y){
+        return (Math.abs(x[0] - y[0]) + Math.abs(x[1] - y[1]));
+    }
+
+    /**
+     * https://leetcode.com/problems/arithmetic-slices/
+     * A sequence of number is called arithmetic if it consists of at least three elements and if the difference between any two consecutive elements is the same.
+     *
+     * For example, these are arithmetic sequence:
+     *
+     * 1, 3, 5, 7, 9
+     * 7, 7, 7, 7
+     * 3, -1, -5, -9
+     * The following sequence is not arithmetic.
+     *
+     * 1, 1, 2, 5, 7
+     *
+     * A zero-indexed array A consisting of N numbers is given. A slice of that array is any pair of integers (P, Q) such that 0 <= P < Q < N.
+     *
+     * A slice (P, Q) of array A is called arithmetic if the sequence:
+     * A[P], A[p + 1], ..., A[Q - 1], A[Q] is arithmetic. In particular, this means that P + 1 < Q.
+     *
+     * The function should return the number of arithmetic slices in the array A.
+     *
+     *
+     * Example:
+     *
+     * A = [1, 2, 3, 4]
+     *
+     * return: 3, for 3 arithmetic slices in A: [1, 2, 3], [2, 3, 4] and [1, 2, 3, 4] itself.
+     *
+     * @param A
+     * @return
+     */
+    public int numberOfArithmeticSlices(int[] A) {
+        int curr = 0, sum = 0;
+        for (int i=2; i<A.length; i++) {
+            if (A[i]-A[i-1] == A[i-1]-A[i-2]) {
+                curr += 1;
+                sum += curr;
+            } else {
+                curr = 0;
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * https://leetcode.com/problems/image-overlap/
+     *
+     * Two images A and B are given, represented as binary, square matrices of the same size.
+     * (A binary matrix has only 0s and 1s as values.)
+     *
+     * We translate one image however we choose (sliding it left, right, up, or down any number of units),
+     * and place it on top of the other image.  After, the overlap of this translation is the number of positions that have a 1 in both images.
+     *
+     * (Note also that a translation does not include any kind of rotation.)
+     *
+     * What is the largest possible overlap?
+     *
+     * Example 1:
+     *
+     * Input: A = [[1,1,0],
+     *             [0,1,0],
+     *             [0,1,0]]
+     *        B = [[0,0,0],
+     *             [0,1,1],
+     *             [0,0,1]]
+     * Output: 3
+     * Explanation: We slide A to right by 1 unit and down by 1 unit.
+     *
+     * Notes:
+     * 1 <= A.length = A[0].length = B.length = B[0].length <= 30
+     * 0 <= A[i][j], B[i][j] <= 1
+     */
+
+    /**
+     * Assume index in A and B is [0, N * N -1].
+     * Loop on A, if value == 1, save a coordinates i / N * 100 + i % N to LA.
+     * Loop on B, if value == 1, save a coordinates i / N * 100 + i % N to LB.
+     * Loop on combination (i, j) of LA and LB, increase count[i - j] by 1.
+     * If we slide to make A[i] overlap B[j], we can get 1 point.
+     * Loop on count and return max values.
+     * I use a 1 key hashmap. Assume ab for row and cd for col, I make it abcd as coordinate.
+     * For sure, hashmap with 2 keys will be better for understanding.
+     *
+     * Flatten each of them to 1-D array:
+     * flattened idx: 0,1,2,3,4,5,6,7,8
+     * flattened A: 1,0,1,1,0,0,1,1,1 -> 0,2,3,6,7,8 : LA
+     * flattened B: 0,0,1,0,1,1,1,1,1 -> 2,4,5,6,7,8 : LB
+     * Each '1' in A can be overlapped with each '1' in B for different offset.
+     * Iterate through every overlap situation for '1' (at i) in LA and '1' (at j) in LB, group by offset (i - j).
+     * Final step is to find the largest number of overlapped '1's among all offsets.
+     */
+    public int largestOverlap(int[][] A, int[][] B) {
+        int N = A.length;
+        List<Integer> LA = new ArrayList<Integer>(),  LB = new ArrayList<Integer>();
+
+        for (int i = 0; i < N * N; ++i) {
+            if (A[i / N][i % N] == 1) {
+                LA.add(i / N * 100 + i % N);
+            }
+        }
+        for (int i = 0; i < N * N; ++i) {
+            if (B[i / N][i % N] == 1) {
+                LB.add(i / N * 100 + i % N);
+            }
+        }
+        Map<Integer, Integer> count = new HashMap<Integer, Integer>();
+        for (int i : LA) {
+            for (int j : LB) {
+                count.put(i - j, count.getOrDefault(i - j, 0) + 1);
+            }
+        }
+        int res = 0;
+        for (int val : count.values()) {
+            res = Math.max(res, val);
+        }
+        return res;
     }
 
     /**

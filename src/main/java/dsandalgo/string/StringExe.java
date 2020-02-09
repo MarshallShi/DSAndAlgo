@@ -2,6 +2,7 @@ package dsandalgo.string;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,11 +14,192 @@ public class StringExe {
 
     public static void main(String[] args) {
         StringExe exe = new StringExe();
-        String[] words3 = {"Science","is","what","we","understand","well","enough","to","explain","to","a","computer.","Art","is","everything","else","we","do"};
-        System.out.println(exe.fullJustify(words3, 20));
+        //S = "abcd", indexes = [0,2], sources = ["a","cd"], targets = ["eee","ffff"]
+        int[] indexes = {3, 5, 1};
+        String[] sources = {"a","cd"};
+        String[] tar = {"eee","ffff"};
+        System.out.println(exe.findReplaceString("vmokgggqzp", indexes, sources, tar));
     }
 
+    /**
+     * https://leetcode.com/problems/substring-with-concatenation-of-all-words/
+     * You are given a string, s, and a list of words, words, that are all of the same length.
+     * Find all starting indices of substring(s) in s that is a concatenation of each word in words exactly
+     * once and without any intervening characters.
 
+     * Example 1:
+     * Input:
+     *   s = "barfoothefoobarman",
+     *   words = ["foo","bar"]
+     * Output: [0,9]
+     * Explanation: Substrings starting at index 0 and 9 are "barfoo" and "foobar" respectively.
+     * The output order does not matter, returning [9,0] is fine too.
+     *
+     * Example 2:
+     * Input:
+     *   s = "wordgoodgoodgoodbestword",
+     *   words = ["word","good","best","word"]
+     * Output: []
+     */
+    public List<Integer> findSubstring(String s, String[] words) {
+        List<Integer> res = new ArrayList<Integer>();
+        int wordNum = words.length;
+        if (wordNum == 0) {
+            return res;
+        }
+        int wordLen = words[0].length();
+        //HashMap to save all the words
+        HashMap<String, Integer> allWords = new HashMap<String, Integer>();
+        for (String w : words) {
+            int value = allWords.getOrDefault(w, 0);
+            allWords.put(w, value + 1); //may have duplicates.
+        }
+        //Scan all the substring, with the length of all word length
+        for (int i = 0; i < s.length() - wordNum * wordLen + 1; i++) {
+            //another hashmap to store the current window result.
+            HashMap<String, Integer> hasWords = new HashMap<String, Integer>();
+            int num = 0;
+            while (num < wordNum) {
+                String word = s.substring(i + num * wordLen, i + (num + 1) * wordLen);
+                if (allWords.containsKey(word)) {
+                    int value = hasWords.getOrDefault(word, 0);
+                    hasWords.put(word, value + 1);
+                    if (hasWords.get(word) > allWords.get(word)) {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+                num++;
+            }
+            //check if all good now.
+            if (num == wordNum) {
+                res.add(i);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/find-and-replace-in-string/
+     *
+     * @param S
+     * @param indexes
+     * @param sources
+     * @param targets
+     * @return
+     */
+    public String findReplaceString(String S, int[] indexes, String[] sources, String[] targets) {
+        List<int[]> sorted = new ArrayList<>();
+        for (int i = 0 ; i < indexes.length; i++) {
+            sorted.add(new int[]{indexes[i], i});
+        }
+        Collections.sort(sorted, Comparator.comparing(i -> -i[0]));
+        //Sorted in descending order of the index, replace string from end to start.
+        for (int[] ind: sorted) {
+            int i = ind[0], j = ind[1];
+            String s = sources[j], t = targets[j];
+            if (S.substring(i, i + s.length()).equals(s)) {
+                S = S.substring(0, i) + t + S.substring(i + s.length());
+            }
+        }
+        return S;
+    }
+
+    /**
+     * https://leetcode.com/problems/short-encoding-of-words/
+     *
+     * @param words
+     * @return
+     */
+    public int minimumLengthEncoding(String[] words) {
+        //Build the set
+        Set<String> s = new HashSet<String>(Arrays.asList(words));
+        for (String w : words) {
+            for (int i = 1; i < w.length(); ++i) {
+                //Remove all the possible occurence of prefix string.
+                s.remove(w.substring(i));
+            }
+        }
+        int res = 0;
+        //remaining is the final string.
+        for (String w : s) {
+            res += w.length() + 1;
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/print-words-vertically/
+     *
+     * Given a string s. Return all the words vertically in the same order in which they appear in s.
+     * Words are returned as a list of strings, complete with spaces when is necessary. (Trailing spaces are not allowed).
+     * Each word would be put on only one column and that in one column there will be only one word.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: s = "HOW ARE YOU"
+     * Output: ["HAY","ORO","WEU"]
+     * Explanation: Each word is printed vertically.
+     *  "HAY"
+     *  "ORO"
+     *  "WEU"
+     * Example 2:
+     *
+     * Input: s = "TO BE OR NOT TO BE"
+     * Output: ["TBONTB","OEROOE","   T"]
+     * Explanation: Trailing spaces is not allowed.
+     * "TBONTB"
+     * "OEROOE"
+     * "   T"
+     * Example 3:
+     *
+     * Input: s = "CONTEST IS COMING"
+     * Output: ["CIC","OSO","N M","T I","E N","S G","T"]
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= s.length <= 200
+     * s contains only upper case English letters.
+     * It's guaranteed that there is only one space between 2 words.
+     *
+     * @param s
+     * @return
+     */
+    public List<String> printVertically(String s) {
+        String[] words = s.split(" ");
+        int m = words.length;
+        int n = 0;
+        for (int i=0; i<words.length; i++) {
+            n = Math.max(n, words[i].length());
+        }
+        char[][] ww = new char[m][n];
+        for (int i=0; i<m; i++) {
+            String w = words[i];
+            for (int j=0; j<n; j++) {
+                if (j < w.length()) {
+                    ww[i][j] = w.charAt(j);
+                } else {
+                    ww[i][j] = ' ';
+                }
+            }
+        }
+        List<String> ret = new ArrayList<String>();
+        for (int i=0; i<n; i++) {
+            StringBuilder perV = new StringBuilder();
+            for (int j=0; j<m; j++) {
+                perV.append(ww[j][i]);
+            }
+            while (perV.charAt(perV.length() - 1) == ' ') {
+                perV.deleteCharAt(perV.length() - 1);
+            }
+            ret.add(perV.toString());
+        }
+        return ret;
+    }
 
     /**
      * https://leetcode.com/problems/palindrome-pairs/

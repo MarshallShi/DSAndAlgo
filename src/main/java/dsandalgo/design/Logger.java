@@ -1,4 +1,4 @@
-package dsandalgo.hashmap;
+package dsandalgo.design;
 
 import java.util.HashMap;
 import java.util.Map;

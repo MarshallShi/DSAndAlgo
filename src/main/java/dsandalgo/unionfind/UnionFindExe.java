@@ -15,17 +15,308 @@ import java.util.Set;
 public class UnionFindExe {
 
     public static void main(String[] args) {
-        String[] grid = {};
-
         UnionFindExe exe = new UnionFindExe();
 
-        /**
-         * ["great","acting","skills"]
-         * ["fine","painting","talent"]
-         * [["great","fine"],["drama","acting"],["skills","talent"]]
-         */
-        int[][] stones = {{1,1},{0,1},{1,0}};
-        System.out.println(exe.removeStones(stones));
+        int[][] grid = {{0,0},{0,1},{1,2},{2,1}};
+        System.out.println(exe.numIslands2(3,3,grid));
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-islands-ii/
+     * @param m
+     * @param n
+     * @param positions
+     * @return
+     */
+    public List<Integer> numIslands2(int m, int n, int[][] positions) {
+        int s = m*n;
+        UFNumIslands2 uf = new UFNumIslands2(s);
+        int[][] directions = {{0,1},{1,0},{-1,0},{0,-1}};
+        List<Integer> ans = new ArrayList<Integer>();
+        for (int i=0; i<positions.length; i++) {
+            if (uf.parent[positions[i][0] * n + positions[i][1]] != -1) {
+                ans.add(uf.size);
+                continue;
+            }
+            uf.updateParent(positions[i][0] * n + positions[i][1]);
+            for (int[] dir : directions) {
+                int nx = positions[i][0] + dir[0];
+                int ny = positions[i][1] + dir[1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
+                    if (uf.find(nx*n + ny) != -1) {
+                        uf.union(nx*n + ny, positions[i][0] * n + positions[i][1]);
+                    }
+                }
+            }
+            ans.add(uf.size);
+        }
+        return ans;
+    }
+
+    class UFNumIslands2 {
+        public int size;
+        public int[] parent;
+        public UFNumIslands2(int size) {
+            this.size = 0;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = -1;
+            }
+        }
+
+        public void updateParent(int a) {
+            parent[a] = a;
+            size++;
+        }
+
+        public void union(int a, int b) {
+            int parB = find(b);
+            int parA = find(a);
+            if (parB != parA) {
+                parent[parB] = parent[parA];
+                size--;
+            }
+        }
+
+        public int find(int x) {
+            if (parent[x] == -1) {
+                return -1;
+            }
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-operations-to-make-network-connected/
+     * There are n computers numbered from 0 to n-1 connected by ethernet cables connections forming a network where connections[i] = [a, b] represents a connection between computers a and b. Any computer can reach any other computer directly or indirectly through the network.
+     *
+     * Given an initial computer network connections. You can extract certain cables between two directly connected computers, and place them between any pair of disconnected computers to make them directly connected. Return the minimum number of times you need to do this in order to make all the computers connected. If it's not possible, return -1.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: n = 4, connections = [[0,1],[0,2],[1,2]]
+     * Output: 1
+     * Explanation: Remove cable between computer 1 and 2 and place between computers 1 and 3.
+     * Example 2:
+     *
+     *
+     *
+     * Input: n = 6, connections = [[0,1],[0,2],[0,3],[1,2],[1,3]]
+     * Output: 2
+     * Example 3:
+     *
+     * Input: n = 6, connections = [[0,1],[0,2],[0,3],[1,2]]
+     * Output: -1
+     * Explanation: There are not enough cables.
+     * Example 4:
+     *
+     * Input: n = 5, connections = [[0,1],[0,2],[3,4],[2,3]]
+     * Output: 0
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= n <= 10^5
+     * 1 <= connections.length <= min(n*(n-1)/2, 10^5)
+     * connections[i].length == 2
+     * 0 <= connections[i][0], connections[i][1] < n
+     * connections[i][0] != connections[i][1]
+     * There are no repeated connections.
+     * No two computers are connected by more than one cable.
+     *
+     * @param n
+     * @param connections
+     * @return
+     */
+    public int makeConnected(int n, int[][] connections) {
+        UFMakeConnected uf = new UFMakeConnected(n);
+        if (connections.length < n-1) {
+            return -1;
+        }
+        for (int[] conn : connections) {
+            uf.union(conn[0], conn[1]);
+        }
+        return uf.size - 1;
+    }
+    class UFMakeConnected {
+        public int size;
+        public int[] parent;
+        public UFMakeConnected(int size) {
+            this.size = size;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public void union(int a, int b) {
+            int parB = find(b);
+            int parA = find(a);
+            if (parB != parA) {
+                parent[parB] = parent[parA];
+                size--;
+            }
+        }
+
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/
+     * Given n nodes labeled from 0 to n - 1 and a list of undirected edges (each edge is a pair of nodes), write a function to find the number of connected components in an undirected graph.
+     *
+     * Example 1:
+     *
+     * Input: n = 5 and edges = [[0, 1], [1, 2], [3, 4]]
+     *
+     *      0          3
+     *      |          |
+     *      1 --- 2    4
+     *
+     * Output: 2
+     * Example 2:
+     *
+     * Input: n = 5 and edges = [[0, 1], [1, 2], [2, 3], [3, 4]]
+     *
+     *      0           4
+     *      |           |
+     *      1 --- 2 --- 3
+     *
+     * Output:  1
+     * Note:
+     * You can assume that no duplicate edges will appear in edges. Since all edges are undirected, [0, 1] is the same as [1, 0] and thus will not appear together in edges.
+     *
+     * @param n
+     * @param edges
+     * @return
+     */
+    public int countComponents(int n, int[][] edges) {
+        UFCountComp uf = new UFCountComp(n);
+        for (int[] edge : edges) {
+            uf.union(edge[0], edge[1]);
+        }
+        return uf.size;
+    }
+
+    class UFCountComp {
+        public int size;
+        public int[] parent;
+        public UFCountComp(int size) {
+            this.size = size;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public void union(int a, int b) {
+            int parB = find(b);
+            int parA = find(a);
+            if (parB != parA) {
+                parent[parB] = parent[parA];
+                size--;
+            }
+        }
+
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/count-servers-that-communicate/
+     *
+     * You are given a map of a server center, represented as a m * n integer matrix grid, where 1 means that on that cell there is a server and 0 means that it is no server.
+     * Two servers are said to communicate if they are on the same row or on the same column.
+     *
+     * Return the number of servers that communicate with any other server.
+     *
+     * Example 1:
+     * Input: grid = [[1,0],[0,1]]
+     * Output: 0
+     * Explanation: No servers can communicate with others.
+     *
+     * Example 2:
+     * Input: grid = [[1,0],[1,1]]
+     * Output: 3
+     * Explanation: All three servers can communicate with at least one other server.
+     *
+     * Example 3:
+     * Input: grid = [[1,1,0,0],[0,0,1,0],[0,0,1,0],[0,0,0,1]]
+     * Output: 4
+     * Explanation: The two servers in the first row can communicate with each other. The two servers in the third column can communicate with each other.
+     * The server at right bottom corner can't communicate with any other server.
+     *
+     *
+     * Constraints:
+     *
+     * m == grid.length
+     * n == grid[i].length
+     * 1 <= m <= 250
+     * 1 <= n <= 250
+     * grid[i][j] == 0 or 1
+     */
+    public int countServers(int[][] grid) {
+        int total = 0, orphan = 0, m = grid.length, n = grid[0].length;
+        int rowCnt[] = new int[m];
+        int colCnt[] = new int[n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    total++;
+                    rowCnt[i]++;
+                    colCnt[j]++;
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            if (rowCnt[i] != 1) {
+                continue;
+            }
+            for (int j = 0; j < n; j++) {
+                if (colCnt[j] == 1 && grid[i][j] == 1) {
+                    orphan++;
+                }
+            }
+        }
+        return total - orphan;
+    }
+
+    /**
+     * https://leetcode.com/problems/smallest-common-region/
+     */
+    public String findSmallestRegion(List<List<String>> regions, String region1, String region2) {
+        Map<String, String> regionParent = new HashMap<String, String>();
+        for (List<String> lst : regions) {
+            String parent = lst.get(0);
+            for (int i=1; i<lst.size(); i++) {
+                regionParent.put(lst.get(i), parent);
+            }
+        }
+        Set<String> parentListOfRegion1 = new HashSet<String>();
+        while (region1 != null) {
+            parentListOfRegion1.add(region1);
+            region1 = regionParent.get(region1);
+        }
+        while (!parentListOfRegion1.contains(region2)) {
+            region2 = regionParent.get(region2);
+        }
+        return region2;
     }
 
     /**

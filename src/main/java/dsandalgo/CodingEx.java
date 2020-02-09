@@ -1369,33 +1369,6 @@ public class CodingEx {
         return false;
     }
 
-    public static int minFallingPathSum(int[][] A) {
-        int len = A.length;
-        int[][] dp = new int[len][len];
-        int min = Integer.MAX_VALUE;
-        for (int i=0; i<len; i++) {
-            for (int j=0; j<len; j++) {
-                if (i == 0) {
-                    dp[i][j] = A[i][j];
-                } else {
-                    if (j==0) {
-                        dp[i][j] = Math.min(dp[i-1][j], dp[i-1][j+1]) + A[i][j];
-                    } else {
-                        if (j==len-1) {
-                            dp[i][j] = Math.min(dp[i-1][j-1], dp[i-1][j]) + A[i][j];
-                        } else {
-                            dp[i][j] = Math.min(dp[i-1][j], Math.min(dp[i-1][j-1], dp[i-1][j+1])) + A[i][j];
-                        }
-                    }
-                }
-                if (i==len-1) {
-                    min = Math.min(min, dp[i][j]);
-                }
-            }
-        }
-        return min;
-    }
-
     public static int uniqueMorseRepresentations(String[] words) {
         if (words == null || words.length == 0) {
             return 0;
@@ -1554,44 +1527,6 @@ public class CodingEx {
 //        }
 //        return counter;
 //    }
-
-    public static int mincostTickets(int[] days, int[] costs) {
-        if (days == null || days.length == 0) {
-            return 0;
-        }
-        int[] dp = new int[days.length+1];
-        dp[0] = 0;
-        dp[1] = Math.min(costs[0],Math.min(costs[1], costs[2]));
-        for (int i=2; i<dp.length; i++) {
-            //Three options for dp[i]:
-            // 1. get cost[0]
-            int cost0 = dp[i - 1] + Math.min(costs[0],Math.min(costs[1], costs[2]));
-            // 2. get cost[1], use seven days ago's to cover all the cost
-            int cost1 = Integer.MAX_VALUE;
-            if (days[i-1] - days[i-2] < 7) {
-                for (int k = i - 2; k >= 0; k--) {
-                    if (days[k] + 7 > days[i-1]) {
-                        cost1 = Math.min(cost1, dp[k] + costs[1]);
-                    } else {
-                        break;
-                    }
-                }
-            }
-            // 3. get cost[2]
-            int cost2 = Integer.MAX_VALUE;
-            if (days[i-1] - days[i-2] < 30) {
-                for (int k = i - 2; k >= 0; k--) {
-                    if (days[k] + 30 > days[i-1]) {
-                        cost2 = Math.min(cost2, dp[k] + costs[2]);
-                    } else {
-                        break;
-                    }
-                }
-            }
-            dp[i] = Math.min(cost0, Math.min(cost1, cost2));
-        }
-        return dp[dp.length - 1];
-    }
 
     public static int numTrees(int n) {
         int[] dp = new int[n + 1];
@@ -1840,17 +1775,6 @@ public class CodingEx {
         return dp[m][n];
     }
 
-    public static int findMaxForm(String[] strs, int m, int n) {
-        if (m == 0 && n == 0) {
-            return 0;
-        }
-        List<String> list = new ArrayList<String>();
-        for (int i=0; i<strs.length; i++) {
-            list.add(strs[i]);
-        }
-        return helper(list, m, n);
-    }
-
     public static int helper(List<String> list, int m, int n) {
         if (m == 0 && n == 0) {
             return 0;
@@ -2097,22 +2021,6 @@ public class CodingEx {
         root.left = rleft;
         root.right = rright;
         return root;
-    }
-
-    public static int numSquares(int n) {
-        int[] dp = new int[n + 1];
-        Arrays.fill(dp, Integer.MAX_VALUE);
-        dp[0] = 0;
-        for(int i = 1; i <= n; ++i) {
-            int min = Integer.MAX_VALUE;
-            int j = 1;
-            while(i - j*j >= 0) {
-                min = Math.min(min, dp[i - j*j] + 1);
-                ++j;
-            }
-            dp[i] = min;
-        }
-        return dp[n];
     }
 
     public class TreeNode {
@@ -2410,25 +2318,6 @@ public class CodingEx {
         int temp = nums[i];
         nums[i] = nums[j];
         nums[j] = temp;
-    }
-
-    public static int uniquePaths(int m, int n) {
-        if (m<=1 || n<=1) {
-            return 1;
-        }
-        int[][] dp = new int[m][n];
-        for (int i=0; i<m; i++) {
-            dp[i][0] = 1;
-        }
-        for (int i=0; i<n; i++) {
-            dp[0][i] = 1;
-        }
-        for (int i=1; i<m; i++) {
-            for (int j=1; j<n; j++) {
-                dp[i][j] = dp[i-1][j] + dp[i][j-1];
-            }
-        }
-        return dp[m-1][n-1];
     }
 
     public static void sortColors(int[] nums) {

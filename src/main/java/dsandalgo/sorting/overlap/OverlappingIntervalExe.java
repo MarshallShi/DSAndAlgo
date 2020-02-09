@@ -28,9 +28,145 @@ public class OverlappingIntervalExe {
         List<String> lst = new ArrayList<String>();
         //[[1,3,2],[2,4,3],[0,2,-2]]
 
-        int[][] ar = {{1,3,2},{2,4,3},{0,2,-2}};
+        int[][] ar = {{-6,9},{1,6},{8,10},{-1,4},{-6,-2},{-9,8},{-5,3},{0,3}};
 
-        System.out.println(exe.getModifiedArray(5,ar));
+        System.out.println(exe.findLongestChain(ar));
+    }
+
+    /**
+     * https://leetcode.com/problems/find-right-interval/
+     * Given a set of intervals, for each of the interval i, check if there exists an interval j whose start point is bigger than or
+     * equal to the end point of the interval i, which can be called that j is on the "right" of i.
+     *
+     * For any interval i, you need to store the minimum interval j's index, which means that the interval j has the minimum start
+     * point to build the "right" relationship for interval i. If the interval j doesn't exist, store -1 for the interval i.
+     * Finally, you need output the stored value of each interval as an array.
+     *
+     * Note:
+     *
+     * You may assume the interval's end point is always bigger than its start point.
+     * You may assume none of these intervals have the same start point.
+     *
+     *
+     * Example 1:
+     *
+     * Input: [ [1,2] ]
+     *
+     * Output: [-1]
+     *
+     * Explanation: There is only one interval in the collection, so it outputs -1.
+     *
+     *
+     * Example 2:
+     *
+     * Input: [ [3,4], [2,3], [1,2] ]
+     *
+     * Output: [-1, 0, 1]
+     *
+     * Explanation: There is no satisfied "right" interval for [3,4].
+     * For [2,3], the interval [3,4] has minimum-"right" start point;
+     * For [1,2], the interval [2,3] has minimum-"right" start point.
+     *
+     *
+     * Example 3:
+     *
+     * Input: [ [1,4], [2,3], [3,4] ]
+     *
+     * Output: [-1, 2, -1]
+     *
+     * Explanation: There is no satisfied "right" interval for [1,4] and [3,4].
+     * For [2,3], the interval [3,4] has minimum-"right" start point.
+     *
+     * @param intervals
+     * @return
+     */
+    //Sort, then apply binary search to get the index of next right interval
+    public int[] findRightInterval(int[][] intervals) {
+        Map<Integer, Integer> map = new HashMap<>();
+        List<Integer> starts = new ArrayList<Integer>();
+        //start for each interval is unique for this question...
+        for (int i = 0; i < intervals.length; i++) {
+            map.put(intervals[i][0], i);
+            starts.add(intervals[i][0]);
+        }
+        Collections.sort(starts);
+        int[] res = new int[intervals.length];
+        for (int i = 0; i < intervals.length; i++) {
+            int end = intervals[i][1];
+            int start = binarySearch(starts, end);
+            if (start < end) {
+                res[i] = -1;
+            } else {
+                res[i] = map.get(start);
+            }
+        }
+        return res;
+    }
+
+    public int binarySearch(List<Integer> list, int x) {
+        int left = 0, right = list.size() - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (list.get(mid) < x) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return list.get(left);
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-length-of-pair-chain/
+     *
+     * You are given n pairs of numbers. In every pair, the first number is always smaller than the second number.
+     *
+     * Now, we define a pair (c, d) can follow another pair (a, b) if and only if b < c. Chain of pairs can be formed in this fashion.
+     *
+     * Given a set of pairs, find the length longest chain which can be formed. You needn't use up all the given pairs. You can select pairs in any order.
+     *
+     * Example 1:
+     * Input: [[1,2], [2,3], [3,4]]
+     * Output: 2
+     * Explanation: The longest chain is [1,2] -> [3,4]
+     * Note:
+     * The number of given pairs will be in the range [1, 1000].
+     *
+     * @param pairs
+     * @return
+     */
+    public int findLongestChain(int[][] pairs) {
+        Arrays.sort(pairs, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0];
+            }
+        });
+        int ret = 1;
+        int[] dp = new int[pairs.length];
+        Arrays.fill(dp,1);
+        for (int i=0; i<dp.length; i++) {
+            for (int j=0; j<i; j++) {
+                if (pairs[j][1] < pairs[i][0]) {
+                    dp[i] = Math.max(dp[i], 1+dp[j]);
+                    ret = Math.max(ret, dp[i]);
+                }
+            }
+        }
+        return dp[dp.length - 1];
+    }
+
+    public int findLongestChain_GREEDY(int[][] pairs) {
+        Arrays.sort(pairs, (a,b) -> a[1] - b[1]);
+        int sum = 0, n = pairs.length, i = -1;
+        while (++i < n) {
+            sum++;
+            int curEnd = pairs[i][1];
+            while (i+1 < n && pairs[i+1][0] <= curEnd) {
+                i++;
+            }
+        }
+        return sum;
     }
 
     /**
@@ -634,5 +770,54 @@ public class OverlappingIntervalExe {
             }
         }
         return intervals.length - count;
+    }
+
+    /**
+     * https://leetcode.com/problems/remove-interval/
+     *
+     * Given a sorted list of disjoint intervals, each interval intervals[i] = [a, b] represents the set of real numbers x such that a <= x < b.
+     *
+     * We remove the intersections between any interval in intervals and the interval toBeRemoved.
+     *
+     * Return a sorted list of intervals after all such removals.
+     *
+     * Example 1:
+     *
+     * Input: intervals = [[0,2],[3,4],[5,7]], toBeRemoved = [1,6]
+     * Output: [[0,1],[6,7]]
+     *
+     * Example 2:
+     *
+     * Input: intervals = [[0,5]], toBeRemoved = [2,3]
+     * Output: [[0,2],[3,5]]
+     *
+     * Constraints:
+     *
+     * 1 <= intervals.length <= 10^4
+     * -10^9 <= intervals[i][0] < intervals[i][1] <= 10^9
+     *
+     * @param intervals
+     * @param toBeRemoved
+     * @return
+     */
+    public List<List<Integer>> removeInterval(int[][] intervals, int[] toBeRemoved) {
+        List<List<Integer>> ans = new ArrayList<List<Integer>>();
+        for (int[] interval : intervals) {
+            if (interval[1] <= toBeRemoved[0] || interval[0] >= toBeRemoved[1]) {
+                // no overlap.
+                ans.add(Arrays.asList(interval[0], interval[1]));
+            } else {
+                // interval[1] > toBeRemoved[0] && interval[0] < toBeRemoved[1].
+                if(interval[0] < toBeRemoved[0]) {
+                    // left end no overlap.
+                    ans.add(Arrays.asList(interval[0], toBeRemoved[0]));
+                }
+                if (interval[1] > toBeRemoved[1]) {
+                    // right end no overlap.
+                    ans.add(Arrays.asList(toBeRemoved[1], interval[1]));
+                }
+            }
+        }
+        return ans;
     }
 }
