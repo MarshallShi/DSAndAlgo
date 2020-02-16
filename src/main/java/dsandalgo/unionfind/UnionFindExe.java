@@ -1,5 +1,6 @@
 package dsandalgo.unionfind;
 
+import java.time.temporal.ValueRange;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,7 +19,310 @@ public class UnionFindExe {
         UnionFindExe exe = new UnionFindExe();
 
         int[][] grid = {{0,0},{0,1},{1,2},{2,1}};
-        System.out.println(exe.numIslands2(3,3,grid));
+//[["x1","x2"],["x2","x3"],["x3","x4"],["x4","x5"]]
+//[3.0,4.0,5.0,6.0]
+//[["x1","x5"],["x5","x2"],["x2","x4"],["x2","x2"],["x2","x9"],["x9","x9"]]
+        List<String> one = new ArrayList<String>();
+        one.add("x1");
+        one.add("x2");
+        List<List<String>> lst = new ArrayList<>();
+        lst.add(one);
+        one = new ArrayList<String>();
+        one.add("x2");
+        one.add("x3");
+        lst.add(one);
+        one = new ArrayList<String>();
+        one.add("x3");
+        one.add("x4");
+        lst.add(one);
+        one = new ArrayList<String>();
+        one.add("x4");
+        one.add("x5");
+        lst.add(one);
+        double[] arr = new double[4];
+        arr[0] = 3.0;
+        arr[1] = 4.0;
+        arr[3] = 5.0;
+        arr[2] = 6.0;
+        List<List<String>> quries = new ArrayList<>();
+        one = new ArrayList<String>();
+        one.add("x1");
+        one.add("x5");
+        quries.add(one);
+        one = new ArrayList<String>();
+        one.add("x5");
+        one.add("x2");
+        quries.add(one);
+        one = new ArrayList<String>();
+        one.add("x2");
+        one.add("x4");
+        quries.add(one);
+        one = new ArrayList<String>();
+        one.add("x2");
+        one.add("x2");
+        quries.add(one);
+        System.out.println(exe.calcEquation(lst,arr,quries));
+    }
+
+    /**
+     * https://leetcode.com/problems/evaluate-division/
+     * Equations are given in the format A / B = k, where A and B are variables represented as strings,
+     * and k is a real number (floating point number). Given some queries, return the answers. If the answer
+     * does not exist, return -1.0.
+     *
+     * Example:
+     * Given a / b = 2.0, b / c = 3.0.
+     * queries are: a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ? .
+     * return [6.0, 0.5, -1.0, 1.0, -1.0 ].
+     *
+     * The input is: vector<pair<string, string>> equations, vector<double>& values, vector<pair<string, string>>
+     * queries , where equations.size() == values.size(), and the values are positive. This represents the
+     * equations. Return vector<double>.
+     *
+     * According to the example above:
+     *
+     * equations = [ ["a", "b"], ["b", "c"] ],
+     * values = [2.0, 3.0],
+     * queries = [ ["a", "c"], ["b", "a"], ["a", "e"], ["a", "a"], ["x", "x"] ].
+     *
+     *
+     * The input is always valid. You may assume that evaluating the queries will result in no division by zero
+     * and there is no contradiction.
+     */
+    class ValuePair{
+        public double val;
+        public String name;
+        public ValuePair(double _v, String _n){
+            this.val = _v;
+            this.name = _n;
+        }
+    }
+    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+        Map<String, List<ValuePair>> graph = new HashMap<String, List<ValuePair>>();
+        for (int i=0; i<equations.size(); i++) {
+            List<String> forumla = equations.get(i);
+            String left = forumla.get(0);
+            String right = forumla.get(1);
+            graph.putIfAbsent(left, new ArrayList<ValuePair>());
+            graph.get(left).add(new ValuePair(values[i], right));
+            graph.putIfAbsent(right, new ArrayList<ValuePair>());
+            graph.get(right).add(new ValuePair(1/values[i], left));
+        }
+        double[] res = new double[queries.size()];
+        for (int i=0; i<queries.size(); i++) {
+            List<String> oneQuery = queries.get(i);
+            if (!graph.containsKey(oneQuery.get(0)) || !graph.containsKey(oneQuery.get(1))) {
+                res[i] = -1.0;
+            } else {
+                if (oneQuery.get(0).equals(oneQuery.get(1))) {
+                    res[i] = 1.0;
+                } else {
+                    res[i] = findValue(oneQuery.get(0), oneQuery.get(1), graph, new HashSet<String>());
+                    if (res[i] == 0) {
+                        res[i] = -1.0;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    private double findValue (String left, String right, Map<String, List<ValuePair>> graph, Set<String> seen) {
+        List<ValuePair> lst = graph.get(left);
+        seen.add(left);
+        for (ValuePair vp : lst) {
+            if (vp.name.equals(right)) {
+                return vp.val;
+            }
+        }
+        double x = 0;
+        for (ValuePair vp : lst) {
+            if (!seen.contains(vp.name)) {
+                 x = vp.val * findValue(vp.name, right, graph, seen);
+                 if (x != 0) {
+                     return x;
+                 }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * https://leetcode.com/problems/satisfiability-of-equality-equations/
+     * Given an array equations of strings that represent relationships between variables, each string equations[i] has length 4
+     * and takes one of two different forms: "a==b" or "a!=b".  Here, a and b are lowercase letters (not necessarily different) that represent one-letter variable names.
+     *
+     * Return true if and only if it is possible to assign integers to variable names so as to satisfy all the given equations.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: ["a==b","b!=a"]
+     * Output: false
+     * Explanation: If we assign say, a = 1 and b = 1, then the first equation is satisfied, but not the second.  There is no way to assign
+     * the variables to satisfy both equations.
+     * Example 2:
+     *
+     * Input: ["b==a","a==b"]
+     * Output: true
+     * Explanation: We could assign a = 1 and b = 1 to satisfy both equations.
+     * Example 3:
+     *
+     * Input: ["a==b","b==c","a==c"]
+     * Output: true
+     * Example 4:
+     *
+     * Input: ["a==b","b!=c","c==a"]
+     * Output: false
+     * Example 5:
+     *
+     * Input: ["c==c","b==d","x!=z"]
+     * Output: true
+     *
+     *
+     * Note:
+     *
+     * 1 <= equations.length <= 500
+     * equations[i].length == 4
+     * equations[i][0] and equations[i][3] are lowercase letters
+     * equations[i][1] is either '=' or '!'
+     * equations[i][2] is '='
+     */
+    public boolean equationsPossible(String[] equations) {
+        UFEquations uf = new UFEquations(26);
+        for (String str : equations) {
+            if (str.contains("==")) {
+                uf.union(str.charAt(0) - 'a', str.charAt(3) - 'a');
+            }
+        }
+        for (String str : equations) {
+            if (str.contains("!=")) {
+                if (uf.find(str.charAt(0) - 'a') == uf.find(str.charAt(3) - 'a')) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    class UFEquations {
+        public int size;
+        public int[] parent;
+        public UFEquations(int size) {
+            this.size = size;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = i;
+            }
+        }
+        public void union(int a, int b) {
+            int parB = find(b);
+            int parA = find(a);
+            if (parB != parA) {
+                parent[parB] = parent[parA];
+                size--;
+            }
+        }
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/possible-bipartition/
+     *
+     * Given a set of N people (numbered 1, 2, ..., N), we would like to split everyone into two groups of any size.
+     *
+     * Each person may dislike some other people, and they should not go into the same group.
+     *
+     * Formally, if dislikes[i] = [a, b], it means it is not allowed to put the people numbered a and b into the same group.
+     *
+     * Return true if and only if it is possible to split everyone into two groups in this way.
+     *
+     * Example 1:
+     *
+     * Input: N = 4, dislikes = [[1,2],[1,3],[2,4]]
+     * Output: true
+     * Explanation: group1 [1,4], group2 [2,3]
+     *
+     * Example 2:
+     *
+     * Input: N = 3, dislikes = [[1,2],[1,3],[2,3]]
+     * Output: false
+     *
+     * Example 3:
+     *
+     * Input: N = 5, dislikes = [[1,2],[2,3],[3,4],[4,5],[1,5]]
+     * Output: false
+     *
+     *
+     * Note:
+     *
+     * 1 <= N <= 2000
+     * 0 <= dislikes.length <= 10000
+     * 1 <= dislikes[i][j] <= N
+     * dislikes[i][0] < dislikes[i][1]
+     * There does not exist i != j for which dislikes[i] == dislikes[j].
+     */
+    public boolean possibleBipartition(int N, int[][] dislikes) {
+        UFPossBipart uf = new UFPossBipart(N+1);
+        Map<Integer, List<Integer>> dislikeGraph = new HashMap<Integer, List<Integer>>();
+        for (int[] dis : dislikes) {
+            if (uf.find(dis[0]) != uf.find(dis[1])) {
+                if (dislikeGraph.containsKey(dis[0])) {
+                    //check current relation.
+                    List<Integer> disliked = dislikeGraph.get(dis[0]);
+                    disliked.add(dis[1]);
+                    uf.union(disliked.get(0), dis[1]);
+                } else {
+                    dislikeGraph.put(dis[0], new ArrayList<Integer>());
+                    dislikeGraph.get(dis[0]).add(dis[1]);
+                }
+                if (dislikeGraph.containsKey(dis[1])) {
+                    //check current relation.
+                    List<Integer> disliked = dislikeGraph.get(dis[1]);
+                    disliked.add(dis[0]);
+                    uf.union(disliked.get(0), dis[0]);
+                } else {
+                    dislikeGraph.put(dis[1], new ArrayList<Integer>());
+                    dislikeGraph.get(dis[1]).add(dis[0]);
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    class UFPossBipart {
+        public int size;
+        public int[] parent;
+        public UFPossBipart(int size) {
+            this.size = size;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public void union(int a, int b) {
+            int parB = find(b);
+            int parA = find(a);
+            if (parB != parA) {
+                parent[parB] = parent[parA];
+                size--;
+            }
+        }
+
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
     }
 
     /**

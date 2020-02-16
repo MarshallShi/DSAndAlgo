@@ -1,10 +1,13 @@
 package dsandalgo.greedy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 public class GreedyExe{
@@ -16,13 +19,148 @@ public class GreedyExe{
         int[] labels = {1,3,3,3,2};
         //System.out.println(exe.largestValsFromLabels(values, labels, 3, 2));
 
-        int[] tempArr = {3,2,1,2,3,4,3,4,5,9,10,11};
-        System.out.println(exe.maxDepthAfterSplit("(()())"));
+        int[] tempArr = {3,2,2,1};
+        System.out.println(exe.numRescueBoats(tempArr, 3));
+    }
+
+    /**
+     * https://leetcode.com/problems/shopping-offers/
+     * @param price
+     * @param special
+     * @param needs
+     * @return
+     */
+    public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
+        return 0;
+    }
+
+    /**
+     * https://leetcode.com/problems/bag-of-tokens/
+     * @param tokens
+     * @param P
+     * @return
+     */
+    public int bagOfTokensScore(int[] tokens, int P) {
+        Arrays.sort(tokens);
+        int low = 0, high = tokens.length - 1;
+        int ans = Integer.MIN_VALUE;
+        int points = 0;
+
+        while (low <= high) {
+            if (P >= tokens[low]) {
+                points++;
+                ans = Math.max(ans, points);
+                P = P - tokens[low];
+                low++;
+            } else {
+                if (points > 0) {
+                    P = P + tokens[high];
+                    points--;
+                    high--;
+                } else {
+                    break;
+                }
+            }
+        }
+        if (ans == Integer.MIN_VALUE) {
+            return 0;
+        }
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/reconstruct-a-2-row-binary-matrix/
+     * @param upper
+     * @param lower
+     * @param colsum
+     * @return
+     */
+    public List<List<Integer>> reconstructMatrix(int upper, int lower, int[] colsum) {
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        ret.add(new ArrayList<Integer>());
+        ret.add(new ArrayList<Integer>());
+        boolean invalid = false;
+        for (int i=0; i<colsum.length; i++) {
+            if (colsum[i] == 0) {
+                ret.get(0).add(0);
+                ret.get(1).add(0);
+                continue;
+            }
+            if (colsum[i] == 2) {
+                ret.get(0).add(1);
+                ret.get(1).add(1);
+                upper--;
+                lower--;
+                continue;
+            }
+            if (colsum[i] == 1) {
+                if (upper > lower) {
+                    ret.get(0).add(1);
+                    ret.get(1).add(0);
+                    upper--;
+                } else {
+                    ret.get(0).add(0);
+                    ret.get(1).add(1);
+                    lower--;
+                }
+            }
+            if (upper < 0 || lower < 0) {
+                invalid = true;
+                break;
+            }
+        }
+        if (invalid) {
+            return new ArrayList<List<Integer>>();
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/boats-to-save-people/
+     *
+     * The i-th person has weight people[i], and each boat can carry a maximum weight of limit.
+     * Each boat carries at most 2 people at the same time, provided the sum of the weight of those people is at most limit.
+     * Return the minimum number of boats to carry every given person.  (It is guaranteed each person can be carried by a boat.)
+     *
+     * Example 1:
+     * Input: people = [1,2], limit = 3
+     * Output: 1
+     * Explanation: 1 boat (1, 2)
+     *
+     * Example 2:
+     * Input: people = [3,2,2,1], limit = 3
+     * Output: 3
+     * Explanation: 3 boats (1, 2), (2) and (3)
+     *
+     * Example 3:
+     * Input: people = [3,5,3,4], limit = 5
+     * Output: 4
+     * Explanation: 4 boats (3), (3), (4), (5)
+     * Note:
+     *
+     * 1 <= people.length <= 50000
+     * 1 <= people[i] <= limit <= 30000
+     */
+    //Tow pointers + Greedy.
+    public int numRescueBoats(int[] people, int limit) {
+        Arrays.sort(people);
+        int i = 0, j = people.length - 1;
+        while (i < j) {
+            if (people[i] + people[j] <= limit) {
+                ++i;
+                j--;
+            } else {
+                j--;
+            }
+        }
+        if (i == j) {
+            return people.length - j;
+        }
+        return people.length - 1 - j;
     }
 
     /**
      * https://leetcode.com/problems/minimum-swaps-to-make-strings-equal/
-     *
      * @param s1
      * @param s2
      * @return
@@ -66,19 +204,6 @@ public class GreedyExe{
 
         return swaps;
     }
-
-    /**
-     * vector<int> maxDepthAfterSplit(string seq) {
-     *         vector<int> ans;
-     *         int depth = 0;
-     *         for(int i = 0; i < seq.length(); i++){
-     *             if(seq[i] == '(') depth++;
-     *             ans.push_back(depth%2);
-     *             if(seq[i] == ')') depth--;
-     *         }
-     *         return ans;
-     *     }```
-     */
 
     /**
      * https://leetcode.com/problems/maximum-nesting-depth-of-two-valid-parentheses-strings/

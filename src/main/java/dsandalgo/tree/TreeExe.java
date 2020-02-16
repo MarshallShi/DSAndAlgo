@@ -1,6 +1,7 @@
 package dsandalgo.tree;
 
 import javafx.util.Pair;
+import sun.reflect.generics.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,7 +23,250 @@ public class TreeExe {
         TreeExe exe = new TreeExe();
         //exe.insertIntoBST(exe.createANode(), 5);
         int[] preorder = {8,5,1,7,10,12};
-        //TreeNode node = exe.sortedListToBST(exe.createTestNode());
+        System.out.println(exe.isValidSerialization("9,3,4,#,#,1,#,#,#,2,#,6,#,#"));
+    }
+
+    /**
+     * One way to serialize a binary tree is to use pre-order traversal. When we encounter a non-null node, we record the node's value. If it is a null node, we record using a sentinel value such as #.
+     *
+     *      _9_
+     *     /   \
+     *    3     2
+     *   / \   / \
+     *  4   1  #  6
+     * / \ / \   / \
+     * # # # #   # #
+     * For example, the above binary tree can be serialized to the string "9,3,4,#,#,1,#,#,2,#,6,#,#", where # represents a null node.
+     *
+     * Given a string of comma separated values, verify whether it is a correct preorder traversal serialization of a binary tree. Find an algorithm without reconstructing the tree.
+     *
+     * Each comma separated value in the string must be either an integer or a character '#' representing null pointer.
+     *
+     * You may assume that the input format is always valid, for example it could never contain two consecutive commas such as "1,,3".
+     *
+     * Example 1:
+     *
+     * Input: "9,3,4,#,#,1,#,#,2,#,6,#,#"
+     * Output: true
+     * Example 2:
+     *
+     * Input: "1,#"
+     * Output: false
+     * Example 3:
+     *
+     * Input: "9,#,#,1"
+     * Output: false
+     *
+     * @param preorder
+     * @return
+     */
+    public boolean isValidSerialization(String preorder) {
+        Stack<String> s = new Stack<String>();
+        String[] strs = preorder.split(",");
+        if (strs.length == 1 && strs[0].equals("#")) {
+            return true;
+        }
+        for (int i=0; i<strs.length; i++) {
+            //Meet a number
+            if (!strs[i].equals("#")) {
+                s.push(strs[i]);
+            } else {
+                //Meet a #
+                if (s.isEmpty()) {
+                    return false;
+                } else {
+                    while (!s.isEmpty() && s.peek().equals("#")) {
+                        s.pop();//pop the left #
+                        s.pop();//pop the number
+                    }
+                    if (!s.isEmpty()) {
+                        s.push(strs[i]);
+                    } else {
+                        //if all popped out, and still have remaining number, return false.
+                        if (i != strs.length - 1) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return s.isEmpty();
+    }
+
+    /**
+     * https://leetcode.com/problems/binary-tree-longest-consecutive-sequence-ii/
+     *
+     * Given a binary tree, you need to find the length of Longest Consecutive Path in Binary Tree.
+     *
+     * Especially, this path can be either increasing or decreasing. For example, [1,2,3,4] and [4,3,2,1]
+     * are both considered valid, but the path [1,2,4,3] is not valid. On the other hand, the path can be
+     * in the child-Parent-child order, where not necessarily be parent-child order.
+     *
+     * Example 1:
+     * Input:
+     *         1
+     *        / \
+     *       2   3
+     * Output: 2
+     * Explanation: The longest consecutive path is [1, 2] or [2, 1].
+     *
+     * Example 2:
+     * Input:
+     *         2
+     *        / \
+     *       1   3
+     * Output: 3
+     * Explanation: The longest consecutive path is [1, 2, 3] or [3, 2, 1].
+     *
+     * Note: All the values of tree nodes are in the range of [-1e7, 1e7].
+     */
+    int maxval = 0;
+    public int longestConsecutive_2(TreeNode root) {
+        longestPath(root);
+        return maxval;
+    }
+    public int[] longestPath(TreeNode root) {
+        if (root == null) {
+            return new int[] {0,0};
+        }
+        int inr = 1, dcr = 1;
+        if (root.left != null) {
+            int[] l = longestPath(root.left);
+            if (root.val == root.left.val + 1) {
+                dcr = l[1] + 1;
+            } else {
+                if (root.val == root.left.val - 1) {
+                    inr = l[0] + 1;
+                }
+            }
+        }
+        if (root.right != null) {
+            int[] r = longestPath(root.right);
+            if (root.val == root.right.val + 1) {
+                dcr = Math.max(dcr, r[1] + 1);
+            } else {
+                if (root.val == root.right.val - 1) {
+                    inr = Math.max(inr, r[0] + 1);
+                }
+            }
+        }
+        maxval = Math.max(maxval, dcr + inr - 1);
+        return new int[] {inr, dcr};
+    }
+
+    //Key trick is how to split the node decreasing length and increasing length.
+    //Result is return the sum, and the max sum.
+//    public int longestConsecutive_2(TreeNode root) {
+//        Map<TreeNode,Integer> increase = new HashMap<TreeNode,Integer>();
+//        Map<TreeNode,Integer> decrease = new HashMap<TreeNode,Integer>();
+//        increase.put(root,1);
+//        decrease.put(root,1);
+//        int max = search(root, increase, decrease,1);
+//        return max;
+//    }
+//
+//    public int search(TreeNode root,Map<TreeNode,Integer> increase,Map<TreeNode,Integer> decrease,int max){
+//        if (root == null) {
+//            return 0;
+//        }
+//        max = Math.max(max, search(root.left, increase, decrease, max));
+//        max = Math.max(max, search(root.right, increase, decrease, max));
+//
+//        increase.put(root,1);
+//        decrease.put(root,1);
+//
+//        if (root.left != null) {
+//            if (root.val - root.left.val == 1){
+//                int maxValue = Math.max(increase.get(root), increase.get(root.left) + 1);
+//                increase.put(root, maxValue);
+//            } else if (root.val - root.left.val == -1) {
+//                int maxValue = Math.max(decrease.get(root), decrease.get(root.left) + 1);
+//                decrease.put(root, maxValue);
+//            }
+//        }
+//        if (root.right != null) {
+//            if (root.val - root.right.val == 1) {
+//                int maxValue = Math.max(increase.get(root), increase.get(root.right) + 1);
+//                increase.put(root, maxValue);
+//            } else if (root.val - root.right.val == -1) {
+//                int maxValue = Math.max(decrease.get(root), decrease.get(root.right) + 1);
+//                decrease.put(root, maxValue);
+//            }
+//        }
+//
+//        max = Math.max(max, increase.get(root) + decrease.get(root) -1);
+//        return max;
+//    }
+
+    /**
+     * https://leetcode.com/problems/binary-tree-longest-consecutive-sequence/
+     *
+     * Given a binary tree, find the length of the longest consecutive sequence path.
+     *
+     * The path refers to any sequence of nodes from some starting node to any node in the
+     * tree along the parent-child connections. The longest consecutive path need to be from
+     * parent to child (cannot be the reverse).
+     *
+     * Example 1:
+     * Input:
+     *
+     *    1
+     *     \
+     *      3
+     *     / \
+     *    2   4
+     *         \
+     *          5
+     *
+     * Output: 3
+     * Explanation: Longest consecutive sequence path is 3-4-5, so return 3.
+     *
+     * Example 2:
+     * Input:
+     *    2
+     *     \
+     *      3
+     *     /
+     *    2
+     *   /
+     *  1
+     *
+     * Output: 2
+     *
+     * Explanation: Longest consecutive sequence path is 2-3, not 3-2-1, so return 2.
+     */
+    public int longestConsecutive(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        return Math.max(lcHelper(root.left, 1, root.val), lcHelper(root.right, 1, root.val));
+    }
+
+    private int lcHelper(TreeNode node, int count, int val) {
+        if (node == null) {
+            return count;
+        }
+        if (node.val - 1 == val) {
+            count = count + 1;
+        } else {
+            count = 1;
+        }
+        int left = lcHelper(node.left, count, node.val);
+        int right = lcHelper(node.right, count, node.val);
+        return Math.max(Math.max(left, right), count);
+    }
+
+    private TreeNode createTest1(){
+        TreeNode r = new TreeNode(1);
+        TreeNode n1 = new TreeNode(2);
+        TreeNode n2 = new TreeNode(3);
+        r.left = n1;
+        r.right = n2;
+        TreeNode n3 = new TreeNode(4);
+        n1.left = n3;
+        TreeNode n4 = new TreeNode(5);
+        n2.right = n4;
+        return r;
     }
 
     /**

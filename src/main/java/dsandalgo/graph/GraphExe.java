@@ -1,6 +1,7 @@
 package dsandalgo.graph;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,11 +13,67 @@ public class GraphExe {
 
     public static void main(String[] args) {
         GraphExe exe = new GraphExe();
+        //[[],[0,2,3,4],[3],[4],[]]
         int[][] graph = {
-                {1,2},{3},{3},{}
+                {},{0,2,3,4},{3},{4},{}
         };
-        exe.allPathsSourceTarget(graph);
+        exe.eventualSafeNodes(graph);
     }
+
+    /**
+     * https://leetcode.com/problems/find-eventual-safe-states/
+     * In a directed graph, we start at some node and every turn, walk along a directed edge
+     * of the graph.  If we reach a node that is terminal (that is, it has no outgoing directed edges), we stop.
+     *
+     * Now, say our starting node is eventually safe if and only if we must eventually walk to a terminal node.
+     * More specifically, there exists a natural number K so that for any choice of where to walk, we must have
+     * stopped at a terminal node in less than K steps.
+     *
+     * Which nodes are eventually safe?  Return them as an array in sorted order.
+     *
+     * The directed graph has N nodes with labels 0, 1, ..., N-1, where N is the length of graph.  The graph is given in the following form: graph[i] is a list of labels j such that (i, j) is a directed edge of the graph.
+     *
+     * Example:
+     * Input: graph = [[1,2],[2,3],[5],[0],[5],[],[]]
+     * Output: [2,4,5,6]
+     * Here is a diagram of the above graph.
+     */
+    public List<Integer> eventualSafeNodes(int[][] graph) {
+        Map<Integer, List<Integer>> mapGraph = new HashMap<Integer, List<Integer>>();
+        for (int i=0; i<graph.length; i++) {
+            mapGraph.putIfAbsent(i, new ArrayList<Integer>());
+            for (int j=0; j<graph[i].length; j++) {
+                mapGraph.get(i).add(graph[i][j]);
+            }
+        }
+        List<Integer> ans = new ArrayList<Integer>();
+        for (int i=0; i<graph.length; i++) {
+            boolean[] seen = new boolean[graph.length];
+            seen[i] = true;
+            if (isSafeDFS(i, mapGraph, seen)) {
+                ans.add(i);
+            }
+        }
+        return ans;
+    }
+
+    private boolean isSafeDFS(int node, Map<Integer, List<Integer>> mapGraph, boolean[] seen) {
+        if (mapGraph.get(node).size() == 0) {
+            return true;
+        } else {
+            boolean ret = true;
+            for (Integer neigh : mapGraph.get(node)) {
+                if (seen[neigh] && mapGraph.get(node).size() != 0) {
+                    return false;
+                }
+                seen[neigh] = true;
+                ret = ret && isSafeDFS(neigh, mapGraph, seen);
+                seen[neigh] = false;
+            }
+            return ret;
+        }
+    }
+
 
     /**
      * https://leetcode.com/problems/tree-diameter/

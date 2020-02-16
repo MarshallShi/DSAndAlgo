@@ -30,12 +30,177 @@ public class ArrayExe {
         int[][] arrr = {{1,2},{1,2},{1,1},{2,2},{1,2}};
         //[-10,-5,-2,0,4,5,6,7,8,9,10]
 
-        int[] c = {1,0,1,2,1,1,7,5};
+
         int[] g = {9,77,63,22,92,9,14,54,8,38,18,19,38,68,58,19};
         int X = 3;
 
         int[][] mat = {{1,2,3,4,5},{2,4,5,8,10},{3,5,7,9,11},{1,3,5,7,9}};
-        //System.out.println(exe.minSetSize(g));
+
+        int[] arr = {1,-1};
+
+        int[] c = {1,0,1,2,1,1,7,5};
+        System.out.println(exe.isNStraightHand(c, 2));
+    }
+
+    /**
+     * https://leetcode.com/problems/hand-of-straights/
+     */
+    public boolean isNStraightHand(int[] hand, int W) {
+        TreeMap<Integer, Integer> countFreq = new TreeMap<Integer, Integer>();
+        for (int i=0; i<hand.length; i++) {
+            countFreq.put(hand[i], countFreq.getOrDefault(hand[i], 0) + 1);
+        }
+        for (Map.Entry<Integer, Integer> entry : countFreq.entrySet()) {
+            int key = entry.getKey();
+            while (countFreq.get(key) > 0) {
+                countFreq.put(key, countFreq.get(key) - 1);
+                for (int i=1; i<W; i++) {
+                    if (!countFreq.containsKey(key + i) || countFreq.get(key + i) < 1) {
+                        return false;
+                    } else {
+                        countFreq.put(key + i, countFreq.get(key + i) - 1);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/k-concatenation-maximum-sum/
+     *
+     * Given an integer array arr and an integer k, modify the array by repeating it k times.
+     *
+     * For example, if arr = [1, 2] and k = 3 then the modified array will be [1, 2, 1, 2, 1, 2].
+     *
+     * Return the maximum sub-array sum in the modified array. Note that the length of the sub-array can be 0 and its sum in that case is 0.
+     *
+     * As the answer can be very large, return the answer modulo 10^9 + 7.
+     *
+     * Example 1:
+     * Input: arr = [1,2], k = 3
+     * Output: 9
+     *
+     * Example 2:
+     * Input: arr = [1,-2,1], k = 5
+     * Output: 2
+     *
+     * Example 3:
+     * Input: arr = [-1,-2], k = 7
+     * Output: 0
+     *
+     * Constraints:
+     *
+     * 1 <= arr.length <= 10^5
+     * 1 <= k <= 10^5
+     * -10^4 <= arr[i] <= 10^4
+     */
+    //But now I have the result for k == 1 at least, now let's think about k == 2. We can easily find that there are 3 cases for k == 2:
+    //Case 1: max subarray is somewhere in the middle and the second repeat does not help at all. ex. arr = [-1, 1, -1],
+    // repeat twice, arr2 = [-1, 1, -1, -1, 1, -1], max subarray is still 1;
+    //Case 2: max subarray is somewhere in the middle and the second repeat can offer some help. ex. arr = [-1, 4, -1],
+    // repeat twice, arr2 = [-1, 4, -1, -1, 4 ,-1], max subarray increases from 4 to [4, -1, -1, 4] -> 6.
+    // Further, we can easily find that the extra offer is the sum of the arr = [-1, 4, -1] -> 2; sum > 0 is the key difference from case 1.
+    // And we can easily extend this case to any k > 2 as well, result = result + (k - 1) * sum;
+    //Case 3: max subarray is at the end of the array and the head of second repeat can offer some help. ex. arr = [1, -4, 1],
+    // repeat twice, arr2 = [1, -4, 1, 1, -4, 1], max subarray increases from 1 to 2; This is a special case which will not be affected by more repeated arrays.
+    public int kConcatenationMaxSum(int[] arr, int k) {
+        long result = 0, cur_max = 0, sum = 0;
+        int M = 1000000007;
+        // basic solution from Leetcode 53
+        for (int i = 0; i < arr.length; i++) {
+            cur_max = Math.max(cur_max + arr[i], (long)arr[i]);
+            result = Math.max(result, cur_max);
+            sum += arr[i];
+        }
+        // k < 2, return result from basic solution
+        if (k < 2) {
+            return (int)(result % M);
+        }
+        // sum > 0, case 2
+        if (sum > 0) {
+            return (int)((result + (k - 1) * sum) % M);
+        }
+        // another round to catch case 3
+        for (int i = 0; i < arr.length; i++) {
+            cur_max = Math.max(cur_max + arr[i], (long)arr[i]);
+            result = Math.max(result, cur_max);
+        }
+        return (int)(result % M);
+    }
+
+    public int numFriendRequests(int[] ages) {
+        Map<Integer, Integer> count = new HashMap<>();
+        for (int age : ages) {
+            count.put(age, count.getOrDefault(age, 0) + 1);
+        }
+        int res = 0;
+        for (Integer a : count.keySet()) {
+            for (Integer b : count.keySet()) {
+                if (request(a, b)) {
+                    res = res + count.get(a) * (count.get(b) - (a == b ? 1 : 0));
+                }
+            }
+        }
+        return res;
+    }
+
+    private boolean request(int a, int b) {
+        return !(b <= 0.5 * a + 7 || b > a || (b > 100 && a < 100));
+    }
+
+    /**
+     * https://leetcode.com/problems/bomb-enemy/
+     *
+     * Given a 2D grid, each cell is either a wall 'W', an enemy 'E' or empty '0' (the number zero),
+     * return the maximum enemies you can kill using one bomb.
+     * The bomb kills all the enemies in the same row and column from the planted point until it hits the
+     * wall since the wall is too strong to be destroyed.
+     * Note: You can only put the bomb at an empty cell.
+     *
+     * Example:
+     * Input: [["0","E","0","0"],["E","0","W","E"],["0","E","0","0"]]
+     * Output: 3
+     * Explanation: For the given grid,
+     *
+     * 0 E 0 0
+     * E 0 W E
+     * 0 E 0 0
+     *
+     * Placing a bomb at (1,1) kills 3 enemies.
+     */
+    public int maxKilledEnemies(char[][] grid) {
+        int maxKilled = Integer.MIN_VALUE;
+        int[][] dirs = {{0,1},{1,0},{0,-1},{-1,0}};
+        for (int i=0; i<grid.length; i++) {
+            for (int j=0; j<grid[i].length; j++) {
+                if (grid[i][j] == '0') {
+                    int totalKilled = 0;
+                    for (int[] d : dirs) {
+                        totalKilled += findKilled(grid, i, j, d);
+                    }
+                    maxKilled = Math.max(maxKilled, totalKilled);
+                }
+            }
+        }
+        if (maxKilled == Integer.MIN_VALUE) {
+            return 0;
+        }
+        return maxKilled;
+    }
+
+    private int findKilled(char[][] grid, int i, int j, int[] d) {
+        int nx = i + d[0];
+        int ny = j + d[1];
+        int count = 0;
+        while (nx >= 0 && nx < grid.length && ny >= 0 && ny < grid[0].length && grid[nx][ny] != 'W') {
+            if (grid[nx][ny] == 'E') {
+                count++;
+            }
+            nx = nx + d[0];
+            ny = ny + d[1];
+        }
+        return count;
     }
 
     /**

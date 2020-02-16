@@ -2,17 +2,209 @@ package dsandalgo.sorting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.TreeMap;
 
 public class SortingExe {
 
     public static void main(String[] args) {
         SortingExe exe = new SortingExe();
-        int[] input = {17,13,11,2,3,5,7};
-        exe.deckRevealedIncreasing(input);
+        int[] input = {1,2,3};
+
+        int[] difficulty = {85,47,57};
+        int[] profit = {24,66,99};
+        int[] worker = {40,25,25};
+        System.out.println(exe.movesToMakeZigzag(input));
+    }
+
+    /**
+     * https://leetcode.com/problems/decrease-elements-to-make-array-zigzag/
+     * Given an array nums of integers, a move consists of choosing any element and decreasing it by 1.
+     *
+     * An array A is a zigzag array if either:
+     *
+     * Every even-indexed element is greater than adjacent elements, ie. A[0] > A[1] < A[2] > A[3] < A[4] > ...
+     * OR, every odd-indexed element is greater than adjacent elements, ie. A[0] < A[1] > A[2] < A[3] > A[4] < ...
+     * Return the minimum number of moves to transform the given array nums into a zigzag array.
+     *
+     * Example 1:
+     * Input: nums = [1,2,3]
+     * Output: 2
+     * Explanation: We can decrease 2 to 0 or 3 to 1.
+     *
+     * Example 2:
+     * Input: nums = [9,6,1,6,2]
+     * Output: 4
+     * Constraints:
+     *
+     * 1 <= nums.length <= 1000
+     * 1 <= nums[i] <= 1000
+     *
+     */
+    public int movesToMakeZigzag(int[] nums) {
+
+        int[] aaa = {3,2,-1,-2};
+        int[] aab = {-2,-1,2,3};
+        int low = 0, high = 3;
+        while (low < high) {
+            int mid = low + (high - low)/2;
+            if (aaa[mid] < 0) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        System.out.println(low);
+        int id = Arrays.binarySearch(aab, 0);
+
+
+        int res[] = new int[2],  n = nums.length, left, right;
+        for (int i = 0; i < n; ++i) {
+            left = i > 0 ? nums[i - 1] : 1001;
+            right = i + 1 < n ? nums[i + 1] : 1001;
+            res[i % 2] += Math.max(0, nums[i] - Math.min(left, right) + 1);
+        }
+        return Math.min(res[0], res[1]);
+    }
+
+    /**
+     * https://leetcode.com/problems/global-and-local-inversions/
+     * @param A
+     * @return
+     */
+    public boolean isIdealPermutation(int[] A) {
+        for (int i = 0; i < A.length; i++) {
+            if (Math.abs(i - A[i]) > 1)
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/corporate-flight-bookings/
+     * @param bookings
+     * @param n
+     * @return
+     */
+    public int[] corpFlightBookings(int[][] bookings, int n) {
+        TreeMap<Integer, Integer> start = new TreeMap<>();
+        TreeMap<Integer, Integer> end = new TreeMap<>();
+        for (int i=0; i<bookings.length; i++) {
+            start.put(bookings[i][0], start.getOrDefault(bookings[i][0], 0) + bookings[i][2]);
+            end.put(bookings[i][1], end.getOrDefault(bookings[i][1], 0) + bookings[i][2]);
+        }
+        int rolling = 0;
+        int[] res = new int[n];
+        for (int i=1; i<=n; i++) {
+            if (start.containsKey(i)) {
+                rolling += start.get(i);
+            }
+            res[i-1] = rolling;
+            if (end.containsKey(i)) {
+                rolling -= end.get(i);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/most-profit-assigning-work/
+     */
+    public int maxProfitAssignment(int[] difficulty, int[] profit, int[] worker) {
+        TreeMap<Integer, Integer> tmap = new TreeMap<Integer, Integer>();
+        // in case two jobs have same difficulty but different profit, we want to count
+        // the higher profit
+        for (int i = 0; i < difficulty.length; i++) {
+            tmap.put(difficulty[i], Math.max(profit[i], tmap.getOrDefault(difficulty[i], 0)));
+        }
+
+        int max = 0, res = 0;
+        // maximum profit at this difficulty or below in case
+        // lower difficulty job offers higher profit
+        for (Integer key : tmap.keySet()) {
+            max = Math.max(tmap.get(key), max);
+            tmap.put(key, max);
+        }
+
+        Map.Entry<Integer, Integer> entry = null;
+        for (int i = 0; i < worker.length; i++) {
+            if (tmap.containsKey(worker[i])) {
+                res += tmap.get(worker[i]);
+            } else {
+                entry = tmap.floorEntry(worker[i]);
+                if (entry != null) {
+                    res += entry.getValue();
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/distant-barcodes/
+     *
+     * In a warehouse, there is a row of barcodes, where the i-th barcode is barcodes[i].
+     *
+     * Rearrange the barcodes so that no two adjacent barcodes are equal.  You may return any
+     * answer, and it is guaranteed an answer exists.
+     *
+     * Example 1:
+     * Input: [1,1,1,2,2,2]
+     * Output: [2,1,2,1,2,1]
+     *
+     * Example 2:
+     * Input: [1,1,1,1,2,2,3,3]
+     * Output: [1,3,1,3,2,1,2,1]
+     *
+     * Note:
+     *
+     * 1 <= barcodes.length <= 10000
+     * 1 <= barcodes[i] <= 10000
+     */
+    public int[] rearrangeBarcodes(int[] barcodes) {
+        if (barcodes == null || barcodes.length == 0) {
+            return barcodes;
+        }
+        //count the freq of numbers.
+        Map<Integer, Integer> counter = new HashMap<>();
+        int max_fre = 0;
+        for (int num : barcodes) {
+            counter.put(num, counter.getOrDefault(num, 0) + 1);
+            if (counter.get(num) > max_fre) {
+                max_fre = counter.get(num);
+            }
+        }
+        //bucket sort.
+        List<Integer>[] buckets = new ArrayList[max_fre + 1];
+        for (int num : counter.keySet()) {
+            int c = counter.get(num);
+            if (buckets[c] == null) {
+                buckets[c] = new ArrayList<>();
+            }
+            buckets[c].add(num);
+        }
+
+        //push data into the result array, first do the most freq number pushed
+        int index = 0;
+        int[] res = new int[barcodes.length];
+        for (int i = max_fre; i >= 1; i--) {
+            List<Integer> b = buckets[i];
+            if (b == null) continue;
+            for (int num : b) {
+                int j = i;
+                while (j > 0) {
+                    res[index] = num;
+                    index = index + 2 < barcodes.length ? index + 2 : 1;
+                    j--;
+                }
+            }
+        }
+        return res;
     }
 
     /**

@@ -2,6 +2,7 @@ package dsandalgo.bfs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -37,6 +38,165 @@ public class BFSExes {
         };
 
         System.out.println(exe.minKnightMoves(-45, -102));
+    }
+
+    /**
+     * https://leetcode.com/problems/get-watched-videos-by-your-friends/
+     * There are n people, each person has a unique id between 0 and n-1. Given the arrays watchedVideos and friends,
+     * where watchedVideos[i] and friends[i] contain the list of watched videos and the list of friends respectively
+     * for the person with id = i.
+     *
+     * Level 1 of videos are all watched videos by your friends, level 2 of videos are all watched videos by the friends
+     * of your friends and so on. In general, the level k of videos are all watched videos by people with the shortest
+     * path exactly equal to k with you. Given your id and the level of videos, return the list of videos ordered by
+     * their frequencies (increasing). For videos with the same frequency order them alphabetically from least to greatest.
+     *
+     *
+     *
+     * Example 1:
+     * Input: watchedVideos = [["A","B"],["C"],["B","C"],["D"]], friends = [[1,2],[0,3],[0,3],[1,2]], id = 0, level = 1
+     * Output: ["B","C"]
+     * Explanation:
+     * You have id = 0 (green color in the figure) and your friends are (yellow color in the figure):
+     * Person with id = 1 -> watchedVideos = ["C"]
+     * Person with id = 2 -> watchedVideos = ["B","C"]
+     * The frequencies of watchedVideos by your friends are:
+     * B -> 1
+     * C -> 2
+     *
+     * Example 2:
+     * Input: watchedVideos = [["A","B"],["C"],["B","C"],["D"]], friends = [[1,2],[0,3],[0,3],[1,2]], id = 0, level = 2
+     * Output: ["D"]
+     * Explanation:
+     * You have id = 0 (green color in the figure) and the only friend of your friends is the person with id = 3
+     * (yellow color in the figure).
+     *
+     *
+     * Constraints:
+     *
+     * n == watchedVideos.length == friends.length
+     * 2 <= n <= 100
+     * 1 <= watchedVideos[i].length <= 100
+     * 1 <= watchedVideos[i][j].length <= 8
+     * 0 <= friends[i].length < n
+     * 0 <= friends[i][j] < n
+     * 0 <= id < n
+     * 1 <= level < n
+     * if friends[i] contains j, then friends[j] contains i
+     *
+     */
+    public List<String> watchedVideosByFriends(List<List<String>> watchedVideos, int[][] friends, int id, int level) {
+        Queue<Integer> q = new LinkedList<Integer>();
+        q.offer(id);
+        int lev = 0;
+        boolean[] visited = new boolean[friends.length];
+        Map<String, Integer> freqMap = new HashMap<>();
+        visited[id] = true;
+        while (!q.isEmpty()) {
+            if (lev == level) {
+                int s = q.size();
+                for (int i=0; i<s; i++) {
+                    int cur = q.poll();
+                    List<String> vidList = watchedVideos.get(cur);
+                    for (String v : vidList) {
+                        freqMap.put(v, freqMap.getOrDefault(v, 0) + 1);
+                    }
+                }
+            } else {
+                int s = q.size();
+                for (int i=0; i<s; i++) {
+                    int cur = q.poll();
+                    int[] fri = friends[cur];
+                    for (int j=0; j<fri.length; j++) {
+                        if (!visited[fri[j]]) {
+                            q.offer(fri[j]);
+                            visited[fri[j]] = true;
+                        }
+                    }
+                }
+                lev++;
+            }
+        }
+        PriorityQueue<Map.Entry<String,Integer>> pq = new PriorityQueue<>(new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                if (o1.getValue() == o2.getValue()) {
+                    return o1.getKey().compareTo(o2.getKey());
+                }
+                return o1.getValue() - o2.getValue();
+            }
+        });
+        for (Map.Entry<String,Integer> en : freqMap.entrySet()) {
+            pq.offer(en);
+        }
+        List<String> ret = new ArrayList<String>();
+        while (!pq.isEmpty()) {
+            ret.add(pq.poll().getKey());
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/alphabet-board-path/
+     * On an alphabet board, we start at position (0, 0), corresponding to character board[0][0].
+     * Here, board = ["abcde", "fghij", "klmno", "pqrst", "uvwxy", "z"], as shown in the diagram below.
+     * We may make the following moves:
+     * 'U' moves our position up one row, if the position exists on the board;
+     * 'D' moves our position down one row, if the position exists on the board;
+     * 'L' moves our position left one column, if the position exists on the board;
+     * 'R' moves our position right one column, if the position exists on the board;
+     * '!' adds the character board[r][c] at our current position (r, c) to the answer.
+     * (Here, the only positions that exist on the board are positions with letters on them.)
+     * Return a sequence of moves that makes our answer equal to target in the minimum number of moves.
+     * You may return any path that does so.
+     *
+     * Example 1:
+     * Input: target = "leet"
+     * Output: "DDR!UURRR!!DDD!"
+     *
+     * Example 2:
+     * Input: target = "code"
+     * Output: "RR!DDRR!UUL!R!"
+     *
+     * Constraints:
+     * 1 <= target.length <= 100
+     * target consists only of English lowercase letters.
+     */
+    public String alphabetBoardPath(String target) {
+        if (target.length() == 0) {
+            return "";
+        }
+        int sourceRow = 0, sourceCol = 0;
+        String res = "";
+        for (char c : target.toCharArray()) {
+            int position = c - 'a';
+            int targetRow = position / 5;
+            int targetCol = position % 5;
+            if (targetCol < sourceCol) {
+                res += helper("L", sourceCol - targetCol);
+            }
+            if (targetRow < sourceRow) {
+                res += helper("U", sourceRow - targetRow);
+            }
+            if (targetRow > sourceRow) {
+                res += helper("D", targetRow - sourceRow);
+            }
+            if (targetCol > sourceCol) {
+                res += helper("R", targetCol - sourceCol);
+            }
+            res += "!";
+            sourceRow = targetRow;
+            sourceCol = targetCol;
+        }
+        return res;
+    }
+
+    private String helper(String dir, int time) {
+        String res = "";
+        for (int i = 0; i < time; i++) {
+            res += dir;
+        }
+        return res;
     }
 
     /**

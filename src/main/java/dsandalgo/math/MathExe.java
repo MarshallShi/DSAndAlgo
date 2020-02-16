@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 public class MathExe {
@@ -17,8 +19,435 @@ public class MathExe {
         int[] rec1 = {0,0,1,1};
         int[] rec2 = {2,2,3,3};
         int[][] shape = {{1,2},{3,4}};
-        int[] primes = {2,7,13,19};
-        //System.out.println(exe.angleClock(12, 30));
+        int[] a = {1,1,0};
+        //2147483647
+        //[1,1,0]
+        System.out.println(exe.smallestRepunitDivByK(2));
+    }
+
+
+    /**
+     * https://leetcode.com/problems/monotone-increasing-digits/
+     * Given a non-negative integer N, find the largest number that is less than or equal
+     * to N with monotone increasing digits.
+     *
+     * (Recall that an integer has monotone increasing digits if and only if each pair of
+     * adjacent digits x and y satisfy x <= y.)
+     *
+     * Example 1:
+     * Input: N = 10
+     * Output: 9
+     * Example 2:
+     * Input: N = 1234
+     * Output: 1234
+     * Example 3:
+     * Input: N = 332
+     * Output: 299
+     * Note: N is an integer in the range [0, 10^9].
+     */
+    public int monotoneIncreasingDigits(int N) {
+        //Greedy approach.
+        char[] arrN = String.valueOf(N).toCharArray();
+        int monotoneIncreasingToTheLeftOf = arrN.length - 1;
+        for (int i = arrN.length - 1; i > 0; i--) {
+            if (arrN[i] < arrN[i - 1]) {
+                monotoneIncreasingToTheLeftOf = i - 1;
+                arrN[i - 1]--;
+            }
+        }
+        for (int i = monotoneIncreasingToTheLeftOf + 1; i < arrN.length; i++) {
+            arrN[i] = '9';
+        }
+        return Integer.parseInt(new String(arrN));
+    }
+
+    public int monotoneIncreasingDigits_BFS_slow(int N) {
+        if (N < 10) {
+            return N;
+        }
+        Queue<Long> queue = new LinkedList<Long>();
+        for (long i = 1; i <= 9; i++) {
+            queue.add(i);
+        }
+        int ret = Integer.MIN_VALUE;
+        while (!queue.isEmpty()) {
+            long p = queue.poll();
+            ret = Math.max(ret, (int)p);
+            long lastDigit = p % 10;
+            for (long k=lastDigit; k<=9; k++) {
+                if (p * 10 + k <= N) {
+                    queue.offer(p * 10 + k);
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/optimal-division/
+     * @param nums
+     * @return
+     */
+    public String optimalDivision(int[] nums) {
+        String ans = null;
+        if (nums.length == 0) return ans;
+        ans = String.valueOf(nums[0]);
+        if (nums.length == 1) return ans;
+        if (nums.length == 2) return ans + "/" + String.valueOf(nums[1]);
+        ans += "/(" + String.valueOf(nums[1]);
+        for(int i = 2; i < nums.length;++i) {
+            ans += "/" + String.valueOf(nums[i]);
+        }
+        ans += ")";
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/smallest-integer-divisible-by-k/
+     * @param K
+     * @return
+     */
+    public int smallestRepunitDivByK(int K) {
+        if(K % 2 == 0 || K % 5 == 0) {
+            return -1;
+        }
+        int count = 1, number = 1;
+        while ( number % K != 0 ) {
+            number = (number * 10 + 1) % K;
+            count++;
+        }
+        return count;
+    }
+
+    /**
+     * https://leetcode.com/problems/clumsy-factorial/
+     * Normally, the factorial of a positive integer n is the product of all positive integers less
+     * than or equal to n.  For example, factorial(10) = 10 * 9 * 8 * 7 * 6 * 5 * 4 * 3 * 2 * 1.
+     *
+     * We instead make a clumsy factorial: using the integers in decreasing order, we swap out the
+     * multiply operations for a fixed rotation of operations: multiply (*), divide (/), add (+) and
+     * subtract (-) in this order.
+     *
+     * For example, clumsy(10) = 10 * 9 / 8 + 7 - 6 * 5 / 4 + 3 - 2 * 1.  However, these operations
+     * are still applied using the usual order of operations of arithmetic: we do all multiplication
+     * and division steps before any addition or subtraction steps, and multiplication and division
+     * steps are processed left to right.
+     *
+     * Additionally, the division that we use is floor division such that 10 * 9 / 8 equals 11.
+     * This guarantees the result is an integer.
+     *
+     * Implement the clumsy function as defined above: given an integer N, it returns the clumsy factorial of N.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: 4
+     * Output: 7
+     * Explanation: 7 = 4 * 3 / 2 + 1
+     * @param N
+     * @return
+     */
+    public int clumsy(int N) {
+        if (N == 0) return 0;
+        if (N == 1) return 1;
+        if (N == 2) return 2;
+        if (N == 3) return 6;
+        return N * (N - 1) / (N - 2) + helper(N - 3);
+    }
+    public int helper(int N) {
+        if (N == 0) return 0;
+        if (N == 1) return 1;
+        if (N == 2) return 1;
+        if (N == 3) return 1;
+        return N - (N - 1) * (N - 2) / (N - 3) + helper(N - 4);
+    }
+
+    /**
+     * https://leetcode.com/problems/nth-digit/
+     * Find the nth digit of the infinite integer sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...
+     *
+     * Note:
+     * n is positive and will fit within the range of a 32-bit signed integer (n < 231).
+     *
+     * Example 1:
+     *
+     * Input:
+     * 3
+     *
+     * Output:
+     * 3
+     * Example 2:
+     *
+     * Input:
+     * 11
+     *
+     * Output:
+     * 0
+     *
+     * Explanation:
+     * The 11th digit of the sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ... is a 0, which is part of the number 10.
+     */
+    public int findNthDigit(int n) {
+        int len = 1;
+        long count = 9;
+        int start = 1;
+
+        while (n > len * count) {
+            n -= len * count;
+            len += 1;
+            count *= 10;
+            start *= 10;
+        }
+
+        start += (n - 1) / len;
+        String s = Integer.toString(start);
+        return Character.getNumericValue(s.charAt((n - 1) % len));
+    }
+
+    /**
+     * https://leetcode.com/problems/line-reflection/
+     * @param points
+     * @return
+     */
+    //Main trick is the sum of the x for any two reflected points will be the same.
+    //Choose the max and min which must be the reflected, so we get the sum.
+    public boolean isReflected(int[][] points) {
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+        HashSet<String> set = new HashSet<>();
+        for (int[] p : points){
+            max = Math.max(max,p[0]);
+            min = Math.min(min,p[0]);
+            String str = p[0] + "a" + p[1];
+            set.add(str);
+        }
+        int sum = max + min;
+        for (int[] p : points) {
+            String str = (sum-p[0]) + "a" + p[1];
+            if( !set.contains(str)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/numbers-with-same-consecutive-differences/
+     * Return all non-negative integers of length N such that the absolute difference
+     * between every two consecutive digits is K.
+     *
+     * Note that every number in the answer must not have leading zeros except for the
+     * number 0 itself. For example, 01 has one leading zero and is invalid, but 0 is valid.
+     *
+     * You may return the answer in any order.
+     * Example 1:
+     *
+     * Input: N = 3, K = 7
+     * Output: [181,292,707,818,929]
+     * Explanation: Note that 070 is not a valid number, because it has leading zeroes.
+     * Example 2:
+     *
+     * Input: N = 2, K = 1
+     * Output: [10,12,21,23,32,34,43,45,54,56,65,67,76,78,87,89,98]
+     *
+     * Note:
+     * 1 <= N <= 9
+     * 0 <= K <= 9
+     */
+    public int[] numsSameConsecDiff(int N, int K) {
+        Queue<Integer> q = new LinkedList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        // in case N is 1.
+        if (N == 1) {
+            q.offer(0);
+        }
+        while (N-- > 1) {
+            for (int sz = q.size(); sz > 0; --sz) {
+                int num = q.poll();
+                int digit1 = num % 10 - K, digit2 = num % 10 + K;
+                if (digit1 >= 0) {
+                    q.offer(num * 10 + digit1);
+                }
+                if (digit2 < 10 && digit1 != digit2) {
+                    q.offer(num * 10 + digit2);
+                }
+            }
+        }
+        return q.stream().mapToInt(i -> i).toArray();
+    }
+
+    /**
+     * https://leetcode.com/problems/stepping-numbers/
+     * A Stepping Number is an integer such that all of its adjacent digits have an absolute difference of exactly 1.
+     * For example, 321 is a Stepping Number while 421 is not.
+     *
+     * Given two integers low and high, find and return a sorted list of all the Stepping Numbers in the range [low, high] inclusive.
+     *
+     * Example 1:
+     *
+     * Input: low = 0, high = 21
+     * Output: [0,1,2,3,4,5,6,7,8,9,10,12,21]
+     *
+     * Constraints:
+     *
+     * 0 <= low <= high <= 2 * 10^9
+     */
+    public List<Integer> countSteppingNumbers(int low, int high) {
+        List<Integer> res = new ArrayList<Integer>();
+        if (low > high) {
+            return res;
+        }
+        Queue<Long> queue = new LinkedList<Long>();
+        for (long i = 1; i <= 9; i++) {
+            queue.add(i);
+        }
+        if (low == 0) {
+            res.add(0);
+        }
+        while (!queue.isEmpty()) {
+            long p = queue.poll();
+            if (p < high) {
+                long lastDigit = p % 10;
+                if (lastDigit > 0) {
+                    queue.add(p * 10 + lastDigit - 1);
+                }
+                if (lastDigit < 9) {
+                    queue.add(p * 10 + lastDigit + 1);
+                }
+            }
+            if (p >= low && p <= high) {
+                res.add((int) p);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/sequential-digits/
+     *
+     * An integer has sequential digits if and only if each digit in the number is one more than the previous digit.
+     *
+     * Return a sorted list of all the integers in the range [low, high] inclusive that have sequential digits.
+     * Example 1:
+     *
+     * Input: low = 100, high = 300
+     * Output: [123,234]
+     *
+     * Example 2:
+     *
+     * Input: low = 1000, high = 13000
+     * Output: [1234,2345,3456,4567,5678,6789,12345]
+     * Constraints:
+     *
+     * 10 <= low <= high <= 10^9
+     */
+    public List<Integer> sequentialDigits(int low, int high) {
+        List<Integer> ans = new ArrayList<>();
+        Queue<Integer> q = new LinkedList<>();
+        if (low <= 0 && high >= 0) {
+            ans.add(0);
+        }
+        for(int i = 1; i < 10; i++) {
+            //seed.
+            q.add(i);
+        }
+        while (q.size() > 0) {
+            int curr = q.remove();
+            if (curr >= low && curr <= high) {
+                ans.add(curr);
+            }
+            //check the last digit.
+            int lastDigit = curr % 10;
+            //queued number will be up to the limit.
+            if (lastDigit < 9 && curr * 10 + lastDigit + 1 <= high) {
+                q.add(curr * 10 + lastDigit + 1);
+            }
+        }
+        return ans;
+    }
+
+    /**
+     *https://leetcode.com/problems/reordered-power-of-2/
+     */
+    public boolean reorderedPowerOf2(int N) {
+        if (N == 1) {
+            return true;
+        }
+        char[] a = String.valueOf(N).toCharArray();
+        Arrays.sort(a);
+        String v = new String(a);
+        int i = 0;
+        while (i<32) {
+            int x = (2<<i);
+            char[] c = String.valueOf(x).toCharArray();
+            Arrays.sort(c);
+            if (v.equals(new String(c))) {
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
+
+    /**
+     * https://leetcode.com/problems/super-pow/
+     */
+    public int superPow(int a, int[] b) {
+        double ret = 1;
+        for (int i=0; i<b.length; i++) {
+            double temp = 1;
+            for (int j=0; j<b[i]; j++) {
+                temp = ((temp % 1337) * (a %1337)) % 1337;
+            }
+            ret = ((ret % 1337) * (temp %1337)) % 1337;
+            if (i != b.length - 1) {
+                double toMul = ret;
+                for (int k=0; k<9; k++) {
+                    ret = ((ret % 1337) * (toMul %1337)) % 1337;
+                }
+            }
+        }
+        return (int)ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/convex-polygon/
+     * Given a list of points that form a polygon when joined sequentially, find if this polygon is convex
+     * (Convex polygon definition).
+     *
+     * Note:
+     * There are at least 3 and at most 10,000 points.
+     * Coordinates are in the range -10,000 to 10,000.
+     * You may assume the polygon formed by given points is always a simple polygon (Simple polygon definition).
+     * In other words, we ensure that exactly two edges intersect at each vertex, and that edges otherwise don't
+     * intersect each other.
+     */
+    public boolean isConvex(List<List<Integer>> points) {
+        List<Integer> back1 = points.get(points.size() - 1);
+        List<Integer> back2 = points.get(points.size() - 2);
+        boolean seenPositive = false, seenNegative = false;
+        for (List<Integer> curr : points) {
+            int orientation = orientation(back2, back1, curr);
+            if (orientation < 0) {
+                seenNegative = true;
+            } else {
+                if (orientation > 0) {
+                    seenPositive = true;
+                }
+            }
+            if (seenPositive && seenNegative) {
+                return false;
+            }
+            back2 = back1;
+            back1 = curr;
+        }
+        return true;
+    }
+
+    private int orientation(List<Integer> point1, List<Integer> point2, List<Integer> point3) {
+        int orientation = (point2.get(1) - point1.get(1)) * (point3.get(0) - point2.get(0)) -
+                (point2.get(0) - point1.get(0)) * (point3.get(1) - point2.get(1));
+        return orientation == 0 ? 0 : orientation / Math.abs(orientation);
     }
 
     /**

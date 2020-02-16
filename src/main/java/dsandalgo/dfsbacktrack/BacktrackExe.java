@@ -3,6 +3,7 @@ package dsandalgo.dfsbacktrack;
 import dsandalgo.tree.TreeNode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,30 +15,143 @@ public class BacktrackExe {
 
     public static void main(String[] args) {
         BacktrackExe backtrack = new BacktrackExe();
+        System.out.println(backtrack.getFactors(32));
+    }
 
-        int[][] nums = {
-                {9,9,4},{6,6,8},{2,1,1}
-        };
+    /**
+     * https://leetcode.com/problems/minimum-genetic-mutation/
+     *
+     * @param start
+     * @param end
+     * @param bank
+     * @return
+     */
+    public int minMutation(String start, String end, String[] bank) {
+        if (start == end) return 0;
+        Set<String> set = new HashSet<>();
+        int min = Integer.MAX_VALUE;
+        for(String s: bank){
+            if (dist(start,s)>1) continue;
+            set.add(s);
+            min = Math.min(min, minMutationBacktrack(s,end,bank,set,0));
+            set.remove(s);
+        }
+        if (min == Integer.MAX_VALUE) return -1;
+        return min;
+    }
+    public int minMutationBacktrack(String current, String end, String[] bank, Set<String> set, int depth){
+        if (current.equals(end)) return 1;
+        int min = Integer.MAX_VALUE;
+        if (depth >= end.length()) return min;
+        for (String s: bank){
+            int diff = dist(current,s);
+            if(!set.contains(s) && (diff==1)){
+                set.add(s);
+                int num = minMutationBacktrack(s,end,bank,set,depth+1);
+                min = Math.min(min, num);
+                set.remove(s);
+            }
+        }
+        if (min == Integer.MAX_VALUE) return min;
+        return 1 + min;
+    }
+    // counts the distance between two strings
+    public int dist(String start, String end){
+        int diff = 0;
+        for (int i=0; i<start.length(); i++){
+            if (start.charAt(i) != end.charAt(i)) diff++;
+        }
+        return diff;
+    }
 
-        List<List<String>> inputs = new ArrayList<List<String>>();
-        List<String> one = new ArrayList<String>();
-        one.add("happy");
-        one.add("joy");
-        inputs.add(one);
+    /**
+     * https://leetcode.com/problems/factor-combinations/
+     * Numbers can be regarded as product of its factors. For example,
+     *
+     * 8 = 2 x 2 x 2;
+     *   = 2 x 4.
+     * Write a function that takes an integer n and return all possible combinations of its factors.
+     *
+     * Note:
+     *
+     * You may assume that n is always positive.
+     * Factors should be greater than 1 and less than n.
+     * Example 1:
+     *
+     * Input: 1
+     * Output: []
+     * Example 2:
+     *
+     * Input: 37
+     * Output:[]
+     * Example 3:
+     *
+     * Input: 12
+     * Output:
+     * [
+     *   [2, 6],
+     *   [2, 2, 3],
+     *   [3, 4]
+     * ]
+     * Example 4:
+     *
+     * Input: 32
+     * Output:
+     * [
+     *   [2, 16],
+     *   [2, 2, 8],
+     *   [2, 2, 2, 4],
+     *   [2, 2, 2, 2, 2],
+     *   [2, 4, 4],
+     *   [4, 8]
+     * ]
+     */
+    public List<List<Integer>> getFactors(int n) {
+        List<List<Integer>> result = new ArrayList<List<Integer>>();
+        backtrackFactors(result, new ArrayList<Integer>(), n, 2);
+        return result;
+    }
+    private void backtrackFactors(List<List<Integer>> result, List<Integer> temp, int target, int start){
+        if (target <= 1) {
+            if (temp.size() > 1) {
+                result.add(new ArrayList<Integer>(temp));
+            }
+            return;
+        }
+        for (int i = start; i <= target; ++i) {
+            if (target % i == 0) {
+                temp.add(i);
+                backtrackFactors(result, temp, target/i, i);
+                temp.remove(temp.size()-1);
+            }
+        }
+    }
 
-        one = new ArrayList<String>();
-        one.add("sad");
-        one.add("sorrow");
-        inputs.add(one);
-
-        one = new ArrayList<String>();
-        one.add("joy");
-        one.add("cheerful");
-        inputs.add(one);
-
-        int[] n = {4, 6, 7, 7};
-        System.out.println(backtrack.confusingNumberII(20));
-
+    /**
+     * https://leetcode.com/problems/combination-sum/
+     */
+    private List<List<Integer>> retComSum;
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        retComSum = new ArrayList<List<Integer>>();
+        if (candidates != null && candidates.length > 0) {
+            Arrays.sort(candidates);
+            backtrackComSum(new ArrayList<Integer>(), candidates, target, 0);
+        }
+        return retComSum;
+    }
+    private void backtrackComSum(List<Integer> temp, int[] candidates, int target, int start){
+        if (target < 0) {
+            return;
+        }
+        if (target == 0) {
+            retComSum.add(new ArrayList<Integer>(temp));
+            return;
+        }
+        for (int i=start; i<candidates.length; i++) {
+            temp.add(candidates[i]);
+            backtrackComSum(temp, candidates, target - candidates[i], i);
+            temp.remove(Integer.valueOf(candidates[i]));
+        }
     }
 
     /**

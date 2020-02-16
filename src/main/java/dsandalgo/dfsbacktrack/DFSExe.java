@@ -19,13 +19,271 @@ public class DFSExe {
         int[][] nums = {
            {9,9,4},{6,6,8},{2,1,1}
         };
-        int[][] nums2 = {
-                {1,2,2},
-                {2,3,2}
-        };
+        int[] nums2 = {1,1,2,2,2,3};
 
-        System.out.println(dfs.colorBorder(nums2, 0, 1, 3));
+        System.out.println(dfs.reachNumber(66));
+    }
 
+    /**
+     * https://leetcode.com/problems/out-of-boundary-paths/
+     *
+     * There is an m by n grid with a ball. Given the start coordinate (i,j) of the ball, you can move the ball to
+     * adjacent cell or cross the grid boundary in four directions (up, down, left, right). However, you can at
+     * most move N times. Find out the number of paths to move the ball out of grid boundary. The answer may be
+     * very large, return it after mod 109 + 7.
+     *
+     *
+     * Example 1:
+     * Input: m = 2, n = 2, N = 2, i = 0, j = 0
+     * Output: 6
+     * Explanation:
+     *
+     * Example 2:
+     * Input: m = 1, n = 3, N = 3, i = 0, j = 1
+     * Output: 12
+     * Explanation:
+     *
+     * Note:
+     * Once you move the ball out of boundary, you cannot move it back.
+     * The length and height of the grid is in range [1,50].
+     * N is in range [0,50].
+     */
+    private int[][] dirs = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}};
+    private int mod = 1000000007;
+    public int findPaths(int m, int n, int N, int i, int j) {
+        // m * n grid
+        long[][][] memo = new long[m][n][N+1];
+        for (int ii = 0; ii < m; ii++) {
+            for (int jj = 0; jj < n; jj++) {
+                for (int kk = 0; kk < N+1; kk++) {
+                    memo[ii][jj][kk] = -1;
+                }
+            }
+        }
+        return (int) (dfs(m, n, N, i, j, memo) % mod);
+    }
+    public long dfs(int m, int n, int N, int i, int j, long[][][] memo) {
+        if (i < 0 || i >= m || j < 0 || j >= n) {
+            return 1l;
+        }
+        if (N == 0) return 0l;
+        if (memo[i][j][N] != -1) return memo[i][j][N];
+        memo[i][j][N] = 0;
+        for (int dir[] : dirs) {
+            int x = dir[0] + i;
+            int y = dir[1] + j;
+            memo[i][j][N] = (memo[i][j][N] + dfs(m, n, N - 1, x, y, memo) % mod) % mod;
+        }
+        return memo[i][j][N];
+    }
+
+    /**
+     * https://leetcode.com/problems/reach-a-number/
+     * You are standing at position 0 on an infinite number line. There is a goal at position target.
+     *
+     * On each move, you can either go left or right. During the n-th move (starting from 1), you take n steps.
+     *
+     * Return the minimum number of steps required to reach the destination.
+     *
+     * Example 1:
+     * Input: target = 3
+     * Output: 2
+     * Explanation:
+     * On the first move we step from 0 to 1.
+     * On the second step we step from 1 to 3.
+     * Example 2:
+     * Input: target = 2
+     * Output: 3
+     * Explanation:
+     * On the first move we step from 0 to 1.
+     * On the second move we step  from 1 to -1.
+     * On the third move we step from -1 to 2.
+     */
+    int res = Integer.MAX_VALUE;
+    public int reachNumber(int target) {
+        reachNumberDFS(0, target, 0);
+        return res;
+    }
+
+    public int reachNumberDFS(int temp, int target, int cur) {
+        if (target == cur) {
+            res = Math.min(temp, res);
+            return temp;
+        }
+        int ret = Integer.MAX_VALUE;
+        if (Math.abs(cur) < Math.abs(target)) {
+            ret = Math.min(reachNumberDFS(temp + 1, target, cur + temp), reachNumberDFS(temp + 1, target, cur - temp));
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/dice-roll-simulation/
+     * A die simulator generates a random number from 1 to 6 for each roll. You introduced a constraint to
+     * the generator such that it cannot roll the number i more than rollMax[i] (1-indexed) consecutive times.
+     *
+     * Given an array of integers rollMax and an integer n, return the number of distinct sequences that can
+     * be obtained with exact n rolls.
+     *
+     * Two sequences are considered different if at least one element differs from each other. Since the answer
+     * may be too large, return it modulo 10^9 + 7.
+     *
+     * Example 1:
+     * Input: n = 2, rollMax = [1,1,2,2,2,3]
+     * Output: 34
+     * Explanation: There will be 2 rolls of die, if there are no constraints on the die, there are 6 * 6 = 36
+     * possible combinations. In this case, looking at rollMax array, the numbers 1 and 2 appear at most once
+     * consecutively, therefore sequences (1,1) and (2,2) cannot occur, so the final answer is 36-2 = 34.
+     *
+     * Example 2:
+     * Input: n = 2, rollMax = [1,1,1,1,1,1]
+     * Output: 30
+     *
+     * Example 3:
+     * Input: n = 3, rollMax = [1,1,1,2,2,3]
+     * Output: 181
+     *
+     * Constraints:
+     * 1 <= n <= 5000
+     * rollMax.length == 6
+     * 1 <= rollMax[i] <= 15
+     */
+
+    private int[][][] dp = new int[5000][6][16];
+    private final int M = 1000000007;
+    public int dieSimulator(int n, int[] rollMax) {
+        return dieSimulatorDFS(n, rollMax, -1, 0);
+    }
+
+    // dieLeft : the number of dies
+    // last : last number we rolled
+    // curlen : current len of same number
+    // This function trys to traval all the valid permutation
+    private int dieSimulatorDFS(int dieLeft, int[] rollMax, int last, int curlen){
+        if (dieLeft == 0) {
+            return 1;
+        }
+        if (last >= 0 && dp[dieLeft][last][curlen] > 0) {
+            return dp[dieLeft][last][curlen];
+        }
+        int ans = 0;
+        for (int i=0; i<6; i++){
+            if (i == last && curlen == rollMax[i]) {
+                continue;
+            }
+            ans = (ans + dieSimulatorDFS(dieLeft - 1, rollMax, i, i == last ? curlen + 1 : 1)) % M;
+        }
+        if (last >= 0) {
+            dp[dieLeft][last][curlen] = ans;
+        }
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/matchsticks-to-square/
+     * Remember the story of Little Match Girl? By now, you know exactly what matchsticks the little match girl has,
+     * please find out a way you can make one square by using up all those matchsticks. You should not break any stick,
+     * but you can link them up, and each matchstick must be used exactly one time.
+     *
+     * Your input will be several matchsticks the girl has, represented with their stick length. Your output will
+     * either be true or false, to represent whether you could make one square using all the matchsticks the little
+     * match girl has.
+     *
+     * Example 1:
+     * Input: [1,1,2,2,2]
+     * Output: true
+     *
+     * Explanation: You can form a square with length 2, one side of the square came two sticks with length 1.
+     * Example 2:
+     * Input: [3,3,3,3,4]
+     * Output: false
+     *
+     * Explanation: You cannot find a way to form a square with all the matchsticks.
+     * Note:
+     * The length sum of the given matchsticks is in the range of 0 to 10^9.
+     * The length of the given matchstick array will not exceed 15.
+     * @param nums
+     * @return
+     */
+    //Trick is to use the four edges to try add each number, see which edge should have the number.!!!!
+    public boolean makesquare(int[] nums) {
+        if (nums == null || nums.length < 4) return false;
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        if (sum % 4 != 0) {
+            return false;
+        }
+        return makesquareDFS(nums, new int[4], 0, sum / 4);
+    }
+
+    private boolean makesquareDFS(int[] nums, int[] sums, int index, int target) {
+        if (index == nums.length) {
+            if (sums[0] == target && sums[1] == target && sums[2] == target) {
+                return true;
+            }
+            return false;
+        }
+        for (int i = 0; i < 4; i++) {
+            if (sums[i] + nums[index] > target) {
+                continue;
+            }
+            sums[i] += nums[index];
+            if (makesquareDFS(nums, sums, index + 1, target)) {
+                return true;
+            }
+            sums[i] -= nums[index];
+        }
+        return false;
+    }
+
+    /**
+     * https://leetcode.com/problems/valid-parenthesis-string/
+     *
+     * Given a string containing only three types of characters: '(', ')' and '*', write a function to check
+     * whether this string is valid. We define the validity of a string by these rules:
+     *
+     * Any left parenthesis '(' must have a corresponding right parenthesis ')'.
+     * Any right parenthesis ')' must have a corresponding left parenthesis '('.
+     * Left parenthesis '(' must go before the corresponding right parenthesis ')'.
+     * '*' could be treated as a single right parenthesis ')' or a single left parenthesis '(' or an empty string.
+     * An empty string is also valid.
+     *
+     * Example 1:
+     * Input: "()"
+     * Output: True
+     *
+     * Example 2:
+     * Input: "(*)"
+     * Output: True
+     *
+     * Example 3:
+     * Input: "(*))"
+     * Output: True
+     * Note:
+     * The string size will be in the range [1, 100].
+     *
+     */
+    public boolean checkValidString(String s) {
+        return checkValidStringHelper(s, 0, 0);
+    }
+    private boolean checkValidStringHelper(String s, int count, int start) {
+        for (int i=start; i<s.length(); i++) {
+            if (s.charAt(i) != '*') {
+                if (s.charAt(i) == '(') {
+                    count++;
+                } else {
+                    count--;
+                }
+                if (count < 0) {
+                    return false;
+                }
+            } else {
+                return checkValidStringHelper(s, count, i+1) || checkValidStringHelper(s, count+1, i+1) || checkValidStringHelper(s, count-1, i+1);
+            }
+        }
+        return count == 0;
     }
 
     /**

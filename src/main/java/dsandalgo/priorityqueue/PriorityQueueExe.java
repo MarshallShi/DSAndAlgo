@@ -5,47 +5,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PriorityQueueExe {
 
     public static void main(String[] args) {
         PriorityQueueExe pqexe = new PriorityQueueExe();
         //pqexe.allCellsDistOrder(1,2,0,0);
-        int[] arr = {17,18,5,4,6,1};
-        pqexe.replaceElements(arr);
-    }
-
-    public int[] kWeakestRows(int[][] mat, int k) {
-        PriorityQueue<int[]> pq = new PriorityQueue<int[]>(new Comparator<int[]>(){
-            @Override
-            public int compare(int[] o1, int[] o2){
-                if (o1[1] == o2[1]) {
-                    return o1[0] - o2[0];
-                }
-                return o1[1] - o2[1];
-            }
-        });
-        for (int i=0; i<mat.length; i++) {
-            int j = 0;
-            while (mat[i][j] != 0) {
-                j++;
-            }
-            int[] rowD = {i, j};
-            pq.offer(rowD);
-            if (pq.size() > k) {
-                pq.poll();
-            }
-        }
-        int[] res = new int[k];
-        int i = 0;
-        while (!pq.isEmpty()) {
-            res[i] = pq.poll()[0];
-            i++;
-        }
-        return res;
+        int[] arr = {1,2,3,4,5};
+        //pqexe.findClosestElements(arr, 4, -1);
     }
 
     /**

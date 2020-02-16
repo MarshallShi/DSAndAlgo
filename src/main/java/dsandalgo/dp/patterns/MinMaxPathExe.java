@@ -1,5 +1,6 @@
 package dsandalgo.dp.patterns;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +28,112 @@ import java.util.List;
  *
  */
 public class MinMaxPathExe {
+
+
+    /**
+     * https://leetcode.com/problems/greatest-sum-divisible-by-three/
+     *
+     * Given an array nums of integers, we need to find the maximum possible sum of elements
+     * of the array such that it is divisible by three.
+     *
+     * Example 1:
+     *
+     * Input: nums = [3,6,5,1,8]
+     * Output: 18
+     * Explanation: Pick numbers 3, 6, 1 and 8 their sum is 18 (maximum sum divisible by 3).
+     * Example 2:
+     *
+     * Input: nums = [4]
+     * Output: 0
+     * Explanation: Since 4 is not divisible by 3, do not pick any number.
+     * Example 3:
+     *
+     * Input: nums = [1,2,3,4,4]
+     * Output: 12
+     * Explanation: Pick numbers 1, 3, 4 and 4 their sum is 12 (maximum sum divisible by 3).
+     * @param nums
+     * @return
+     */
+    public int maxSumDivThree(int[] nums) {
+        int[] dp = new int[]{0, Integer.MIN_VALUE, Integer.MIN_VALUE};
+        for (int a : nums) {
+            int[] dp2 = new int[3];
+            for (int i = 0; i < 3; ++i) {
+                dp2[(i + a) % 3] = Math.max(dp[(i + a) % 3], dp[i] + a);
+            }
+            dp = dp2;
+        }
+        return dp[0];
+    }
+
+    public int maxSumDiv_byK(int[] nums) {
+        return maxSumDivK(nums,3);
+    }
+    public int maxSumDivK(int[] nums, int k){
+        if (k==0) {
+            return -1;
+        }
+        int[] dp = new int[k];
+        for (int num : nums) {
+            int tmp[] = Arrays.copyOf(dp, k);
+            for(int i=0; i<k; i++){
+                dp[(num + tmp[i])%k] = Math.max(dp[(num + tmp[i])%k],num + tmp[i]);
+            }
+        }
+        return dp[0];
+    }
+
+    /**
+     * https://leetcode.com/problems/campus-bikes-ii/
+     *
+     * On a campus represented as a 2D grid, there are N workers and M bikes, with N <= M. Each worker and bike is a 2D coordinate on this grid.
+     *
+     * We assign one unique bike to each worker so that the sum of the Manhattan distances between each worker and their assigned bike is minimized.
+     *
+     * The Manhattan distance between two points p1 and p2 is Manhattan(p1, p2) = |p1.x - p2.x| + |p1.y - p2.y|.
+     *
+     * Return the minimum possible sum of Manhattan distances between each worker and their assigned bike.
+     *
+     * Example 1:
+     *
+     * Input: workers = [[0,0],[2,1]], bikes = [[1,2],[3,3]]
+     * Output: 6
+     * Explanation:
+     * We assign bike 0 to worker 0, bike 1 to worker 1. The Manhattan distance of both assignments is 3, so the output is 6.
+     *
+     * Example 2:
+     *
+     * Input: workers = [[0,0],[1,1],[2,0]], bikes = [[1,0],[2,2],[2,1]]
+     * Output: 4
+     * Explanation:
+     * We first assign bike 0 to worker 0, then assign bike 1 to worker 1 or worker 2, bike 2 to worker 2 or worker 1. Both assignments lead to sum of the Manhattan distances as 4.
+     *
+     *
+     * Note:
+     *
+     * 0 <= workers[i][0], workers[i][1], bikes[i][0], bikes[i][1] < 1000
+     * All worker and bike locations are distinct.
+     * 1 <= workers.length <= bikes.length <= 10
+     */
+    public int assignBikes(int[][] workers, int[][] bikes) {
+        int[][] dp = new int[workers.length][1<<bikes.length];
+        return solve(0, 0, workers, bikes, dp);
+    }
+    public int solve(int cur, int takenBits, int[][] workers, int[][] bikes, int[][] dp) {
+        if(cur == workers.length) return 0;
+        else if(dp[cur][takenBits] != 0) return dp[cur][takenBits];
+
+        int best = Integer.MAX_VALUE;
+
+        for(int i=0;i<bikes.length;i++) {
+            if((takenBits & 1<<i) != 0) continue;
+            int dist = Math.abs(workers[cur][0] - bikes[i][0]) + Math.abs(workers[cur][1] - bikes[i][1]);
+            best = Math.min(best, dist+solve(cur+1,takenBits | (1<<i), workers, bikes, dp));
+        }
+        dp[cur][takenBits] = best;
+        return best;
+    }
+
     /**
      * https://leetcode.com/problems/min-cost-climbing-stairs/
      *
@@ -529,6 +636,54 @@ public class MinMaxPathExe {
             }
         }
         return result*result;
+    }
+
+    /**
+     * https://leetcode.com/problems/largest-1-bordered-square/
+     * Given a 2D grid of 0s and 1s, return the number of elements in the largest
+     * square subgrid that has all 1s on its border, or 0 if such a subgrid doesn't
+     * exist in the grid.
+     *
+     * Example 1:
+     * Input: grid = [[1,1,1],[1,0,1],[1,1,1]]
+     * Output: 9
+     *
+     * Example 2:
+     * Input: grid = [[1,1,0,0]]
+     * Output: 1
+     *
+     * Constraints:
+     *
+     * 1 <= grid.length <= 100
+     * 1 <= grid[0].length <= 100
+     * grid[i][j] is 0 or 1
+     */
+    public int largest1BorderedSquare(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int[][] hor = new int[m][n], ver = new int[m][n];
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] > 0) {
+                    hor[i][j] = j > 0 ? hor[i][j - 1] + 1 : 1;
+                    ver[i][j] = i > 0  ? ver[i - 1][j] + 1 : 1;
+                }
+            }
+        }
+        int max = 0;
+        for (int i=m-1; i>=0; i--) {
+            for (int j=n-1; j>=0; j--) {
+                // choose smallest of horizontal and vertical value
+                int small = Math.min(hor[i][j], ver[i][j]);
+                while (small > max) {
+                    // check if square exists with 'small' length
+                    if (ver[i][j-small+1] >= small &&  hor[i-small+1][j] >= small) {
+                        max = small;
+                    }
+                    small--;
+                }
+            }
+        }
+        return max*max;
     }
 
     /**

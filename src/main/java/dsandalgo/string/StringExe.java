@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,9 +18,586 @@ public class StringExe {
         StringExe exe = new StringExe();
         //S = "abcd", indexes = [0,2], sources = ["a","cd"], targets = ["eee","ffff"]
         int[] indexes = {3, 5, 1};
-        String[] sources = {"a","cd"};
-        String[] tar = {"eee","ffff"};
-        System.out.println(exe.findReplaceString("vmokgggqzp", indexes, sources, tar));
+        String[] sources = {"abc", "xyz"};
+        //exe.reverseWords(words);
+        System.out.println(exe.validIPAddress("1.1.1.1."));
+    }
+
+    /**
+     * https://leetcode.com/problems/delete-columns-to-make-sorted-ii/
+     * @param A
+     * @return
+     */
+    //Key Trick is how to skip those sorted string.
+    public int minDeletionSize(String[] A) {
+        /* set represented row idx that already sorted */
+        Set<Integer> set = new HashSet<>();
+        int col, row;
+        int result = 0;
+        for (col = 0; col < A[0].length(); col++) {
+            // if all rows is marked as "sorted", we do not need to go through the rest of columns again
+            // just return current result directly
+            if (set.size() == A.length - 1) {
+                return result;
+            }
+            // traverse every row to check whether current column is a valid or invalid
+            for (row = 0; row < A.length - 1; row++) {
+                if (!set.contains(row) && A[row].charAt(col) > A[row + 1].charAt(col)) {
+                    result++;
+                    break;
+                }
+            }
+            // if current column is INVALID (current column exists < = and > relationships), we cannot conduct adding
+            // set operations, but we need to delete the entire column, so we have to go to next iteration to check next column
+            if (row != A.length - 1) {
+                continue;
+            }
+            // if current column is VALID (current column only exists < or = relationships)
+            for (int k = 0; k < A.length - 1; k++) {
+                if (A[k].charAt(col) < A[k + 1].charAt(col)) {
+                    set.add(k);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-uncommon-subsequence-ii/
+     */
+    //Trick: greedily check from the longest one, skip the duplicates.
+    public int findLUSlength(String[] strs) {
+        Arrays.sort(strs, new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                return o2.length() - o1.length();
+            }
+        });
+        Set<String> duplicates = getDuplicates(strs);
+        for(int i = 0; i < strs.length; i++) {
+            //skip the duplicate, go check the unique string.
+            if (!duplicates.contains(strs[i])) {
+                if (i == 0) {
+                    return strs[i].length();
+                }
+                for (int j = 0; j < i; j++) {
+                    //check if the current ith string is sub string of longer ones.
+                    //if yes, then skip.
+                    if(isSubsequence_LUS(strs[j], strs[i])) {
+                        break;
+                    }
+                    //checked all the longer ones, all okay, then return it.
+                    if(j == i-1) {
+                        return strs[i].length();
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+    public boolean isSubsequence_LUS(String a, String b) {
+        int i = 0, j = 0;
+        while(i < a.length() && j < b.length()) {
+            if (a.charAt(i) == b.charAt(j)) {
+                j++;
+            }
+            i++;
+        }
+        return j == b.length();
+    }
+    private Set<String> getDuplicates(String[] strs) {
+        Set<String> set = new HashSet<String>();
+        Set<String> duplicates = new HashSet<String>();
+        for (String s : strs) {
+            if (set.contains(s)) {
+                duplicates.add(s);
+            }
+            set.add(s);
+        }
+        return duplicates;
+    }
+
+    /**
+     * https://leetcode.com/problems/can-make-palindrome-from-substring/
+     * Given a string s, we make queries on substrings of s.
+     *
+     * For each query queries[i] = [left, right, k], we may rearrange the substring s[left], ..., s[right],
+     * and then choose up to k of them to replace with any lowercase English letter.
+     *
+     * If the substring is possible to be a palindrome string after the operations above, the result of the query
+     * is true. Otherwise, the result is false.
+     *
+     * Return an array answer[], where answer[i] is the result of the i-th query queries[i].
+     *
+     * Note that: Each letter is counted individually for replacement so if for example s[left..right] = "aaa",
+     * and k = 2, we can only replace two of the letters.  (Also, note that the initial string s is never modified by any query.)
+     *
+     *
+     *
+     * Example :
+     *
+     * Input: s = "abcda", queries = [[3,3,0],[1,2,0],[0,3,1],[0,3,2],[0,4,1]]
+     * Output: [true,false,false,true,true]
+     * Explanation:
+     * queries[0] : substring = "d", is palidrome.
+     * queries[1] : substring = "bc", is not palidrome.
+     * queries[2] : substring = "abcd", is not palidrome after replacing only 1 character.
+     * queries[3] : substring = "abcd", could be changed to "abba" which is palidrome. Also this can be changed to
+     * "baab" first rearrange it "bacd" then replace "cd" with "ab".
+     * queries[4] : substring = "abcda", could be changed to "abcba" which is palidrome.
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= s.length, queries.length <= 10^5
+     * 0 <= queries[i][0] <= queries[i][1] < s.length
+     * 0 <= queries[i][2] <= s.length
+     * s only contains lowercase English letters.
+     */
+    //https://leetcode.com/problems/can-make-palindrome-from-substring/discuss/371849/JavaPython-3-3-codes-each%3A-prefix-sum-boolean-and-xor-of-characters'-frequencies-then-compare
+    //Trick is presum, so we get the sum in a subarray for the count.
+    public List<Boolean> canMakePaliQueries(String s, int[][] queries) {
+        List<Boolean> ans = new ArrayList<>();
+        //large 2D to store all the letter's total count till each position of s.
+        int[][] cnt = new int[s.length() + 1][26];
+        for (int i = 0; i < s.length(); ++i) {
+            // copy previous sum.
+            cnt[i + 1] = cnt[i].clone();
+            // update current char count.
+            ++cnt[i + 1][s.charAt(i) - 'a'];
+        }
+        for (int[] q : queries) {
+            if (q[2] >= 13) {
+                ans.add(true);
+            } else {
+                int sum = 0;
+                for (int i = 0; i < 26; ++i) {
+                    sum += (cnt[q[1] + 1][i] - cnt[q[0]][i]) % 2;
+                }
+                ans.add(sum / 2 <= q[2]);
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/validate-ip-address/
+     * Write a function to check whether an input string is a valid IPv4 address or IPv6 address or neither.
+     *
+     * IPv4 addresses are canonically represented in dot-decimal notation, which consists of four decimal numbers,
+     * each ranging from 0 to 255, separated by dots ("."), e.g.,172.16.254.1;
+     *
+     * Besides, leading zeros in the IPv4 is invalid. For example, the address 172.16.254.01 is invalid.
+     *
+     * IPv6 addresses are represented as eight groups of four hexadecimal digits, each group representing 16 bits.
+     * The groups are separated by colons (":"). For example, the address 2001:0db8:85a3:0000:0000:8a2e:0370:7334 is
+     * a valid one. Also, we could omit some leading zeros among four hexadecimal digits and some low-case characters
+     * in the address to upper-case ones, so 2001:db8:85a3:0:0:8A2E:0370:7334 is also a valid IPv6 address(Omit leading
+     * zeros and using upper cases).
+     *
+     * However, we don't replace a consecutive group of zero value with a single empty group using two consecutive
+     * colons (::) to pursue simplicity. For example, 2001:0db8:85a3::8A2E:0370:7334 is an invalid IPv6 address.
+     *
+     * Besides, extra leading zeros in the IPv6 is also invalid. For example, the
+     * address 02001:0db8:85a3:0000:0000:8a2e:0370:7334 is invalid.
+     *
+     * Note: You may assume there is no extra space or special characters in the input string.
+     *
+     * Example 1:
+     * Input: "172.16.254.1"
+     *
+     * Output: "IPv4"
+     *
+     * Explanation: This is a valid IPv4 address, return "IPv4".
+     * Example 2:
+     * Input: "2001:0db8:85a3:0:0:8A2E:0370:7334"
+     *
+     * Output: "IPv6"
+     *
+     * Explanation: This is a valid IPv6 address, return "IPv6".
+     * Example 3:
+     * Input: "256.256.256.256"
+     *
+     * Output: "Neither"
+     *
+     * Explanation: This is neither a IPv4 address nor a IPv6 address.
+     */
+    public static String validIPAddress(String IP) {
+        String[] ipv4 = IP.split("\\.",-1);
+        String[] ipv6 = IP.split("\\:",-1);
+        if (IP.chars().filter(ch -> ch == '.').count() == 3){
+            for (String s : ipv4) {
+                if (isIPv4(s)) {
+                    continue;
+                } else {
+                    return "Neither";
+                }
+            }
+            return "IPv4";
+        }
+        if (IP.chars().filter(ch -> ch == ':').count() == 7){
+            for (String s : ipv6) {
+                if (isIPv6(s)) {
+                    continue;
+                } else {
+                    return "Neither";
+                }
+            }
+            return "IPv6";
+        }
+        return "Neither";
+    }
+    public static boolean isIPv4 (String s){
+        try {
+            return String.valueOf(Integer.valueOf(s)).equals(s) && Integer.parseInt(s) >= 0 && Integer.parseInt(s) <= 255;
+        } catch (NumberFormatException e){
+            return false;
+        }
+    }
+    public static boolean isIPv6 (String s){
+        if (s.length() > 4) {
+            return false;
+        }
+        try {
+            return Integer.parseInt(s, 16) >= 0  && s.charAt(0) != '-';
+        } catch (NumberFormatException e){
+            return false;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/sentence-screen-fitting/
+     * Given a rows x cols screen and a sentence represented by a list of non-empty words,
+     * find how many times the given sentence can be fitted on the screen.
+     *
+     * Note:
+     * A word cannot be split into two lines.
+     * The order of words in the sentence must remain unchanged.
+     * Two consecutive words in a line must be separated by a single space.
+     * Total words in the sentence won't exceed 100.
+     * Length of each word is greater than 0 and won't exceed 10.
+     * 1 ≤ rows, cols ≤ 20,000.
+     *
+     * Example 1:
+     * Input:
+     * rows = 2, cols = 8, sentence = ["hello", "world"]
+     *
+     * Output:
+     * 1
+     *
+     * Explanation:
+     * hello---
+     * world---
+     *
+     * The character '-' signifies an empty space on the screen.
+     *
+     * Example 2:
+     *
+     * Input:
+     * rows = 3, cols = 6, sentence = ["a", "bcd", "e"]
+     *
+     * Output:
+     * 2
+     *
+     * Explanation:
+     * a-bcd-
+     * e-a---
+     * bcd-e-
+     *
+     * The character '-' signifies an empty space on the screen.
+     *
+     * Example 3:
+     *
+     * Input:
+     * rows = 4, cols = 5, sentence = ["I", "had", "apple", "pie"]
+     *
+     * Output:
+     * 1
+     *
+     * Explanation:
+     * I-had
+     * apple
+     * pie-I
+     * had--
+     *
+     * The character '-' signifies an empty space on the screen.
+     *
+     */
+    public int wordsTyping(String[] sentence, int rows, int cols) {
+        Map<Integer, Integer> rowStartWordIdxAndWordCount = new HashMap<Integer, Integer>();
+        //Totoal number of words can be printed.
+        int num = 0;
+        int n = sentence.length;
+        for (int i=0; i<rows; i++) {
+            int start = num%n;
+            //cache the start and number of words per each line.
+            if (!rowStartWordIdxAndWordCount.containsKey(start)) {
+                int cnt = 0, len = 0;
+                for (int j = start; len < cols; j = (j+1) % n, cnt++){
+                     if (len + sentence[j].length() > cols) {
+                         break;
+                     }
+                     len += sentence[j].length() + 1;
+                }
+                num += cnt;
+                rowStartWordIdxAndWordCount.put(start, cnt);
+            } else {
+                num += rowStartWordIdxAndWordCount.get(start);
+            }
+        }
+        return num / n;
+    }
+
+    /**
+     * https://leetcode.com/problems/swap-for-longest-repeated-character-substring/
+     * Given a string text, we are allowed to swap two of the characters in the string.
+     * Find the length of the longest substring with repeated characters.
+     *
+     * Example 1:
+     *
+     * Input: text = "ababa"
+     * Output: 3
+     * Explanation: We can swap the first 'b' with the last 'a', or the last 'b' with the first 'a'. Then, the longest repeated character substring is "aaa", which its length is 3.
+     * Example 2:
+     *
+     * Input: text = "aaabaaa"
+     * Output: 6
+     * Explanation: Swap 'b' with the last 'a' (or the first 'a'), and we get longest repeated character substring "aaaaaa", which its length is 6.
+     * Example 3:
+     *
+     * Input: text = "aaabbaaa"
+     * Output: 4
+     * Example 4:
+     *
+     * Input: text = "aaaaa"
+     * Output: 5
+     * Explanation: No need to swap, longest repeated character substring is "aaaaa", length is 5.
+     * Example 5:
+     *
+     * Input: text = "abcdef"
+     * Output: 1
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= text.length <= 20000
+     * text consist of lowercase English characters only.
+     */
+    public int maxRepOpt1(String text) {
+        int len = text.length();
+
+        int[] dict = new int[26];
+        for(int i = 0; i < len; ++i) {
+            ++dict[text.charAt(i) - 'a'];
+        }
+        Map<Character, Integer> win = new HashMap();
+        int res = 0, sizeMoreThanTwo = 0;
+
+        for(int l = 0, r = 0; r < len; ++r){
+            char c = text.charAt(r);
+            win.put(c, win.getOrDefault(c, 0) + 1);
+            if (win.get(c) == 2) {
+                ++sizeMoreThanTwo;
+            }
+            while (win.size() > 2 || sizeMoreThanTwo > 1){
+                c = text.charAt(l++);
+                win.put(c, win.getOrDefault(c, 0) - 1);
+                if (win.get(c) == 1) {
+                    --sizeMoreThanTwo;
+                }
+                if (win.get(c) == 0) {
+                    win.remove(c);
+                }
+            }
+
+            for(Character _c : win.keySet()){
+                res = (win.size() == 1 || dict[_c - 'a'] > win.get(_c))? Math.max(res, r - l + 1)
+                        : Math.max(res, r - l);
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-word-in-dictionary-through-deleting/
+     *
+     * Given a string and a string dictionary, find the longest string in the dictionary
+     * that can be formed by deleting some characters of the given string. If there are more
+     * than one possible results, return the longest word with the smallest lexicographical order.
+     * If there is no possible result, return the empty string.
+     *
+     * Example 1:
+     * Input:
+     * s = "abpcplea", d = ["ale","apple","monkey","plea"]
+     *
+     * Output:
+     * "apple"
+     * Example 2:
+     * Input:
+     * s = "abpcplea", d = ["a","b","c"]
+     *
+     * Output:
+     * "a"
+     * Note:
+     * All the strings in the input will only contain lower-case letters.
+     * The size of the dictionary won't exceed 1,000.
+     * The length of all the strings in the input won't exceed 1,000.
+     */
+    public String findLongestWord(String s, List<String> d) {
+        String res = "";
+        for (String w: d) {
+            if (isSubsequence(w, s)) {
+                if (w.length() > res.length()) {
+                    res = w;
+                }
+                if (w.length() == res.length() && w.compareTo(res) < 0) {
+                    res = w;
+                }
+            }
+        }
+        return res;
+    }
+    private boolean isSubsequence(String w, String s){
+        char[] wc = w.toCharArray();
+        char[] sc = s.toCharArray();
+        int i = 0, j = 0;
+        while(i < wc.length && j < sc.length){
+            if (wc[i] == sc[j]) {
+                i++;
+            }
+            j++;
+        }
+        return i == wc.length;
+    }
+
+    /**
+     * https://leetcode.com/problems/ternary-expression-parser/
+     *
+     * Given a string representing arbitrarily nested ternary expressions, calculate the result of the expression. You can always assume that the given
+     * expression is valid and only consists of digits 0-9, ?, :, T and F (T and F represent True and False respectively).
+     *
+     * Note:
+     *
+     * The length of the given string is ≤ 10000.
+     * Each number will contain only one digit.
+     * The conditional expressions group right-to-left (as usual in most languages).
+     * The condition will always be either T or F. That is, the condition will never be a digit.
+     * The result of the expression will always evaluate to either a digit 0-9, T or F.
+     *
+     * Example 1:
+     * Input: "T?2:3"
+     * Output: "2"
+     * Explanation: If true, then result is 2; otherwise result is 3.
+     *
+     * Example 2:
+     * Input: "F?1:T?4:5"
+     * Output: "4"
+     * Explanation: The conditional expressions group right-to-left. Using parenthesis, it is read/evaluated as:
+     *
+     *              "(F ? 1 : (T ? 4 : 5))"                   "(F ? 1 : (T ? 4 : 5))"
+     *           -> "(F ? 1 : 4)"                 or       -> "(T ? 4 : 5)"
+     *           -> "4"                                    -> "4"
+     *
+     * Example 3:
+     * Input: "T?T?F:5:3"
+     *
+     * Output: "F"
+     *
+     * Explanation: The conditional expressions group right-to-left. Using parenthesis, it is read/evaluated as:
+     *
+     *              "(T ? (T ? F : 5) : 3)"                   "(T ? (T ? F : 5) : 3)"
+     *           -> "(T ? F : 3)"                 or       -> "(T ? F : 5)"
+     *           -> "F"                                    -> "F"
+     */
+    public String parseTernary(String expression) {
+        if (expression == null || expression.length() == 0) {
+            return "";
+        }
+        Deque<Character> stack = new LinkedList<>();
+        for (int i = expression.length() - 1; i >= 0; i--) {
+            char c = expression.charAt(i);
+            if (!stack.isEmpty() && stack.peek() == '?') {
+                stack.pop(); //pop '?'
+                char first = stack.pop();
+                stack.pop(); //pop ':'
+                char second = stack.pop();
+                if (c == 'T') {
+                    stack.push(first);
+                } else {
+                    stack.push(second);
+                }
+            } else {
+                stack.push(c);
+            }
+        }
+        return String.valueOf(stack.peek());
+    }
+
+    /**
+     * https://leetcode.com/problems/break-a-palindrome/
+     */
+    public String breakPalindrome(String palindrome) {
+        if (palindrome == null || palindrome.length() == 0) {
+            return palindrome;
+        }
+        if (palindrome.length() == 1) {
+            return "";
+        }
+        char[] charr = palindrome.toCharArray();
+        boolean found = false;
+        for (int i=0; i<charr.length; i++) {
+            if (charr[i] != 'a') {
+                if (palindrome.length() % 2 != 0 && i*2 + 1 == palindrome.length()) {
+                    continue;
+                } else {
+                    charr[i] = 'a';
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (!found) {
+            charr[charr.length - 1] = 'b';
+        }
+        return new String(charr);
+    }
+
+    /**
+     * https://leetcode.com/problems/reverse-words-in-a-string-ii/
+     * Given an input string , reverse the string word by word.
+     *
+     * Example:
+     *
+     * Input:  ["t","h","e"," ","s","k","y"," ","i","s"," ","b","l","u","e"]
+     * Output: ["b","l","u","e"," ","i","s"," ","s","k","y"," ","t","h","e"]
+     * Note:
+     *
+     * A word is defined as a sequence of non-space characters.
+     * The input string does not contain leading or trailing spaces.
+     * The words are always separated by a single space.
+     * Follow up: Could you do it in-place without allocating extra space?
+     *
+     * */
+
+    public void reverseWords(char[] s) {
+        swap(s, 0, s.length - 1);
+        int j = 0;
+        for (int i=0; i<=s.length; i++) {
+            if ((i < s.length && s[i] == ' ') || i == s.length) {
+                swap(s, j, i - 1);
+                j = i + 1;
+            }
+        }
+    }
+
+    private void swap(char[] s, int l, int h) {
+        while (l < h) {
+            char c = s[l];
+            s[l] = s[h];
+            s[h] = c;
+            l++;
+            h--;
+        }
     }
 
     /**

@@ -1,5 +1,9 @@
 package dsandalgo.dp.classic;
 
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Knapsack {
 
     /**
@@ -61,5 +65,67 @@ public class Knapsack {
             }
         }
         return sum - 2 * S2;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimize-rounding-error-to-meet-target/
+     * This is DP top down approach. How to do bottom up?????
+     * There are also greedy approach.
+     */
+//    public String minimizeError(String[] prices, int target) {
+//        int n = prices.length;
+//        Map<Integer, Double>[] dp = new HashMap[n + 1];
+//        dp[0] = new HashMap<>();
+//        dp[0].put(0, 0.0);
+//        for (int i = 1; i <= n; i++) {
+//            double num = Double.parseDouble(prices[i - 1]);
+//            double upperCost = Math.ceil(num) - num;
+//            int upper = (int)Math.ceil(num);
+//            double lowerCost = num - Math.floor(num);
+//            int lower = (int)Math.floor(num);
+//            dp[i] = new HashMap<>();
+//            for (Map.Entry<Integer, Double> entry : dp[i - 1].entrySet()) {
+//                int upperKey = entry.getKey() + upper;
+//                dp[i].put(upperKey, Math.min(dp[i].getOrDefault(upperKey, Double.MAX_VALUE), entry.getValue() + upperCost));
+//                int lowerKey = entry.getKey() + lower;
+//                dp[i].put(lowerKey, Math.min(dp[i].getOrDefault(lowerKey, Double.MAX_VALUE), entry.getValue() + lowerCost));
+//            }
+//        }
+//        return dp[n].containsKey(target) ? String.format ("%.3f", dp[n].get(target)) : "-1";
+//    }
+
+    public String minimizeError_topdown(String[] prices, int target) {
+        DecimalFormat df = new DecimalFormat("#.000");
+        HashMap<Integer, Double>[] memo = new HashMap[prices.length + 1];
+        double ans = minimizeError(memo, 0, target, prices);
+        if (ans == 0){
+            return "0.000";
+        }
+        return ans <= 1000000 ? df.format(ans) : "-1";
+    }
+
+    public double minimizeError(HashMap<Integer, Double>[] memo, int index, int target, String[] prices){
+        if(target < 0) {
+            return 2000000;
+        }
+        if(memo[index] != null && memo[index].get(target) != null) {
+            return memo[index].get(target);
+        }
+        if(index == prices.length){
+            if(target == 0) {
+                return 0;
+            }
+            return 2000000;
+        }
+        double current = Double.parseDouble(prices[index]);
+        int floor =  (int) Math.floor(current);
+        int ceil = (int) Math.ceil(current);
+        double currError = Math.min(current - floor + minimizeError(memo, index + 1, target - floor, prices),
+                ceil - current + minimizeError(memo, index + 1, target - ceil, prices));
+        if(memo[index] == null) {
+            memo[index] = new HashMap<Integer, Double>();
+        }
+        memo[index].put(target, currError);
+        return currError;
     }
 }

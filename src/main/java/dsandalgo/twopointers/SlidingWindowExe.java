@@ -14,10 +14,135 @@ public class SlidingWindowExe {
         //System.out.println(exe.minSwaps(data));
 
         int[] data1 = {2,2,2,1,2,2,1,2,2,2};
-        System.out.println(exe.numberOfSubarrays(data1, 2));
+        //System.out.println(exe.numberOfSubarrays(data1, 2));
 
         int[] data2 = {1,0,1,0,1,0,0,1,1,0,1};
-        //System.out.println(exe.lengthOfLongestSubstringKDistinct("eceba", 2));
+        System.out.println(exe.balancedString("QQQW"));
+    }
+
+    /**
+     * https://leetcode.com/problems/replace-the-substring-for-balanced-string/
+     * You are given a string containing only 4 kinds of characters 'Q', 'W', 'E' and 'R'.
+     *
+     * A string is said to be balanced if each of its characters appears n/4 times where n is
+     * the length of the string.
+     *
+     * Return the minimum length of the substring that can be replaced with any other string of the
+     * same length to make the original string s balanced.
+     *
+     * Return 0 if the string is already balanced.
+     *
+     * Example 1:
+     * Input: s = "QWER"
+     * Output: 0
+     * Explanation: s is already balanced.
+     *
+     * Example 2:
+     * Input: s = "QQWE"
+     * Output: 1
+     * Explanation: We need to replace a 'Q' to 'R', so that "RQWE" (or "QRWE") is balanced.
+     *
+     * Example 3:
+     * Input: s = "QQQW"
+     * Output: 2
+     * Explanation: We can replace the first "QQ" to "ER".
+     *
+     * Example 4:
+     * Input: s = "QQQQ"
+     * Output: 3
+     * Explanation: We can replace the last 3 'Q' to make s = "QWER".
+     *
+     * Constraints:
+     * 1 <= s.length <= 10^5
+     * s.length is a multiple of 4
+     * s contains only 'Q', 'W', 'E' and 'R'.
+     */
+    public int balancedString(String s) {
+        //count the freq of 'Q', 'W', 'E' and 'R' in entire string.
+        int len = s.length();
+        int k = len/4;
+        int[] count = new int[4];
+        for (int i=0; i<len; i++) {
+            count[getIdx(s.charAt(i))]++;
+        }
+        if (count[0] == k && count[1] == k && count[2] == k && count[3] == k) {
+            return 0;
+        }
+        int res = Integer.MAX_VALUE;
+        int j = 0;
+        for (int i=0; i<len; i++) {
+            count[getIdx(s.charAt(i))]--;
+            while (j<len && count[0] <= k && count[1] <= k && count[2] <= k && count[3] <= k) {
+                res = Math.min(res, i - j + 1);
+                count[getIdx(s.charAt(j))]++;
+                j++;
+            }
+        }
+        return res;
+    }
+
+    private int getIdx(char ch){
+        if (ch == 'Q') return 0;
+        if (ch == 'W') return 1;
+        if (ch == 'E') return 2;
+        if (ch == 'R') return 3;
+        return 0;
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-repeating-character-replacement/
+     *
+     * Given a string s that consists of only uppercase English letters, you can perform at most k operations on that string.
+     *
+     * In one operation, you can choose any character of the string and change it to any other uppercase English character.
+     *
+     * Find the length of the longest sub-string containing all repeating letters you can get after performing the above operations.
+     *
+     * Note:
+     * Both the string's length and k will not exceed 104.
+     *
+     * Example 1:
+     *
+     * Input:
+     * s = "ABAB", k = 2
+     *
+     * Output:
+     * 4
+     *
+     * Explanation:
+     * Replace the two 'A's with two 'B's or vice versa.
+     *
+     *
+     * Example 2:
+     *
+     * Input:
+     * s = "AABABBA", k = 1
+     *
+     * Output:
+     * 4
+     *
+     * Explanation:
+     * Replace the one 'A' in the middle with 'B' and form "AABBBBA".
+     * The substring "BBBB" has the longest repeating letters, which is 4.
+     *
+     */
+    //Trick: maxCount may be invalid at some points, but this doesn't matter, because it was valid earlier in the string, and all that matters
+    // is finding the max window that occurred anywhere in the string. Additionally, it will expand if and only if enough repeating characters
+    // appear in the window to make it expand. So whenever it expands, it's a valid expansion.
+    public int characterReplacement(String s, int k) {
+        int[] chcount = new int[26];
+        int i = 0, maxLen = 0, maxCount = 0;
+        for (int j=0; j<s.length(); j++) {
+            int curCharIdx = s.charAt(j) - 'A';
+            chcount[curCharIdx]++;
+            maxCount = Math.max(maxCount, chcount[curCharIdx]);
+            while (j - i + 1 - maxCount > k) {
+                chcount[s.charAt(i) - 'A']--;
+                i++;
+            }
+            maxLen = Math.max(maxLen, j - i + 1);
+        }
+        return maxLen;
     }
 
 
