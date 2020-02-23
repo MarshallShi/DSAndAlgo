@@ -16,8 +16,118 @@ public class SlidingWindowExe {
         int[] data1 = {2,2,2,1,2,2,1,2,2,2};
         //System.out.println(exe.numberOfSubarrays(data1, 2));
 
-        int[] data2 = {1,0,1,0,1,0,0,1,1,0,1};
-        System.out.println(exe.balancedString("QQQW"));
+        int[] data2 = {11,13,17,23,29,31,7,5,2,3};
+        System.out.println(exe.numOfSubarrays(data2, 3, 5));
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-number-of-occurrences-of-a-substring/
+     * Given a string s, return the maximum number of ocurrences of any substring under the following rules:
+     *
+     * The number of unique characters in the substring must be less than or equal to maxLetters.
+     * The substring size must be between minSize and maxSize inclusive.
+     *
+     * Example 1:
+     *
+     * Input: s = "aababcaab", maxLetters = 2, minSize = 3, maxSize = 4
+     * Output: 2
+     * Explanation: Substring "aab" has 2 ocurrences in the original string.
+     * It satisfies the conditions, 2 unique letters and size 3 (between minSize and maxSize).
+     * Example 2:
+     *
+     * Input: s = "aaaa", maxLetters = 1, minSize = 3, maxSize = 3
+     * Output: 2
+     * Explanation: Substring "aaa" occur 2 times in the string. It can overlap.
+     * Example 3:
+     *
+     * Input: s = "aabcabcab", maxLetters = 2, minSize = 2, maxSize = 3
+     * Output: 3
+     * Example 4:
+     *
+     * Input: s = "abcde", maxLetters = 2, minSize = 3, maxSize = 3
+     * Output: 0
+     *
+     * Constraints:
+     * 1 <= s.length <= 10^5
+     * 1 <= maxLetters <= 26
+     * 1 <= minSize <= maxSize <= min(26, s.length)
+     * s only contains lowercase English letters.
+     *
+     */
+    public int maxFreq(String s, int maxLetters, int minSize, int maxSize) {
+        Map<String,Integer> map = new HashMap<>();
+        int[] ch = new int[26];
+        int res = 0, l = 0, r = 0, uniqLetter = 0;
+        while (r < s.length()) {
+            if (ch[s.charAt(r)] == 0) {
+                uniqLetter++;
+            }
+            ch[s.charAt(r)]++;
+            r++;
+            while (uniqLetter > maxLetters || r - l > minSize){
+                if (ch[s.charAt(l)] == 1) {
+                    uniqLetter--;
+                }
+                ch[s.charAt(l)]--;
+                l++;
+            }
+            if ( r - l == minSize){
+                String sb = s.substring(l, r);
+                //Trick: store the count in a map for current met substring!!!
+                //this avoid the overhead of search for count from entire string.
+                map.put(sb, map.getOrDefault(sb,0)+1);
+                res = Math.max(res, map.get(sb));
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/
+     *
+     * Given an array of integers arr and two integers k and threshold.
+     * Return the number of sub-arrays of size k and average greater than or equal to threshold.
+     *
+     * Example 1:
+     * Input: arr = [2,2,2,2,5,5,5,8], k = 3, threshold = 4
+     * Output: 3
+     * Explanation: Sub-arrays [2,5,5],[5,5,5] and [5,5,8] have averages 4, 5 and 6 respectively. All other sub-arrays of size 3 have averages less than 4 (the threshold).
+     *
+     * Example 2:
+     * Input: arr = [1,1,1,1,1], k = 1, threshold = 0
+     * Output: 5
+     *
+     * Example 3:
+     * Input: arr = [11,13,17,23,29,31,7,5,2,3], k = 3, threshold = 5
+     * Output: 6
+     * Explanation: The first 6 sub-arrays of size 3 have averages greater than 5. Note that averages are not integers.
+     *
+     * Example 4:
+     * Input: arr = [7,7,7,7,7,7,7], k = 7, threshold = 7
+     * Output: 1
+     *
+     * Example 5:
+     * Input: arr = [4,4,4,4], k = 4, threshold = 1
+     * Output: 1
+     *
+     * @param arr
+     * @param k
+     * @param threshold
+     * @return
+     */
+    public int numOfSubarrays(int[] arr, int k, int threshold) {
+        int j = 0, count = 0, slidingSum = 0;
+        for (int i=0; i<arr.length; i++) {
+            slidingSum += arr[i];
+            if (i >= k) {
+                slidingSum -= arr[j];
+                j++;
+            }
+            if (i >= k-1 && slidingSum/k >= threshold) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**

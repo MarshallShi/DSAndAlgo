@@ -34,6 +34,30 @@ public class OverlappingIntervalExe {
     }
 
     /**
+     * https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended/
+     * @param A
+     * @return
+     */
+    public int maxEvents(int[][] A) {
+        PriorityQueue<Integer> pq = new PriorityQueue<Integer>();
+        Arrays.sort(A, (a, b) -> Integer.compare(a[0], b[0]));
+        int i = 0, res = 0, n = A.length;
+        for (int d = 1; d <= 100000; ++d) {
+            while (pq.size() > 0 && pq.peek() < d) {
+                pq.poll();
+            }
+            while (i < n && A[i][0] == d) {
+                pq.offer(A[i++][1]);
+            }
+            if (pq.size() > 0) {
+                pq.poll();
+                ++res;
+            }
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/video-stitching/
      *
      * You are given a series of video clips from a sporting event that lasted T seconds.  These video clips can be overlapping with each other and have varied lengths.

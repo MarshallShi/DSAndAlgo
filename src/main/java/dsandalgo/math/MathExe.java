@@ -3,6 +3,7 @@ package dsandalgo.math;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,9 +23,313 @@ public class MathExe {
         int[] a = {1,1,0};
         //2147483647
         //[1,1,0]
-        System.out.println(exe.smallestRepunitDivByK(2));
+        System.out.println(exe.reachNumber(2));
     }
 
+    /**
+     * https://leetcode.com/problems/statistics-from-a-large-sample/
+     * We sampled integers between 0 and 255, and stored the results in an array count:  count[k] is
+     * the number of integers we sampled equal to k.
+     *
+     * Return the minimum, maximum, mean, median, and mode of the sample respectively, as an array
+     * of floating point numbers.  The mode is guaranteed to be unique.
+     *
+     * (Recall that the median of a sample is:
+     *
+     * The middle element, if the elements of the sample were sorted and the number of elements is odd;
+     * The average of the middle two elements, if the elements of the sample were sorted and the number
+     * of elements is even.)
+     */
+    public double[] sampleStats(int[] count) {
+        double[] stats = new double[5];
+        double min = -1, max = -1, mean = 0, median = -1, mode = 0, total = 0;
+        //traverse through the given array
+        for(int i=0; i<count.length; i++){
+            //'min' is always the first index with count > 0
+            if(min == -1 && count[i] > 0){
+                min = i;
+            }
+            //'max' is the number with greatest count
+            if(count[i] > 0 && i > max){
+                max = i;
+            }
+            //'mean' is the summation of all numbers (count[i]*i for ith number) divided by 'total' which is calculated below
+            mean += i*count[i];
+            total += count[i];
+            //'mode' is the number with highest frequency
+            if(count[i] > count[(int)mode]){
+                mode = i;
+            }
+        }
+        //calculate mean
+        mean = mean/total;
+        //tricky part: median. we calculate this based on the total length being even or odd.
+        int countSoFar = 0;
+        //traverse the array again
+        for(int i=0; i<count.length; i++){
+            countSoFar += count[i];  //increment countSoFar everytime
+            //odd length: median is single mid element
+            if(total % 2 != 0){
+                if(countSoFar > total/2){   //if we 'cross' the mid element, it is the median
+                    median = i;
+                    break;
+                }
+            }
+            //even length: median is average of 2 consecutive mid elements
+            else{
+                //'count[i] > 0 here is to avoid counting 'zero' freq elements
+                //countSoFar == total/2 implies we are at the 'first' of 2 mid elements
+                if(count[i] > 0 && countSoFar == total/2){
+                    median = i;
+                }
+                //countSoFar crossed total/2 implies that we reached 'second' of  mid elements
+                if(countSoFar > total/2){
+                    //if median is -1 at this point, this means both the mid elements are the same element. Eg: 1,1,2,2,2,2,3,3, here median = (2+2)/2 => 2
+                    if(median == -1){
+                        median = i;
+                    }
+                    //add first and second and take average
+                    else median = (median+i)/2;
+                    break;
+                }
+            }
+        }
+        //finally, fill the stats array and return
+        stats[0] = min; stats[1] = max; stats[2] = mean; stats[3] = median; stats[4] = mode;
+        return stats;
+    }
+
+    /**
+     * https://leetcode.com/problems/reach-a-number/
+     * You are standing at position 0 on an infinite number line. There is a goal at position target.
+     *
+     * On each move, you can either go left or right. During the n-th move (starting from 1), you take n steps.
+     *
+     * Return the minimum number of steps required to reach the destination.
+     *
+     * Example 1:
+     * Input: target = 3
+     * Output: 2
+     * Explanation:
+     * On the first move we step from 0 to 1.
+     * On the second step we step from 1 to 3.
+     *
+     * Example 2:
+     * Input: target = 2
+     * Output: 3
+     * Explanation:
+     * On the first move we step from 0 to 1.
+     * On the second move we step  from 1 to -1.
+     * On the third move we step from -1 to 2.
+     *
+     * Note:
+     * target will be a non-zero integer in the range [-10^9, 10^9].
+     *
+     */
+    //Step 0: Get positive target value (step to get negative target is the same as to get positive value due to symmetry).
+    //Step 1: Find the smallest step that the summation from 1 to step just exceeds or equals target.
+    //Step 2: Find the difference between sum and target. The goal is to get rid of the difference to reach target.
+    // For ith move, if we switch the right move to the left, the change in summation will be 2*i less.
+    // Now the difference between sum and target has to be an even number in order for the math to check out.
+    //Step 2.1: If the difference value is even, we can return the current step.
+    //Step 2.2: If the difference value is odd, we need to increase the step until the difference is even (at most 2 more steps needed).
+    public int reachNumber(int target) {
+        target = Math.abs(target);
+        int step = 0;
+        int sum = 0;
+        while (sum < target) {
+            step++;
+            sum += step;
+        }
+        while ((sum - target) % 2 != 0) {
+            step++;
+            sum += step;
+        }
+        return step;
+    }
+
+    /**
+     * https://leetcode.com/problems/reconstruct-original-digits-from-english/
+     * @param s
+     * @return
+     */
+    public String originalDigits(String s) {
+        int[] count = new int[10];
+        for (int i = 0; i < s.length(); i++){
+            char c = s.charAt(i);
+            if (c == 'z') count[0]++;
+            if (c == 'w') count[2]++;
+            if (c == 'x') count[6]++;
+            if (c == 's') count[7]++; //7-6
+            if (c == 'g') count[8]++;
+            if (c == 'u') count[4]++;
+            if (c == 'f') count[5]++; //5-4
+            if (c == 'h') count[3]++; //3-8
+            if (c == 'i') count[9]++; //9-8-5-6
+            if (c == 'o') count[1]++; //1-0-2-4
+        }
+        count[7] -= count[6];
+        count[5] -= count[4];
+        count[3] -= count[8];
+        count[9] = count[9] - count[8] - count[5] - count[6];
+        count[1] = count[1] - count[0] - count[2] - count[4];
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i <= 9; i++){
+            for (int j = 0; j < count[i]; j++){
+                sb.append(i);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * https://leetcode.com/problems/champagne-tower/
+     * @param poured
+     * @param query_row
+     * @param query_glass
+     * @return
+     */
+    public double champagneTower(int poured, int query_row, int query_glass) {
+        double[][] result = new double[101][101];
+        result[0][0] = poured;
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j <= i; j++) {
+                //If the glass >=1, we should split the diff (glass - 1) into next level.
+                if (result[i][j] >= 1) {
+                    result[i + 1][j] += (result[i][j] - 1) / 2.0;
+                    result[i + 1][j + 1] += (result[i][j] - 1) / 2.0;
+                    result[i][j] = 1;
+                }
+            }
+        }
+        return result[query_row][query_glass];
+    }
+
+    /**
+     * https://leetcode.com/problems/next-closest-time/
+     * Given a time represented in the format "HH:MM", form the next closest time by reusing the current digits.
+     * There is no limit on how many times a digit can be reused.
+     *
+     * You may assume the given input string is always valid. For example, "01:34", "12:09" are all valid. "1:34", "12:9" are all invalid.
+     *
+     * Example 1:
+     *
+     * Input: "19:34"
+     * Output: "19:39"
+     * Explanation: The next closest time choosing from digits 1, 9, 3, 4, is 19:39, which occurs 5 minutes later.  It is not 19:33,
+     * because this occurs 23 hours and 59 minutes later.
+     * Example 2:
+     *
+     * Input: "23:59"
+     * Output: "22:22"
+     * Explanation: The next closest time choosing from digits 2, 3, 5, 9, is 22:22. It may be assumed that the returned time is next day's
+     * time since it is smaller than the input time numerically.
+     */
+    public String nextClosestTime(String time) {
+        char[] result = time.toCharArray();
+        char[] digits = new char[] {result[0], result[1], result[3], result[4]};
+        Arrays.sort(digits);
+
+        // find next digit for HH:M_
+        result[4] = findNext(result[4], (char)('9' + 1), digits);  // no upperLimit for this digit, i.e. 0-9
+        if(result[4] > time.charAt(4)) return String.valueOf(result);  // e.g. 23:43 -> 23:44
+
+        // find next digit for HH:_M
+        result[3] = findNext(result[3], '5', digits);
+        if(result[3] > time.charAt(3)) return String.valueOf(result);  // e.g. 14:29 -> 14:41
+
+        // find next digit for H_:MM
+        result[1] = result[0] == '2' ? findNext(result[1], '3', digits) : findNext(result[1], (char)('9' + 1), digits);
+        if(result[1] > time.charAt(1)) return String.valueOf(result);  // e.g. 02:37 -> 03:00
+
+        // find next digit for _H:MM
+        result[0] = findNext(result[0], '2', digits);
+        return String.valueOf(result);  // e.g. 19:59 -> 11:11
+    }
+
+    /**
+     * find the next bigger digit which is no more than upperLimit.
+     * If no such digit exists in digits[], return the minimum one i.e. digits[0]
+     */
+    private char findNext(char current, char upperLimit, char[] digits) {
+        //System.out.println(current);
+        if(current == upperLimit) {
+            return digits[0];
+        }
+        int pos = Arrays.binarySearch(digits, current) + 1;
+        while (pos < 4 && (digits[pos] > upperLimit || digits[pos] == current)) { // traverse one by one to find next greater digit
+            pos++;
+        }
+        return pos == 4 ? digits[0] : digits[pos];
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-swap/
+     * @param num
+     * @return
+     */
+    public int maximumSwap(int num) {
+        char[] digits = String.valueOf(num).toCharArray();
+        int[] buckets = new int[10];
+        for (int i=0; i<digits.length; i++) {
+            buckets[digits[i] - '0'] = i;
+        }
+        for (int i = 0; i < digits.length; i++) {
+            for (int k = 9; k > digits[i] - '0'; k--) {
+                if (buckets[k] > i) {
+                    char tmp = digits[i];
+                    digits[i] = digits[buckets[k]];
+                    digits[buckets[k]] = tmp;
+                    return Integer.valueOf(new String(digits));
+                }
+            }
+        }
+        return num;
+    }
+
+    /**
+     * https://leetcode.com/problems/bulb-switcher-ii/
+     * @param n
+     * @param m
+     * @return
+     */
+    public int flipLights(int n, int m) {
+        if (m == 0 || n == 0) return 1;
+        if (n == 1) return 2;
+        if (n == 2) return m == 1? 3:4;
+        if (m == 1) return 4;
+        return m == 2? 7:8;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-factorization/
+     * @param a
+     * @return
+     */
+    public int smallestFactorization(int a) {
+        List<Integer> ans = new ArrayList<>();
+        if (a <= 9) return a;
+        //Trick is we only look for the divisor less than 9
+        int k = 9;
+        while (a > 1 && k >= 2) {
+            if (a % k == 0){
+                ans.add(k);
+                a = a / k;
+            } else {
+                k--;
+            }
+        }
+        Collections.sort(ans);
+        // Integer.MAX_VALUE = 2147483647
+        // Note: ans starts at least with 2 (guaranteed to have overflow if the size is great or equal 10)
+        if (a > 10 || ans.size() >= 10) return 0;
+        int num = 0;
+        for (int i: ans){
+            num *= 10;
+            num += i;
+        }
+        return num;
+    }
 
     /**
      * https://leetcode.com/problems/monotone-increasing-digits/

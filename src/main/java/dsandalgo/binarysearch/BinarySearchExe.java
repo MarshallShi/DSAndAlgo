@@ -1,7 +1,10 @@
 package dsandalgo.binarysearch;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BinarySearchExe {
@@ -9,6 +12,128 @@ public class BinarySearchExe {
     public static void main(String[] args) {
         BinarySearchExe exe = new BinarySearchExe();
         int[] nums = {2,5,6,0,0,1,2};
+    }
+
+    /**
+     * https://leetcode.com/problems/shortest-distance-to-target-color/
+     * You are given an array colors, in which there are three colors: 1, 2 and 3.
+     *
+     * You are also given some queries. Each query consists of two integers i and c, return
+     * the shortest distance between the given index i and the target color c. If there is no
+     * solution return -1.
+     *
+     * Example 1:
+     * Input: colors = [1,1,2,1,3,2,2,3,3], queries = [[1,3],[2,2],[6,1]]
+     * Output: [3,0,3]
+     * Explanation:
+     * The nearest 3 from index 1 is at index 4 (3 steps away).
+     * The nearest 2 from index 2 is at index 2 itself (0 steps away).
+     * The nearest 1 from index 6 is at index 3 (3 steps away).
+     *
+     * Example 2:
+     * Input: colors = [1,2], queries = [[0,3]]
+     * Output: [-1]
+     * Explanation: There is no 3 in the array.
+     *
+     * Constraints:
+     * 1 <= colors.length <= 5*10^4
+     * 1 <= colors[i] <= 3
+     * 1 <= queries.length <= 5*10^4
+     * queries[i].length == 2
+     * 0 <= queries[i][0] < colors.length
+     * 1 <= queries[i][1] <= 3
+     */
+    //Step: Add all indexes of each color to its list.
+    //For each given color and start index, perform a binary search on the index list to find the position.
+    //Return the shortest length between indexes.
+    public List<Integer> shortestDistanceColor(int[] colors, int[][] queries) {
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < colors.length; i++) {
+            int c = colors[i];
+            map.putIfAbsent(c, new ArrayList<>());
+            map.get(c).add(i);
+        }
+        List<Integer> ans = new ArrayList<>();
+        for (int[] query : queries) {
+            int index = query[0];
+            int c = query[1];
+            if (!map.containsKey(c)) {
+                ans.add(-1);
+            } else {
+                ans.add(binarySearchHelper(index, map.get(c)));
+            }
+        }
+        return ans;
+    }
+
+    private int binarySearchHelper(int index, List<Integer> list) {
+        int left = 0;
+        int right = list.size() - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (list.get(mid) < index) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        int res = left;
+        if (left - 1 >= 0 && index - list.get(left - 1) < list.get(left) - index) {
+            res = left - 1;
+        }
+        return Math.abs(list.get(res) - index);
+    }
+
+    /**
+     * https://leetcode.com/problems/sum-of-mutated-array-closest-to-target/
+     * Given an integer array arr and a target value target, return the integer value such that when
+     * we change all the integers larger than value in the given array to be equal to value, the sum
+     * of the array gets as close as possible (in absolute difference) to target.
+     *
+     * In case of a tie, return the minimum such integer.
+     *
+     * Notice that the answer is not neccesarilly a number from arr.
+     *
+     * Example 1:
+     * Input: arr = [4,9,3], target = 10
+     * Output: 3
+     * Explanation: When using 3 arr converts to [3, 3, 3] which sums 9 and that's the optimal answer.
+     *
+     * Example 2:
+     * Input: arr = [2,3,5], target = 10
+     * Output: 5
+     *
+     * Example 3:
+     * Input: arr = [60864,25176,27249,21296,20204], target = 56803
+     * Output: 11361
+     *
+     * Constraints:
+     * 1 <= arr.length <= 10^4
+     * 1 <= arr[i], target <= 10^5
+     *
+     */
+    public int findBestValue(int[] arr, int target) {
+        int totalSum = 0, maxNum = -1;
+        for (int i=0; i<arr.length; i++) {
+            totalSum += arr[i];
+            maxNum = Math.max(maxNum, arr[i]);
+        }
+        if (totalSum <= target) {
+            return maxNum;
+        }
+        Arrays.sort(arr);
+        int lastIdx = arr.length - 1;
+        int removed = 0;
+        while (lastIdx>=0 && target < totalSum + removed*arr[lastIdx]) {
+            removed++;
+            totalSum -= arr[lastIdx];
+            lastIdx--;
+        }
+        int v = (target - totalSum) / removed;
+        if (Math.abs(target-totalSum-removed*v) <= Math.abs(target-totalSum-removed*(v+1))) {
+            return v;
+        }
+        return v+1;
     }
 
     /**

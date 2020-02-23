@@ -4,6 +4,7 @@ import javafx.util.Pair;
 import sun.reflect.generics.tree.Tree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,7 +24,156 @@ public class TreeExe {
         TreeExe exe = new TreeExe();
         //exe.insertIntoBST(exe.createANode(), 5);
         int[] preorder = {8,5,1,7,10,12};
-        System.out.println(exe.isValidSerialization("9,3,4,#,#,1,#,#,#,2,#,6,#,#"));
+        TreeNode n = exe.str2tree("4(2(3)(1))(6(5))");
+        System.out.println(n);
+    }
+
+    /**
+     * https://leetcode.com/problems/insufficient-nodes-in-root-to-leaf-paths/
+     * Given the root of a binary tree, consider all root to leaf paths: paths from the root to any leaf.
+     * (A leaf is a node with no children.)
+     *
+     * A node is insufficient if every such root to leaf path intersecting this node has sum strictly less
+     * than limit.
+     *
+     * Delete all insufficient nodes simultaneously, and return the root of the resulting binary tree.
+     */
+    public TreeNode sufficientSubset(TreeNode root, int limit) {
+        if (root == null) {
+            return null;
+        }
+        if (root.left == null && root.right == null) {
+            if (root.val < limit) {
+                return null;
+            } else {
+                return root;
+            }
+        } else {
+            if (root.left != null) {
+                root.left = sufficientSubset(root.left, limit - root.val);
+            }
+            if (root.right != null) {
+                root.right = sufficientSubset(root.right, limit - root.val);
+            }
+            //This is the tricky part, if no children, no valid path anymore, so should return null.
+            if (root.left == null && root.right == null) {
+                return null;
+            } else {
+                return root;
+            }
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/construct-binary-tree-from-string/
+     *
+     * You need to construct a binary tree from a string consisting of parenthesis and integers.
+     *
+     * The whole input represents a binary tree. It contains an integer followed by zero, one or two pairs of parenthesis.
+     * The integer represents the root's value and a pair of parenthesis contains a child binary tree with the same structure.
+     *
+     * You always start to construct the left child node of the parent first if it exists.
+     *
+     * Example:
+     * Input: "4(2(3)(1))(6(5))"
+     * Output: return the tree root node representing the following tree:
+     *
+     *        4
+     *      /   \
+     *     2     6
+     *    / \   /
+     *   3   1 5
+     * Note:
+     * There will only be '(', ')', '-' and '0' ~ '9' in the input string.
+     * An empty tree is represented by "" instead of "()".
+     */
+    public TreeNode str2tree(String s) {
+        if (s.length() == 0) {
+            return null;
+        }
+        int i = 0;
+        while (i<s.length() && s.charAt(i) != '(') {
+            i++;
+        }
+        if (i<s.length() && s.charAt(i) == '(') {
+            String rval = s.substring(0, i);
+            TreeNode root = new TreeNode(Integer.parseInt(rval));
+            int l = 1, j = 0;
+            for (j=i+1;j<s.length();j++) {
+                if (s.charAt(j) =='('){
+                    l++;
+                }
+                if (s.charAt(j) == ')') {
+                    l--;
+                }
+                if (l == 0) {
+                    break;
+                }
+            }
+            root.left = str2tree(s.substring(i+1, j));
+            if (j+1 < s.length() && s.charAt(j+1) == '(') {
+                root.right = str2tree(s.substring(j+2, s.length()-1));
+            }
+            return root;
+        } else {
+            return new TreeNode(Integer.parseInt(s));
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/binary-trees-with-factors/
+     * Given an array of unique integers, each integer is strictly greater than 1.
+     *
+     * We make a binary tree using these integers and each number may be used for any number of times.
+     *
+     * Each non-leaf node's value should be equal to the product of the values of it's children.
+     *
+     * How many binary trees can we make?  Return the answer modulo 10 ** 9 + 7.
+     *
+     * Example 1:
+     *
+     * Input: A = [2, 4]
+     * Output: 3
+     * Explanation: We can make these trees: [2], [4], [4, 2, 2]
+     * Example 2:
+     *
+     * Input: A = [2, 4, 5, 10]
+     * Output: 7
+     * Explanation: We can make these trees: [2], [4], [5], [10], [4, 2, 2], [10, 2, 5], [10, 5, 2].
+     *
+     *
+     * Note:
+     *
+     * 1 <= A.length <= 1000.
+     * 2 <= A[i] <= 10 ^ 9.
+     */
+    /**sort the array
+     * and use HashMap to record each Integer, and the number of trees with that Integer as root
+     * (1) each integer A[i] will always have one tree with only itself
+     * (2) if A[i] has divisor (a) in the map, and if A[i]/a also in the map
+     *     then a can be the root of its left subtree, and A[i]/a can be the root of its right subtree;
+     *     the number of such tree is map.get(a) * map.get(A[i]/a)
+     * (3) sum over the map
+     */
+    public int numFactoredBinaryTrees(int[] A) {
+        Arrays.sort(A);
+        Map<Integer, Long> map = new HashMap();
+        long count = 1;
+        map.put(A[0], count);
+        for (int i = 1; i < A.length; i++) {
+            count = 1;
+            for (Integer n : map.keySet()) {
+                if (A[i] % n == 0 && map.containsKey(A[i] / n)) {
+                    count += map.get(n) * map.get(A[i] / n);
+                }
+            }
+            map.put(A[i], count);
+        }
+        long sum = 0;
+        for (Integer n : map.keySet()) {
+            sum = (sum + map.get(n)) % 1000000007 ;
+        }
+        return (int) sum;
     }
 
     /**

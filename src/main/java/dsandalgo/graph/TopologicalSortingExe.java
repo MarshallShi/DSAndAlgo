@@ -15,9 +15,124 @@ public class TopologicalSortingExe {
 
     public static void main(String[] args) {
         TopologicalSortingExe exe = new TopologicalSortingExe();
-        //String[] words = {"z","x"};
-        String[] words = {"wrt","wrf","er","ett","rftt"};
-        System.out.println(exe.alienOrder(words));
+        int[] arr = {1};
+        List<List<Integer>> input = new ArrayList<List<Integer>>();
+        List<Integer> one = new ArrayList<Integer>();
+        one.add(1);
+        input.add(one);
+        one = new ArrayList<Integer>();
+        one.add(1);
+        input.add(one);
+        one = new ArrayList<Integer>();
+        one.add(1);
+        input.add(one);
+        System.out.println(exe.sequenceReconstruction(arr, input));
+    }
+
+    /**
+     * https://leetcode.com/problems/sequence-reconstruction/
+     *
+     * Check whether the original sequence org can be uniquely reconstructed from the sequences in seqs.
+     * The org sequence is a permutation of the integers from 1 to n, with 1 ≤ n ≤ 104. Reconstruction
+     * means building a shortest common supersequence of the sequences in seqs (i.e., a shortest sequence
+     * so that all sequences in seqs are subsequences of it). Determine whether there is only one sequence
+     * that can be reconstructed from seqs and it is the org sequence.
+     *
+     * Example 1:
+     * Input:
+     * org: [1,2,3], seqs: [[1,2],[1,3]]
+     * Output:false
+     * Explanation:
+     * [1,2,3] is not the only one sequence that can be reconstructed, because [1,3,2] is also a valid sequence that can be reconstructed.
+     *
+     * Example 2:
+     * Input:
+     * org: [1,2,3], seqs: [[1,2]]
+     * Output:false
+     * Explanation:
+     * The reconstructed sequence can only be [1,2].
+     *
+     * Example 3:
+     * Input:
+     * org: [1,2,3], seqs: [[1,2],[1,3],[2,3]]
+     * Output:true
+     * Explanation:
+     * The sequences [1,2], [1,3], and [2,3] can uniquely reconstruct the original sequence [1,2,3].
+     *
+     * Example 4:
+     * Input:
+     * org: [4,1,5,2,6,3], seqs: [[5,2,6,3],[4,1,5,2]]
+     * Output:true
+     */
+    public boolean sequenceReconstruction(int[] org, List<List<Integer>> seqs) {
+        if (seqs.size() == 0) {
+            return false;
+        }
+        int[] indegrees = new int[org.length + 1];
+        Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>();
+        boolean allEmpty = true;
+        for (int i=0; i<seqs.size(); i++) {
+            if (!seqs.get(i).isEmpty()) {
+                allEmpty = false;
+            }
+            if (seqs.get(i).size() > 1) {
+                for (int j=0; j<seqs.get(i).size()-1; j++) {
+                    if (seqs.get(i).get(j) > org.length) {
+                        return false;
+                    }
+                    map.putIfAbsent(seqs.get(i).get(j), new ArrayList<Integer>());
+                    map.get(seqs.get(i).get(j)).add(seqs.get(i).get(j+1));
+                    indegrees[seqs.get(i).get(j+1)]++;
+                }
+            } else {
+                if (seqs.get(i).size() == 1) {
+                    if (seqs.get(i).get(0) > org.length) {
+                        return false;
+                    }
+                }
+            }
+        }
+        if (allEmpty) {
+            return false;
+        }
+        Queue<Integer> queue = new LinkedList<Integer>();
+        int counterInDegree0 = 0;
+        for (int i=1; i<indegrees.length; i++) {
+            if (indegrees[i] == 0) {
+                counterInDegree0++;
+                queue.add(i);
+            }
+        }
+        if (counterInDegree0 > 1 || queue.isEmpty()) {
+            return false;
+        }
+        int idxInOrig = 0;
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            if (cur != org[idxInOrig]) {
+                return false;
+            }
+            indegrees[cur] = -1;
+            List<Integer> curChildren = map.get(cur);
+            counterInDegree0 = 0;
+            if (curChildren != null && !curChildren.isEmpty()) {
+                for (Integer child: curChildren) {
+                    indegrees[child]--;
+                    if (indegrees[child] == 0) {
+                        queue.add(child);
+                        counterInDegree0++;
+                    }
+                }
+            }
+            if (counterInDegree0 > 1) {
+                return false;
+            }
+            idxInOrig++;
+        }
+        if (idxInOrig != org.length) {
+            return false;
+        }
+        return true;
     }
 
     /**

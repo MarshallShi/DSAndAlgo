@@ -22,6 +22,68 @@ public class HashMapExe {
         int[] quiet = {3,2,5,4,6,1,7,0};
 
         exe.minAreaFreeRect(richer);
+        //Caused by: javax.jms.JMSException: Could not connect to broker URL: tcp://activemq-cms:61616. Reason: java.net.UnknownHostException: activemq-cms
+    }
+
+    public HashMapExe(){
+
+    }
+
+    /*
+        https://leetcode.com/problems/unique-word-abbreviation/
+    */
+
+    private Map<String, Integer> freqMap;
+    public HashMapExe(String[] dictionary) {
+        freqMap = new HashMap<String, Integer>();
+        for (String w : dictionary) {
+            if (w.length() > 2) {
+                String key = String.valueOf(w.charAt(0)) + String.valueOf(w.length() - 2) + String.valueOf(w.charAt(w.length() - 1));
+                freqMap.put(key, freqMap.getOrDefault(key, 0) + 1);
+            } else {
+                freqMap.put(w, freqMap.getOrDefault(w, 0) + 1);
+            }
+        }
+    }
+    public boolean isUnique(String word) {
+        if (word == null || word.length() == 0) {
+            return false;
+        }
+        String key = null;
+        if (word.length() > 2) {
+            key = String.valueOf(word.charAt(0)) + String.valueOf(word.length() - 2) + String.valueOf(word.charAt(word.length() - 1));
+        } else {
+            key = word;
+        }
+        return !freqMap.containsKey(key);
+    }
+
+    /**
+     * https://leetcode.com/problems/vowel-spellchecker/
+     */
+    public String[] spellchecker(String[] wordlist, String[] queries) {
+        Set<String> words = new HashSet<>(Arrays.asList(wordlist));
+        Map<String, String> cap = new HashMap<String, String>();
+        Map<String, String> vowel = new HashMap<String, String>();
+        for (String w : wordlist) {
+            String lower = w.toLowerCase(), devowel = lower.replaceAll("[aeiou]", "#");
+            cap.putIfAbsent(lower, w);
+            vowel.putIfAbsent(devowel, w);
+        }
+        for (int i = 0; i < queries.length; ++i) {
+            if (words.contains(queries[i])) {
+                continue;
+            }
+            String lower = queries[i].toLowerCase(), devowel = lower.replaceAll("[aeiou]", "#");
+            if (cap.containsKey(lower)) {
+                queries[i] = cap.get(lower);
+            } else if (vowel.containsKey(devowel)) {
+                queries[i] = vowel.get(devowel);
+            } else {
+                queries[i] = "";
+            }
+        }
+        return queries;
     }
 
     /**

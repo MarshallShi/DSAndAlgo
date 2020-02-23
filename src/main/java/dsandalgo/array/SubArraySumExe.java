@@ -3,19 +3,157 @@ package dsandalgo.array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
+import org.apache.commons.lang.StringUtils;
 
 public class SubArraySumExe {
 
     public static void main(String[] args) {
         SubArraySumExe exe = new SubArraySumExe();
-        int[] nums = {1, -1, 5, -2, 3};
-        //"abcd"
-        //"bcdf"
-        //3
-        System.out.println(exe.equalSubstring("abcd", "bcdf", 3));
+        int[] nums = {1,2,1,2,1,2,1};
+        System.out.println(exe.splitArray(nums));
+    }
+
+    /**
+     * https://leetcode.com/problems/split-array-with-equal-sum/
+     * Given an array with n integers, you need to find if there are triplets (i, j, k) which satisfies following conditions:
+     *
+     * 0 < i, i + 1 < j, j + 1 < k < n - 1
+     * Sum of subarrays (0, i - 1), (i + 1, j - 1), (j + 1, k - 1) and (k + 1, n - 1) should be equal.
+     * where we define that subarray (L, R) represents a slice of the original array starting from the element indexed L to the element indexed R.
+     * Example:
+     * Input: [1,2,1,2,1,2,1]
+     * Output: True
+     * Explanation:
+     * i = 1, j = 3, k = 5.
+     * sum(0, i - 1) = sum(0, 0) = 1
+     * sum(i + 1, j - 1) = sum(2, 2) = 1
+     * sum(j + 1, k - 1) = sum(4, 4) = 1
+     * sum(k + 1, n - 1) = sum(6, 6) = 1
+     * Note:
+     * 1 <= n <= 2000.
+     * Elements in the given array will be in range [-1,000,000, 1,000,000].
+     *
+     * @param nums
+     * @return
+     */
+    public boolean splitArray(int[] nums) {
+        if (nums.length < 7) {
+            return false;
+        }
+        int[] sum = new int[nums.length];
+        sum[0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            sum[i] = sum[i - 1] + nums[i];
+        }
+        for (int j = 3; j < nums.length - 3; j++) {
+            Set<Integer> set = new HashSet< >();
+            for (int i = 1; i < j - 1; i++) {
+                if (sum[i - 1] == sum[j - 1] - sum[i]) {
+                    set.add(sum[i - 1]);
+                }
+            }
+            for (int k = j + 2; k < nums.length - 1; k++) {
+                if (sum[nums.length - 1] - sum[k] == sum[k - 1] - sum[j] && set.contains(sum[k - 1] - sum[j])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-subarray/
+     * @param nums
+     * @return
+     */
+    //Kadane’s Algorithm
+    public int maxSubArray(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return -2147483648;
+        }
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        int max = dp[0];
+        for (int i = 1; i < nums.length; i++) {
+            if (dp[i - 1] + nums[i] < nums[i]) {
+                dp[i] = nums[i];
+            } else {
+                dp[i] = nums[i] + dp[i-1];
+            }
+            if (dp[i] > max) {
+                max = dp[i];
+            }
+        }
+        return max;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-subarray-sum-with-one-deletion/
+     *
+     * Given an array of integers, return the maximum sum for a non-empty subarray (contiguous elements)
+     * with at most one element deletion. In other words, you want to choose a subarray and optionally
+     * delete one element from it so that there is still at least one element left and the sum of the
+     * remaining elements is maximum possible.
+     *
+     * Note that the subarray needs to be non-empty after deleting one element.
+     *
+     * Example 1:
+     * Input: arr = [1,-2,0,3]
+     * Output: 4
+     * Explanation: Because we can choose [1, -2, 0, 3] and drop -2, thus the subarray [1, 0, 3] becomes the maximum value.
+     * Example 2:
+     *
+     * Input: arr = [1,-2,-2,3]
+     * Output: 3
+     * Explanation: We just choose [3] and it's the maximum sum.
+     * Example 3:
+     *
+     * Input: arr = [-1,-1,-1,-1]
+     * Output: -1
+     * Explanation: The final subarray needs to be non-empty. You can't choose [-1] and delete -1 from it, then get an
+     * empty subarray to make the sum equals to 0.
+     *
+     * Constraints:
+     * 1 <= arr.length <= 10^5
+     * -10^4 <= arr[i] <= 10^4
+     */
+    public int maximumSum(int[] arr) {
+        if(arr.length == 1) {
+            return arr[0];
+        }
+        int n = arr.length;
+        //dp1 is the maxsum from left to right
+        int[] dp1 = new int[n];
+        //dp2 is the maxsum from right to left.
+        int[] dp2 = new int[n];
+
+        dp1[0] = arr[0];
+        dp2[n-1] = arr[n-1];
+        int max = arr[0];
+
+        //Kadane’s Algorithm
+        for(int i=1; i<n; i++){
+            dp1[i] = dp1[i-1] > 0 ? dp1[i-1] + arr[i] : arr[i];
+            max = Math.max(max, dp1[i]);
+        }
+        for(int i=n-2; i>=0; i--){
+            dp2[i] = dp2[i+1] > 0 ? dp2[i+1] + arr[i] : arr[i];
+        }
+
+        for(int i=1; i<n-1; i++){
+            if (arr[i] < 0){
+                max = Math.max(max, dp1[i-1] + dp2[i+1]);
+            }
+        }
+        return max;
     }
 
     /**

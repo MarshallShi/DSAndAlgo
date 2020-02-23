@@ -15,7 +15,84 @@ public class BacktrackExe {
 
     public static void main(String[] args) {
         BacktrackExe backtrack = new BacktrackExe();
-        System.out.println(backtrack.getFactors(32));
+        int[] A = {1,1,2,2,2,2};
+        //System.out.println(backtrack.threeSumMulti(A, 5));
+    }
+
+    /**
+     * https://leetcode.com/problems/generalized-abbreviation/
+     *
+     * Write a function to generate the generalized abbreviations of a word.
+     *
+     * Note: The order of the output does not matter.
+     *
+     * Example:
+     *
+     * Input: "word"
+     * Output:
+     * ["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+     *
+     * @param word
+     * @return
+     */
+    public List<String> generateAbbreviations(String word) {
+        return null;
+    }
+
+    /**
+     * https://leetcode.com/problems/palindrome-permutation-ii/
+     *
+     * Given a string s, return all the palindromic permutations (without duplicates) of it.
+     * Return an empty list if no palindromic permutation could be form.
+     *
+     * Example 1:
+     * Input: "aabb"
+     * Output: ["abba", "baab"]
+     *
+     * Example 2:
+     * Input: "abc"
+     * Output: []
+     */
+    private List<String> list = new ArrayList<>();
+    public List<String> generatePalindromes(String s) {
+        int numOdds = 0; // How many characters that have odd number of count
+        int[] map = new int[256]; // Map from character to its frequency
+        for (char c: s.toCharArray()) {
+            map[c]++;
+            numOdds = (map[c] & 1) == 1 ? numOdds+1 : numOdds-1;
+        }
+        if (numOdds > 1) {
+            return list;
+        }
+        //Main trick to improve the runtime is just do the permutation on the first half.
+        String mid = "";
+        int length = 0;
+        for (int i = 0; i < 256; i++) {
+            if (map[i] > 0) {
+                if ((map[i] & 1) == 1) { // Char with odd count will be in the middle
+                    mid = "" + (char)i;
+                    map[i]--;
+                }
+                map[i] /= 2; // Cut in half since we only generate half string
+                length += map[i]; // The length of half string
+            }
+        }
+        generatePalindromesHelper(map, length, "", mid);
+        return list;
+    }
+    private void generatePalindromesHelper(int[] map, int length, String s, String mid) {
+        if (s.length() == length) {
+            StringBuilder reverse = new StringBuilder(s).reverse(); // Second half
+            list.add(s + mid + reverse);
+            return;
+        }
+        for (int i = 0; i < 256; i++) { // backtracking just like permutation
+            if (map[i] > 0) {
+                map[i]--;
+                generatePalindromesHelper(map, length, s + (char)i, mid);
+                map[i]++;
+            }
+        }
     }
 
     /**

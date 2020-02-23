@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 public class BitExe {
 
@@ -16,9 +17,58 @@ public class BitExe {
                 {1,0,1,0},
                 {1,1,0,0}};
 
-        int[] arr = {1,2,1,3,2,5};
+        int[] arr1 = {1,1,1,1,1};
+        int[] arr2 = {1,0,1};
         int[][] queries = {{2,3},{1,3},{0,0},{0,3}};
-        System.out.println(exe.encode(66));
+        System.out.println(exe.addNegabinary(arr1, arr2));
+    }
+
+    /**
+     * https://leetcode.com/problems/adding-two-negabinary-numbers/
+     * Given two numbers arr1 and arr2 in base -2, return the result of adding them together.
+     *
+     * Each number is given in array format:  as an array of 0s and 1s, from most significant bit to least significant bit.
+     * For example, arr = [1,1,0,1] represents the number (-2)^3 + (-2)^2 + (-2)^0 = -3.  A number arr in array format is also
+     * guaranteed to have no leading zeros: either arr == [0] or arr[0] == 1.
+     *
+     * Return the result of adding arr1 and arr2 in the same format: as an array of 0s and 1s with no leading zeros.
+     *
+     * Example 1:
+     *
+     * Input: arr1 = [1,1,1,1,1], arr2 = [1,0,1]
+     * Output: [1,0,0,0,0]
+     * Explanation: arr1 represents 11, arr2 represents 5, the output represents 16.
+     *
+     *
+     * Note:
+     *
+     * 1 <= arr1.length <= 1000
+     * 1 <= arr2.length <= 1000
+     * arr1 and arr2 have no leading zeros
+     * arr1[i] is 0 or 1
+     * arr2[i] is 0 or 1
+     */
+    public int[] addNegabinary(int[] arr1, int[] arr2) {
+        int i = arr1.length - 1, j = arr2.length - 1, carry = 0;
+        Stack<Integer> stack = new Stack<Integer>();
+        while (i >= 0 || j >= 0 || carry != 0) {
+            int v1 = i >= 0 ? arr1[i--] : 0;
+            int v2 = j >= 0 ? arr2[j--] : 0;
+            carry = v1 + v2 + carry;
+            stack.push(carry & 1);
+            carry = -(carry >> 1);
+        }
+        //Remove the leading 0.
+        while (!stack.isEmpty() && stack.peek() == 0) {
+            stack.pop();
+        }
+        int[] res = new int[stack.size()];
+        int index = 0;
+        while (!stack.isEmpty()) {
+            res[index++] = stack.pop();
+        }
+        //if stack length 0, return 0.
+        return res.length == 0 ? new int[1] : res;
     }
 
     /**

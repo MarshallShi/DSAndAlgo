@@ -2,6 +2,11 @@ package dsandalgo.twopointers;
 
 public class FastSlowPointers {
 
+    public static void main(String[] args) {
+        FastSlowPointers exe = new FastSlowPointers();
+        int[] a = {2,-1,1,2,2};
+        System.out.println(exe.circularArrayLoop(a));
+    }
     /**
      * https://leetcode.com/problems/circular-array-loop/
      *
@@ -39,11 +44,32 @@ public class FastSlowPointers {
      * All movements in a cycle must follow a single direction.
      *
      * //Could you solve it in O(n) time complexity and O(1) extra space complexity?
-     * @param nums
-     * @return
      */
+    //Slow and fast pointer, if slow move one step each time, while fast move two, if they meet, there is a cycle.
     public boolean circularArrayLoop(int[] nums) {
-        return false;
+        boolean found = false;
+        for ( int i=0; i<nums.length; i++ ) {
+            Integer ps = i;
+            Integer pf = next(nums, 0, i);
+            int dir = nums[i];
+            while ( ps != null && pf != null && ps != pf ) {
+                ps = next(nums, dir, ps);
+                pf = next(nums, dir, next(nums, dir, pf));
+            }
+            if ( ps != null && ps == pf ) {
+                found = true;
+                break;
+            }
+        }
+        return found;
     }
 
+    private Integer next(int[] nums, int dir, Integer pos) {
+        if ( pos == null ) return null; // null, return null
+        if ( dir * nums[pos] < 0 ) return null; // change in direction, return null
+        Integer next = (pos + nums[pos]) % nums.length;
+        if ( next < 0 ) next += nums.length; // wrap negative
+        if ( next == pos ) next = null; // self-pointer, return null
+        return next;
+    }
 }

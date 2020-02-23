@@ -29,7 +29,6 @@ import java.util.List;
  */
 public class MinMaxPathExe {
 
-
     /**
      * https://leetcode.com/problems/greatest-sum-divisible-by-three/
      *

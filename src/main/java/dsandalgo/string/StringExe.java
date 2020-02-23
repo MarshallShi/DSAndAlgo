@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class StringExe {
 
@@ -20,7 +21,244 @@ public class StringExe {
         int[] indexes = {3, 5, 1};
         String[] sources = {"abc", "xyz"};
         //exe.reverseWords(words);
-        System.out.println(exe.validIPAddress("1.1.1.1."));
+        //"dcab"
+        //[[0,3],[1,2]]
+        //"dcab"
+        //[[0,3],[1,2],[0,2]]
+        List<List<Integer>> input = new ArrayList<List<Integer>>();
+        List<Integer> one = new ArrayList<Integer>();
+        one.add(0);
+        one.add(3);
+        input.add(one);
+        one = new ArrayList<Integer>();
+        one.add(1);
+        one.add(2);
+        input.add(one);
+        one = new ArrayList<Integer>();
+        one.add(0);
+        one.add(2);
+        input.add(one);
+        System.out.println(exe.strWithout3a3b(4, 1));
+    }
+
+    /**
+     * https://leetcode.com/problems/string-without-aaa-or-bbb/
+     * Given two integers A and B, return any string S such that:
+     *
+     * S has length A + B and contains exactly A 'a' letters, and exactly B 'b' letters;
+     * The substring 'aaa' does not occur in S;
+     * The substring 'bbb' does not occur in S.
+     *
+     *
+     * Example 1:
+     *
+     * Input: A = 1, B = 2
+     * Output: "abb"
+     * Explanation: "abb", "bab" and "bba" are all correct answers.
+     * Example 2:
+     *
+     * Input: A = 4, B = 1
+     * Output: "aabaa"
+     *
+     *
+     * Note:
+     *
+     * 0 <= A <= 100
+     * 0 <= B <= 100
+     * It is guaranteed such an S exists for the given A and B.
+     */
+    public String strWithout3a3b(int A, int B) {
+        StringBuilder res = new StringBuilder(A + B);
+        char a = 'a', b = 'b';
+        //Make sure i is the bigger one.
+        int i = A, j = B;
+        if (B > A) {
+            a = 'b'; b = 'a'; i = B; j = A;
+        }
+        while (i-- > 0) {
+            //greedily add two a and one b, till i and j are the same
+            //then start add one a one b.
+            res.append(a);
+            if (i > j) {
+                res.append(a);
+                --i;
+            }
+            if (j-- > 0) {
+                res.append(b);
+            }
+        }
+        return res.toString();
+    }
+
+    /**
+     * https://leetcode.com/problems/smallest-string-with-swaps/
+     * @param s
+     * @param pairs
+     * @return
+     */
+    public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
+        char[] charr = s.toCharArray();
+        TreeMap<Integer, List<Integer>> map = new TreeMap<>();
+        for (List<Integer> lst : pairs) {
+            int p0 = Math.min(lst.get(0), lst.get(1));
+            int p1 = Math.max(lst.get(0), lst.get(1));
+            if (p0 == p1) {
+                continue;
+            }
+            map.putIfAbsent(p0, new ArrayList<Integer>());
+            map.get(p0).add(p1);
+        }
+        boolean needSwap = true;
+        while (needSwap) {
+            boolean swapped = false;
+            for (Map.Entry<Integer, List<Integer>> entry : map.entrySet()) {
+                System.out.println(entry.getKey());
+                char minChar = charr[entry.getKey()];
+                int toSwap = -1;
+                for (Integer val : entry.getValue()) {
+                    if (minChar > charr[val]) {
+                        toSwap = val;
+                        minChar = charr[val];
+                    }
+                }
+                if (toSwap != -1) {
+                    char t = charr[entry.getKey()];
+                    charr[entry.getKey()] = charr[toSwap];
+                    charr[toSwap] = t;
+                    swapped = true;
+                }
+            }
+            if (!swapped) {
+                needSwap = false;
+            }
+        }
+        return new String(charr);
+    }
+
+    /**
+     * https://leetcode.com/problems/swap-adjacent-in-lr-string/
+     * @param start
+     * @param end
+     * @return
+     */
+    public boolean canTransform(String start, String end) {
+        if (!start.replace("X", "").equals(end.replace("X", ""))){
+            return false;
+        }
+        int p1 = 0;
+        int p2 = 0;
+        while (p1 < start.length() && p2 < end.length()){
+            // get the non-X positions of 2 strings
+            while(p1 < start.length() && start.charAt(p1) == 'X'){
+                p1++;
+            }
+            while(p2 < end.length() && end.charAt(p2) == 'X'){
+                p2++;
+            }
+            //if both of the pointers reach the end the strings are transformable
+            if(p1 == start.length() && p2 == end.length()){
+                return true;
+            }
+            // if only one of the pointer reach the end they are not transformable
+            if(p1 == start.length() || p2 == end.length()){
+                return false;
+            }
+
+            if(start.charAt(p1) != end.charAt(p2)){
+                return false;
+            }
+            // if the character is 'L', it can only be moved to the left. p1 should be greater or equal to p2.
+            if(start.charAt(p1) == 'L' && p2 > p1){
+                return false;
+            }
+            // if the character is 'R', it can only be moved to the right. p2 should be greater or equal to p1.
+            if(start.charAt(p1) == 'R' && p1 > p2){
+                return false;
+            }
+            p1++;
+            p2++;
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-swaps-to-make-strings-equal/
+     */
+    public int minimumSwap(String s1, String s2) {
+        int xToyCount = 0, yToxCount = 0;
+        for (int i=0; i<s1.length(); i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                if (s1.charAt(i) == 'x' && s2.charAt(i) == 'y') {
+                    xToyCount++;
+                } else {
+                    yToxCount++;
+                }
+            }
+        }
+        if ((xToyCount + yToxCount) % 2 != 0) {
+            return -1;
+        } else {
+            if (xToyCount % 2 == 0 && yToxCount % 2 == 0) {
+                return (xToyCount + yToxCount) / 2;
+            } else {
+                return xToyCount/2 + yToxCount/2 + 2;
+            }
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-number-of-steps-to-make-two-strings-anagram/
+     * Given two equal-size strings s and t. In one step you can choose any character of t and replace it with another character.
+     * Return the minimum number of steps to make t an anagram of s.
+     * An Anagram of a string is a string that contains the same characters with a different (or the same) ordering.
+     *
+     * Example 1:
+     * Input: s = "bab", t = "aba"
+     * Output: 1
+     * Explanation: Replace the first 'a' in t with b, t = "bba" which is anagram of s.
+     *
+     * Example 2:
+     * Input: s = "leetcode", t = "practice"
+     * Output: 5
+     * Explanation: Replace 'p', 'r', 'a', 'i' and 'c' from t with proper characters to make t anagram of s.
+     *
+     * Example 3:
+     * Input: s = "anagram", t = "mangaar"
+     * Output: 0
+     * Explanation: "anagram" and "mangaar" are anagrams.
+     * Example 4:
+     *
+     * Input: s = "xxyyzz", t = "xxyyzz"
+     * Output: 0
+     * Example 5:
+     *
+     * Input: s = "friend", t = "family"
+     * Output: 4
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= s.length <= 50000
+     * s.length == t.length
+     * s and t contain lower-case English letters only.
+     */
+    public int minSteps(String s, String t) {
+        int[] schar = new int[26];
+        for (int i=0; i<s.length(); i++) {
+            schar[s.charAt(i) - 'a']++;
+        }
+        int count = 0;
+        for (int i=0; i<t.length(); i++) {
+            if (schar[t.charAt(i) - 'a'] == 0) {
+                count++;
+            } else {
+                schar[t.charAt(i) - 'a']--;
+            }
+        }
+        for (int i=0; i<26; i++) {
+            count += schar[i];
+        }
+        return count/2;
     }
 
     /**
