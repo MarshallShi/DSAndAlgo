@@ -23,6 +23,38 @@ public class StackExe {
         System.out.println(exe.removeDuplicates("pbbcggttciiippooaais", 2));
     }
 
+
+    /**
+     * https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/
+     * @param text
+     * @return
+     */
+    public String smallestSubsequence(String text) {
+        int[] count = new int[26];
+        int[] inUse = new int[26];
+        for (int i = 0; i < text.length(); i++) {
+            count[text.charAt(i) - 'a']++;
+        }
+        Stack<Character> stack = new Stack<Character>();
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            count[ch - 'a']--;
+            if (inUse[ch - 'a'] == 1) {
+                continue;
+            }
+            while (!stack.isEmpty() && count[stack.peek() - 'a']!=0 && stack.peek() > ch) {
+                inUse[stack.pop() - 'a']--;
+            }
+            stack.push(ch);
+            inUse[ch -'a']++;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        return sb.reverse().toString();
+    }
+	
     /**
      * https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/
      *

@@ -16,7 +16,53 @@ public class DPOnGrid {
         int[][] mines = {{4, 2}};
         System.out.println(exe.orderOfLargestPlusSign(5, mines));
     }
-
+/**
+     * https://leetcode.com/problems/longest-line-of-consecutive-one-in-matrix/
+     * Given a 01 matrix M, find the longest line of consecutive one in the matrix. The line could be horizontal,
+     * vertical, diagonal or anti-diagonal.
+     * Example:
+     * Input:
+     * [[0,1,1,0],
+     *  [0,1,1,0],
+     *  [0,0,0,1]]
+     * Output: 3
+     * Hint: The number of elements in the given matrix will not exceed 10,000.
+     */
+    public int longestLine(int[][] M) {
+        int n = M.length, max = 0;
+        if (n == 0) {
+            return max;
+        }
+        int m = M[0].length;
+        //0: horizontal cache, 1: anti-diagonal cache, 2: vertical, 3: diagonal
+        int[][][] dp = new int[n][m][4];
+        for (int i=0; i<n; i++) {
+            for (int j=0; j<m; j++) {
+                if (M[i][j] == 0) {
+                    continue;
+                }
+                //init base value in dp array for all 4 cases..
+                for (int k=0; k<4; k++) {
+                    dp[i][j][k] = 1;
+                }
+                if (j > 0) {
+                    dp[i][j][0] += dp[i][j-1][0];
+                }
+                if (j > 0 && i > 0) {
+                    dp[i][j][1] += dp[i-1][j-1][1];
+                }
+                if (i > 0) {
+                    dp[i][j][2] += dp[i-1][j][2];
+                }
+                if (j < m-1 && i > 0) {
+                    dp[i][j][3] += dp[i-1][j+1][3];
+                }
+                int curMax = Math.max(Math.max(dp[i][j][0], dp[i][j][1]), Math.max(dp[i][j][2], dp[i][j][3]));
+                max = Math.max(max, curMax);
+            }
+        }
+        return max;
+    }
     /**
      * In a 2D grid from (0, 0) to (N-1, N-1), every cell contains a 1, except those cells in the given list mines which are 0.
      * What is the largest axis-aligned plus sign of 1s contained in the grid? Return the order of the plus sign. If there is none, return 0.

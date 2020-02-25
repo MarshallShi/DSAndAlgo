@@ -23,6 +23,76 @@ public class GreedyExe{
         System.out.println(exe.numRescueBoats(tempArr, 3));
     }
 
+
+    /**
+     * https://leetcode.com/problems/beautiful-arrangement-ii/
+     * Given two integers n and k, you need to construct a list which contains n different positive integers ranging from 1 to n
+     * and obeys the following requirement:
+     * Suppose this list is [a1, a2, a3, ... , an], then the list [|a1 - a2|, |a2 - a3|, |a3 - a4|, ... , |an-1 - an|] has exactly
+     * k distinct integers.
+     *
+     * If there are multiple answers, print any of them.
+     *
+     * Example 1:
+     * Input: n = 3, k = 1
+     * Output: [1, 2, 3]
+     * Explanation: The [1, 2, 3] has three different positive integers ranging from 1 to 3, and the [1, 1] has exactly 1
+     * distinct integer: 1.
+     * Example 2:
+     * Input: n = 3, k = 2
+     * Output: [1, 3, 2]
+     * Explanation: The [1, 3, 2] has three different positive integers ranging from 1 to 3, and the [2, 1] has exactly 2
+     * distinct integers: 1 and 2.
+     */
+    //When k = n-1, a valid construction is [1, n, 2, n-1, 3, n-2, ....]. One way to see this is, we need to have a difference
+    // of n-1, which means we need 1 and n adjacent; then, we need a difference of n-2, etc.
+    //This leads to the following idea: we will put [1, 2, ...., n-k-1] first, and then we have N = k+1 adjacent numbers left,
+    // of which we want k different differences. This is just the answer above translated by n-k-1:
+    // we'll put [n-k, n, n-k+1, n-1, ....] after.
+    public int[] constructArray(int n, int k) {
+        int[] result = new int[n];
+        int left = 1, right = n;
+        for (int i=0; i<n; i++){
+            result[i] = k%2 !=0 ? left++ : right--;
+            if (k>1) {
+                k--;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * https://leetcode.com/problems/previous-permutation-with-one-swap/
+     * @param A
+     * @return
+     */
+    public int[] prevPermOpt1(int[] A) {
+        if (A == null || A.length < 2) {
+            return A;
+        }
+        int preHigher = -1, toSwap = -1;
+        for (int i=1; i<A.length; i++) {
+            if (A[i] < A[i-1]) {
+                preHigher = i-1;
+                toSwap = i;
+            } else {
+                if (A[i] > A[i - 1] && preHigher != -1 && toSwap != -1) {
+                    if (A[i] < A[preHigher] && A[i] > A[toSwap]) {
+                        toSwap = i;
+                    }
+                }
+            }
+        }
+        if (preHigher == -1){
+            return A;
+        } else {
+            int temp = A[preHigher];
+            A[preHigher] = A[toSwap];
+            A[toSwap] = temp;
+            return A;
+        }
+    }
+	
     /**
      * https://leetcode.com/problems/dota2-senate/
      */

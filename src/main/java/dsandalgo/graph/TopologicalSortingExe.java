@@ -29,6 +29,40 @@ public class TopologicalSortingExe {
         System.out.println(exe.sequenceReconstruction(arr, input));
     }
 
+/**
+     * https://leetcode.com/problems/validate-binary-tree-nodes/
+     * @param n
+     * @param leftChild
+     * @param rightChild
+     * @return
+     */
+    public boolean validateBinaryTreeNodes(int n, int[] leftChild, int[] rightChild) {
+        int[] inDegree = new int[n];
+        for (int i=0; i<n; i++) {
+            if (leftChild[i] != -1) {
+                inDegree[leftChild[i]]++;
+            }
+            if (rightChild[i] != -1) {
+                inDegree[rightChild[i]]++;
+            }
+        }
+        int countOfInDegree0 = 0;
+        for (int i=0; i<n; i++) {
+            if (inDegree[i] > 1) {
+                return false;
+            } else {
+                if (inDegree[i] == 0) {
+                    countOfInDegree0++;
+                }
+            }
+        }
+        if (countOfInDegree0 == 1) {
+            return true;
+        }
+        return false;
+    }
+
+
     /**
      * https://leetcode.com/problems/sequence-reconstruction/
      *

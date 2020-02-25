@@ -40,6 +40,232 @@ public class StringExe {
         input.add(one);
         System.out.println(exe.strWithout3a3b(4, 1));
     }
+	
+	/**
+     * https://leetcode.com/problems/number-of-substrings-containing-all-three-characters/
+     * Given a string s consisting only of characters a, b and c.
+     *
+     * Return the number of substrings containing at least one occurrence of all these characters a, b and c.
+     *
+     * Example 1:
+     * Input: s = "abcabc"
+     * Output: 10
+     * Explanation: The substrings containing at least one occurrence of the characters a, b and c are "abc", "abca",
+     * "abcab", "abcabc", "bca", "bcab", "bcabc", "cab", "cabc" and "abc" (again).
+     *
+     * Example 2:
+     * Input: s = "aaacb"
+     * Output: 3
+     * Explanation: The substrings containing at least one occurrence of the characters a, b and c are "aaacb", "aacb" and "acb".
+     *
+     * Example 3:
+     * Input: s = "abc"
+     * Output: 1
+     *
+     * Constraints:
+     * 3 <= s.length <= 5 x 10^4
+     * s only consists of a, b or c characters.
+     */
+    public int numberOfSubstrings(String s) {
+        LinkedList<Integer> aIdxList = new LinkedList<Integer>();
+        LinkedList<Integer> bIdxList = new LinkedList<Integer>();
+        LinkedList<Integer> cIdxList = new LinkedList<Integer>();
+        for (int i=0; i<s.length(); i++) {
+            if (s.charAt(i) == 'a') {
+                aIdxList.add(i);
+            } else {
+                if (s.charAt(i) == 'b') {
+                    bIdxList.add(i);
+                } else {
+                    cIdxList.add(i);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i=0; i<s.length() - 2; i++) {
+            int idxA = -1, idxB = -1, idxC = - 1;
+            for (int j=0; j<aIdxList.size(); j++) {
+                if (aIdxList.get(j) >= i) {
+                    idxA = aIdxList.get(j);
+                    break;
+                }
+            }
+            for (int j=0; j<bIdxList.size(); j++) {
+                if (bIdxList.get(j) >= i) {
+                    idxB = bIdxList.get(j);
+                    break;
+                }
+            }
+            for (int j=0; j<cIdxList.size(); j++) {
+                if (cIdxList.get(j) >= i) {
+                    idxC = cIdxList.get(j);
+                    break;
+                }
+            }
+            if (idxA == -1 || idxB == -1 || idxC == -1) {
+                break;
+            } else {
+                ans = ans + s.length() - Math.max(idxA, Math.max(idxB, idxC));
+            }
+            while (!aIdxList.isEmpty() && aIdxList.getFirst()<i) {
+                aIdxList.removeFirst();
+            }
+            while (!bIdxList.isEmpty() && bIdxList.getFirst()<i) {
+                bIdxList.removeFirst();
+            }
+            while (!cIdxList.isEmpty() && cIdxList.getFirst()<i) {
+                cIdxList.removeFirst();
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/remove-comments/
+     * @param source
+     * @return
+     */
+    public List<String> removeComments(String[] source) {
+        List<String> res = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        boolean mode = false;
+        for (String s : source) {
+            for (int i = 0; i < s.length(); i++) {
+                if (mode) {
+                    if (s.charAt(i) == '*' && i < s.length() - 1 && s.charAt(i + 1) == '/') {
+                        mode = false;
+                        i++;        //skip '/' on next iteration of i
+                    }
+                }
+                else {
+                    if (s.charAt(i) == '/' && i < s.length() - 1 && s.charAt(i + 1) == '/') {
+                        break;      //ignore remaining characters on line s
+                    } else if (s.charAt(i) == '/' && i < s.length() - 1 && s.charAt(i + 1) == '*') {
+                        mode = true;
+                        i++;           //skip '*' on next iteration of i
+                    }  else {
+                        sb.append(s.charAt(i));     //not a comment
+                    }
+                }
+            }
+            if (!mode && sb.length() > 0) {
+                res.add(sb.toString());
+                sb = new StringBuilder();   //reset for next line of source code
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/group-shifted-strings/
+     * Given a string, we can "shift" each of its letter to its successive letter, for example: "abc" -> "bcd".
+     * We can keep "shifting" which forms the sequence:
+     *
+     * "abc" -> "bcd" -> ... -> "xyz"
+     * Given a list of strings which contains only lowercase alphabets, group all strings that belong to
+     * the same shifting sequence.
+     *
+     * Example:
+     *
+     * Input: ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"],
+     * Output:
+     * [
+     *   ["abc","bcd","xyz"],
+     *   ["az","ba"],
+     *   ["acef"],
+     *   ["a","z"]
+     * ]
+     */
+    public List<List<String>> groupStrings(String[] strings) {
+        List<List<String>> result = new ArrayList<List<String>>();
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for (String str : strings) {
+            int offset = str.charAt(0) - 'a';
+            String key = "";
+            for (int i = 0; i < str.length(); i++) {
+                char c = (char) (str.charAt(i) - offset);
+                if (c < 'a') {
+                    c += 26;
+                }
+                key += c;
+            }
+            if (!map.containsKey(key)) {
+                List<String> list = new ArrayList<String>();
+                map.put(key, list);
+            }
+            map.get(key).add(str);
+        }
+        for (String key : map.keySet()) {
+            List<String> list = map.get(key);
+            Collections.sort(list);
+            result.add(list);
+        }
+        return result;
+    }
+
+    private String nextShift(String s) {
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i<s.length(); i++) {
+            if (s.charAt(i) == 'z') {
+                sb.append('a');
+            } else {
+                sb.append((char)(s.charAt(i) + 1));
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * https://leetcode.com/problems/ambiguous-coordinates/
+     * We had some 2-dimensional coordinates, like "(1, 3)" or "(2, 0.5)".  Then, we removed all commas, decimal points,
+     * and spaces, and ended up with the string S.  Return a list of strings representing all possibilities for what
+     * our original coordinates could have been.
+     *
+     * Our original representation never had extraneous zeroes, so we never started with numbers like "00", "0.0", "0.00",
+     * "1.0", "001", "00.01", or any other number that can be represented with less digits.  Also, a decimal point within
+     * a number never occurs without at least one digit occuring before it, so we never started with numbers like ".1".
+     *
+     * The final answer list can be returned in any order.  Also note that all coordinates in the final answer have exactly
+     * one space between them (occurring after the comma.)
+     *
+     * Example 1:
+     * Input: "(123)"
+     * Output: ["(1, 23)", "(12, 3)", "(1.2, 3)", "(1, 2.3)"]
+     */
+    //Split to left and right.
+    //Check if both left and right can be further split to valid numbers using splitToNumbers.
+    //Add to the result only when both side are not empty
+    public List<String> ambiguousCoordinates(String S) {
+        List<String> ans = new ArrayList<>();
+        for (int i = 2; i < S.length() - 1; i++) {
+            List<String> left = splitToNumbers(S.substring(1, i));
+            List<String> right = splitToNumbers(S.substring(i, S.length() - 1));
+            if (!left.isEmpty() && !right.isEmpty()) {
+                for (String l : left) {
+                    for (String r : right) {
+                        ans.add("(" + l + ", " + r + ")");
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    private List<String> splitToNumbers(String s) {
+        if (s.length() == 1) {
+            return Collections.singletonList(s);
+        }
+        List<String> ans = new ArrayList<>();
+        if (s.charAt(0) != '0') {
+            ans.add(s);
+            for (int i = 1; i < s.length() && !s.endsWith("0"); i++) {
+                ans.add(s.substring(0, i) + "." + s.substring(i));
+            }
+        } else if (!s.endsWith("0")) {
+            ans.add(s.substring(0, 1) + "." + s.substring(1));
+        }
+        return ans;
+    }
 
     /**
      * https://leetcode.com/problems/masking-personal-information/

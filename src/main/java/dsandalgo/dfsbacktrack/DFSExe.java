@@ -21,7 +21,90 @@ public class DFSExe {
         };
         int[] nums2 = {1,15,7,9,2,5,10};
 
-        System.out.println(dfs.maxSumAfterPartitioning(nums2, 3));
+        System.out.println(dfs.numberOfPatterns(2, 3));
+    }
+
+    /**
+     * https://leetcode.com/problems/android-unlock-patterns/
+     * Given an Android 3x3 key lock screen and two integers m and n, where 1 ≤ m ≤ n ≤ 9, count the total number
+     * of unlock patterns of the Android lock screen, which consist of minimum of m keys and maximum n keys.
+     *
+     *
+     *
+     * Rules for a valid pattern:
+     *
+     * Each pattern must connect at least m keys and at most n keys.
+     * All the keys must be distinct.
+     * If the line connecting two consecutive keys in the pattern passes through any other keys, the other keys
+     * must have previously selected in the pattern. No jumps through non selected key is allowed.
+     * The order of keys used matters.
+     *
+     * Explanation:
+     * | 1 | 2 | 3 |
+     * | 4 | 5 | 6 |
+     * | 7 | 8 | 9 |
+     * Invalid move: 4 - 1 - 3 - 6
+     * Line 1 - 3 passes through key 2 which had not been selected in the pattern.
+     * Invalid move: 4 - 1 - 9 - 2
+     * Line 1 - 9 passes through key 5 which had not been selected in the pattern.
+     * Valid move: 2 - 4 - 1 - 3 - 6
+     * Line 1 - 3 is valid because it passes through key 2, which had been selected in the pattern
+     * Valid move: 6 - 5 - 4 - 1 - 9 - 2
+     * Line 1 - 9 is valid because it passes through key 5, which had been selected in the pattern.
+     *
+     * Example:
+     * Input: m = 1, n = 1
+     * Output: 9
+     */
+    private int cnt = 0;
+    boolean[] visited = new boolean[10];
+    public int numberOfPatterns(int m, int n) {
+        for (int i = 1; i <= 9; i ++) {
+            dfs(i, 1, m, n);
+        }
+        return cnt;
+    }
+    private void dfs(int start, int count, int m, int n) {
+        if (count >= m) {
+            if (count <= n) {
+                cnt++;
+            } else {
+                return;
+            }
+        }
+        visited[start] = true;
+        for (int i = 1; i <= 9; i ++) {
+            if (check(start, i)) {
+                visited[i] = true;
+                dfs(i, count + 1, m, n);
+                visited[i] = false;
+            }
+        }
+        visited[start] = false;
+    }
+    private boolean check(int n1, int n2) {
+        if (visited[n2]) {
+            return false;
+        }
+        int r1 = (n1-1) / 3;
+        int r2 = (n2-1) / 3;
+        int c1 = (n1-1) % 3;
+        int c2 = (n2-1) % 3;
+        int smallN = Math.min(n1, n2);
+        int colDiff = Math.abs(c1 - c2);
+        int rowDiff = Math.abs(r1 - r2);
+        if (colDiff == 2) {
+            if (rowDiff == 2) {
+                return visited[5];
+            } else if (rowDiff == 0) {
+                return visited[smallN + 1]; // check middle col
+            }
+        } else if (colDiff == 0) {
+            if (rowDiff == 2) {
+                return visited[smallN + 3]; // check middle row
+            }
+        }
+        return true;
     }
 
     /**
@@ -93,7 +176,49 @@ public class DFSExe {
     }
 
 
-
+/**
+     * https://leetcode.com/problems/maximum-length-of-a-concatenated-string-with-unique-characters/
+     *
+     * Given an array of strings arr. String s is a concatenation of a sub-sequence of arr which have unique characters.
+     * Return the maximum possible length of s.
+     * Example 1:
+     * Input: arr = ["un","iq","ue"]
+     * Output: 4
+     * Explanation: All possible concatenations are "","un","iq","ue","uniq" and "ique".
+     * Maximum length is 4.
+     * Example 2:
+     * Input: arr = ["cha","r","act","ers"]
+     * Output: 6
+     * Explanation: Possible solutions are "chaers" and "acters".
+     * Example 3:
+     * Input: arr = ["abcdefghijklmnopqrstuvwxyz"]
+     * Output: 26
+     *
+     * Constraints:
+     * 1 <= arr.length <= 16
+     * 1 <= arr[i].length <= 26
+     * arr[i] contains only lower case English letters.
+     */
+    public int maxLength(List<String> arr) {
+        return maxLengthHelper(arr, "", 0);
+    }
+    private int maxLengthHelper(List<String> arr, String soFar, int index) {
+        if (index > arr.size()) {
+            return 0;
+        }
+        Set<Character> set = new HashSet<>();
+        for (char c: soFar.toCharArray()) {
+            if (set.contains(c)) {
+                return 0;
+            }
+            set.add(c);
+        }
+        int max = soFar.length();
+        for(int i = index; i < arr.size(); i++) {
+            max = Math.max(max, maxLengthHelper(arr, soFar + arr.get(i), i + 1));
+        }
+        return max;
+    }
 
     /**
      * https://leetcode.com/problems/all-paths-from-source-lead-to-destination/

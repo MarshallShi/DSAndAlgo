@@ -24,6 +24,107 @@ public class BitExe {
     }
 
     /**
+     * https://leetcode.com/problems/bitwise-ors-of-subarrays/
+     * @param A
+     * @return
+     */
+    public int subarrayBitwiseORs(int[] A) {
+        //if we get all result for 0..i, then for next i+1,
+        //we apply it to all previous result with the bitwise or, and plus itself.
+        Set<Integer> res = new HashSet<>(), cur = new HashSet<>(), cur2;
+        for (Integer i: A) {
+            cur2 = new HashSet<>();
+            cur2.add(i);
+            for (Integer j: cur) {
+                cur2.add(i|j);
+            }
+            cur = cur2;
+            res.addAll(cur);
+        }
+        return res.size();
+    }
+	
+	/**
+     * https://leetcode.com/problems/k-th-symbol-in-grammar/
+     * @param N
+     * @param K
+     * @return
+     */
+    public int kthGrammar(int N, int K) {
+        if (N == 1 && K == 1) {
+            return 0;
+        }
+        if (N == 2 && K == 1) {
+            return 0;
+        }
+        if (N == 2 && K == 2) {
+            return 1;
+        }
+        int prevPos = K/2 + K%2;
+        int prevVal = kthGrammar(N-1, prevPos);
+        if (K%2 == 0) {
+            if (prevVal == 1) {
+                return 0;
+            } else {
+                return 1;
+            }
+        } else {
+            if (prevVal == 1) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-length-of-a-concatenated-string-with-unique-characters/
+     *
+     * Given an array of strings arr. String s is a concatenation of a sub-sequence of arr which have unique characters.
+     * Return the maximum possible length of s.
+     * Example 1:
+     * Input: arr = ["un","iq","ue"]
+     * Output: 4
+     * Explanation: All possible concatenations are "","un","iq","ue","uniq" and "ique".
+     * Maximum length is 4.
+     * Example 2:
+     * Input: arr = ["cha","r","act","ers"]
+     * Output: 6
+     * Explanation: Possible solutions are "chaers" and "acters".
+     * Example 3:
+     * Input: arr = ["abcdefghijklmnopqrstuvwxyz"]
+     * Output: 26
+     *
+     * Constraints:
+     * 1 <= arr.length <= 16
+     * 1 <= arr[i].length <= 26
+     * arr[i] contains only lower case English letters.
+     */
+    public int maxLength(List<String> arr) {
+        List<Integer> dp = new ArrayList<>();
+        dp.add(0);
+        int res = 0;
+        for (String s : arr) {
+            int a = 0, dup = 0;
+            for (char c : s.toCharArray()) {
+                dup |= a & (1 << (c - 'a'));
+                a |= 1 << (c - 'a');
+            }
+            if (dup > 0) {
+                continue;
+            }
+            for (int i = dp.size() - 1; i >= 0; --i) {
+                if ((dp.get(i) & a) > 0) {
+                    continue;
+                }
+                dp.add(dp.get(i) | a);
+                res = Math.max(res, Integer.bitCount(dp.get(i) | a));
+            }
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/adding-two-negabinary-numbers/
      * Given two numbers arr1 and arr2 in base -2, return the result of adding them together.
      *

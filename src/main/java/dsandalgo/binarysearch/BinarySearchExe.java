@@ -13,6 +13,127 @@ public class BinarySearchExe {
         BinarySearchExe exe = new BinarySearchExe();
         int[] nums = {2,5,6,0,0,1,2};
     }
+	
+	/**
+     * https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/
+     * Given an array of integers nums and an integer threshold, we will choose a positive integer divisor and divide
+     * all the array by it and sum the result of the division. Find the smallest divisor such that the result mentioned
+     * above is less than or equal to threshold.
+     *
+     * Each result of division is rounded to the nearest integer greater than or equal to that element.
+     * (For example: 7/3 = 3 and 10/2 = 5).
+     *
+     * It is guaranteed that there will be an answer.
+     *
+     * Example 1:
+     *
+     * Input: nums = [1,2,5,9], threshold = 6
+     * Output: 5
+     * Explanation: We can get a sum to 17 (1+2+5+9) if the divisor is 1.
+     * If the divisor is 4 we can get a sum to 7 (1+1+2+3) and if the divisor is 5 the sum will be 5 (1+1+1+2).
+     * Example 2:
+     *
+     * Input: nums = [2,3,5,7,11], threshold = 11
+     * Output: 3
+     * Example 3:
+     *
+     * Input: nums = [19], threshold = 5
+     * Output: 4
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= nums.length <= 5 * 10^4
+     * 1 <= nums[i] <= 10^6
+     * nums.length <= threshold <= 10^6
+     *
+     */
+    public int smallestDivisor(int[] nums, int threshold) {
+        int maxNum = 0;
+        for (int i=0; i<nums.length; i++) {
+            maxNum = Math.max(nums[i], maxNum);
+        }
+        int low = 1, high = threshold;
+        while (low < high) {
+            int mid = low + (high - low)/2;
+            if (getDivSum(nums, mid) > threshold) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return high;
+    }
+
+    private int getDivSum(int[] nums, int div) {
+        int sum = 0;
+        for (int i=0; i<nums.length; i++) {
+            if (nums[i]%div != 0) {
+                sum += (nums[i]/div) + 1;
+            } else {
+                sum += nums[i]/div;
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-side-length-of-a-square-with-sum-less-than-or-equal-to-threshold/
+     * Given a m x n matrix mat and an integer threshold. Return the maximum side-length of a square with a sum less than
+     * or equal to threshold or return 0 if there is no such square.
+     * Example 1:
+     * Input: mat = [[1,1,3,2,4,3,2],[1,1,3,2,4,3,2],[1,1,3,2,4,3,2]], threshold = 4
+     * Output: 2
+     * Explanation: The maximum side length of square with sum less than 4 is 2 as shown.
+     * Example 2:
+     * Input: mat = [[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2],[2,2,2,2,2]], threshold = 1
+     * Output: 0
+     * Example 3:
+     * Input: mat = [[1,1,1,1],[1,0,0,0],[1,0,0,0],[1,0,0,0]], threshold = 6
+     * Output: 3
+     * Example 4:
+     * Input: mat = [[18,70],[61,1],[25,85],[14,40],[11,96],[97,96],[63,45]], threshold = 40184
+     * Output: 2
+     *
+     * Constraints:
+     * 1 <= m, n <= 300
+     * m == mat.length
+     * n == mat[i].length
+     * 0 <= mat[i][j] <= 10000
+     * 0 <= threshold <= 10^5
+     */
+    //Timecomplex: O(m*n*log(min(m,n)))
+    public int maxSideLength(int[][] mat, int threshold) {
+        int m = mat.length;
+        int n = mat[0].length;
+        int[][] sum = new int[m + 1][n + 1];
+        //Presum grid.
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                sum[i][j] = sum[i-1][j] + sum[i][j-1] - sum[i-1][j-1] + mat[i-1][j-1];
+            }
+        }
+        int lo = 0, hi = Math.min(m, n);
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (isSquareExist(sum, threshold, mid, m, n)) {
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+        return hi;
+    }
+    private boolean isSquareExist(int[][] sum, int threshold, int len, int m, int n) {
+        for (int i = len; i <= m; i++) {
+            for (int j = len; j <= n; j++) {
+                if (sum[i][j] - sum[i-len][j] - sum[i][j-len] + sum[i-len][j-len] <= threshold) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * https://leetcode.com/problems/shortest-distance-to-target-color/

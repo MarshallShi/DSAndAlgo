@@ -27,6 +27,175 @@ public class MathExe {
         System.out.println(exe.fractionAddition("-1/2+1/2"));
     }
 
+/**
+     * https://leetcode.com/problems/strobogrammatic-number-ii/
+     * A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
+     *
+     * Find all strobogrammatic numbers that are of length = n.
+     *
+     * Example:
+     *
+     * Input:  n = 2
+     * Output: ["11","69","88","96"]
+     * @param n
+     * @return
+     */
+    //Recursively build result based on n-2.
+    public List<String> findStrobogrammatic(int n) {
+        return helper(n, n);
+    }
+
+    private List<String> helper(int n, int m) {
+        if (n == 0) return new ArrayList<String>(Arrays.asList(""));
+        if (n == 1) return new ArrayList<String>(Arrays.asList("0", "1", "8"));
+        List<String> list = helper(n - 2, m);
+        List<String> res = new ArrayList<String>();
+        for (int i = 0; i < list.size(); i++) {
+            String s = list.get(i);
+            if (n != m) {
+                res.add("0" + s + "0");
+            }
+            res.add("1" + s + "1");
+            res.add("6" + s + "9");
+            res.add("8" + s + "8");
+            res.add("9" + s + "6");
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/strobogrammatic-number/
+     * A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
+     *
+     * Write a function to determine if a number is strobogrammatic. The number is represented as a string.
+     *
+     * Example 1:
+     *
+     * Input:  "69"
+     * Output: true
+     * Example 2:
+     *
+     * Input:  "88"
+     * Output: true
+     * Example 3:
+     *
+     * Input:  "962"
+     * Output: false
+     */
+    public boolean isStrobogrammatic(String numstr) {
+        StringBuilder sb = new StringBuilder();
+        for (int i=numstr.length() - 1; i>=0; i--) {
+            char ch = numstr.charAt(i);
+            if(ch != '0' && ch != '1' && ch != '6' && ch != '8' && ch != '9'){
+                return false;
+            }
+            if(ch == '6' || ch == '9'){
+                sb.append(ch == '6' ? '9' : '6');
+            } else {
+                sb.append(ch);
+            }
+        }
+        if (sb.toString().equals(numstr)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * https://leetcode.com/problems/mirror-reflection/
+     * There is a special square room with mirrors on each of the four walls.  Except for the southwest corner, there are
+     * receptors on each of the remaining corners, numbered 0, 1, and 2.
+     *
+     * The square room has walls of length p, and a laser ray from the southwest corner first meets the east wall at a
+     * distance q from the 0th receptor.
+     *
+     * Return the number of the receptor that the ray meets first.  (It is guaranteed that the ray will meet a receptor eventually.)
+     */
+    //https://leetcode.com/problems/mirror-reflection/discuss/146336/Java-solution-with-an-easy-to-understand-explanation
+    //Extend the room to see the reflection. m, n represent till which number of rooms they meet.
+    //So, this problem can be transformed into finding m * p = n * q, where
+    //m = the number of room extension + 1.
+    //n = the number of light reflection + 1.
+    //If the number of light reflection is odd (which means n is even),
+    //it means the corner is on the left-hand side. The possible corner is 2.
+    //Otherwise, the corner is on the right-hand side. The possible corners are 0 and 1.
+    //Given the corner is on the right-hand side.
+    //If the number of room extension is even (which means m is odd), it means the corner is 1. Otherwise, the corner is 0.
+    public int mirrorReflection(int p, int q) {
+        int m = 1, n = 1;
+        while (m * p != n * q) {
+            n++;
+            m = n * q / p;
+        }
+        if (m % 2 == 0 && n % 2 == 1) return 0;
+        if (m % 2 == 1 && n % 2 == 1) return 1;
+        if (m % 2 == 1 && n % 2 == 0) return 2;
+        return -1;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-of-absolute-value-expression/
+     * Given two arrays of integers with equal lengths, return the maximum value of:
+     *
+     * |arr1[i] - arr1[j]| + |arr2[i] - arr2[j]| + |i - j|
+     *
+     * where the maximum is taken over all 0 <= i, j < arr1.length.
+     *
+     */
+    //Take |arr1[i] - arr1[j]| + |arr2[i] - arr2[j]| as Manhattan distance of two points.
+    //arr1 is the coordinate of points on the x-axis,
+    //arr2 is the coordinate of points on the y-axis.
+    //Explanation
+    //For 3 points on the plane, we always have |AO| - |BO| <= |AB|.
+    //When AO and BO are in the same direction, we have ||AO| - |BO|| = |AB|.
+    //We take 4 points for point O, left-top, left-bottom, right-top and right-bottom.
+    //Each time, for each point B, and find the closest A point to O,
+    public int maxAbsValExpr(int[] x, int[] y) {
+        int res = 0, n = x.length, P[] = {-1,1};
+        for (int p : P) {
+            for (int q : P) {
+                int closest = p * x[0] + q * y[0] + 0;
+                for (int i = 1; i < n; ++i) {
+                    int cur = p * x[i] + q * y[i] + i;
+                    res = Math.max(res, cur - closest);
+                    closest = Math.min(closest, cur);
+                }
+            }
+        }
+        return res;
+    }
+
+    public int maxAbsValExpr_math(int[] arr1, int[] arr2) {
+        int max1 = Integer.MIN_VALUE;
+        int max2 = Integer.MIN_VALUE;
+        int max3 = Integer.MIN_VALUE;
+        int max4 = Integer.MIN_VALUE;
+        int min1 = Integer.MAX_VALUE;
+        int min2 = Integer.MAX_VALUE;
+        int min3 = Integer.MAX_VALUE;
+        int min4 = Integer.MAX_VALUE;
+        int n = arr1.length;
+        for (int i = 0; i < n; i++){
+            // st scenario arr1[i] + arr2[i] + i
+            max1 = Integer.max(arr1[i]+arr2[i]+i, max1);
+            min1 = Integer.min(arr1[i]+arr2[i]+i, min1);
+            // nd scenario arr1[i] + arr2[i] - i
+            max2 = Integer.max(arr1[i] + arr2[i] - i, max2);
+            min2 = Integer.min(arr1[i] + arr2[i] - i, min2);
+            // rd scenario arr1[i] - arr2[i] - i
+            max3 = Integer.max(arr1[i] - arr2[i] - i, max3);
+            min3 = Integer.min(arr1[i] - arr2[i] - i, min3);
+            // th scenario arr1[i] - arr2[i] + i
+            max4 = Integer.max(arr1[i] - arr2[i] + i, max4);
+            min4 = Integer.min(arr1[i] - arr2[i] + i, min4);
+        }
+        int diff1 = max1 - min1;
+        int diff2 = max2 - min2;
+        int diff3 = max3 - min3;
+        int diff4 = max4 - min4;
+        return Integer.max(Integer.max(diff1,diff2),Integer.max(diff3,diff4));
+    }
+	
     /**
      * https://leetcode.com/problems/closest-divisors/
      * Given an integer num, find the closest two integers in absolute difference whose product equals num + 1 or num + 2.

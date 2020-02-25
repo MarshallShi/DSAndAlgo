@@ -41,8 +41,129 @@ public class TreeExe {
      *
      * If we cannot do so, then return the list [-1].
      */
-    public List<Integer> flipMatchVoyage(TreeNode root, int[] voyage) {
-        return null;
+    //Recursively check the tree need to be flipped or not.
+    //Move the cursor in the array as we traverse the tree in preorder.
+    private List<Integer> res = new ArrayList<>();
+    private int vIdx = 0;
+    public List<Integer> flipMatchVoyage(TreeNode root, int[] v) {
+        if (flipMatchVoyageHelper(root, v)) {
+            return res;
+        } else {
+            return Arrays.asList(-1);
+        }
+    }
+    private Boolean flipMatchVoyageHelper(TreeNode node, int[] v) {
+        if (node == null) {
+            return true;
+        }
+        if (node.val != v[vIdx++]) {
+            return false;
+        }
+        //not the same, need to flip.
+        if (node.left != null && node.left.val != v[vIdx]) {
+            res.add(node.val);
+            return flipMatchVoyageHelper(node.right, v) && flipMatchVoyageHelper(node.left, v);
+        }
+        //otherwise we skip current, go deeper
+        return flipMatchVoyageHelper(node.left, v) && flipMatchVoyageHelper(node.right, v);
+    }
+	
+	/**
+     * https://leetcode.com/problems/equal-tree-partition/
+     * @param root
+     * @return
+     */
+    public boolean checkEqualTree(TreeNode root) {
+        if (root == null) {
+            return false;
+        }
+        if (root.left == null && root.right == null) {
+            return false;
+        }
+        int total = getSum(root);
+        if (total % 2 != 0) {
+            return false;
+        }
+        return checkEqualTreeHelper(root, total/2);
+    }
+
+    private boolean checkEqualTreeHelper(TreeNode root, int target){
+        if (root == null) {
+            return false;
+        }
+        if (root.left == null && root.right == null) {
+            return root.val == target;
+        }
+        if ((root.left != null && getSum(root.left) == target) || (root.right != null && getSum(root.right) == target)) {
+            return true;
+        } else {
+            return checkEqualTreeHelper(root.left, target) || checkEqualTreeHelper(root.right, target);
+        }
+    }
+
+    private int getSum(TreeNode node) {
+        if (node == null) {
+            return 0;
+        }
+        return node.val + getSum(node.left) + getSum(node.right);
+    }
+
+    /**
+     * https://leetcode.com/problems/verify-preorder-sequence-in-binary-search-tree/
+     * Given an array of numbers, verify whether it is the correct preorder traversal sequence of a binary search tree.
+     *
+     * You may assume each number in the sequence is unique.
+     *
+     * Consider the following binary search tree:
+     *
+     *      5
+     *     / \
+     *    2   6
+     *   / \
+     *  1   3
+     * Example 1:
+     *
+     * Input: [5,2,6,1,3]
+     * Output: false
+     * Example 2:
+     *
+     * Input: [5,2,1,3,6]
+     * Output: true
+     *
+     * Follow up:
+     * Could you do it using only constant space complexity?
+     */
+    //Leverage the property of BST, the traversal sequence must be increasing.
+    public boolean verifyPreorder(int[] preorder) {
+        int low = Integer.MIN_VALUE;
+        Stack<Integer> stack = new Stack(); //traversal sequence.
+        for (int p : preorder) {
+            //Not in order, return false.
+            if (p < low) {
+                return false;
+            }
+            while (!stack.empty() && p > stack.peek()) {
+                //last visited low bound
+                low = stack.pop();
+            }
+            stack.push(p);
+        }
+        return true;
+    }
+
+    //Abuse the input array to save space.
+    public boolean verifyPreorder_O1Space(int[] preorder) {
+        int low = Integer.MIN_VALUE, i = -1;
+        for (int p : preorder) {
+            if (p < low) {
+                return false;
+            }
+            while (i >= 0 && p > preorder[i]) {
+                low = preorder[i--];
+            }
+            preorder[++i] = p;
+        }
+        return true;
     }
 
     /**

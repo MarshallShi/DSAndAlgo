@@ -46,25 +46,26 @@ public class Knapsack {
     //    j ranges from  {1..n}
     //same as 494. Target Sum
     public int lastStoneWeightII(int[] stones) {
-        int sum = 0, S2 = 0;
-        for (int s : stones) {
-            sum = sum + s;
+        int sum = 0;
+        for (int i=0; i<stones.length; i++) {
+            sum += stones[i];
         }
-        int n = stones.length;
-        boolean[][] dp = new boolean[sum + 1][n + 1];
-        for (int i = 0; i <= n; i++) {
+        int mid = sum/2;
+        boolean[][] dp = new boolean[sum+1][stones.length+1];
+        for (int i = 0; i <= stones.length; i++) {
             dp[0][i] = true;
         }
-        //typical 0/1 knapsack solution.
-        for (int i = 1; i <= n; i++) {
-            for (int s = 1; s <= sum / 2; s++) {
+        int closest = 0;
+        for (int i = 1; i <= stones.length; i++) {
+            for (int s = 1; s <= mid; s++) {
+                //we achieve dp[s][i] by: not use stones[i]  or  use stones[i]
                 if (dp[s][i - 1] || (s >= stones[i - 1] && dp[s - stones[i - 1]][i - 1])) {
                     dp[s][i] = true;
-                    S2 = Math.max(S2, s);
+                    closest = Math.max(closest, s);
                 }
             }
         }
-        return sum - 2 * S2;
+        return sum - 2 * closest;
     }
 
     /**
