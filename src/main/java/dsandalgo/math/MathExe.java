@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class MathExe {
 
@@ -23,8 +24,69 @@ public class MathExe {
         int[] a = {1,1,0};
         //2147483647
         //[1,1,0]
-        System.out.println(exe.solveEquation("x+5-3+x=6+x-2"));
+        System.out.println(exe.fractionAddition("-1/2+1/2"));
     }
+
+    /**
+     * https://leetcode.com/problems/closest-divisors/
+     * Given an integer num, find the closest two integers in absolute difference whose product equals num + 1 or num + 2.
+     *
+     * Return the two integers in any order.
+     *
+     * Example 1:
+     * Input: num = 8
+     * Output: [3,3]
+     * Explanation: For num + 1 = 9, the closest divisors are 3 & 3, for num + 2 = 10, the closest divisors are 2 & 5,
+     * hence 3 & 3 is chosen.
+     */
+    public int[] closestDivisors(int num) {
+        int d1 = largestDivisor(num + 1), d2 = largestDivisor(num + 2);
+        if (Math.abs(d1 - (num + 1) / d1) < Math.abs(d2 - (num + 2) / d2)) {
+            return new int[] { d1, (num + 1) / d1 };
+        }
+        return new int[] { d2, (num + 2) / d2 };
+    }
+    private int largestDivisor(int num) {
+        int d = (int)Math.sqrt(num);
+        while (num % d != 0) {
+            --d;
+        }
+        return d;
+    }
+
+    /**
+     * https://leetcode.com/problems/fraction-addition-and-subtraction/
+     * Given a string representing an expression of fraction addition and subtraction,
+     * you need to return the calculation result in string format. The final result should
+     * be irreducible fraction. If your final result is an integer, say 2, you need to
+     * change it to the format of fraction that has denominator 1. So in this case,
+     * 2 should be converted to 2/1.
+     */
+    public String fractionAddition(String expression) {
+        String[] fracs = expression.split("(?=[-+])"); // splits input string into individual fractions
+        String res = "0/1";
+        for (String frac : fracs) {
+            res = add(res, frac); // add all fractions together
+        }
+        return res;
+    }
+    private String add(String frac1, String frac2) {
+        int[] f1 = Stream.of(frac1.split("/")).mapToInt(Integer::parseInt).toArray(),
+                f2 = Stream.of(frac2.split("/")).mapToInt(Integer::parseInt).toArray();
+        int numer = f1[0]*f2[1] + f1[1]*f2[0], denom = f1[1]*f2[1];
+        String sign = "";
+        if (numer < 0) {
+            sign = "-";
+            numer *= -1;
+        }
+        return sign + numer/gcd(numer, denom) + "/" + denom/gcd(numer, denom); // construct reduced fraction
+    }
+    // Computes gcd using Euclidean algorithm
+    private int gcd(int x, int y) {
+        return x == 0 || y == 0 ? x + y : gcd(y, x % y);
+    }
+
+
 
     /**
      * https://leetcode.com/problems/solve-the-equation/

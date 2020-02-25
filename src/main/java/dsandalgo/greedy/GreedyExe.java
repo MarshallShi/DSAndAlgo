@@ -24,6 +24,42 @@ public class GreedyExe{
     }
 
     /**
+     * https://leetcode.com/problems/dota2-senate/
+     */
+    //Greedy strategy is to ban the next opponent right after current
+    public String predictPartyVictory(String senate) {
+        int r = 0, d = 0, start = 0;
+        char[] arr = senate.toCharArray();
+        for (char c : arr) {
+            if (c == 'R') {
+                r++;
+            } else {
+                d++;
+            }
+        }
+        while (r > 0 && d > 0) {
+            while (arr[start] != 'R' && arr[start] != 'D') {
+                //avoid arr idx overflow
+                start = (start + 1) % arr.length;
+            }
+            char ban = 'R';
+            if (arr[start] == 'R') {
+                ban = 'D';
+                d--;
+            } else {
+                r--;
+            }
+            int idx = (start + 1) % arr.length;
+            while (arr[idx] != ban) {
+                idx = (idx + 1) % arr.length;
+            }
+            arr[idx] = ' ';
+            start = (start + 1) % arr.length;
+        }
+        return d == 0 ? "Radiant" : "Dire";
+    }
+
+    /**
      * https://leetcode.com/problems/advantage-shuffle/
      * Given two arrays A and B of equal size, the advantage of A with respect to B is the number
      * of indices i for which A[i] > B[i].
@@ -70,17 +106,6 @@ public class GreedyExe{
             }
         }
         return res;
-    }
-
-    /**
-     * https://leetcode.com/problems/shopping-offers/
-     * @param price
-     * @param special
-     * @param needs
-     * @return
-     */
-    public int shoppingOffers(List<Integer> price, List<List<Integer>> special, List<Integer> needs) {
-        return 0;
     }
 
     /**

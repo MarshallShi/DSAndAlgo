@@ -1,7 +1,6 @@
 package dsandalgo.tree;
 
 import javafx.util.Pair;
-import sun.reflect.generics.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,13 +18,101 @@ import java.util.TreeMap;
 
 public class TreeExe {
 
-
     public static void main(String[] args) {
         TreeExe exe = new TreeExe();
-        //exe.insertIntoBST(exe.createANode(), 5);
         int[] preorder = {8,5,1,7,10,12};
         TreeNode n = exe.str2tree("4(2(3)(1))(6(5))");
         System.out.println(n);
+    }
+
+    /**
+     * https://leetcode.com/problems/flip-binary-tree-to-match-preorder-traversal/
+     * Given a binary tree with N nodes, each node has a different value from {1, ..., N}.
+     *
+     * A node in this binary tree can be flipped by swapping the left child and the right child of that node.
+     *
+     * Consider the sequence of N values reported by a preorder traversal starting from the root.  Call such a sequence of N values the voyage of the tree.
+     *
+     * (Recall that a preorder traversal of a node means we report the current node's value, then preorder-traverse the left child, then preorder-traverse the right child.)
+     *
+     * Our goal is to flip the least number of nodes in the tree so that the voyage of the tree matches the voyage we are given.
+     *
+     * If we can do so, then return a list of the values of all nodes flipped.  You may return the answer in any order.
+     *
+     * If we cannot do so, then return the list [-1].
+     */
+    public List<Integer> flipMatchVoyage(TreeNode root, int[] voyage) {
+        return null;
+    }
+
+    /**
+     * https://leetcode.com/problems/path-sum-iv/
+     * If the depth of a tree is smaller than 5, then this tree can be represented by a list of three-digits integers.
+     *
+     * For each integer in this list:
+     *
+     * The hundreds digit represents the depth D of this node, 1 <= D <= 4.
+     * The tens digit represents the position P of this node in the level it belongs to, 1 <= P <= 8. The position is the same as that in a full binary tree.
+     * The units digit represents the value V of this node, 0 <= V <= 9.
+     *
+     *
+     * Given a list of ascending three-digits integers representing a binary tree with the depth smaller than 5, you need to return the sum of all paths from the root towards the leaves.
+     *
+     * Example 1:
+     *
+     * Input: [113, 215, 221]
+     * Output: 12
+     * Explanation:
+     * The tree that the list represents is:
+     *     3
+     *    / \
+     *   5   1
+     *
+     * The path sum is (3 + 5) + (3 + 1) = 12.
+     *
+     *
+     * Example 2:
+     *
+     * Input: [113, 221]
+     * Output: 4
+     * Explanation:
+     * The tree that the list represents is:
+     *     3
+     *      \
+     *       1
+     *
+     * The path sum is (3 + 1) = 4.
+     */
+    int pathSumAns = 0;
+    Map<Integer, Integer> tree = new HashMap<>();
+    public int pathSum(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        for (int num : nums) {
+            int key = num / 10;
+            int value = num % 10;
+            tree.put(key, value);
+        }
+        traverse(nums[0] / 10, 0);
+        return pathSumAns;
+    }
+    private void traverse(int root, int preSum) {
+        int level = root / 10;
+        int pos = root % 10;
+        int left = (level + 1) * 10 + pos * 2 - 1;
+        int right = (level + 1) * 10 + pos * 2;
+        int curSum = preSum + tree.get(root);
+        if (!tree.containsKey(left) && !tree.containsKey(right)) {
+            pathSumAns += curSum;
+            return;
+        }
+        if (tree.containsKey(left)) {
+            traverse(left, curSum);
+        }
+        if (tree.containsKey(right)) {
+            traverse(right, curSum);
+        }
     }
 
     /**
@@ -547,16 +634,23 @@ public class TreeExe {
      * copying the original root, otherwise it will become cyclic!
      */
     public TreeNode upsideDownBinaryTree(TreeNode root) {
-        if (root == null || root.left == null) {
-            return root;
+        if (root == null) {
+            return null;
         }
-        TreeNode newRoot = upsideDownBinaryTree(root.left);
-        TreeNode rightMostIterator = newRoot;
-        while (rightMostIterator.right != null) {
-            rightMostIterator = rightMostIterator.right;
+        Map<TreeNode, TreeNode> parentMap = new HashMap<>();
+        while (root.left != null) {
+            parentMap.put(root.left, root);
+            root = root.left;
         }
-        rightMostIterator.left = root.right;
-        rightMostIterator.right = new TreeNode(root.val);
+        TreeNode newRoot = root;
+        while (parentMap.get(root) != null) {
+            parentMap.get(root).left = null;
+            root.left = parentMap.get(root).right;
+            root.right = parentMap.get(root);
+            root = root.right;
+        }
+        root.left = null;
+        root.right = null;
         return newRoot;
     }
 

@@ -29,6 +29,65 @@ public class HashMapExe {
 
     }
 
+    /**
+     * https://leetcode.com/problems/rabbits-in-forest/
+     * In a forest, each rabbit has some color. Some subset of rabbits (possibly all of them) tell you how many other rabbits
+     * have the same color as them. Those answers are placed in an array.
+     *
+     * Return the minimum number of rabbits that could be in the forest.
+     *
+     * Examples:
+     * Input: answers = [1, 1, 2]
+     * Output: 5
+     * Explanation:
+     * The two rabbits that answered "1" could both be the same color, say red.
+     * The rabbit than answered "2" can't be red or the answers would be inconsistent.
+     * Say the rabbit that answered "2" was blue.
+     * Then there should be 2 other blue rabbits in the forest that didn't answer into the array.
+     * The smallest possible number of rabbits in the forest is therefore 5: 3 that answered plus 2 that didn't.
+     *
+     * Input: answers = [10, 10, 10]
+     * Output: 11
+     *
+     * Input: answers = []
+     * Output: 0
+     * Note:
+     *
+     * answers will have length at most 1000.
+     * Each answers[i] will be an integer in the range [0, 999].
+     */
+    public int numRabbits(int[] answers) {
+        if (answers.length == 0) {
+            return 0;
+        }
+
+        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+        int sum = 0;
+
+        //For each rabbits answer
+        for (int ans : answers) {
+            if (ans == 0){
+                sum += 1;
+                continue;
+            }
+            if (!map.containsKey(ans)) {
+                //If we haven't accounted for this rabbit color then account for the one telling us
+                // as well as the one that rabbit says is that color.
+                map.put(ans, 0);
+                sum += (ans + 1);
+
+            } else {
+                map.put(ans, map.get(ans) + 1);
+                //if there are k of each color then they are all present, remove them to allow the change to account for others.
+                if(map.get(ans) == ans){
+                    map.remove(ans);
+                }
+            }
+
+        }
+        return sum;
+    }
+
     /*
         https://leetcode.com/problems/unique-word-abbreviation/
     */
