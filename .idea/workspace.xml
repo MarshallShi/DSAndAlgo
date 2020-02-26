@@ -2,29 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a386c200-b4a7-4ed0-a4c0-437e7ab23533" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/classic/FrogJump.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/array/SubArraySumExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/array/SubArraySumExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/binarysearch/BinarySearchExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/binarysearch/BinarySearchExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/bit/BitExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/bit/BitExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/BacktrackExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/BacktrackExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/DFSExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/DFSExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPOnArrayExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPOnArrayExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPOnGrid.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPOnGrid.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPOnStringExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPOnStringExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/classic/Knapsack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/classic/Knapsack.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/PartitionExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/PartitionExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/ProbabilityExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/ProbabilityExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/game/minimax/MinimaxAlgoExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/game/minimax/MinimaxAlgoExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/graph/TopologicalSortingExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/graph/TopologicalSortingExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/greedy/GreedyExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/greedy/GreedyExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/math/MathExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/math/MathExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/priorityqueue/PriorityQueueExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/priorityqueue/PriorityQueueExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/stack/StackExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/stack/StackExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/string/StringExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/string/StringExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/tree/BinarySearchTreeExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/tree/BinarySearchTreeExe.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/twopointers/TwoPointers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/twopointers/TwoPointers.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -63,26 +42,26 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="java" value="699" />
+          <entry key="java" value="703" />
           <entry key="xml" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="JAVA" value="699" />
+          <entry key="JAVA" value="703" />
           <entry key="XML" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="27" />
-          <entry key="java" value="219469" />
+          <entry key="java" value="219983" />
           <entry key="xml" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="219469" />
+          <entry key="JAVA" value="219983" />
           <entry key="PLAIN_TEXT" value="27" />
           <entry key="XML" value="3" />
         </counts>
@@ -90,7 +69,29 @@
     </session>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/array/SubArraySumExe.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1564">
+              <caret line="92" column="40" lean-forward="true" selection-start-line="92" selection-start-column="40" selection-end-line="92" selection-end-column="40" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/PartitionExe.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="340">
+              <caret line="38" selection-start-line="38" selection-end-line="60" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -146,7 +147,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/PartitionExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/graph/GraphExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/design/SnapshotArray.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/design/Codec.java" />
@@ -190,13 +190,14 @@
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/array/SubArraySumExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/priorityqueue/PriorityQueueExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/game/minimax/MinimaxAlgoExe.java" />
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/DFSExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dp/classic/Knapsack.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPOnArrayExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/MoreStateExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/bit/BitExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dp/classic/FrogJump.java" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeExe.java" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/PartitionExe.java" />
       </list>
     </option>
   </component>
@@ -260,6 +261,33 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="array" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="bfs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="binarysearch" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
               <item name="bit" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -269,7 +297,25 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="design" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
               <item name="dfsbacktrack" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="divideandconquer" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
@@ -300,6 +346,168 @@
               <item name="dp" type="462c0819:PsiDirectoryNode" />
               <item name="patterns" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="game" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="graph" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="greedy" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="hashmap" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="linkedlist" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="math" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="othertree" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="priorityqueue" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="random" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="sortedmap" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="sorting" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="stack" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="stackmonotone" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="string" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="tree" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="trie" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="twopointers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
+              <item name="unionfind" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -311,7 +519,7 @@
     <property name="SearchEverywhereHistoryKey" value="Coding&#9;PSI&#9;JAVA://dsandalgo.CodingEx" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1582670420791" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1582691149192" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -339,7 +547,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.FrogJump">
+  <component name="RunManager" selected="Application.PartitionExe">
     <configuration name="DFSExe" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="dsandalgo.dfsbacktrack.DFSExe" />
       <module name="DSandAlgExe" />
@@ -379,8 +587,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ProbabilityExe" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="dsandalgo.dp.patterns.ProbabilityExe" />
+    <configuration name="PartitionExe" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="dsandalgo.dp.patterns.PartitionExe" />
       <module name="DSandAlgExe" />
       <extension name="coverage">
         <pattern>
@@ -407,18 +615,18 @@
     </configuration>
     <list>
       <item itemvalue="Application.MathExe" />
-      <item itemvalue="Application.ProbabilityExe" />
       <item itemvalue="Application.SubArraySumExe" />
       <item itemvalue="Application.DFSExe" />
       <item itemvalue="Application.FrogJump" />
+      <item itemvalue="Application.PartitionExe" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.PartitionExe" />
         <item itemvalue="Application.FrogJump" />
         <item itemvalue="Application.DFSExe" />
         <item itemvalue="Application.SubArraySumExe" />
         <item itemvalue="Application.MathExe" />
-        <item itemvalue="Application.ProbabilityExe" />
       </list>
     </recent_temporary>
   </component>
@@ -446,18 +654,18 @@
       <workItem from="1581288703735" duration="177808000" />
       <workItem from="1581897609188" duration="23228000" />
       <workItem from="1581977318699" duration="74556000" />
-      <workItem from="1582496167589" duration="42473000" />
+      <workItem from="1582496167589" duration="47592000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1140933000" />
+    <option name="totallyTimeSpent" value="1146052000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1295" height="695" extended-state="7" />
+    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23887588" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19947916" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -466,7 +674,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.35238096" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.34641638" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.17354497" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.33617023" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -880,13 +1088,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/PartitionExe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-914">
-          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/graph/ArticulationPointsAndBridges.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -1163,16 +1364,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/array/SubArraySumExe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-170">
-          <caret line="26" column="68" selection-start-line="26" selection-start-column="68" selection-end-line="26" selection-end-column="68" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/priorityqueue/PriorityQueueExe.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1980">
@@ -1271,13 +1462,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/MoreStateExe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="69" column="30" lean-forward="true" selection-start-line="69" selection-start-column="30" selection-end-line="69" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/classic/Knapsack.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="230">
@@ -1295,13 +1479,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/MoreStateExe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="87" column="9" lean-forward="true" selection-start-line="87" selection-start-column="9" selection-end-line="87" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeExe.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="244">
-          <caret line="60" column="9" lean-forward="true" selection-start-line="60" selection-start-column="9" selection-end-line="60" selection-end-column="9" />
+        <state relative-caret-position="305">
+          <caret line="68" column="19" lean-forward="true" selection-start-line="68" selection-start-column="19" selection-end-line="68" selection-end-column="19" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/array/SubArraySumExe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1564">
+          <caret line="92" column="40" lean-forward="true" selection-start-line="92" selection-start-column="40" selection-end-line="92" selection-end-column="40" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/PartitionExe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="38" selection-start-line="38" selection-end-line="60" selection-end-column="5" />
         </state>
       </provider>
     </entry>
