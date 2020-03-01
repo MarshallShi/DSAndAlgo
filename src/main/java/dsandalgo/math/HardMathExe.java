@@ -11,6 +11,60 @@ public class HardMathExe {
     }
 
     /**
+     * https://leetcode.com/problems/best-meeting-point/
+     * @param grid
+     * @return
+     */
+    public int minTotalDistance(int[][] grid) {
+        return 0;
+    }
+
+    /**
+     * https://leetcode.com/problems/check-if-it-is-a-good-array/
+     * Given an array nums of positive integers. Your task is to select some subset of nums,
+     * multiply each element by an integer and add all these numbers.
+     * The array is said to be good if you can obtain a sum of 1 from the array by any possible subset and multiplicand.
+     *
+     * Return True if the array is good otherwise return False.
+     *
+     * Example 1:
+     * Input: nums = [12,5,7,23]
+     * Output: true
+     * Explanation: Pick numbers 5 and 7.
+     * 5*3 + 7*(-2) = 1
+     *
+     * Example 2:
+     * Input: nums = [29,6,10]
+     * Output: true
+     * Explanation: Pick numbers 29, 6 and 10.
+     * 29*1 + 6*(-3) + 10*(-1) = 1
+     *
+     * Example 3:
+     * Input: nums = [3,6]
+     * Output: false
+     */
+    //TRICK: GCD.
+    public boolean isGoodArray(int[] nums) {
+        if (nums.length == 1) {
+            if (nums[0] == 1) return true;
+            return false;
+        }
+        int gcdResult = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            gcdResult = gcd(nums[i], gcdResult);
+            if (gcdResult == 1){
+                return true;
+            }
+        }
+        return false;
+    }
+    //Need to memorize...
+    private int gcd(int x, int y) {
+        return x == 0 || y == 0 ? x + y : gcd(y, x % y);
+    }
+
+
+    /**
      * https://leetcode.com/problems/find-the-derangement-of-an-array/
      * In combinatorial mathematics, a derangement is a permutation of the elements of a set, such that no element appears in its original position.
      * There's originally an array consisting of n integers from 1 to n in ascending order, you need to find the number of derangement it can generate.

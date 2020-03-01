@@ -2,11 +2,19 @@ package dsandalgo.unionfind;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class UnionFindHardExe {
+
+    public static void main(String[] args) {
+        UnionFindHardExe exe = new UnionFindHardExe();
+        int[] wells = {1,2,2};
+        int[][] pipes = {{1,2,1},{2,3,1}};
+        //System.out.println(exe.minCostToSupplyWater(3, wells, pipes));
+    }
 
     /**
      * https://leetcode.com/problems/smallest-string-with-swaps/

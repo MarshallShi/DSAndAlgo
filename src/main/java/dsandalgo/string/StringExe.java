@@ -1,5 +1,7 @@
 package dsandalgo.string;
 
+import sun.util.resources.cldr.rn.CurrencyNames_rn;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,6 +12,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PrimitiveIterator;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -17,28 +21,39 @@ public class StringExe {
 
     public static void main(String[] args) {
         StringExe exe = new StringExe();
-        //S = "abcd", indexes = [0,2], sources = ["a","cd"], targets = ["eee","ffff"]
-        int[] indexes = {3, 5, 1};
-        String[] sources = {"abc", "xyz"};
-        //exe.reverseWords(words);
-        //"dcab"
-        //[[0,3],[1,2]]
-        //"dcab"
-        //[[0,3],[1,2],[0,2]]
-        List<List<Integer>> input = new ArrayList<List<Integer>>();
-        List<Integer> one = new ArrayList<Integer>();
-        one.add(0);
-        one.add(3);
-        input.add(one);
-        one = new ArrayList<Integer>();
-        one.add(1);
-        one.add(2);
-        input.add(one);
-        one = new ArrayList<Integer>();
-        one.add(0);
-        one.add(2);
-        input.add(one);
-        System.out.println(exe.strWithout3a3b(4, 1));
+        String[] ranks = {"WXYZ","XYZW"};
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-days-between-two-dates/
+     * @param date1
+     * @param date2
+     * @return
+     */
+    public int daysBetweenDates(String date1, String date2) {
+        int days1 = days(date1);
+        int days2 = days(date2);
+        return Math.abs(days1 - days2);
+    }
+    int[] mdays = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
+    // days from 1900-1-0
+    private int days(String d) {
+        String[] ss = d.split("-");
+        int year = Integer.valueOf(ss[0]);
+        int month = Integer.valueOf(ss[1]);
+        int day = Integer.valueOf(ss[2]);
+        // years we spent, hence -1 because current year is not spent yet
+        int ydelta = year - 1 - 1900;
+        int dy = ydelta * 365 + ydelta / 4;// from 1900 every 4 years is leap year
+        // month-1, current month is not done yet
+        int dm = mdays[month - 1];
+        if (isleap(year) && month - 1 >= 2) {
+            dm++;
+        }
+        return dy + dm + day;
+    }
+    private boolean isleap(int year) {
+        return (year % 100 != 0 && year % 4 == 0) || (year % 100 == 0 && year % 400 == 0);
     }
 	
 	/**

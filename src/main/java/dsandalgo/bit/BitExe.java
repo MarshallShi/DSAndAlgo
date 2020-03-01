@@ -2,10 +2,12 @@ package dsandalgo.bit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Stack;
 
@@ -17,10 +19,117 @@ public class BitExe {
                 {1,0,1,0},
                 {1,1,0,0}};
 
-        int[] arr1 = {1,1,1,1,1};
+        int[] arr1 = {0,1,2,3,4,5,6,7,8};
         int[] arr2 = {1,0,1};
         int[][] queries = {{2,3},{1,3},{0,0},{0,3}};
-        System.out.println(exe.addNegabinary(arr1, arr2));
+        System.out.println(exe.sortByBits(arr1));
+    }
+
+    /**
+     * https://leetcode.com/problems/sort-integers-by-the-number-of-1-bits/
+     * Given an integer array arr. You have to sort the integers in the array in ascending order by the number of 1's in their
+     * binary representation and in case of two or more integers have the same number of 1's you have to sort them in ascending order.
+     *
+     * Return the sorted array.
+     *
+     * Example 1:
+     * Input: arr = [0,1,2,3,4,5,6,7,8]
+     * Output: [0,1,2,4,8,3,5,6,7]
+     * Explantion: [0] is the only integer with 0 bits.
+     * [1,2,4,8] all have 1 bit.
+     * [3,5,6] have 2 bits.
+     * [7] has 3 bits.
+     * The sorted array by bits is [0,1,2,4,8,3,5,6,7]
+     */
+    public int[] sortByBits(int[] arr) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[1] == o2[1]) {
+                    return o1[0] - o2[0];
+                }
+                return o1[1] - o2[1];
+            }
+        });
+        for (int i=0; i<arr.length; i++) {
+            int[] val = new int[2];
+            val[0] = arr[i];
+            val[1] = Integer.bitCount(arr[i]);
+            pq.offer(val);
+        }
+        int[] ret = new int[arr.length];
+        int idx = 0;
+        while (!pq.isEmpty()) {
+            ret[idx++] = pq.poll()[0];
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/bitwise-and-of-numbers-range/
+     *
+     * Given a range [m, n] where 0 <= m <= n <= 2147483647, return the bitwise AND of all numbers in this range, inclusive.
+     * Example 1:
+     * Input: [5,7]
+     * Output: 4
+     * Example 2:
+     * Input: [0,1]
+     * Output: 0
+     */
+    public int rangeBitwiseAnd(int m, int n) {
+        if(m == 0){
+            return 0;
+        }
+        int moveFactor = 1;
+        while (m != n) {
+            m >>= 1;
+            n >>= 1;
+            moveFactor <<= 1;
+        }
+        return m * moveFactor;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/
+     * Given a non-empty array of numbers, a0, a1, a2, … , an-1, where 0 ≤ ai < 231.
+     *
+     * Find the maximum result of ai XOR aj, where 0 ≤ i, j < n.
+     *
+     * Could you do this in O(n) runtime?
+     *
+     * Example:
+     *
+     * Input: [3, 10, 5, 25, 2, 8]
+     *
+     * Output: 28
+     *
+     * Explanation: The maximum result is 5 ^ 25 = 28.
+     */
+    //https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/discuss/91049/Java-O(n)-solution-using-bit-manipulation-and-HashMap
+    //if A ^ B = C, then A ^ B ^ B = C ^ B, then A = C ^ B
+    //to iteratively determine what would be each bit of the final result from left to right.
+    // And it narrows down the candidate group iteration by iteration. e.g. assume input are a,b,c,d,...z, 26 integers in total.
+    // In first iteration, if you found that a, d, e, h, u differs on the MSB(most significant bit), so you are sure your final result's MSB is set.
+    // Now in second iteration, you try to see if among a, d, e, h, u there are at least two numbers make the 2nd MSB differs, if yes, then definitely, the 2nd MSB will be set in the final result.
+    // And maybe at this point the candidate group shinks from a,d,e,h,u to a, e, h.
+    // Implicitly, every iteration, you are narrowing down the candidate group, but you don't need to track how the group is shrinking, you only cares about the final result.
+    public int findMaximumXOR(int[] nums) {
+        int max = 0, mask = 0;
+        for (int i = 31; i >= 0; i--) {
+            mask = mask | (1 << i);
+            Set<Integer> set = new HashSet<>();
+            for (int num : nums) {
+                set.add(num & mask);
+            }
+            int tmp = max | (1 << i);
+            for (int prefix : set) {
+                if (set.contains(tmp ^ prefix)) {
+                    max = tmp;
+                    break;
+                }
+            }
+        }
+        return max;
     }
 
     /**

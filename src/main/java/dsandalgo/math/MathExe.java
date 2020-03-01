@@ -27,6 +27,41 @@ public class MathExe {
         System.out.println(exe.fractionAddition("-1/2+1/2"));
     }
 
+    /**
+     * https://leetcode.com/problems/airplane-seat-assignment-probability/
+     * n passengers board an airplane with exactly n seats. The first passenger has lost the ticket and picks a seat randomly.
+     * But after that, the rest of passengers will:
+     *
+     * Take their own seat if it is still available,
+     * Pick other seats randomly when they find their seat occupied
+     * What is the probability that the n-th person can get his own seat?
+     *
+     *
+     * Example 1:
+     *
+     * Input: n = 1
+     * Output: 1.00000
+     * Explanation: The first person can only get the first seat.
+     * Example 2:
+     *
+     * Input: n = 2
+     * Output: 0.50000
+     * Explanation: The second person has a probability of 0.5 to get the second seat (when first person gets the first seat).
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= n <= 10^5
+     */
+    //f(n) = 1 / n + (n - 2) / n * f(n - 1)
+    //https://leetcode.com/problems/airplane-seat-assignment-probability/discuss/411905/It's-not-obvious-to-me-at-all.-Foolproof-explanation-here!!!-And-proof-for-why-it's-12
+    public double nthPersonGetsNthSeat(int n) {
+        if (n == 1) {
+            return 1.0d;
+        }
+        return 1d / n + (n - 2d) / n * nthPersonGetsNthSeat(n - 1);
+    }
+
 /**
      * https://leetcode.com/problems/strobogrammatic-number-ii/
      * A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
@@ -1811,13 +1846,6 @@ public class MathExe {
      */
     public boolean divisorGame(int N) {
         return N %2 == 0;
-    }
-
-
-    //https://www.youtube.com/watch?v=GSBLe8cKu0s
-    //https://leetcode.com/problems/the-skyline-problem/
-    public List<List<Integer>> getSkyline(int[][] buildings) {
-        return null;
     }
 
 

@@ -11,6 +11,13 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ *
+ * Important: Priority Queue doesn't support remove element in log(n). Just the add and max is in log(n).
+ *
+ * If algo need to remove elements frequently, should use TreeMap.
+ *
+ */
 public class PriorityQueueExe {
 
     public static void main(String[] args) {

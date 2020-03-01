@@ -20,17 +20,17 @@ public class BacktrackExe {
         System.out.println(backtrack.generateAbbreviations("word"));
     }
 
-/**
+    /**
      * https://leetcode.com/problems/split-array-into-fibonacci-sequence/
      * @param S
      * @return
      */
     public List<Integer> splitIntoFibonacci(String S) {
         List<Integer> ans = new ArrayList<>();
-        helper(S, ans, 0);
+        splitIntoFibonacciHelper(S, ans, 0);
         return ans;
     }
-    public boolean helper(String s, List<Integer> ans, int idx) {
+    public boolean splitIntoFibonacciHelper(String s, List<Integer> ans, int idx) {
         if (idx == s.length() && ans.size() >= 3) {
             return true;
         }
@@ -50,7 +50,7 @@ public class BacktrackExe {
             if (size <= 1 || num == ans.get(size-1) + ans.get(size-2)) {
                 ans.add((int)num);
                 // branch pruning. if one branch has found fib seq, return true to upper call
-                if (helper(s, ans, i+1)) {
+                if (splitIntoFibonacciHelper(s, ans, i+1)) {
                     return true;
                 }
                 ans.remove(ans.size()-1);

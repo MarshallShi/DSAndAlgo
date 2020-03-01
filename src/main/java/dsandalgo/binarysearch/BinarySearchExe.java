@@ -11,7 +11,119 @@ public class BinarySearchExe {
 
     public static void main(String[] args) {
         BinarySearchExe exe = new BinarySearchExe();
-        int[] nums = {2,5,6,0,0,1,2};
+        int[] nums = {1,3,5};
+        System.out.println(exe.search_33(nums, 1));
+    }
+
+    /**
+     * https://leetcode.com/problems/search-in-rotated-sorted-array-ii/
+     *
+     * Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+     *
+     * (i.e., [0,0,1,2,2,5,6] might become [2,5,6,0,0,1,2]).
+     *
+     * You are given a target value to search. If found in the array return true, otherwise return false.
+     *
+     * Example 1:
+     *
+     * Input: nums = [2,5,6,0,0,1,2], target = 0
+     * Output: true
+     * Example 2:
+     *
+     * Input: nums = [2,5,6,0,0,1,2], target = 3
+     * Output: false
+     * Follow up:
+     *
+     * This is a follow up problem to Search in Rotated Sorted Array, where nums may contain duplicates.
+     * Would this affect the run-time complexity? How and why?
+     */
+    public boolean search(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return false;
+        }
+        int lo = 0;
+        int hi = nums.length - 1;
+        while (lo+1 < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (nums[lo] < nums[mid]) {
+                if (nums[mid] >= target && target >= nums[lo]) {
+                    hi = mid;
+                } else {
+                    lo = mid;
+                }
+            } else {
+                if (nums[lo] > nums[mid]) {
+                    if (nums[mid] <= target && target <= nums[hi]) {
+                        lo = mid;
+                    } else {
+                        hi = mid;
+                    }
+                } else {
+                    lo++;
+                }
+            }
+        }
+        if (nums[lo] == target || nums[hi] == target) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/search-in-rotated-sorted-array/
+     *
+     * Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+     *
+     * (i.e., [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2]).
+     *
+     * You are given a target value to search. If found in the array return its index, otherwise return -1.
+     *
+     * You may assume no duplicate exists in the array.
+     *
+     * Your algorithm's runtime complexity must be in the order of O(log n).
+     *
+     * Example 1:
+     *
+     * Input: nums = [4,5,6,7,0,1,2], target = 0
+     * Output: 4
+     * Example 2:
+     *
+     * Input: nums = [4,5,6,7,0,1,2], target = 3
+     * Output: -1
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int search_33(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        int lo = 0;
+        int hi = nums.length - 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (nums[lo] < nums[mid]) {
+                if (nums[mid] >= target && target >= nums[lo]) {
+                    hi = mid;
+                } else {
+                    lo = mid;
+                }
+            } else {
+                if (nums[lo] > nums[mid]) {
+                    if (nums[mid] <= target && target <= nums[hi]) {
+                        lo = mid;
+                    } else {
+                        hi = mid;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        if (nums[lo] == target) return lo;
+        if (nums[hi] == target) return hi;
+        return -1;
     }
 	
 	/**
@@ -507,51 +619,5 @@ public class BinarySearchExe {
             else if (nums[mid] >= target) high = mid;
         }
         return low;
-    }
-
-    /**
-     * https://leetcode.com/problems/search-in-rotated-sorted-array-ii/
-     *
-     * Have duplicates.
-     *
-     * @param nums
-     * @param target
-     * @return
-     */
-    public boolean search(int[] nums, int target) {
-        return false;
-    }
-
-    /**
-     * https://leetcode.com/problems/search-in-rotated-sorted-array/
-     *
-     * no duplicates.
-     *
-     * @param nums
-     * @param target
-     * @return
-     */
-    public int search_33(int[] nums, int target) {
-        if (nums == null || nums.length == 0) return -1;
-        int lo = 0;
-        int hi = nums.length - 1;
-        while (lo < hi) {
-            int mid = lo + (hi - lo) / 2;
-            //target and mid are on the same side
-            if ((nums[mid] - nums[nums.length - 1]) * (target - nums[nums.length - 1]) > 0) {
-                if (nums[mid] < target)
-                    lo = mid + 1;
-                else
-                    hi = mid;
-            } else if (target > nums[nums.length - 1])
-                hi = mid; // target on the left side
-            else
-                lo = mid + 1; // target on the right side
-        }
-        // now hi == lo
-        if (nums[lo] == target)
-            return lo;
-        else
-            return -1;
     }
 }

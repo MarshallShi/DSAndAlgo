@@ -3,6 +3,7 @@ package dsandalgo.dp.patterns;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Generate problem statement for this pattern
@@ -28,6 +29,61 @@ import java.util.List;
  *
  */
 public class MinMaxPathExe {
+
+    public static void main(String[] args) {
+        MinMaxPathExe exe = new MinMaxPathExe();
+        int[] s = {2,7,4,1,8,1};
+        int[][] arr = {{1,2,3}, {4,5,6}, {7,8,9}};
+        System.out.println(exe.minFallingPathSum_II(arr));
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-falling-path-sum-ii/
+     * Given a square grid of integers arr, a falling path with non-zero shifts is a choice of exactly one element from each row of arr,
+     * such that no two elements chosen in adjacent rows are in the same column.
+     *
+     * Return the minimum sum of a falling path with non-zero shifts.
+     *
+     * Example 1:
+     * Input: arr = [[1,2,3],[4,5,6],[7,8,9]]
+     * Output: 13
+     * Explanation:
+     * The possible falling paths are:
+     * [1,5,9], [1,5,7], [1,6,7], [1,6,8],
+     * [2,4,8], [2,4,9], [2,6,7], [2,6,8],
+     * [3,4,8], [3,4,9], [3,5,7], [3,5,9]
+     * The falling path with the smallest sum is [1,5,7], so the answer is 13.
+     *
+     * Constraints:
+     * 1 <= arr.length == arr[i].length <= 200
+     * -99 <= arr[i][j] <= 99
+     */
+    public int minFallingPathSum_II(int[][] arr) {
+        int[][] dp = new int[arr.length][arr[0].length];
+        TreeMap<Integer,Integer> rowMap = new TreeMap<>();
+        for (int j=0; j<arr[arr.length-1].length; j++) {
+            int val = arr[arr.length-1][j];
+            dp[arr.length-1][j] = val;
+            rowMap.putIfAbsent(val, 0);
+            rowMap.put(val, rowMap.get(val) + 1);
+        }
+        for (int i=arr.length-2; i>=0; i--) {
+            TreeMap<Integer,Integer> upperRow = new TreeMap<>();
+            for (int j=0; j<arr[i].length; j++) {
+                int toRemove = dp[i+1][j];
+                if (rowMap.get(dp[i+1][j]) > 1) {
+                    rowMap.put(dp[i+1][j], rowMap.get(dp[i+1][j]) - 1);
+                } else {
+                    rowMap.remove(dp[i+1][j]);
+                }
+                dp[i][j] = arr[i][j] + rowMap.firstKey();
+                upperRow.put(dp[i][j], upperRow.getOrDefault(dp[i][j], 0) + 1);
+                rowMap.put(toRemove, rowMap.getOrDefault(toRemove, 0) + 1);
+            }
+            rowMap = upperRow;
+        }
+        return rowMap.firstKey();
+    }
 
     /**
      * https://leetcode.com/problems/greatest-sum-divisible-by-three/
@@ -888,9 +944,4 @@ public class MinMaxPathExe {
         return dp[n];
     }
 
-    public static void main(String[] args) {
-        MinMaxPathExe exe = new MinMaxPathExe();
-        int[] s = {2,7,4,1,8,1};
-        System.out.println(exe.maxA(7));
-    }
 }

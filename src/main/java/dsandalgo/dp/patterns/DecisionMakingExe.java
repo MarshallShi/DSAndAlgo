@@ -24,6 +24,72 @@ package dsandalgo.dp.patterns;
  */
 public class DecisionMakingExe {
 
+    public static void main(String[] args) {
+        DecisionMakingExe exe = new DecisionMakingExe();
+        int[] input = {2,7,9,4,4};
+        System.out.println(exe.stoneGameII(input));
+    }
+
+    /**
+     * https://leetcode.com/problems/stone-game-ii/
+     * Alex and Lee continue their games with piles of stones.  There are a number of piles arranged in a row,
+     * and each pile has a positive integer number of stones piles[i].  The objective of the game is to end with
+     * the most stones.
+     *
+     * Alex and Lee take turns, with Alex starting first.  Initially, M = 1.
+     *
+     * On each player's turn, that player can take all the stones in the first X remaining piles, where 1 <= X <= 2M.
+     * Then, we set M = max(M, X).
+     *
+     * The game continues until all the stones have been taken.
+     *
+     * Assuming Alex and Lee play optimally, return the maximum number of stones Alex can get.
+     *
+     * Example 1:
+     * Input: piles = [2,7,9,4,4]
+     * Output: 10
+     * Explanation:  If Alex takes one pile at the beginning, Lee takes two piles, then Alex takes 2 piles again.
+     * Alex can get 2 + 4 + 4 = 10 piles in total. If Alex takes two piles at the beginning,
+     * then Lee can take all three piles left. In this case, Alex get 2 + 7 = 9 piles in total.
+     * So we return 10 since it's larger.
+     *
+     * Constraints:
+     * 1 <= piles.length <= 100
+     * 1 <= piles[i] <= 10 ^ 4
+     */
+
+    private int[] sums;
+    private int[][] cache;
+    public int stoneGameII(int[] piles) {
+        if(piles == null || piles.length == 0) return 0;
+        int n = piles.length;
+        //the sum from piles[i] to the end
+        sums = new int[n];
+        sums[n-1] = piles[n-1];
+        for(int i = n -2; i>=0;i--) {
+            sums[i] = sums[i+1] + piles[i];
+        }
+        cache = new int[n][n];
+        return helper(piles, 0, 1);
+    }
+    //max stones = all the left stones - the min stones next player can get
+    private int helper(int[] a, int i, int M) {
+        if (i == a.length) {
+            return 0;
+        }
+        if (2*M >= a.length - i) {
+            return sums[i];
+        }
+        if (cache[i][M] != 0) {
+            return cache[i][M];
+        }
+        int min = Integer.MAX_VALUE;//the min value the next player can get
+        for (int x=1; x<=2*M; x++){
+            min = Math.min(min, helper(a, i+x, Math.max(M,x)));
+        }
+        cache[i][M] = sums[i] - min;
+        return cache[i][M];
+    }
     /**
      * https://leetcode.com/problems/house-robber/
      * You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed,
@@ -65,6 +131,49 @@ public class DecisionMakingExe {
     }
 
     /**
+     * https://leetcode.com/problems/house-robber-ii/
+     * You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed.
+     * All houses at this place are arranged in a circle. That means the first house is the neighbor of the last one.
+     * Meanwhile, adjacent houses have security system connected and it will automatically contact the police
+     * if two adjacent houses were broken into on the same night.
+     *
+     * Given a list of non-negative integers representing the amount of money of each house,
+     * determine the maximum amount of money you can rob tonight without alerting the police.
+     *
+     * Example 1:
+     *
+     * Input: [2,3,2]
+     * Output: 3
+     * Explanation: You cannot rob house 1 (money = 2) and then rob house 3 (money = 2),
+     *              because they are adjacent houses.
+     * Example 2:
+     *
+     * Input: [1,2,3,1]
+     * Output: 4
+     * Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+     *              Total amount you can rob = 1 + 3 = 4.
+     */
+    public int rob_II(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        return Math.max(rob_II_helper(nums,0, nums.length - 2), rob_II_helper(nums,1, nums.length-1));
+    }
+
+    private int rob_II_helper(int[] nums, int low, int high) {
+        int include = 0, exclude = 0;
+        for (int j = low; j <= high; j++) {
+            int i = include, e = exclude;
+            include = e + nums[j];
+            exclude = Math.max(e, i);
+        }
+        return Math.max(include, exclude);
+    }
+
+    /**
      * https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
      *
      * Say you have an array for which the ith element is the price of a given stock on day i.
@@ -98,60 +207,6 @@ public class DecisionMakingExe {
             maxProfit = Math.max(maxProfit, curMaxProfit);
         }
         return maxProfit;
-    }
-
-    /**
-     * https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/
-     * Your are given an array of integers prices, for which the i-th element is the price of a given
-     * stock on day i; and a non-negative integer fee representing a transaction fee.
-     *
-     * You may complete as many transactions as you like, but you need to pay the transaction fee for
-     * each transaction. You may not buy more than 1 share of a stock at a time (ie. you must sell the
-     * stock share before you buy again.)
-     *
-     * Return the maximum profit you can make.
-     *
-     * Example 1:
-     * Input: prices = [1, 3, 2, 8, 4, 9], fee = 2
-     * Output: 8
-     * Explanation: The maximum profit can be achieved by:
-     * Buying at prices[0] = 1
-     * Selling at prices[3] = 8
-     * Buying at prices[4] = 4
-     * Selling at prices[5] = 9
-     * The total profit is ((8 - 1) - 2) + ((9 - 4) - 2) = 8.
-     * Note:
-     *
-     * 0 < prices.length <= 50000.
-     * 0 < prices[i] < 50000.
-     * 0 <= fee < 50000.
-     * @param prices
-     * @param fee
-     * @return
-     */
-    public int maxProfit(int[] prices, int fee) {
-        return 0;
-    }
-
-    /**
-     * https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/
-     * Say you have an array for which the ith element is the price of a given stock on day i.
-     *
-     * Design an algorithm to find the maximum profit. You may complete as many transactions as
-     * you like (ie, buy one and sell one share of the stock multiple times) with the following restrictions:
-     *
-     * You may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
-     * After you sell your stock, you cannot buy stock on next day. (ie, cooldown 1 day)
-     * Example:
-     *
-     * Input: [1,2,3,0,2]
-     * Output: 3
-     * Explanation: transactions = [buy, sell, cooldown, buy, sell]
-     * @param prices
-     * @return
-     */
-    public int maxProfit_2(int[] prices) {
-        return 0;
     }
 
     /**

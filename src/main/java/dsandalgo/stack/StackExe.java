@@ -1,7 +1,13 @@
 package dsandalgo.stack;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Stack;
 
 public class StackExe {
@@ -20,9 +26,173 @@ public class StackExe {
 
     public static void main(String[] args) {
         StackExe exe = new StackExe();
-        System.out.println(exe.removeDuplicates("pbbcggttciiippooaais", 2));
+        int[] a = {2,2,2};
+        System.out.println(exe.validSubarrays(a));
     }
 
+    /**
+     * https://leetcode.com/problems/number-of-valid-subarrays/
+     * Given an array A of integers, return the number of non-empty continuous subarrays that satisfy the following condition:
+     *
+     * The leftmost element of the subarray is not larger than other elements in the subarray.
+     *
+     * Example 1:
+     * Input: [1,4,2,5,3]
+     * Output: 11
+     * Explanation: There are 11 valid subarrays: [1],[4],[2],[5],[3],[1,4],[2,5],[1,4,2],[2,5,3],[1,4,2,5],[1,4,2,5,3].
+     * Example 2:
+     * Input: [3,2,1]
+     * Output: 3
+     * Explanation: The 3 valid subarrays are: [3],[2],[1].
+     * Example 3:
+     * Input: [2,2,2]
+     * Output: 6
+     * Explanation: There are 6 valid subarrays: [2],[2],[2],[2,2],[2,2],[2,2,2].
+     *
+     * Note:
+     * 1 <= A.length <= 50000
+     * 0 <= A[i] <= 100000
+     */
+    public int validSubarrays(int[] nums) {
+        int[] res = new int[nums.length];
+        Arrays.fill(res, -1);
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < nums.length; i++) {
+            //Get the right next number
+            int num = nums[i];
+            while (!stack.isEmpty() && nums[stack.peek()] > num) {
+                res[stack.pop()] = i;
+            }
+            stack.push(i);
+        }
+        int ret = 0;
+        for (int i=0; i<res.length; i++) {
+            if (res[i] != -1) {
+                ret += res[i] - i;
+            } else {
+                ret += res.length - i;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-atoms/
+     * Given a chemical formula (given as a string), return the count of each atom.
+     *
+     * An atomic element always starts with an uppercase character, then zero or more lowercase letters,
+     * representing the name.
+     *
+     * 1 or more digits representing the count of that element may follow if the count is greater than 1.
+     * If the count is 1, no digits will follow. For example, H2O and H2O2 are possible, but H1O2 is impossible.
+     *
+     * Two formulas concatenated together produce another formula. For example, H2O2He3Mg4 is also a formula.
+     *
+     * A formula placed in parentheses, and a count (optionally added) is also a formula.
+     * For example, (H2O2) and (H2O2)3 are formulas.
+     *
+     * Given a formula, output the count of all elements as a string in the following form:
+     * the first name (in sorted order), followed by its count (if that count is more than 1),
+     * followed by the second name (in sorted order), followed by its count (if that count is more than 1), and so on.
+     *
+     * Example 1:
+     * Input:
+     * formula = "H2O"
+     * Output: "H2O"
+     * Explanation:
+     * The count of elements are {'H': 2, 'O': 1}.
+     * Example 2:
+     * Input:
+     * formula = "Mg(OH)2"
+     * Output: "H2MgO2"
+     * Explanation:
+     * The count of elements are {'H': 2, 'Mg': 1, 'O': 2}.
+     * Example 3:
+     * Input:
+     * formula = "K4(ON(SO3)2)2"
+     * Output: "K4N2O14S4"
+     * Explanation:
+     * The count of elements are {'K': 4, 'N': 2, 'O': 14, 'S': 4}.
+     * Note:
+     *
+     * All atom names consist of lowercase letters, except for the first character which is uppercase.
+     * The length of formula will be in the range [1, 1000].
+     * formula will only consist of letters, digits, and round parentheses, and is a valid formula as defined in the problem.
+     */
+    private Map<String, Integer> count = new HashMap<>();
+    public String countOfAtoms(String formula) {
+        countOfAtomsHelper(formula, 1);
+        PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                return o1.getKey().compareTo(o2.getKey());
+            }
+        });
+        for (Map.Entry<String, Integer> entry : count.entrySet()) {
+            pq.offer(entry);
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!pq.isEmpty()) {
+            Map.Entry<String, Integer> en = pq.poll();
+            sb.append(en.getKey());
+            if (en.getValue() > 1) {
+                sb.append(en.getValue());
+            }
+        }
+        return sb.toString();
+    }
+    private void countOfAtomsHelper(String formula, int times) {
+        for (int i=0; i<formula.length(); i++) {
+            if (formula.charAt(i) == '(') {
+                int c = 1, ending = 0;
+                for (int j=i+1; j<formula.length(); j++) {
+                    if (formula.charAt(j) == '(') {
+                        c++;
+                    }
+                    if (formula.charAt(j) == ')') {
+                        c--;
+                    }
+                    if (c == 0) {
+                        ending = j;
+                        break;
+                    }
+                }
+                String subString = formula.substring(i+1, ending);
+                int numIdx = ending+1;
+                while (numIdx<formula.length() && Character.isDigit(formula.charAt(numIdx))) {
+                    numIdx++;
+                }
+                if (numIdx >= ending+1 && ending+1 < formula.length()) {
+                    int nTimes = Integer.parseInt(formula.substring(ending+1, numIdx));
+                    countOfAtomsHelper(subString, nTimes*times);
+                    i = numIdx-1;
+                } else {
+                    countOfAtomsHelper(subString, 1*times);
+                    i = ending;
+                }
+            } else {
+                if (Character.isUpperCase(formula.charAt(i))) {
+                    int ending = i+1;
+                    while (ending < formula.length() && Character.isLowerCase(formula.charAt(ending))) {
+                        ending++;
+                    }
+                    String atomKey = formula.substring(i, ending);
+                    if (ending<formula.length() && Character.isDigit(formula.charAt(ending))) {
+                        int numEnd = ending + 1;
+                        while (numEnd < formula.length() && Character.isDigit(formula.charAt(numEnd))) {
+                            numEnd++;
+                        }
+                        int ntimes = Integer.parseInt(formula.substring(ending, numEnd));
+                        count.put(atomKey, count.getOrDefault(atomKey, 0) + ntimes*times);
+                        i = numEnd-1;
+                    } else {
+                        count.put(atomKey, count.getOrDefault(atomKey, 0) + 1*times);
+                        i = ending-1;
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/

@@ -38,6 +38,86 @@ public class MinimumSpanningTree {
     }
 
     /**
+     * https://leetcode.com/problems/optimize-water-distribution-in-a-village/
+     * There are n houses in a village. We want to supply water for all the houses by building wells and laying pipes.
+     *
+     * For each house i, we can either build a well inside it directly with cost wells[i], or pipe in water from another well to it.
+     * The costs to lay pipes between houses are given by the array pipes, where each pipes[i] = [house1, house2, cost]
+     * represents the cost to connect house1 and house2 together using a pipe. Connections are bidirectional.
+     *
+     * Find the minimum total cost to supply water to all houses.
+     *
+     * Example 1:
+     * Input: n = 3, wells = [1,2,2], pipes = [[1,2,1],[2,3,1]]
+     * Output: 3
+     * Explanation:
+     * The image shows the costs of connecting houses using pipes.
+     * The best strategy is to build a well in the first house with cost 1 and connect the other houses to it with cost 2 so the total cost is 3.
+     *
+     * Constraints:
+     * 1 <= n <= 10000
+     * wells.length == n
+     * 0 <= wells[i] <= 10^5
+     * 1 <= pipes.length <= 10000
+     * 1 <= pipes[i][0], pipes[i][1] <= n
+     * 0 <= pipes[i][2] <= 10^5
+     * pipes[i][0] != pipes[i][1]
+     */
+    //Trick: image all new wells as 'pipe' as well, from a hidden house 0, so we can use Minimal Spanning Tree algo.
+    public int minCostToSupplyWater(int n, int[] wells, int[][] pipes) {
+        List<int[]> allEdges = new ArrayList<>();
+        for (int i=0; i<pipes.length; i++) {
+            int[] oneEdge = new int[]{pipes[i][0], pipes[i][1], pipes[i][2]};
+            allEdges.add(oneEdge);
+        }
+        for (int i=0; i<wells.length; i++) {
+            int[] hiddenEdge = new int[]{0, i+1, wells[i]};
+            allEdges.add(hiddenEdge);
+        }
+        Collections.sort(allEdges, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[2] - o2[2];
+            }
+        });
+        int minCost = 0;
+        UFMinCostToSupplyWater uf = new UFMinCostToSupplyWater(n+1);
+        for (int[] edge : allEdges) {
+            if (uf.find(edge[0]) != uf.find(edge[1])) {
+                uf.union(edge[0], edge[1]);
+                minCost += edge[2];
+            }
+        }
+        return minCost;
+    }
+
+    class UFMinCostToSupplyWater {
+        public int size;
+        public int[] parent;
+        public UFMinCostToSupplyWater(int size) {
+            this.size = size;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = i;
+            }
+        }
+        public void union(int a, int b) {
+            int parB = find(b);
+            int parA = find(a);
+            if (parB != parA) {
+                parent[parB] = parent[parA];
+                size--;
+            }
+        }
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+    }
+
+    /**
      * https://leetcode.com/problems/connecting-cities-with-minimum-cost/
      *
      * There are N cities numbered from 1 to N.

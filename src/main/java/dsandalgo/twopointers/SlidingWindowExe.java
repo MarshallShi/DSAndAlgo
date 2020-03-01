@@ -3,6 +3,7 @@ package dsandalgo.twopointers;
 //TODO: follow all these same type of problems.
 //https://leetcode.com/problems/subarrays-with-k-different-integers/discuss/235002/One-code-template-to-solve-all-of-these-problems!
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,26 @@ public class SlidingWindowExe {
 
         int[] data2 = {11,13,17,23,29,31,7,5,2,3};
         System.out.println(exe.numOfSubarrays(data2, 3, 5));
+    }
+
+    /**
+     * https://leetcode.com/problems/moving-stones-until-consecutive-ii/
+     * @param A
+     * @return
+     */
+    //Hard to understand the questions...
+    public int[] numMovesStonesII(int[] A) {
+        Arrays.sort(A);
+        int i = 0, n = A.length, low = n;
+        int high = Math.max(A[n - 1] - n + 2 - A[1], A[n - 2] - A[0] - n + 2);
+        for (int j = 0; j < n; ++j) {
+            while (A[j] - A[i] >= n) ++i;
+            if (j - i + 1 == n - 1 && A[j] - A[i] == n - 2)
+                low = Math.min(low, 2);
+            else
+                low = Math.min(low, n - (j - i + 1));
+        }
+        return new int[] {low, high};
     }
 
     /**
