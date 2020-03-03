@@ -22,27 +22,126 @@ public class HardDFSExe {
 
     public static void main(String[] args) {
         HardDFSExe exe = new HardDFSExe();
-        int[][] grid = {
-                {1,1,0,0,0},{1,1,0,0,0},{0,0,0,1,1},{0,0,0,1,1}
-        };
-        int[][] grid1 = {
-                {1,1,0,1,1},{1,0,0,0,0},{0,0,0,0,1},{1,1,0,1,1}
-        };
-        String[] words = {"kid","tag","pup","ail","tun","woo","erg","luz","brr","gay","sip","kay","per","val","mes","ohs","now","boa","cet","pal","bar","die","war","hay","eco","pub","lob","rue","fry","lit","rex","jan","cot","bid","ali","pay","col","gum","ger","row","won","dan","rum","fad","tut","sag","yip","sui","ark","has","zip","fez","own","ump","dis","ads","max","jaw","out","btu","ana","gap","cry","led","abe","box","ore","pig","fie","toy","fat","cal","lie","noh","sew","ono","tam","flu","mgm","ply","awe","pry","tit","tie","yet","too","tax","jim","san","pan","map","ski","ova","wed","non","wac","nut","why","bye","lye","oct","old","fin","feb","chi","sap","owl","log","tod","dot","bow","fob","for","joe","ivy","fan","age","fax","hip","jib","mel","hus","sob","ifs","tab","ara","dab","jag","jar","arm","lot","tom","sax","tex","yum","pei","wen","wry","ire","irk","far","mew","wit","doe","gas","rte","ian","pot","ask","wag","hag","amy","nag","ron","soy","gin","don","tug","fay","vic","boo","nam","ave","buy","sop","but","orb","fen","paw","his","sub","bob","yea","oft","inn","rod","yam","pew","web","hod","hun","gyp","wei","wis","rob","gad","pie","mon","dog","bib","rub","ere","dig","era","cat","fox","bee","mod","day","apr","vie","nev","jam","pam","new","aye","ani","and","ibm","yap","can","pyx","tar","kin","fog","hum","pip","cup","dye","lyx","jog","nun","par","wan","fey","bus","oak","bad","ats","set","qom","vat","eat","pus","rev","axe","ion","six","ila","lao","mom","mas","pro","few","opt","poe","art","ash","oar","cap","lop","may","shy","rid","bat","sum","rim","fee","bmw","sky","maj","hue","thy","ava","rap","den","fla","auk","cox","ibo","hey","saw","vim","sec","ltd","you","its","tat","dew","eva","tog","ram","let","see","zit","maw","nix","ate","gig","rep","owe","ind","hog","eve","sam","zoo","any","dow","cod","bed","vet","ham","sis","hex","via","fir","nod","mao","aug","mum","hoe","bah","hal","keg","hew","zed","tow","gog","ass","dem","who","bet","gos","son","ear","spy","kit","boy","due","sen","oaf","mix","hep","fur","ada","bin","nil","mia","ewe","hit","fix","sad","rib","eye","hop","haw","wax","mid","tad","ken","wad","rye","pap","bog","gut","ito","woe","our","ado","sin","mad","ray","hon","roy","dip","hen","iva","lug","asp","hui","yak","bay","poi","yep","bun","try","lad","elm","nat","wyo","gym","dug","toe","dee","wig","sly","rip","geo","cog","pas","zen","odd","nan","lay","pod","fit","hem","joy","bum","rio","yon","dec","leg","put","sue","dim","pet","yaw","nub","bit","bur","sid","sun","oil","red","doc","moe","caw","eel","dix","cub","end","gem","off","yew","hug","pop","tub","sgt","lid","pun","ton","sol","din","yup","jab","pea","bug","gag","mil","jig","hub","low","did","tin","get","gte","sox","lei","mig","fig","lon","use","ban","flo","nov","jut","bag","mir","sty","lap","two","ins","con","ant","net","tux","ode","stu","mug","cad","nap","gun","fop","tot","sow","sal","sic","ted","wot","del","imp","cob","way","ann","tan","mci","job","wet","ism","err","him","all","pad","hah","hie","aim","ike","jed","ego","mac","baa","min","com","ill","was","cab","ago","ina","big","ilk","gal","tap","duh","ola","ran","lab","top","gob","hot","ora","tia","kip","han","met","hut","she","sac","fed","goo","tee","ell","not","act","gil","rut","ala","ape","rig","cid","god","duo","lin","aid","gel","awl","lag","elf","liz","ref","aha","fib","oho","tho","her","nor","ace","adz","fun","ned","coo","win","tao","coy","van","man","pit","guy","foe","hid","mai","sup","jay","hob","mow","jot","are","pol","arc","lax","aft","alb","len","air","pug","pox","vow","got","meg","zoe","amp","ale","bud","gee","pin","dun","pat","ten","mob"};
-        List<String> wordlist = Arrays.asList(words);
-        exe.findLadders("cet","ism",wordlist);
+        //int[][] edges = {{0,1,2,3,4},{24,23,22,21,5},{12,13,14,15,16},{11,17,18,19,20},{10,9,8,7,6}};
+        int[][] graph = {{1},{0,2,4},{1,3,4},{2},{1,2}};
+        System.out.println(exe.shortestPathLength(graph));
+    }
 
-        int[][] tes = {{0,1},{2,0}};
-        char[][] b = {{'5','3','.','.','7','.','.','.','.'},
-                {'6','.','.','1','9','5','.','.','.'},
-                {'.','9','8','.','.','.','.','6','.'},
-                {'8','.','.','.','6','.','.','.','3'},
-                {'4','.','.','8','.','3','.','.','1'},
-                {'7','.','.','.','2','.','.','.','6'},
-                {'.','6','.','.','.','.','2','8','.'},
-                {'.','.','.','4','1','9','.','.','5'},
-                {'.','.','.','.','8','.','.','7','9'}};
-        System.out.println(exe.makeLargestSpecial("11011000"));
+
+    /**
+     * https://leetcode.com/problems/shortest-path-visiting-all-nodes/
+     * An undirected, connected graph of N nodes (labeled 0, 1, 2, ..., N-1) is given as graph.
+     *
+     * graph.length = N, and j != i is in the list graph[i] exactly once, if and only if nodes i and j are connected.
+     *
+     * Return the length of the shortest path that visits every node. You may start and stop at any node,
+     * you may revisit nodes multiple times, and you may reuse edges.
+     *
+     * Example 1:
+     * Input: [[1,2,3],[0],[0],[0]]
+     * Output: 4
+     * Explanation: One possible path is [1,0,2,0,3]
+     *
+     * Example 2:
+     * Input: [[1],[0,2,4],[1,3,4],[2],[1,2]]
+     * Output: 4
+     * Explanation: One possible path is [0,1,4,2,3]
+     *
+     * Note:
+     * 1 <= graph.length <= 12
+     * 0 <= graph[i].length < graph.length
+     */
+    //The length of the shortest path to visit all nodes is at least n - 1, where n is the number of nodes. => If you encounter a
+    // path of length n - 1, you can return immediately.
+    //For a tree (i.e. no cycle) rooted at i, the length of the shortest path to visit all nodes starting from i is 2 * (n - 1) - maxDepth
+    // (think about it), where maxDepth is the maximum distance of a node from the root i => If we have a rooted tree,
+    // we can get the length of the shortest path starting from the root easily.
+    public int shortestPathLength(int[][] graph) {
+        int res = 0;
+        for (int i = 0; i < graph.length; i++) {
+            boolean[] visited = new boolean[graph.length];
+            res = Math.max(res, shortestPathLengthDFS(i, graph, visited, 0));
+            if (res == graph.length - 1) {
+                return res;
+            }
+        }
+        return 2 * (graph.length - 1) - res;
+    }
+
+    private int shortestPathLengthDFS(int start, int[][] graph, boolean[] visited, int depth) {
+        visited[start] = true;
+        int res = depth;
+        for (int to : graph[start]) {
+            if (!visited[to]) {
+                res = Math.max(res, shortestPathLengthDFS(to, graph, visited, depth + 1));
+                if (res == graph.length - 1) {
+                    return res;
+                }
+            }
+        }
+        visited[start] = false;
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/swim-in-rising-water/
+     * On an N x N grid, each square grid[i][j] represents the elevation at that point (i,j).
+     *
+     * Now rain starts to fall. At time t, the depth of the water everywhere is t. You can swim from a square
+     * to another 4-directionally adjacent square if and only if the elevation of both squares individually are
+     * at most t. You can swim infinite distance in zero time. Of course, you must stay within the boundaries of
+     * the grid during your swim.
+     *
+     * You start at the top left square (0, 0). What is the least time until you can reach the bottom right
+     * square (N-1, N-1)?
+     *
+     * Example 1:
+     * Input: [[0,2],[1,3]]
+     * Output: 3
+     * Explanation:
+     * At time 0, you are in grid location (0, 0).
+     * You cannot go anywhere else because 4-directionally adjacent neighbors have a higher elevation than t = 0.
+     *
+     * You cannot reach point (1, 1) until time 3.
+     * When the depth of water is 3, we can swim anywhere inside the grid.
+     *
+     * Example 2:
+     * Input: [[0,1,2,3,4],[24,23,22,21,5],[12,13,14,15,16],[11,17,18,19,20],[10,9,8,7,6]]
+     * Output: 16
+     * Explanation:
+     *  0  1  2  3  4
+     * 24 23 22 21  5
+     * 12 13 14 15 16
+     * 11 17 18 19 20
+     * 10  9  8  7  6
+     *
+     * The final route is marked in bold.
+     * We need to wait until time 16 so that (0, 0) and (4, 4) are connected.
+     * Note:
+     *
+     * 2 <= N <= 50.
+     * grid[i][j] is a permutation of [0, ..., N*N - 1].
+     */
+    public int swimInWater(int[][] grid) {
+        int time = 0;
+        int n = grid.length;
+        Set<Integer> visited = new HashSet<>();
+        while (!visited.contains(n*n-1)) {
+            visited.clear();
+            swimInWaterDFS(grid, 0, 0, time, visited);
+            time++;
+        }
+        return time - 1;
+    }
+    private int[][] dirs = {{-1,0},{1,0},{0,1},{0,-1}};
+    private void swimInWaterDFS(int[][] grid, int i, int j, int time, Set<Integer> visited) {
+        if (i < 0 || i > grid.length - 1 || j < 0 || j > grid[0].length - 1 || grid[i][j] > time || visited.contains(i*grid.length+j)) {
+            return;
+        }
+        visited.add(i*grid.length+j);
+        for (int[] dir : dirs) {
+            swimInWaterDFS(grid, i+dir[0], j+dir[1], time, visited);
+        }
     }
 
     /**

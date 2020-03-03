@@ -22,6 +22,73 @@ public class SlidingWindowExe {
     }
 
     /**
+     * https://leetcode.com/problems/subarrays-with-k-different-integers/
+     *
+     * Given an array A of positive integers, call a (contiguous, not necessarily distinct) subarray of A good if the number of different integers in that subarray
+     * is exactly K.
+     *
+     * (For example, [1,2,3,1,2] has 3 different integers: 1, 2, and 3.)
+     *
+     * Return the number of good subarrays of A.
+     *
+     * Example 1:
+     * Input: A = [1,2,1,2,3], K = 2
+     * Output: 7
+     * Explanation: Subarrays formed with exactly 2 different integers: [1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2].
+     *
+     * Example 2:
+     * Input: A = [1,2,1,3,4], K = 3
+     * Output: 3
+     * Explanation: Subarrays formed with exactly 3 different integers: [1,2,1,3], [2,1,3], [1,3,4].
+     *
+     * Note:
+     *
+     * 1 <= A.length <= 20000
+     * 1 <= A[i] <= A.length
+     * 1 <= K <= A.length
+     *
+     * @param A
+     * @param K
+     * @return
+     */
+    public int subarraysWithKDistinct(int[] A, int K) {
+        if (A == null || A.length == 0) {
+            return 0;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        int res = 0;
+        int count = 0;
+        int l = 0, h = 0, max = 0;
+        while (h < A.length) {
+            map.put(A[h], map.getOrDefault(A[h], 0) + 1);
+            if (map.get(A[h]) == 1) {
+                count++;
+            }
+            if (count == K) {
+                // find the max
+                max = h;
+                while (max + 1 < A.length) {
+                    if (map.getOrDefault(A[max + 1], 0) == 0) {
+                        //find new number, break, so we can add to res.
+                        break;
+                    }
+                    max++;
+                }
+            }
+            while (count == K) {
+                res += max - h + 1;
+                map.put(A[l], map.get(A[l]) - 1);
+                if (map.get(A[l]) == 0) {
+                    count--;
+                }
+                l++;
+            }
+            h++;
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/moving-stones-until-consecutive-ii/
      * @param A
      * @return
@@ -314,73 +381,6 @@ public class SlidingWindowExe {
             ans += map.getOrDefault(cur - k, 0);
         }
         return ans;
-    }
-
-    /**
-     * https://leetcode.com/problems/subarrays-with-k-different-integers/
-     *
-     * Given an array A of positive integers, call a (contiguous, not necessarily distinct) subarray of A good if the number of different integers in that subarray
-     * is exactly K.
-     *
-     * (For example, [1,2,3,1,2] has 3 different integers: 1, 2, and 3.)
-     *
-     * Return the number of good subarrays of A.
-     *
-     * Example 1:
-     *
-     * Input: A = [1,2,1,2,3], K = 2
-     * Output: 7
-     * Explanation: Subarrays formed with exactly 2 different integers: [1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2].
-     *
-     * Example 2:
-     *
-     * Input: A = [1,2,1,3,4], K = 3
-     * Output: 3
-     * Explanation: Subarrays formed with exactly 3 different integers: [1,2,1,3], [2,1,3], [1,3,4].
-     *
-     * Note:
-     *
-     * 1 <= A.length <= 20000
-     * 1 <= A[i] <= A.length
-     * 1 <= K <= A.length
-     *
-     * @param A
-     * @param K
-     * @return
-     */
-    //Intuition
-    //If the subarray [j, i] contains K unique numbers, and first prefix numbers also appear in [j + prefix, i] subarray, we have total 1 + prefix good subarrays.
-    //For example, there are 3 unique numers in [1, 2, 1, 2, 3]. First two numbers also appear in the remaining subarray [1, 2, 3], so we have 1 + 2 good
-    //subarrays: [1, 2, 1, 2, 3], [2, 1, 2, 3] and [1, 2, 3].
-    //
-    //Linear Solution
-    //We can iterate through the array and use two pointers for our sliding window ([j, i]). The back of the window is always the current position in the array (i).
-    //The front of the window (j) is moved so that A[j] appear only once in the sliding window. In other words, we are trying to shrink our sliding window while
-    //maintaining the same number of unique elements.
-    //To do that, we keep tabs on how many times each number appears in our window (m). After we add next number to the back of our window, we try to remove
-    //as many as possible numbers from the front, until the number in the front appears only once. While removing numbers, we are increasing prefix.
-
-    public int subarraysWithKDistinct(int[] A, int K) {
-        int res = 0, prefix = 0;
-        int[] m = new int[A.length + 1];
-        for (int i = 0, j = 0, cnt = 0; i < A.length; ++i) {
-            if (m[A[i]]++ == 0) {
-                ++cnt;
-            }
-            if (cnt > K) {
-                --m[A[j++]];
-                --cnt;
-                prefix = 0;
-            }
-            while (m[A[j]] > 1) {
-                ++prefix;
-                --m[A[j++]];
-            }
-            if (cnt == K) {
-                res += prefix + 1;
-            }
-        }
-        return res;
     }
 
 

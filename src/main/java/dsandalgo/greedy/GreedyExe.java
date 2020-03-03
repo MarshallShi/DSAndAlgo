@@ -14,13 +14,27 @@ public class GreedyExe{
 
     public static void main(String[] args) {
         GreedyExe exe = new GreedyExe();
+        int[] nums = {1,2,2,3,3,4,4};
+        System.out.println(exe.canDivideIntoSubsequences(nums, 3));
+    }
 
-        int[] values = {5,4,3,2,1};
-        int[] labels = {1,3,3,3,2};
-        //System.out.println(exe.largestValsFromLabels(values, labels, 3, 2));
-
-        int[] tempArr = {3,2,2,1};
-        System.out.println(exe.numRescueBoats(tempArr, 3));
+    /**
+     * https://leetcode.com/problems/divide-array-into-increasing-sequences/
+     * @param nums
+     * @param K
+     * @return
+     */
+    public boolean canDivideIntoSubsequences(int[] nums, int K) {
+        int groups = 1;
+        Map<Integer, Integer> freqMap = new HashMap<>();
+        for (int i=0; i<nums.length; i++) {
+            freqMap.put(nums[i], freqMap.getOrDefault(nums[i], 0) + 1);
+            groups = Math.max(groups, freqMap.get(nums[i]));
+        }
+        if (nums.length >= K*groups) {
+            return true;
+        }
+        return false;
     }
 
     /**

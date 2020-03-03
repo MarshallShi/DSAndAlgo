@@ -1,5 +1,6 @@
 package dsandalgo.sorting;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,8 +21,78 @@ public class SortingExe {
 
         int[] difficulty = {85,47,57};
         int[] profit = {24,66,99};
-        int[] worker = {1,0,2,3,4};
-        System.out.println(exe.maxChunksToSorted(worker));
+        int[] worker = {1,2,3,5};
+        System.out.println(exe.kthSmallestPrimeFraction(worker, 3));
+    }
+
+    /**
+     * https://leetcode.com/problems/k-th-smallest-prime-fraction/
+     * A sorted list A contains 1, plus some number of primes.  Then, for every p < q in the list, we consider the fraction p/q.
+     *
+     * What is the K-th smallest fraction considered?  Return your answer as an array of ints, where answer[0] = p and answer[1] = q.
+     *
+     * Examples:
+     * Input: A = [1, 2, 3, 5], K = 3
+     * Output: [2, 5]
+     * Explanation:
+     * The fractions to be considered in sorted order are:
+     * 1/5, 1/3, 2/5, 1/2, 3/5, 2/3.
+     * The third fraction is 2/5.
+     *
+     * Input: A = [1, 7], K = 1
+     * Output: [1, 7]
+     * Note:
+     *
+     * A will have length between 2 and 2000.
+     * Each A[i] will be between 1 and 30000.
+     * K will be between 1 and A.length * (A.length - 1) / 2.
+     */
+    //https://leetcode.com/problems/k-th-smallest-prime-fraction/discuss/115819/Summary-of-solutions-for-problems-%22reducible%22-to-LeetCode-378
+    //TODO: add a separate topic.
+    //Priority Queue with Optimization, only push smallest values into the PQ, and after poll, add the next possible smallest immediately.
+    public int[] kthSmallestPrimeFraction(int[] A, int K) {
+        int n = A.length;
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) {
+                return Integer.compare(A[a[0]] * A[n - 1 - b[1]], A[n - 1 - a[1]] * A[b[0]]);
+            }
+        });
+        for (int i = 0; i < n; i++) {
+            pq.offer(new int[] {i, 0});
+        }
+        while (--K > 0) {
+            int[] p = pq.poll();
+            //increment the index so we add next smallest value on the row of the matrix
+            if (++p[1] < n) {
+                pq.offer(p);
+            }
+        }
+        return new int[] {A[pq.peek()[0]], A[n - 1 - pq.peek()[1]]};
+    }
+
+    public int[] kthSmallestPrimeFraction_TLE(int[] A, int K) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if ((float)o1[0]/(double)o1[1] < (float)o2[0]/(double)o2[1]) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        });
+        for (int i=0; i<A.length; i++) {
+            for (int j=A.length-1; j>i; j--) {
+                pq.offer(new int[]{A[i], A[j]});
+            }
+        }
+        int count = 0;
+        int[] arr = null;
+        while (!pq.isEmpty() && count != K) {
+            arr = pq.poll();
+            count++;
+        }
+        return arr;
     }
 
     /**

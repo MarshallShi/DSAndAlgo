@@ -15,9 +15,9 @@ public class HardBFSExe {
 
     public static void main(String[] args) {
         HardBFSExe exe = new HardBFSExe();
-        int[][] edges = {{1,0,2,0,1}};
-        System.out.println(exe.shortestDistance(edges));
+
     }
+
 
     /**
      * https://leetcode.com/problems/minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix/
