@@ -38,6 +38,116 @@ public class DistinctWaysExe {
     }
 
     /**
+     * https://leetcode.com/problems/decode-ways/
+     * A message containing letters from A-Z is being encoded to numbers using the following mapping:
+     * 'A' -> 1
+     * 'B' -> 2
+     * ...
+     * 'Z' -> 26
+     * Given a non-empty string containing only digits, determine the total number of ways to decode it.
+     *
+     * Example 1:
+     * Input: "12"
+     * Output: 2
+     * Explanation: It could be decoded as "AB" (1 2) or "L" (12).
+     * Example 2:
+     * Input: "226"
+     * Output: 3
+     * Explanation: It could be decoded as "BZ" (2 26), "VF" (22 6), or "BBF" (2 2 6).
+     */
+    public int numDecodings(String s) {
+        if(s == null || s.length() == 0) {
+            return 0;
+        }
+        int n = s.length();
+        int[] dp = new int[n+1];
+        dp[0] = 1;
+        dp[1] = s.charAt(0) != '0' ? 1 : 0;
+        for(int i = 2; i <= n; i++) {
+            int first = Integer.valueOf(s.substring(i-1, i));
+            int second = Integer.valueOf(s.substring(i-2, i));
+            if(first >= 1 && first <= 9) {
+                dp[i] += dp[i-1];
+            }
+            if(second >= 10 && second <= 26) {
+                dp[i] += dp[i-2];
+            }
+        }
+        return dp[n];
+    }
+
+    /**
+     * https://leetcode.com/problems/decode-ways-ii/
+     * A message containing letters from A-Z is being encoded to numbers using the following mapping way:
+     *
+     * 'A' -> 1
+     * 'B' -> 2
+     * ...
+     * 'Z' -> 26
+     * Beyond that, now the encoded string can also contain the character '*', which can be treated as one of the numbers from 1 to 9.
+     *
+     * Given the encoded message containing digits and the character '*', return the total number of ways to decode it.
+     *
+     * Also, since the answer may be very large, you should return the output mod 109 + 7.
+     *
+     * Example 1:
+     * Input: "*"
+     * Output: 9
+     * Explanation: The encoded message can be decoded to the string: "A", "B", "C", "D", "E", "F", "G", "H", "I".
+     * Example 2:
+     * Input: "1*"
+     * Output: 9 + 9 = 18
+     * Note:
+     * The length of the input string will fit in range [1, 105].
+     * The input string will only contain the character '*' and digits '0' - '9'.
+     */
+    public int numDecodings_II(String s) {
+        int n = s.length();
+        long[] dp = new long[n+1];
+        dp[0] = 1;
+        if (s.charAt(0) != '0') {
+            if (s.charAt(0) == '*') {
+                dp[1] = 9;
+            } else {
+                dp[1] = 1;
+            }
+        }
+
+        for(int i = 2; i <= n; i++) {
+            char prev = s.charAt(i-2);
+            char cur = s.charAt(i-1);
+            // For dp[i-1]
+            if (cur == '*') {
+                dp[i] += 9*dp[i-1];
+            } else if (cur > '0') {
+                dp[i] += dp[i-1];
+            }
+            // For dp[i-2]
+            if (prev == '*') {
+                if(cur == '*'){
+                    dp[i] += 15*dp[i-2];
+                } else if (cur <= '6') {
+                    dp[i] += 2*dp[i-2];
+                } else {
+                    dp[i] += dp[i-2];
+                }
+            } else if(prev == '1' || prev == '2'){
+                if (cur == '*') {
+                    if (prev == '1') {
+                        dp[i] += 9*dp[i-2];
+                     }else { // first == '2'
+                        dp[i] += 6*dp[i-2];
+                    }
+                } else if (((prev-'0')*10 + (cur-'0')) <= 26 ){
+                    dp[i] += dp[i-2];
+                }
+            }
+            dp[i] %= 1000000007;
+        }
+        return (int)dp[n];
+    }
+
+    /**
      * https://leetcode.com/problems/count-all-valid-pickup-and-delivery-options/
      * Given n orders, each order consist in pickup and delivery services.
      *

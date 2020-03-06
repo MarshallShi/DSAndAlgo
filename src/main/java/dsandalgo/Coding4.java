@@ -882,29 +882,6 @@ public class Coding4 {
         return res;
     }
 
-    public int findMin(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return -1;
-        }
-        if (nums.length == 1) {
-            return nums[0];
-        }
-        int low = 0, high = nums.length - 1;
-        while (low < high) {
-            int mid = low + (high - low)/2;
-            if (mid > 0 && nums[mid] < nums[mid - 1]) {
-                return nums[mid];
-            } else {
-                if (nums[mid] >= nums[low] && nums[mid] > nums[high]) {
-                    low = mid + 1;
-                } else {
-                    high = mid - 1;
-                }
-            }
-        }
-        return nums[low];
-    }
-
     public List<String> letterCasePermutation(String S) {
         if (S == null) {
             return new LinkedList<>();
@@ -1526,79 +1503,6 @@ public class Coding4 {
 //        }
 //        return false;
 //    }
-
-    public int smallestDistancePair(int[] nums, int k) {
-        PriorityQueue<List<Integer>> maxHeap = new PriorityQueue<List<Integer>>(new Comparator<List<Integer>>() {
-            @Override
-            public int compare(List<Integer> o1, List<Integer> o2) {
-                return Math.abs(o2.get(0) - o2.get(1)) - Math.abs(o1.get(0) - o1.get(1));
-            }
-        });
-        for (int i=0; i<nums.length - 1; i++) {
-            for (int j=i+1; j< nums.length; j++) {
-                if (maxHeap.size() < k) {
-                    List<Integer> obj = new ArrayList<Integer>();
-                    obj.add(nums[i]);
-                    obj.add(nums[j]);
-                    maxHeap.offer(obj);
-                } else {
-                    List<Integer> curMax = maxHeap.peek();
-                    if (Math.abs(nums[i] - nums[j]) < Math.abs(curMax.get(0) - curMax.get(1))) {
-                        maxHeap.poll();
-                        List<Integer> toputin = new ArrayList<Integer>();
-                        toputin.add(nums[i]);
-                        toputin.add(nums[j]);
-                        maxHeap.offer(toputin);
-                    }
-                }
-            }
-        }
-        if (!maxHeap.isEmpty()) {
-            List<Integer> res = maxHeap.poll();
-            return Math.abs(res.get(0) - res.get(1));
-        }
-        return -1;
-    }
-
-    public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
-        PriorityQueue<List<Integer>> maxHeap = new PriorityQueue<List<Integer>>(new Comparator<List<Integer>>() {
-            @Override
-            public int compare(List<Integer> o1, List<Integer> o2) {
-                return (o2.get(0) + o2.get(1)) - (o1.get(0) + o1.get(1));
-            }
-        });
-        for (int i=0; i<nums1.length; i++) {
-            for (int j=0; j< nums2.length; j++) {
-                if (maxHeap.size() < k) {
-                    List<Integer> obj = new ArrayList<Integer>();
-                    obj.add(nums1[i]);
-                    obj.add(nums2[j]);
-                    maxHeap.offer(obj);
-                } else {
-                    List<Integer> curMax = maxHeap.peek();
-                    if (nums1[i] + nums2[j] < curMax.get(0) + curMax.get(1)) {
-                        maxHeap.poll();
-                        List<Integer> toputin = new ArrayList<Integer>();
-                        toputin.add(nums1[i]);
-                        toputin.add(nums2[j]);
-                        maxHeap.offer(toputin);
-                    }
-                }
-            }
-        }
-
-        int size = maxHeap.size();
-        List<List<Integer>> resArr = new ArrayList<List<Integer>>();
-        while (!maxHeap.isEmpty()) {
-            List<Integer> max = maxHeap.poll();
-            resArr.add(max);
-        }
-        List<List<Integer>> res = new ArrayList<List<Integer>>();
-        for (int i=resArr.size()-1; i>=0; i--){
-            res.add(resArr.get(i));
-        }
-        return res;
-    }
 
     PriorityQueue<Integer> minHeap = new PriorityQueue<Integer>();
     PriorityQueue<Integer> maxHeap = new PriorityQueue<Integer>(10, Comparator.reverseOrder());

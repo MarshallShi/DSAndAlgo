@@ -16,6 +16,136 @@ public class BinarySearchExe {
     }
 
     /**
+     * https://leetcode.com/problems/maximum-average-subarray-ii/
+     * Given an array consisting of n integers, find the contiguous subarray whose length is greater than or
+     * equal to k that has the maximum average value. And you need to output the maximum average value.
+     *
+     * Example 1:
+     * Input: [1,12,-5,-6,50,3], k = 4
+     * Output: 12.75
+     * Explanation:
+     * when length is 5, maximum average value is 10.8,
+     * when length is 6, maximum average value is 9.16667.
+     * Thus return 12.75.
+     * Note:
+     * 1 <= k <= n <= 10,000.
+     * Elements of the given array will be in range [-10,000, 10,000].
+     * The answer with the calculation error less than 10-5 will be accepted.
+     */
+    public double findMaxAverage(int[] nums, int k) {
+        double l = -10001, r = 10001;
+        while (l + 0.00001 < r) {
+            double m = l + (r - l) / 2;
+            if (canFindLargerAverage(nums, k, m)) {
+                l = m;
+            } else {
+                r = m;
+            }
+        }
+        return l;
+    }
+
+    private boolean canFindLargerAverage(int[] nums, int k, double x) {
+        int n = nums.length;
+        double[] a = new double[n];
+        for (int i = 0; i < n; i++) {
+            a[i] = nums[i] - x;
+        }
+        double cur = 0, prev = 0;
+        for (int i = 0; i < k; i++) {
+            cur += a[i];
+        }
+        if (cur >= 0) {
+            return true;
+        }
+        for (int i = k; i < n; i++) {
+            cur += a[i];
+            prev += a[i - k];
+            if (prev < 0) {
+                cur -= prev;
+                prev = 0;
+            }
+            if (cur >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii/
+     * Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+     *
+     * (i.e.,  [0,1,2,4,5,6,7] might become  [4,5,6,7,0,1,2]).
+     *
+     * Find the minimum element.
+     *
+     * The array may contain duplicates.
+     *
+     * Example 1:
+     *
+     * Input: [1,3,5]
+     * Output: 1
+     * Example 2:
+     *
+     * Input: [2,2,2,0,1]
+     * Output: 0
+     * Note:
+     *
+     * This is a follow up problem to Find Minimum in Rotated Sorted Array.
+     * Would allow duplicates affect the run-time complexity? How and why?
+     */
+    public int findMin_II(int[] nums) {
+        int low = 0, high = nums.length - 1;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (nums[mid] < nums[high]) {
+                // the mininum is in the left part
+                high = mid;
+            } else if (nums[mid] > nums[high]) {
+                // the mininum is in the right part
+                low = mid + 1;
+            } else {
+                high--;
+            }
+        }
+        return nums[low];
+    }
+
+    /**
+     * https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
+     * Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+     *
+     * (i.e.,  [0,1,2,4,5,6,7] might become  [4,5,6,7,0,1,2]).
+     *
+     * Find the minimum element.
+     *
+     * You may assume no duplicate exists in the array.
+     *
+     * Example 1:
+     *
+     * Input: [3,4,5,1,2]
+     * Output: 1
+     * Example 2:
+     *
+     * Input: [4,5,6,7,0,1,2]
+     * Output: 0
+     */
+    public int findMin(int[] nums) {
+        int low = 0, high = nums.length - 1;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (nums[mid] < nums[high]) {
+                // the mininum is in the left part
+                high = mid;
+            } else if (nums[mid] > nums[high]) {
+                // the mininum is in the right part
+                low = mid + 1;
+            }
+        }
+        return nums[low];
+    }
+
+    /**
      * https://leetcode.com/problems/search-in-rotated-sorted-array-ii/
      *
      * Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.

@@ -1,12 +1,209 @@
 package dsandalgo.dp;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class HardDPExe {
 
     public static void main(String[] args) {
         HardDPExe exe = new HardDPExe();
-        System.out.println(exe.palindromePartition("abc", 2));
+        System.out.println(exe.countVowelPermutation(144));
+    }
+
+    /**
+     * https://leetcode.com/problems/count-vowels-permutation/
+     * @param n
+     * @return
+     */
+    public int countVowelPermutation(int n) {
+        long MOD = 1000000007L;
+        long[][] dp = new long[5][n];
+        dp[0][0] = 1; //end with 'a'
+        dp[1][0] = 1; //end with 'e'
+        dp[2][0] = 1; //end with 'i'
+        dp[3][0] = 1; //end with 'o'
+        dp[4][0] = 1; //end with 'u'
+        for (int i=1; i<n; i++) {
+            dp[0][i] = (dp[1][i-1] + dp[4][i-1] + dp[2][i-1])%MOD;
+            dp[1][i] = (dp[0][i-1] + dp[2][i-1])%MOD;
+            dp[2][i] = (dp[1][i-1] + dp[3][i-1])%MOD;
+            dp[3][i] = dp[2][i-1]%MOD;
+            dp[4][i] = (dp[2][i-1] + dp[3][i-1])%MOD;
+        }
+        return (int)((dp[0][n-1] + dp[1][n-1] + dp[2][n-1] + dp[3][n-1] + dp[4][n-1])%MOD);
+    }
+
+    /**
+     * https://leetcode.com/problems/smallest-rectangle-enclosing-black-pixels/
+     * An image is represented by a binary matrix with 0 as a white pixel and 1 as a black pixel.
+     * The black pixels are connected, i.e., there is only one black region.
+     * Pixels are connected horizontally and vertically. Given the location (x, y) of one of the black pixels,
+     * return the area of the smallest (axis-aligned) rectangle that encloses all black pixels.
+     *
+     * Example:
+     *
+     * Input:
+     * [
+     *   "0010",
+     *   "0110",
+     *   "0100"
+     * ]
+     * and x = 0, y = 2
+     *
+     * Output: 6
+     */
+    private int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = 0, maxY = 0;
+    public int minArea(char[][] image, int x, int y) {
+        if (image == null || image.length == 0 || image[0].length == 0) {
+            return 0;
+        }
+        minAreaDFS(image, x, y);
+        return(maxX - minX + 1) * (maxY - minY + 1);
+    }
+    private void minAreaDFS(char[][] image, int x, int y){
+        int m = image.length, n = image[0].length;
+        if (x < 0 || y < 0 || x >= m || y >= n || image[x][y] == '0') {
+            return;
+        }
+        image[x][y] = '0';
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y);
+        minAreaDFS(image, x + 1, y);
+        minAreaDFS(image, x - 1, y);
+        minAreaDFS(image, x, y - 1);
+        minAreaDFS(image, x, y + 1);
+    }
+
+    /**
+     * https://leetcode.com/problems/jump-game-v/
+     * Given an array of integers arr and an integer d. In one step you can jump from index i to index:
+     *
+     * i + x where: i + x < arr.length and 0 < x <= d.
+     * i - x where: i - x >= 0 and 0 < x <= d.
+     * In addition, you can only jump from index i to index j if arr[i] > arr[j] and arr[i] > arr[k] for
+     * all indices k between i and j (More formally min(i, j) < k < max(i, j)).
+     *
+     * You can choose any index of the array and start jumping. Return the maximum number of indices you can visit.
+     *
+     * Notice that you can not jump outside of the array at any time.
+     *
+     * Example 1:
+     * Input: arr = [6,4,14,6,8,13,9,7,10,6,12], d = 2
+     * Output: 4
+     * Explanation: You can start at index 10. You can jump 10 --> 8 --> 6 --> 7 as shown.
+     * Note that if you start at index 6 you can only jump to index 7. You cannot jump to index 5 because 13 > 9.
+     * You cannot jump to index 4 because index 5 is between index 4 and 6 and 13 > 9.
+     * Similarly You cannot jump from index 3 to index 2 or index 1.
+     *
+     * Example 2:
+     * Input: arr = [3,3,3,3,3], d = 3
+     * Output: 1
+     * Explanation: You can start at any index. You always cannot jump to any index.
+     *
+     * Example 3:
+     * Input: arr = [7,6,5,4,3,2,1], d = 1
+     * Output: 7
+     * Explanation: Start at index 0. You can visit all the indicies.
+     *
+     * Example 4:
+     * Input: arr = [7,1,7,1,7,1], d = 2
+     * Output: 2
+     *
+     * Example 5:
+     * Input: arr = [66], d = 1
+     * Output: 1
+     *
+     * Constraints:
+     * 1 <= arr.length <= 1000
+     * 1 <= arr[i] <= 10^5
+     * 1 <= d <= arr.length
+     */
+    public int maxJumps(int[] arr, int d) {
+        int n = arr.length;
+        int cache[] = new int[n];
+        int res = 1;
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, maxJumpsDFS(arr, n, d, i, cache));
+        }
+        return res;
+    }
+    private int maxJumpsDFS(int[] arr, int n, int d, int i, int[] cache) {
+        if (cache[i] != 0) {
+            return cache[i];
+        }
+        int res = 1;
+        for (int j = i + 1; j <= Math.min(i + d, n - 1) && arr[j] < arr[i]; j++) {
+            res = Math.max(res, 1 + maxJumpsDFS(arr, n, d, j, cache));
+        }
+        for (int j = i - 1; j >= Math.max(i - d, 0) && arr[j] < arr[i]; j--) {
+            res = Math.max(res, 1 + maxJumpsDFS(arr, n, d, j, cache));
+        }
+        cache[i] = res;
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-profit-in-job-scheduling/
+     * We have n jobs, where every job is scheduled to be done from startTime[i] to endTime[i], obtaining a profit of profit[i].
+     *
+     * You're given the startTime , endTime and profit arrays, you need to output the maximum profit you can take such that
+     * there are no 2 jobs in the subset with overlapping time range.
+     *
+     * If you choose a job that ends at time X you will be able to start another job that starts at time X.
+     *
+     * Example 1:
+     * Input: startTime = [1,2,3,3], endTime = [3,4,5,6], profit = [50,10,40,70]
+     * Output: 120
+     * Explanation: The subset chosen is the first and fourth job.
+     * Time range [1-3]+[3-6] , we get profit of 120 = 50 + 70.
+     *
+     * Example 2:
+     * Input: startTime = [1,2,3,4,6], endTime = [3,5,10,6,9], profit = [20,20,100,70,60]
+     * Output: 150
+     * Explanation: The subset chosen is the first, fourth and fifth job.
+     * Profit obtained 150 = 20 + 70 + 60.
+     *
+     * Example 3:
+     * Input: startTime = [1,1,1], endTime = [2,3,4], profit = [5,6,4]
+     * Output: 6
+     *
+     * Constraints:
+     * 1 <= startTime.length == endTime.length == profit.length <= 5 * 10^4
+     * 1 <= startTime[i] < endTime[i] <= 10^9
+     * 1 <= profit[i] <= 10^4
+     */
+    public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {
+        int[][] items = new int[startTime.length][3];
+        for (int i = 0; i < startTime.length; i++) {
+            items[i] = new int[] {startTime[i], endTime[i], profit[i]};
+        }
+        // sort by endTime
+        Arrays.sort(items, (a1, a2)->a1[1] - a2[1]);
+        List<Integer> dpEndTime = new ArrayList<>();
+        List<Integer> dpProfit = new ArrayList<>();
+        // dynamic build up these two in the loop to track current max.
+        dpEndTime.add(0);
+        dpProfit.add(0);
+        for (int[] item : items) {
+            int start = item[0], end = item[1], seProfit = item[2];
+            // find previous endTime index
+            int prevIdx = Collections.binarySearch(dpEndTime, start + 1);
+            if (prevIdx < 0) {
+                prevIdx = -prevIdx - 1;
+            }
+            prevIdx--;
+            //current max profit : max(use current, not use current).
+            int currProfit = dpProfit.get(prevIdx) + seProfit, maxProfit = dpProfit.get(dpProfit.size() - 1);
+            if (currProfit > maxProfit) {
+                dpProfit.add(currProfit);
+                dpEndTime.add(end);
+            }
+        }
+        return dpProfit.get(dpProfit.size() - 1);
     }
 
     /**

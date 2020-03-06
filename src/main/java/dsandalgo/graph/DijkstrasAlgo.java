@@ -33,7 +33,7 @@ public class DijkstrasAlgo {
     }
 
     // Function for Dijkstra's Algorithm
-    public void dijkstra(List<List<Node> > adj, int src){
+    public void dijkstra(List<List<Node>> adj, int src){
         this.adj = adj;
 
         for (int i = 0; i < V; i++) {

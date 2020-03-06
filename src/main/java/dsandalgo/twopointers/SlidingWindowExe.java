@@ -3,8 +3,10 @@ package dsandalgo.twopointers;
 //TODO: follow all these same type of problems.
 //https://leetcode.com/problems/subarrays-with-k-different-integers/discuss/235002/One-code-template-to-solve-all-of-these-problems!
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SlidingWindowExe {
@@ -18,7 +20,61 @@ public class SlidingWindowExe {
         //System.out.println(exe.numberOfSubarrays(data1, 2));
 
         int[] data2 = {11,13,17,23,29,31,7,5,2,3};
-        System.out.println(exe.numOfSubarrays(data2, 3, 5));
+        System.out.println(exe.uniqueLetterString("LEETCODE"));
+    }
+
+    /**
+     * https://leetcode.com/problems/count-unique-characters-of-all-substrings-of-a-given-string/
+     * Let's define a function countUniqueChars(s) that returns the number of unique characters on s, for example if s = "LEETCODE"
+     * then "L", "T","C","O","D" are the unique characters since they appear only once in s, therefore countUniqueChars(s) = 5.
+     *
+     * On this problem given a string s we need to return the sum of countUniqueChars(t) where t is a substring of s.
+     * Notice that some substrings can be repeated so on this case you have to count the repeated ones too.
+     *
+     * Since the answer can be very large, return the answer modulo 10 ^ 9 + 7.
+     *
+     * Example 1:
+     * Input: s = "ABC"
+     * Output: 10
+     * Explanation: All possible substrings are: "A","B","C","AB","BC" and "ABC".
+     * Evey substring is composed with only unique letters.
+     * Sum of lengths of all substring is 1 + 1 + 1 + 2 + 2 + 3 = 10
+     * Example 2:
+     * Input: s = "ABA"
+     * Output: 8
+     * Explanation: The same as example 1, except countUniqueChars("ABA") = 1.
+     * Example 3:
+     * Input: s = "LEETCODE"
+     * Output: 92
+     *
+     * Constraints:
+     * 0 <= s.length <= 10^4
+     * s contain upper-case English letters only.
+     */
+    //https://leetcode.com/problems/count-unique-characters-of-all-substrings-of-a-given-string/discuss/128952/C%2B%2BJavaPython-One-pass-O(N)
+    //Trick: count the individual char, times showing in different substring.
+    public int uniqueLetterString(String S) {
+        List<Integer>[] record = new List[128];
+        int M = 1000000007;
+        int n = S.length();
+        for (int i = 0; i < 128; i++) {
+            record[i] = new ArrayList<>();
+        }
+        for (int i = 0; i < S.length(); i++) {
+            record[S.charAt(i)].add(i);
+        }
+        long result = 0;
+        for (int i = 0; i < 128; i++) {
+            int size = record[i].size();
+            for (int j = 0; j < size; j++) {
+                int index = record[i].get(j);
+                int left = j == 0 ? -1 : record[i].get(j - 1);
+                int right = j == size - 1 ? n : record[i].get(j + 1);
+                result += (index - left) * (right - index);
+                result %= M;
+            }
+        }
+        return (int)result;
     }
 
     /**

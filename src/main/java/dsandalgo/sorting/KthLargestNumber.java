@@ -1,10 +1,250 @@
 package dsandalgo.sorting;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Random;
 
+//https://leetcode.com/problems/k-th-smallest-prime-fraction/discuss/115819/Summary-of-solutions-for-problems-%22reducible%22-to-LeetCode-378
+
 public class KthLargestNumber {
+
+    public static void main(String[] args) {
+        KthLargestNumber exe = new KthLargestNumber();
+        int[] arr = {1,6,1};
+        exe.findKthNumber(3, 1, 2);
+    }
+
+    /**
+     * https://leetcode.com/problems/kth-smallest-number-in-multiplication-table/
+     * Nearly every one have used the Multiplication Table.
+     * But could you find out the k-th smallest number quickly from the multiplication table?
+     *
+     * Given the height m and the length n of a m * n Multiplication Table, and a positive integer k,
+     * you need to return the k-th smallest number in this table.
+     *
+     * Example 1:
+     * Input: m = 3, n = 3, k = 5
+     * Output:
+     * Explanation:
+     * The Multiplication Table:
+     * 1	2	3
+     * 2	4	6
+     * 3	6	9
+     *
+     * The 5-th smallest number is 3 (1, 2, 2, 3, 3).
+     * Example 2:
+     * Input: m = 2, n = 3, k = 6
+     * Output:
+     * Explanation:
+     * The Multiplication Table:
+     * 1	2	3
+     * 2	4	6
+     *
+     * The 6-th smallest number is 6 (1, 2, 2, 3, 4, 6).
+     * Note:
+     * The m and n will be in the range [1, 30000].
+     * The k will be in the range [1, m * n]
+     */
+    public int findKthNumber(int m, int n, int k) {
+        int low = 1, high = m * n + 1;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            int c = count(mid, m, n);
+            if (c >= k) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return high;
+    }
+    private int count(int v, int m, int n) {
+        int count = 0;
+        //Trick: quickly calculate the numbers less than v.
+        for (int i = 1; i <= m; i++) {
+            int temp = Math.min(v / i , n);
+            count += temp;
+        }
+        return count;
+    }
+
+    /**
+     * https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/
+     * Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.
+     *
+     * Note that it is the kth smallest element in the sorted order, not the kth distinct element.
+     *
+     * Example:
+     *
+     * matrix = [
+     *    [ 1,  5,  9],
+     *    [10, 11, 13],
+     *    [12, 13, 15]
+     * ],
+     * k = 8,
+     *
+     * return 13.
+     * Note:
+     * You may assume k is always valid, 1 ≤ k ≤ n2.
+     *
+     * Accepted
+     * 155,975
+     * Submissions
+     * 298,193
+     */
+    public int kthSmallest(int[][] matrix, int k) {
+        int n = matrix.length;
+        Queue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] a, int[] b) {
+                return Integer.compare(matrix[a[0]][a[1]], matrix[b[0]][b[1]]);
+            }
+        });
+        for (int i=0; i<matrix.length; i++) {
+            pq.offer(new int[]{i, 0});
+        }
+        while (--k > 0) {
+            int[] p = pq.poll();
+            if (++p[1] < n) {
+                pq.offer(p);
+            }
+        }
+        int ret = matrix[pq.peek()[0]][pq.peek()[1]];
+        return ret;
+    }
+
+    public int kthSmallest_binarySearch(int[][] matrix, int k) {
+        int n = matrix.length;
+        int l = matrix[0][0];               // minimum element in the matrix
+        int r = matrix[n - 1][n - 1];       // maximum element in the matrix
+        for (int cnt = 0; l < r; cnt = 0) { // this is the binary search loop
+            int m = l + (r - l) / 2;
+            //search the matrix to find number of greaters.
+            for (int i = 0, j = n - 1; i < n; i++)  {
+                while (j >= 0 && matrix[i][j] > m) j--;  // the pointer j will only go in one direction
+                cnt += (j + 1);
+            }
+            if (cnt < k) {
+                l = m + 1;   // cnt less than k, so throw away left half
+            } else {
+                r = m;       // otherwise discard right half
+            }
+        }
+        return l;
+    }
+
+    /**
+     * https://leetcode.com/problems/find-k-pairs-with-smallest-sums/
+     * You are given two integer arrays nums1 and nums2 sorted in ascending order and an integer k.
+     *
+     * Define a pair (u,v) which consists of one element from the first array and one element from the second array.
+     *
+     * Find the k pairs (u1,v1),(u2,v2) ...(uk,vk) with the smallest sums.
+     *
+     * Example 1:
+     *
+     * Input: nums1 = [1,7,11], nums2 = [2,4,6], k = 3
+     * Output: [[1,2],[1,4],[1,6]]
+     * Explanation: The first 3 pairs are returned from the sequence:
+     *              [1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]
+     * Example 2:
+     *
+     * Input: nums1 = [1,1,2], nums2 = [1,2,3], k = 2
+     * Output: [1,1],[1,1]
+     * Explanation: The first 2 pairs are returned from the sequence:
+     *              [1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]
+     * Example 3:
+     *
+     * Input: nums1 = [1,2], nums2 = [3], k = 3
+     * Output: [1,3],[2,3]
+     * Explanation: All possible pairs are returned from the sequence: [1,3],[2,3]
+     */
+    public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
+        PriorityQueue<List<Integer>> maxHeap = new PriorityQueue<List<Integer>>(new Comparator<List<Integer>>() {
+            @Override
+            public int compare(List<Integer> o1, List<Integer> o2) {
+                return (o2.get(0) + o2.get(1)) - (o1.get(0) + o1.get(1));
+            }
+        });
+        for (int i=0; i<nums1.length; i++) {
+            for (int j=0; j< nums2.length; j++) {
+                if (maxHeap.size() < k) {
+                    List<Integer> obj = new ArrayList<Integer>();
+                    obj.add(nums1[i]);
+                    obj.add(nums2[j]);
+                    maxHeap.offer(obj);
+                } else {
+                    List<Integer> curMax = maxHeap.peek();
+                    if (nums1[i] + nums2[j] < curMax.get(0) + curMax.get(1)) {
+                        maxHeap.poll();
+                        List<Integer> toputin = new ArrayList<Integer>();
+                        toputin.add(nums1[i]);
+                        toputin.add(nums2[j]);
+                        maxHeap.offer(toputin);
+                    }
+                }
+            }
+        }
+
+        int size = maxHeap.size();
+        List<List<Integer>> resArr = new ArrayList<List<Integer>>();
+        while (!maxHeap.isEmpty()) {
+            List<Integer> max = maxHeap.poll();
+            resArr.add(max);
+        }
+        List<List<Integer>> res = new ArrayList<List<Integer>>();
+        for (int i=resArr.size()-1; i>=0; i--){
+            res.add(resArr.get(i));
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/find-k-th-smallest-pair-distance/
+     * Given an integer array, return the k-th smallest distance among all the pairs.
+     * The distance of a pair (A, B) is defined as the absolute difference between A and B.
+     *
+     * Example 1:
+     * Input:
+     * nums = [1,3,1]
+     * k = 1
+     * Output: 0
+     * Explanation:
+     * Here are all the pairs:
+     * (1,3) -> 2
+     * (1,1) -> 0
+     * (3,1) -> 2
+     * Then the 1st smallest distance pair is (1,1), and its distance is 0.
+     * Note:
+     * 2 <= len(nums) <= 10000.
+     * 0 <= nums[i] < 1000000.
+     * 1 <= k <= len(nums) * (len(nums) - 1) / 2.
+     */
+    public int smallestDistancePair(int[] nums, int k) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        int l = 0;
+        int r = nums[n - 1] - nums[0];
+        int cnt = 0;
+        while (l < r) {
+            int m = l + (r - l) / 2;
+            for (int i = 0, j = 0; i < n; i++) {
+                while (j < n && nums[j] - nums[i] <=  m) j++;
+                cnt += j - i - 1;
+            }
+            if (cnt < k) {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+            cnt = 0;
+        }
+        return l;
+    }
 
     //https://leetcode.com/problems/kth-largest-element-in-an-array/
 

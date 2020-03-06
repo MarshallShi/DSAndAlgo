@@ -48,7 +48,6 @@ public class SortingExe {
      * K will be between 1 and A.length * (A.length - 1) / 2.
      */
     //https://leetcode.com/problems/k-th-smallest-prime-fraction/discuss/115819/Summary-of-solutions-for-problems-%22reducible%22-to-LeetCode-378
-    //TODO: add a separate topic.
     //Priority Queue with Optimization, only push smallest values into the PQ, and after poll, add the next possible smallest immediately.
     public int[] kthSmallestPrimeFraction(int[] A, int K) {
         int n = A.length;

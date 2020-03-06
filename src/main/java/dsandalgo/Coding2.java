@@ -863,29 +863,6 @@ public class Coding2 {
         return 1 + min;
     }
 
-    public int kthSmallest(int[][] matrix, int k) {
-        Queue<Integer> pq = new PriorityQueue<>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return o2 - o1;
-            }
-        });
-        for (int i=0; i<matrix.length; i++) {
-            for (int j=0; j<matrix[i].length; j++) {
-                if (pq.size() < k) {
-                    pq.offer(matrix[i][j]);
-                } else {
-                    if (pq.size() == k && pq.peek() > matrix[i][j]) {
-                        pq.poll();
-                        pq.offer(matrix[i][j]);
-                    }
-                }
-            }
-        }
-        int ret = pq.peek();
-        return ret;
-    }
-
     /**
      * traverse the list for i= 0 to n-1 elements
      * {

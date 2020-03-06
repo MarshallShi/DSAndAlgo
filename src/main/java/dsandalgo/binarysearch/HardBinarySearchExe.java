@@ -1,7 +1,5 @@
 package dsandalgo.binarysearch;
 
-import dsandalgo.dfsbacktrack.HardDFSExe;
-
 public class HardBinarySearchExe {
 
     public static void main(String[] args) {
@@ -10,26 +8,115 @@ public class HardBinarySearchExe {
         exe.shipWithinDays(wts, 5);
     }
 
-    //https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/discuss/256729/JavaC%2B%2BPython-Binary-Search
-
     /**
-     * def shipWithinDays(self, a: List[int], d: int) -> int:
-     *         lo, hi = max(a), sum(a)
-     *         while lo < hi:
-     *             mid = (lo + hi) // 2
-     *             tot, res = 0, 1
-     *             for wt in a:
-     *                 if tot + wt > mid:
-     *                     res += 1
-     *                     tot = wt
-     *                 else:
-     *                     tot += wt
-     *             if res <= d:
-     *                 hi = mid
-     *             else:
-     *                 lo = mid+1
-     *         return lo
+     * https://leetcode.com/problems/divide-chocolate/
+     * You have one chocolate bar that consists of some chunks. Each chunk has its own sweetness given by the array sweetness.
+     *
+     * You want to share the chocolate with your K friends so you start cutting the chocolate bar into K+1 pieces
+     * using K cuts, each piece consists of some consecutive chunks.
+     *
+     * Being generous, you will eat the piece with the minimum total sweetness and give the other pieces to your friends.
+     *
+     * Find the maximum total sweetness of the piece you can get by cutting the chocolate bar optimally.
+     *
+     *
+     * Example 1:
+     * Input: sweetness = [1,2,3,4,5,6,7,8,9], K = 5
+     * Output: 6
+     * Explanation: You can divide the chocolate to [1,2,3], [4,5], [6], [7], [8], [9]
+     *
+     * Example 2:
+     * Input: sweetness = [5,6,7,8,9,1,2,3,4], K = 8
+     * Output: 1
+     * Explanation: There is only one way to cut the bar into 9 pieces.
+     *
+     * Example 3:
+     * Input: sweetness = [1,2,2,1,2,2,1,2,2], K = 2
+     * Output: 5
+     * Explanation: You can divide the chocolate to [1,2,2], [1,2,2], [1,2,2]
+     *
+     * Constraints:
+     * 0 <= K < sweetness.length <= 10^4
+     * 1 <= sweetness[i] <= 10^5
      */
+    public int maximizeSweetness(int[] sweetness, int K) {
+        K=K+1; // Include yourself.
+        int lo = getMin(sweetness);
+        int hi = getSum(sweetness);
+        while (lo < hi) {
+            int mid = (lo + hi + 1) >>> 1;
+            if (split(sweetness, mid) < K) {
+                hi = mid - 1;
+            } else {
+                lo = mid;
+            }
+        }
+        return lo;
+    }
+
+    private int split(int[] arr, int minSweetness) {
+        int splitCount = 0;
+        int sweetness = 0;
+        for (int val : arr) {
+            sweetness += val;
+            if (sweetness >= minSweetness) {
+                splitCount++;
+                sweetness = 0;
+            }
+        }
+        return splitCount;
+    }
+    private int getMin(int[] arr) {
+        int min = Integer.MAX_VALUE;
+        for (int val : arr) {
+            min = Math.min(min, val);
+        }
+        return min;
+    }
+    private int getSum(int[] arr) {
+        int sum = 0;
+        for (int val : arr) {
+            sum += val;
+        }
+        return sum;
+    }
+
+
+    //https://leetcode.com/problems/smallest-rectangle-enclosing-black-pixels/
+    private char[][] image;
+    public int minArea(char[][] iImage, int x, int y) {
+        image = iImage;
+        int m = image.length, n = image[0].length;
+        int left = searchColumns(0, y, 0, m, true);
+        int right = searchColumns(y + 1, n, 0, m, false);
+        int top = searchRows(0, x, left, right, true);
+        int bottom = searchRows(x + 1, m, left, right, false);
+        return (right - left) * (bottom - top);
+    }
+    private int searchColumns(int i, int j, int top, int bottom, boolean opt) {
+        while (i != j) {
+            int k = top, mid = (i + j) / 2;
+            while (k < bottom && image[k][mid] == '0') ++k;
+            if (k < bottom == opt)
+                j = mid;
+            else
+                i = mid + 1;
+        }
+        return i;
+    }
+    private int searchRows(int i, int j, int left, int right, boolean opt) {
+        while (i != j) {
+            int k = left, mid = (i + j) / 2;
+            while (k < right && image[mid][k] == '0') ++k;
+            if (k < right == opt)
+                j = mid;
+            else
+                i = mid + 1;
+        }
+        return i;
+    }
+
+    //https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/discuss/256729/JavaC%2B%2BPython-Binary-Search
     public int shipWithinDays(int[] weights, int D) {
         //Intuition is the low end capacity is the maxium weight, the high end is the total weight where D is 1.
         int high = 0, low = Integer.MIN_VALUE;
