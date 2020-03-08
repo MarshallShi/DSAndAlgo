@@ -1,5 +1,6 @@
 package dsandalgo.string;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,7 +9,155 @@ public class StringHardExe {
 
     public static void main(String[] args) {
         StringHardExe exe = new StringHardExe();
-        System.out.println(exe.parseBoolExpr("|(&(t,f,t),!(t))"));
+        System.out.println(exe.findTheLongestSubstring("eleetminicoworoep"));
+    }
+
+    /**
+     * https://leetcode.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/
+     * Given the string s, return the size of the longest substring containing each vowel an even number of times.
+     * That is, 'a', 'e', 'i', 'o', and 'u' must appear an even number of times.
+     *
+     * Example 1:
+     * Input: s = "eleetminicoworoep"
+     * Output: 13
+     * Explanation: The longest substring is "leetminicowor" which contains two each of the
+     * vowels: e, i and o and zero of the vowels: a and u.
+     *
+     * Example 2:
+     * Input: s = "leetcodeisgreat"
+     * Output: 5
+     * Explanation: The longest substring is "leetc" which contains two e's.
+     *
+     * Example 3:
+     * Input: s = "bcbcbc"
+     * Output: 6
+     * Explanation: In this case, the given string "bcbcbc" is the longest because all vowels: a, e, i, o and u appear zero times.
+     *
+     * Constraints:
+     *
+     * 1 <= s.length <= 5 x 10^5
+     * s contains only lowercase English letters.
+     */
+    //https://leetcode.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/discuss/532101/Java-o(n)-one-pass-solution.-Easy-to-understand.
+    HashMap<Character, Integer> voewlToIndex = new HashMap<Character, Integer>() {
+        {
+            put('a', 0);
+            put('e', 1);
+            put('i', 2);
+            put('o', 3);
+            put('u', 4);
+        }
+    };
+    public int findTheLongestSubstring(String s) {
+        HashMap<Integer, Integer> stateToIndex = new HashMap<>();
+        stateToIndex.put(0, -1);
+        int state = 0, maxLen = 0;
+        for(int i = 0; i < s.length(); ++i) {
+            char cur = s.charAt(i);
+            if (voewlToIndex.containsKey(cur)) {
+                // flip the digits of the state. 1-> 0 or 0 -> 1
+                int digit = voewlToIndex.get(cur); // ideally we can do only one lookup.
+                state ^= (1 << digit);
+            }
+            stateToIndex.putIfAbsent(state, i);
+            maxLen = Math.max(maxLen, i - stateToIndex.get(state));
+        }
+        return maxLen;
+    }
+
+    /**
+     * https://leetcode.com/problems/valid-number/
+     * Validate if a given string can be interpreted as a decimal number.
+     *
+     * Some examples:
+     * "0" => true
+     * " 0.1 " => true
+     * "abc" => false
+     * "1 a" => false
+     * "2e10" => true
+     * " -90e3   " => true
+     * " 1e" => false
+     * "e3" => false
+     * " 6e-1" => true
+     * " 99e2.5 " => false
+     * "53.5e93" => true
+     * " --6 " => false
+     * "-+3" => false
+     * "95a54e53" => false
+     *
+     * Note: It is intended for the problem statement to be ambiguous. You should gather all requirements up front before implementing one.
+     * However, here is a list of characters that can be in a valid decimal number:
+     *
+     * Numbers 0-9
+     * Exponent - "e"
+     * Positive/negative sign - "+"/"-"
+     * Decimal point - "."
+     * Of course, the context of these characters also matters in the input.
+     *
+     * Update (2015-02-10):
+     * The signature of the C++ function had been updated. If you still see your function signature accepts a const char * argument,
+     * please click the reload button to reset your code definition.
+     */
+    public boolean isNumber(String s) {
+        s = s.trim();
+        boolean pointSeen = false;
+        boolean eSeen = false;
+        boolean numberSeen = false;
+        boolean numberAfterE = true;
+        for(int i=0; i<s.length(); i++) {
+            if('0' <= s.charAt(i) && s.charAt(i) <= '9') {
+                numberSeen = true;
+                numberAfterE = true;
+            } else if(s.charAt(i) == '.') {
+                if(eSeen || pointSeen) {
+                    return false;
+                }
+                pointSeen = true;
+            } else if(s.charAt(i) == 'e') {
+                if(eSeen || !numberSeen) {
+                    return false;
+                }
+                numberAfterE = false;
+                eSeen = true;
+            } else if(s.charAt(i) == '-' || s.charAt(i) == '+') {
+                if(i != 0 && s.charAt(i-1) != 'e') {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return numberSeen && numberAfterE;
+    }
+
+    /**
+     * https://leetcode.com/problems/scramble-string/
+     * @param s1
+     * @param s2
+     * @return
+     */
+    public boolean isScramble(String s1, String s2) {
+        if (s1 == null || s2 == null) return false;
+        if (s1.equals(s2)) return true;
+        if (s1.length() != s2.length()) return false;
+
+        int[] letters = new int[26];
+        int len = s1.length();
+        for (int i = 0; i < len; i++){
+            letters[s1.charAt(i)-'a']++;
+            letters[s2.charAt(i)-'a']--;
+        }
+        for (int i = 0; i < 26; i++){
+            if(letters[i]!= 0) return false;
+        }
+
+        for (int i = 1; i < len; i++){
+            //any partition worked from 0-i, i-len, return true.
+            if (isScramble(s1.substring(0,i), s2.substring(0,i)) && isScramble(s1.substring(i), s2.substring(i))) return true;
+            //any partition worked from 0-i, len-i, reversely, return true.
+            if (isScramble(s1.substring(0,i), s2.substring(len-i)) && isScramble(s1.substring(i), s2.substring(0,len-i))) return true;
+        }
+        return false;
     }
 
     /**

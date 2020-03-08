@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.trie;
 
 public class MagicDictionary {
 

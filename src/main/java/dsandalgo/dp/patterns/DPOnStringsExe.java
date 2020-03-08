@@ -1,5 +1,6 @@
 package dsandalgo.dp.patterns;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.stream.IntStream;
 
@@ -37,6 +38,71 @@ import java.util.stream.IntStream;
  *  }
 **/
 public class DPOnStringsExe {
+
+    public static void main(String[] args) {
+        DPOnStringsExe exe = new DPOnStringsExe();
+        System.out.println(exe.shortestCommonSupersequence("delete", "leet"));
+    }
+
+    /**
+     * https://leetcode.com/problems/shortest-common-supersequence/
+     *
+     * Given two strings str1 and str2, return the shortest string that has both str1 and str2 as subsequences.
+     * If multiple answers exist, you may return any of them.
+     *
+     * (A string S is a subsequence of string T if deleting some number of characters from T (possibly 0,
+     * and the characters are chosen anywhere from T) results in the string S.)
+     *
+     * Example 1:
+     *
+     * Input: str1 = "abac", str2 = "cab"
+     * Output: "cabac"
+     * Explanation:
+     * str1 = "abac" is a subsequence of "cabac" because we can delete the first "c".
+     * str2 = "cab" is a subsequence of "cabac" because we can delete the last "ac".
+     * The answer provided is the shortest such string that satisfies these properties.
+     *
+     *
+     * Note:
+     *
+     * 1 <= str1.length, str2.length <= 1000
+     * str1 and str2 consist of lowercase English letters.
+     */
+    //Trick: find the lcs, compare with original string add all missing ones.
+    public String shortestCommonSupersequence(String str1, String str2) {
+        String lcs = longestCommonSubSeq(str1, str2);
+        int p1 = 0, p2 = 0;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < lcs.length(); i++) {
+            while (p1 < str1.length() && str1.charAt(p1) != lcs.charAt(i)) {
+                sb.append(str1.charAt(p1++));
+            }
+            while (p2 < str2.length() && str2.charAt(p2) != lcs.charAt(i)) {
+                sb.append(str2.charAt(p2++));
+            }
+            sb.append(lcs.charAt(i));
+            p1++;
+            p2++;
+        }
+        sb.append(str1.substring(p1)).append(str2.substring(p2));
+        return sb.toString();
+    }
+    private String longestCommonSubSeq(String str1, String str2) {
+        String[][] dp = new String[str1.length() + 1][str2.length() + 1];
+        for (int i = 0; i < dp.length; i++) {
+            Arrays.fill(dp[i], "");
+        }
+        for (int i = 1; i <= str1.length(); i++) {
+            for (int j = 1; j <= str2.length(); j++) {
+                if (str1.charAt(i - 1) == str2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + str1.charAt(i - 1);
+                } else {
+                    dp[i][j] = dp[i - 1][j].length() > dp[i][j - 1].length() ?  dp[i - 1][j] : dp[i][j - 1];
+                }
+            }
+        }
+        return dp[str1.length()][str2.length()];
+    }
 
     /**
      * https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/
@@ -426,35 +492,6 @@ public class DPOnStringsExe {
     }
 
     /**
-     * https://leetcode.com/problems/shortest-common-supersequence/
-     *
-     * Given two strings str1 and str2, return the shortest string that has both str1 and str2 as subsequences.
-     * If multiple answers exist, you may return any of them.
-     *
-     * (A string S is a subsequence of string T if deleting some number of characters from T (possibly 0,
-     * and the characters are chosen anywhere from T) results in the string S.)
-     *
-     * Example 1:
-     *
-     * Input: str1 = "abac", str2 = "cab"
-     * Output: "cabac"
-     * Explanation:
-     * str1 = "abac" is a subsequence of "cabac" because we can delete the first "c".
-     * str2 = "cab" is a subsequence of "cabac" because we can delete the last "ac".
-     * The answer provided is the shortest such string that satisfies these properties.
-     *
-     *
-     * Note:
-     *
-     * 1 <= str1.length, str2.length <= 1000
-     * str1 and str2 consist of lowercase English letters.
-     */
-    public String shortestCommonSupersequence(String str1, String str2) {
-        return null;
-    }
-
-
-    /**
      * https://leetcode.com/problems/edit-distance/
      *
      * Given two words word1 and word2, find the minimum number of operations required to convert word1 to word2.
@@ -775,10 +812,5 @@ public class DPOnStringsExe {
             }
         }
         return dp[s.length()][p.length()];
-    }
-
-    public static void main(String[] args) {
-        DPOnStringsExe exe = new DPOnStringsExe();
-        System.out.println(exe.minimumDeleteSum("delete", "leet"));
     }
 }

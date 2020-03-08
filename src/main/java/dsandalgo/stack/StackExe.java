@@ -27,7 +27,59 @@ public class StackExe {
     public static void main(String[] args) {
         StackExe exe = new StackExe();
         int[] a = {2,2,2};
-        System.out.println(exe.validSubarrays(a));
+        System.out.println(exe.longestValidParentheses(")()())"));
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
+     *
+     * @param s
+     * @return
+     */
+    public String minRemoveToMakeValid(String s) {
+        StringBuilder sb = new StringBuilder(s);
+        Stack<Integer> st = new Stack<>();
+        for (int i = 0; i < sb.length(); ++i) {
+            if (sb.charAt(i) == '(') {
+                st.push(i);
+            }
+            if (sb.charAt(i) == ')') {
+                if (!st.empty()) {
+                    st.pop();
+                } else {
+                    sb.setCharAt(i, '*');
+                }
+            }
+        }
+        while (!st.empty()) {
+            sb.setCharAt(st.pop(), '*');
+        }
+        return sb.toString().replaceAll("\\*", "");
+    }
+
+    public int longestValidParentheses(String s) {
+        int size = s.length(), res = 0;
+        if (size < 2) {
+            return res;
+        }
+        Stack<Integer> si = new Stack<>();
+        for(int i = 0; i < size; ++i) {
+            if('(' == s.charAt(i)) {
+                si.push(i);
+            } else {
+                if (si.empty()) {
+                    si.push(i);
+                } else {
+                    if(s.charAt(si.peek()) == '(') {
+                        si.pop();
+                        res = Math.max(i - (si.empty()? -1: si.peek()), res);
+                    } else {
+                        si.push(i);
+                    }
+                }
+            }
+        }
+        return res;
     }
 
     /**

@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.design;
 
 import java.util.Stack;
 

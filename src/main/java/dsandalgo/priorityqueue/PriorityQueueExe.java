@@ -23,8 +23,142 @@ public class PriorityQueueExe {
     public static void main(String[] args) {
         PriorityQueueExe pqexe = new PriorityQueueExe();
         //pqexe.allCellsDistOrder(1,2,0,0);
-        int[] arr = {1,2,3,4,5};
         //pqexe.findClosestElements(arr, 4, -1);
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-cost-to-hire-k-workers/
+     * There are N workers.  The i-th worker has a quality[i] and a minimum wage expectation wage[i].
+     *
+     * Now we want to hire exactly K workers to form a paid group.  When hiring a group of K workers, we must pay them according to the following rules:
+     *
+     * Every worker in the paid group should be paid in the ratio of their quality compared to other workers in the paid group.
+     * Every worker in the paid group must be paid at least their minimum wage expectation.
+     * Return the least amount of money needed to form a paid group satisfying the above conditions.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: quality = [10,20,5], wage = [70,50,30], K = 2
+     * Output: 105.00000
+     * Explanation: We pay 70 to 0-th worker and 35 to 2-th worker.
+     * Example 2:
+     *
+     * Input: quality = [3,1,10,10,1], wage = [4,8,2,2,7], K = 3
+     * Output: 30.66667
+     * Explanation: We pay 4 to 0-th worker, 13.33333 to 2-th and 3-th workers seperately.
+     *
+     *
+     * Note:
+     *
+     * 1 <= K <= N <= 10000, where N = quality.length = wage.length
+     * 1 <= quality[i] <= 10000
+     * 1 <= wage[i] <= 10000
+     * Answers within 10^-5 of the correct answer will be considered correct.
+     *
+     */
+    //  Every worker in the paid group should be paid in the ratio of their quality compared to other workers in the paid group.
+    // -> group of workers share the same "cost[i]  / quality[i]", let's call it PAID_RATIO
+    // -> PAID_RATIO = total cost / total quality
+
+    // Every worker in the paid group must be paid at least their minimum wage expectation.
+    // -> cost[i] >= wage[i]
+    // -> cost[i] / quality[i] >= wage[i] / quality[i]
+    // -> PAID_RATIO >= MAX RATIO(maximum wage[i] / quality[i] in the group)
+
+    // cost = groupQuality * PAID_RATIO
+    // -> groupQuality * MAX RATIO(maximum wage[i] / quality[i] in the group)
+    // -> minCost = Math.min(minCost, minimum groupQuality * minimum MAX RATIO)
+
+    // get minimum groupQuality -> pop highest quality when size is bigger than k -> maxHeap
+    // track minimum MAX RATIO -> keep current ratio -> increase order workers list
+    public double mincostToHireWorkers(int[] quality, int[] wage, int K) {
+        List<Worker> workers = new ArrayList<>();
+        for (int i = 0; i < quality.length; i++) {
+            workers.add(new Worker(quality[i], wage[i]));
+        }
+        // Sort by ratio increasingly
+        Collections.sort(workers, (a, b) -> Double.compare(a.ratio, b.ratio));
+        // Maxheap always pop highest quality
+        PriorityQueue<Worker> maxHeap = new PriorityQueue<>((a, b) -> (b.quality - a.quality));
+        int totalQuality = 0;
+        double minCost = Double.MAX_VALUE;
+        for (Worker worker: workers) {
+            maxHeap.offer(worker);
+            totalQuality += worker.quality;
+            if (maxHeap.size() > K) {
+                // pop highest quality worker
+                Worker removedWorker = maxHeap.poll();
+                totalQuality -= removedWorker.quality;
+            }
+            if (maxHeap.size() == K) {
+                // this is to double check we always get minCost.
+                // groupQuality * MAX RATIO(maximum wage[i] / quality[i] in the group)
+                minCost = Math.min(totalQuality * worker.ratio, minCost);
+            }
+        }
+        return minCost;
+    }
+
+    class Worker {
+        int quality;
+        int wage;
+        double ratio;
+        public Worker(int quality, int wage) {
+            this.quality = quality;
+            this.wage = wage;
+            // be careful about int = int / int, double = double / int
+            ratio = wage * 1.0 / quality;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/
+     * You have k lists of sorted integers in ascending order. Find the smallest range that includes at least
+     * one number from each of the k lists.
+     *
+     * We define the range [a,b] is smaller than range [c,d] if b-a < d-c or a < c if b-a == d-c.
+     *
+     * Example 1:
+     * Input: [[4,10,15,24,26], [0,9,12,20], [5,18,22,30]]
+     * Output: [20,24]
+     * Explanation:
+     * List 1: [4, 10, 15, 24,26], 24 is in range [20,24].
+     * List 2: [0, 9, 12, 20], 20 is in range [20,24].
+     * List 3: [5, 18, 22, 30], 22 is in range [20,24].
+     *
+     * Note:
+     * The given list may contain duplicates, so ascending order means >= here.
+     * 1 <= k <= 3500
+     * -105 <= value of elements <= 105.
+     */
+    public int[] smallestRange(List<List<Integer>> nums) {
+        //int[] : 0: val, 1: index of list, 2: pos in the list
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (a[0] - b[0]));
+        int max = Integer.MIN_VALUE;
+        for (int i=0; i<nums.size(); i++) {
+            max = Math.max(max, nums.get(i).get(0));
+            pq.offer(new int[]{nums.get(i).get(0), i, 0});
+        }
+        int range = Integer.MAX_VALUE;
+        int start = -1, end = -1;
+        while (pq.size() == nums.size()) {
+            int[] arr = pq.poll();
+            if (max - arr[0] < range) {
+                range = max - arr[0];
+                start = arr[0];
+                end = max;
+            }
+            if (arr[2] + 1 < nums.get(arr[1]).size()) {
+                int[] nxarr = {nums.get(arr[1]).get(arr[2] + 1), arr[1], arr[2]+1};
+                if (nxarr[0] > max) {
+                    max = nxarr[0];
+                }
+                pq.offer(nxarr);
+            }
+        }
+        return new int[] { start, end };
     }
 	
 	/**

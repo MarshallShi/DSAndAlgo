@@ -22,6 +22,57 @@ public class StringExe {
     public static void main(String[] args) {
         StringExe exe = new StringExe();
         String[] ranks = {"WXYZ","XYZW"};
+        System.out.println(exe.sortString("spo"));
+    }
+
+
+    /**
+     * https://leetcode.com/problems/increasing-decreasing-string/
+     * @param s
+     * @return
+     */
+    public String sortString(String s) {
+        int[] charryCount = new int[26];
+        for (int i=0; i<s.length(); i++) {
+            charryCount[s.charAt(i) - 'a']++;
+        }
+        StringBuilder sb = new StringBuilder();
+        boolean pickSmallest = true;
+        char preSmallest = 'a' - 1, preLargest = 'z' + 1;
+        while (sb.length() < s.length()) {
+            if (pickSmallest) {
+                boolean canAppend = false;
+                for (int i=0; i<26; i++) {
+                    if (charryCount[i] > 0 && i+'a' > preSmallest) {
+                        charryCount[i]--;
+                        sb.append((char)(i+'a'));
+                        preSmallest = (char)(i+'a');
+                        canAppend = true;
+                        break;
+                    }
+                }
+                if (!canAppend) {
+                    preSmallest = 'a' - 1;
+                    pickSmallest = false;
+                }
+            } else {
+                boolean canAppend = false;
+                for (int i=25; i>=0; i--) {
+                    if (charryCount[i] > 0 && i+'a' < preLargest) {
+                        charryCount[i]--;
+                        sb.append((char)(i+'a'));
+                        preLargest = (char)(i+'a');
+                        canAppend = true;
+                        break;
+                    }
+                }
+                if (!canAppend) {
+                    preLargest = 'z' + 1;
+                    pickSmallest = true;
+                }
+            }
+        }
+        return sb.toString();
     }
 
     /**

@@ -1,4 +1,4 @@
-package dsandalgo;
+package dsandalgo.string;
 
 public class SubStringQuestionsExe {
 
