@@ -1,5 +1,9 @@
 package dsandalgo.string;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +13,332 @@ public class StringHardExe {
 
     public static void main(String[] args) {
         StringHardExe exe = new StringHardExe();
-        System.out.println(exe.findTheLongestSubstring("eleetminicoworoep"));
+        String[] str = {"plain", "amber", "blade"};
+        List<String> s = Arrays.asList(str);
+        System.out.println(exe.minAbbreviation("apple", str));
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-unique-word-abbreviation/
+     *
+     * A string such as "word" contains the following abbreviations:
+     *
+     * ["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+     * Given a target string and a set of strings in a dictionary, find an abbreviation of this target string with the smallest
+     * possible length such that it does not conflict with abbreviations of the strings in the dictionary.
+     *
+     * Each number or letter in the abbreviation is considered length = 1. For example, the abbreviation "a32bc" has length = 4.
+     *
+     * Note:
+     * In the case of multiple answers as shown in the second example below, you may return any one of them.
+     * Assume length of target string = m, and dictionary size = n. You may assume that m ≤ 21, n ≤ 1000, and log2(n) + m ≤ 20.
+     * Examples:
+     * "apple", ["blade"] -> "a4" (because "5" or "4e" conflicts with "blade")
+     *
+     * "apple", ["plain", "amber", "blade"] -> "1p3" (other valid answers include "ap3", "a3e", "2p2", "3le", "3l1").
+     */
+
+    class Trie{
+        Trie[] next = new Trie[26];
+        boolean isEnd = false;
+    }
+    Trie root = new Trie();
+    public String minAbbreviation(String target, String[] dictionary) {
+        List<String> abbrs = generateAbbreviations(target);
+        List<String> toCompare = new ArrayList<>();
+        for (String dic : dictionary) {
+            if (dic.length() == target.length()) {
+                toCompare.add(dic);
+                addTrie(dic);
+            }
+        }
+        if (toCompare.size() == 0) {
+            return target.length()+"";
+        }
+        Collections.sort(abbrs, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                if (o1.length() == o2.length()) {
+                    int o1NumCounter = 0, o2NumCounter = 0;
+                    for (int i=0; i<o1.length(); i++) {
+                        if (Character.isDigit(o1.charAt(i))) o1NumCounter++;
+                        if (Character.isDigit(o2.charAt(i))) o2NumCounter++;
+                    }
+                    return o2NumCounter - o1NumCounter;
+                }
+                return o1.length() - o2.length();
+            }
+        });
+        for (String abbr : abbrs) {
+            if(search(abbr, root, 0, 0) == false) {
+                return abbr;
+            }
+        }
+        return "";
+    }
+    private void addTrie(String s) {
+        Trie cur = root;
+        for (int i=0; i<s.length(); i++) {
+            char c = s.charAt(i);
+            if (cur.next[c-'a'] == null) {
+                cur.next[c-'a'] = new Trie();
+            }
+            cur = cur.next[c-'a'];
+        }
+        cur.isEnd = true;
+    }
+    private boolean search(String target, Trie root, int i, int loop) {
+        if (root == null) return false;
+        if (loop != 0) {
+            for (int a=0; a<26; a++) {
+                if (search(target, root.next[a], i, loop-1)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (i == target.length()) {
+            if (root.isEnd) return true;
+            return false;
+        }
+        if (Character.isDigit(target.charAt(i))) {
+            int tmp = 0;
+            while (i<target.length() && Character.isDigit(target.charAt(i))) {
+                tmp = tmp*10 + target.charAt(i)-'0';
+                i++;
+            }
+            return search(target, root, i, tmp);
+        } else {
+            return search(target, root.next[target.charAt(i)-'a'], i+1, 0);
+        }
+    }
+    private List<String> generateAbbreviations(String word) {
+        List<String> res = new ArrayList<>();
+        genBacktrack(res, "", word, 0);
+        return res;
+    }
+    private void genBacktrack(List<String> res, String temp, String word, int start){
+        for (int i = start; i < word.length(); i++) {
+            String abbr = "";
+            if (i != start) {
+                abbr = i - start + "";
+            }
+            genBacktrack(res, temp + abbr + word.substring(i, i+1), word, i+1);
+        }
+        if (word.length() == start) {
+            res.add(temp);
+        } else {
+            res.add(temp + (word.length() - start));
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/word-abbreviation/
+     *
+     * Given an array of n distinct non-empty strings, you need to generate minimal possible abbreviations for every word following rules below.
+     *
+     * Begin with the first character and then the number of characters abbreviated, which followed by the last character.
+     * If there are any conflict, that is more than one words share the same abbreviation,
+     * a longer prefix is used instead of only the first character until making the map from word to abbreviation become unique.
+     * In other words, a final abbreviation cannot map to more than one original words.
+     * If the abbreviation doesn't make the word shorter, then keep it as original.
+     * Example:
+     * Input: ["like", "god", "internal", "me", "internet", "interval", "intension", "face", "intrusion"]
+     * Output: ["l2e","god","internal","me","i6t","interval","inte4n","f2e","intr4n"]
+     * Note:
+     * Both n and the length of each word will not exceed 400.
+     * The length of each word is greater than 1.
+     * The words consist of lowercase English letters only.
+     * The return answers should be in the same order as the original array.
+     */
+    public List<String> wordsAbbreviation(List<String> dict) {
+        int len = dict.size();
+        String[] ans = new String[len];
+        int[] prefix = new int[len];
+        for (int i=0; i<len; i++) {
+            prefix[i] = 1;
+            ans[i] = makeAbbr(dict.get(i), 1); // make abbreviation for each string
+        }
+        for (int i=0; i<len; i++) {
+            //keep looping till the duplicated set is empty.
+            while (true) {
+                Set<Integer> dupAbbrIndexSet = new HashSet<>();
+                for (int j=i+1;j<len;j++) {
+                    if (ans[j].equals(ans[i])) {
+                        dupAbbrIndexSet.add(j); // check all strings with the same abbreviation
+                    }
+                }
+                if (dupAbbrIndexSet.isEmpty()) {
+                    break;
+                }
+                dupAbbrIndexSet.add(i);
+                for (int k: dupAbbrIndexSet) {
+                    ans[k] = makeAbbr(dict.get(k), ++prefix[k]); // increase the prefix
+                }
+            }
+        }
+        return Arrays.asList(ans);
+    }
+    private String makeAbbr(String s, int k) {
+        if (k >= s.length() - 2) {
+            //not shorter, directly return the string.
+            return s;
+        }
+        StringBuilder builder=new StringBuilder();
+        builder.append(s.substring(0, k));
+        builder.append(s.length()-1-k);
+        builder.append(s.charAt(s.length()-1));
+        return builder.toString();
+    }
+
+    /**
+     * https://leetcode.com/problems/strong-password-checker/
+     *
+     * A password is considered strong if below conditions are all met:
+     *
+     * It has at least 6 characters and at most 20 characters.
+     * It must contain at least one lowercase letter, at least one uppercase letter, and at least one digit.
+     * It must NOT contain three repeating characters in a row ("...aaa..." is weak, but "...aa...a..." is strong,
+     * assuming other conditions are met).
+     * Write a function strongPasswordChecker(s), that takes a string s as input,
+     * and return the MINIMUM change required to make s a strong password. If s is already strong, return 0.
+     *
+     * Insertion, deletion or replace of any one character are all considered as one change.
+     */
+    public int strongPasswordChecker(String s) {
+        int res = 0, a = 1, A = 1, d = 1;
+        char[] carr = s.toCharArray();
+        int[] arr = new int[carr.length];
+
+        for (int i = 0; i < arr.length;) {
+            if (Character.isLowerCase(carr[i])) a = 0;
+            if (Character.isUpperCase(carr[i])) A = 0;
+            if (Character.isDigit(carr[i])) d = 0;
+
+            int j = i;
+            while (i < carr.length && carr[i] == carr[j]) i++;
+            arr[j] = i - j;
+        }
+
+        int total_missing = (a + A + d);
+
+        if (arr.length < 6) {
+            res += total_missing + Math.max(0, 6 - (arr.length + total_missing));
+
+        } else {
+            int over_len = Math.max(arr.length - 20, 0), left_over = 0;
+            res += over_len;
+
+            for (int k = 1; k < 3; k++) {
+                for (int i = 0; i < arr.length && over_len > 0; i++) {
+                    if (arr[i] < 3 || arr[i] % 3 != (k - 1)) continue;
+                    arr[i] -= Math.min(over_len, k);
+                    over_len -= k;
+                }
+            }
+
+            for (int i = 0; i < arr.length; i++) {
+                if (arr[i] >= 3 && over_len > 0) {
+                    int need = arr[i] - 2;
+                    arr[i] -= over_len;
+                    over_len -= need;
+                }
+
+                if (arr[i] >= 3) left_over += arr[i] / 3;
+            }
+
+            res += Math.max(total_missing, left_over);
+        }
+
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/find-the-closest-palindrome/
+     * Given an integer n, find the closest integer (not including itself), which is a palindrome.
+     *
+     * The 'closest' is defined as absolute difference minimized between two integers.
+     *
+     * Example 1:
+     * Input: "123"
+     * Output: "121"
+     * Note:
+     * The input n is a positive integer represented by string, whose length will not exceed 18.
+     * If there is a tie, return the smaller one as answer.
+     */
+    public String nearestPalindromic(String n) {
+        long nl = Long.parseLong(n);
+        int len = n.length();
+        //
+        // Corner cases
+        //
+        // <= 10 or equal to 100, 1000, 10000, ...
+        if (nl <= 10 || (nl % 10 == 0
+                && nl != 0
+                && Long.parseLong(n.substring(1)) == 0)) {
+            return "" + (nl - 1);
+        }
+        // 11 or 101, 1001, 10001, 100001, ...
+        if (nl == 11 || (nl % 10 == 1
+                && n.charAt(0) == '1'
+                && Long.parseLong(n.substring(1, len - 1)) == 0)) {
+            return "" + (nl - 2);
+        }
+        // 99, 999, 9999, 99999, ...
+        if (isAllDigitNine(n)) {
+            return "" + (nl + 2);
+        }
+        //
+        // Construct the closest palindrome and calculate absolute difference with n
+        //
+        boolean isEvenDigits = len % 2 == 0;
+
+        String palindromeRootStr
+                = (isEvenDigits) ? n.substring(0, len / 2) : n.substring(0, len / 2 + 1);
+
+        int palindromeRoot = Integer.valueOf(palindromeRootStr);
+        long equal = toPalindromeDigits("" + palindromeRoot, isEvenDigits);
+        long diffEqual = Math.abs(nl - equal);
+
+        long bigger = toPalindromeDigits("" + (palindromeRoot + 1), isEvenDigits);
+        long diffBigger = Math.abs(nl - bigger);
+
+        long smaller = toPalindromeDigits("" + (palindromeRoot - 1), isEvenDigits);
+        long diffSmaller = Math.abs(nl - smaller);
+
+        //
+        // Find the palindrome with minimum absolute differences
+        // If tie, return the smaller one
+        //
+        long closest = (diffBigger < diffSmaller) ? bigger : smaller;
+        long minDiff = Math.min(diffBigger, diffSmaller);
+
+        if (diffEqual != 0) { // n is not a palindrome, diffEqual should be considered
+            if (diffEqual == minDiff) { // if tie
+                closest = Math.min(equal, closest);
+            } else if (diffEqual < minDiff){
+                closest = equal;
+            }
+        }
+
+        return "" + closest;
+    }
+
+    private long toPalindromeDigits(String num, boolean isEvenDigits) {
+        StringBuilder reversedNum = new StringBuilder(num).reverse();
+        String palindromeDigits = isEvenDigits
+                ? num + reversedNum.toString()
+                : num + (reversedNum.deleteCharAt(0)).toString();
+        return Long.parseLong(palindromeDigits);
+    }
+
+    private boolean isAllDigitNine(String n) {
+        for (char ch : n.toCharArray()) {
+            if (ch != '9') {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

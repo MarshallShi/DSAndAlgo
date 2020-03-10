@@ -1,11 +1,114 @@
 package dsandalgo.binarysearch;
 
+import java.util.TreeSet;
+
 public class HardBinarySearchExe {
 
     public static void main(String[] args) {
-        int[] wts = {1,2,3,4,5,6,7,8,9,10};
+        int[] wts = {3,6,12,19,33,44,67,72,89,95};
         HardBinarySearchExe exe = new HardBinarySearchExe();
-        exe.shipWithinDays(wts, 5);
+        int[][] mat = {{1,0,1},{0,-2,3}};
+        //[3,6,12,19,33,44,67,72,89,95]
+        //2
+        System.out.println(exe.minmaxGasDist(wts, 2));
+    }
+
+    /**
+     * https://leetcode.com/problems/minimize-max-distance-to-gas-station/
+     * On a horizontal number line, we have gas stations at positions stations[0], stations[1], ..., stations[N-1], where N = stations.length.
+     *
+     * Now, we add K more gas stations so that D, the maximum distance between adjacent gas stations, is minimized.
+     *
+     * Return the smallest possible value of D.
+     *
+     * Example:
+     *
+     * Input: stations = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], K = 9
+     * Output: 0.500000
+     * Note:
+     *
+     * stations.length will be an integer in range [10, 2000].
+     * stations[i] will be an integer in range [0, 10^8].
+     * K will be an integer in range [1, 10^6].
+     * Answers within 10^-6 of the true value will be accepted as correct.
+     */
+    public double minmaxGasDist(int[] stations, int K) {
+        int max = Integer.MIN_VALUE;
+        for (int i=1; i<stations.length; i++) {
+            max = Math.max(max, stations[i] - stations[i-1]);
+        }
+        double low = 0;
+        double high = (double)max;
+        while (low + 0.000001 < high) {
+            double mid = low + (high - low)/2;
+            if (canAchieveMin(mid, stations, K)) {
+                high = mid;
+            } else {
+                low = mid + 0.000001;
+            }
+        }
+        return low;
+    }
+    private boolean canAchieveMin(double val, int[] stations, int K) {
+        for (int i=1; i<stations.length; i++) {
+            double diff = (double)(stations[i] - stations[i-1]);
+            while (diff > val) {
+                diff = diff - val;
+                K--;
+            }
+            if (K < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k/
+     * Given a non-empty 2D matrix matrix and an integer k, find the max sum of a rectangle in the matrix such that its sum is no larger than k.
+     *
+     * Example:
+     *
+     * Input: matrix = [[1,0,1],[0,-2,3]], k = 2
+     * Output: 2
+     * Explanation: Because the sum of rectangle [[0, 1], [-2, 3]] is 2,
+     *              and 2 is the max number no larger than k (k = 2).
+     * Note:
+     *
+     * The rectangle inside the matrix must have an area > 0.
+     * What if the number of rows is much larger than the number of columns?
+     */
+    //Add all the possible sums to a TreeSet and use binary search.
+    public int maxSumSubmatrix(int[][] matrix, int target) {
+        int row = matrix.length;
+        if(row==0)return 0;
+        int col = matrix[0].length;
+        int m = Math.min(row,col);
+        int n = Math.max(row,col);
+        //indicating sum up in every row or every column
+        boolean colIsBig = col>row;
+        int res = Integer.MIN_VALUE;
+        for (int i = 0;i<m;i++) {
+            int[] array = new int[n];
+            // sum from row j to row i
+            for (int j = i; j>=0; j--) {
+                int val = 0;
+                TreeSet<Integer> set = new TreeSet<Integer>();
+                set.add(0);
+                //traverse every column/row and sum up
+                for (int k=0; k<n; k++) {
+                    array[k] = array[k] + (colIsBig ? matrix[j][k] : matrix[k][j]);
+                    val = val + array[k];
+                    //use  TreeMap to binary search previous sum to get possible result
+                    Integer subres = set.ceiling(val-target);
+                    if (subres != null) {
+                        res = Math.max(res, val-subres);
+                    }
+                    set.add(val);
+                }
+            }
+        }
+        return res;
     }
 
     /**

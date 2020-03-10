@@ -26,6 +26,23 @@ public class SortingExe {
     }
 
     /**
+     * https://leetcode.com/problems/bulb-switcher-iii/
+     * @param light
+     * @return
+     */
+    public int numTimesAllBlue(int[] light) {
+        int right = 0, res = 0, n = light.length;
+        for (int i = 0; i < n; ++i) {
+            right = Math.max(right, light[i]);
+            //if current seen max is matching the order.
+            if (right == i + 1) {
+                res++;
+            }
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/k-th-smallest-prime-fraction/
      * A sorted list A contains 1, plus some number of primes.  Then, for every p < q in the list, we consider the fraction p/q.
      *

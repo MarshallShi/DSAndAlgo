@@ -15,10 +15,276 @@ public class HardDPExe {
     public static void main(String[] args) {
         HardDPExe exe = new HardDPExe();
         String[] strs = {"with", "example", "science"};
-        //System.out.println(exe.countPalindromicSubsequences("abcdabcdabcdabcdabcdabcdabcdabcddcbadcbadcbadcbadcbadcbadcbadcba"));
+        System.out.println(exe.numMusicPlaylists(100, 101, 9));
     }
 
+    /**
+     * https://leetcode.com/problems/maximum-vacation-days/
+     * LeetCode wants to give one of its best employees the option to travel among N cities to collect algorithm problems.
+     * But all work and no play makes Jack a dull boy, you could take vacations in some particular cities and weeks.
+     * Your job is to schedule the traveling to maximize the number of vacation days you could take, but there are certain rules and restrictions you need to follow.
+     *
+     * Rules and restrictions:
+     * You can only travel among N cities, represented by indexes from 0 to N-1. Initially, you are in the city indexed 0 on Monday.
+     * The cities are connected by flights. The flights are represented as a N*N matrix (not necessary symmetrical),
+     * called flights representing the airline status from the city i to the city j. If there is no flight from the city i to the city j,
+     * flights[i][j] = 0; Otherwise, flights[i][j] = 1. Also, flights[i][i] = 0 for all i.
+     * You totally have K weeks (each week has 7 days) to travel. You can only take flights at most once per day and can only take flights
+     * on each week's Monday morning. Since flight time is so short, we don't consider the impact of flight time.
+     * For each city, you can only have restricted vacation days in different weeks, given an N*K matrix called days representing this
+     * relationship. For the value of days[i][j], it represents the maximum days you could take vacation in the city i in the week j.
+     * You're given the flights matrix and days matrix, and you need to output the maximum vacation days you could take during K weeks.
+     *
+     * Example 1:
+     * Input:flights = [[0,1,1],[1,0,1],[1,1,0]], days = [[1,3,1],[6,0,3],[3,3,3]]
+     * Output: 12
+     * Explanation:
+     * Ans = 6 + 3 + 3 = 12.
+     *
+     * One of the best strategies is:
+     * 1st week : fly from city 0 to city 1 on Monday, and play 6 days and work 1 day.
+     * (Although you start at city 0, we could also fly to and start at other cities since it is Monday.)
+     * 2nd week : fly from city 1 to city 2 on Monday, and play 3 days and work 4 days.
+     * 3rd week : stay at city 2, and play 3 days and work 4 days.
+     * Example 2:
+     * Input:flights = [[0,0,0],[0,0,0],[0,0,0]], days = [[1,1,1],[7,7,7],[7,7,7]]
+     * Output: 3
+     * Explanation:
+     * Ans = 1 + 1 + 1 = 3.
+     *
+     * Since there is no flights enable you to move to another city, you have to stay at city 0 for the whole 3 weeks.
+     * For each week, you only have one day to play and six days to work.
+     * So the maximum number of vacation days is 3.
+     * Example 3:
+     * Input:flights = [[0,1,1],[1,0,1],[1,1,0]], days = [[7,0,0],[0,7,0],[0,0,7]]
+     * Output: 21
+     * Explanation:
+     * Ans = 7 + 7 + 7 = 21
+     *
+     * One of the best strategies is:
+     * 1st week : stay at city 0, and play 7 days.
+     * 2nd week : fly from city 0 to city 1 on Monday, and play 7 days.
+     * 3rd week : fly from city 1 to city 2 on Monday, and play 7 days.
+     * Note:
+     * N and K are positive integers, which are in the range of [1, 100].
+     * In the matrix flights, all the values are integers in the range of [0, 1].
+     * In the matrix days, all the values are integers in the range [0, 7].
+     * You could stay at a city beyond the number of vacation days, but you should work on the extra days, which won't be counted as vacation days.
+     * If you fly from the city A to the city B and take the vacation on that day, the deduction towards vacation days will count towards the
+     * vacation days of city B in that week.
+     * We don't consider the impact of flight hours towards the calculation of vacation days.
+     */
+    //Semi graph traverse
+    public int maxVacationDays(int[][] flights, int[][] days) {
+        int totalCities = days.length, totalWeeks = days[0].length;
+        int[][]memo = new int[totalCities][totalWeeks];
+        return maxVacationDaysDFS(flights, days, 0, 0, totalCities, totalWeeks, memo);
+    }
+    private int maxVacationDaysDFS(int[][] flights, int[][] days, int curWeek, int curPos, int totalCities, int totalWeeks, int[][] memo){
+        if (curWeek == totalWeeks) {
+            return 0;
+        }
+        if (memo[curPos][curWeek] != 0) {
+            return memo[curPos][curWeek];
+        }
+        int res = 0;
+        for (int i = 0; i < totalCities; i++) {
+            if (curPos == i || flights[curPos][i] == 1) {
+                res = Math.max(res, days[i][curWeek] + maxVacationDaysDFS(flights, days, curWeek + 1, i, totalCities, totalWeeks, memo));
+            }
+        }
+        memo[curPos][curWeek] = res;
+        return res;
+    }
 
+    /**
+     * You are installing a billboard and want it to have the largest height.  The billboard will have two steel supports,
+     * one on each side.  Each steel support must be an equal height.
+     *
+     * You have a collection of rods which can be welded together.  For example, if you have rods of lengths 1, 2, and 3,
+     * you can weld them together to make a support of length 6.
+     *
+     * Return the largest possible height of your billboard installation.  If you cannot support the billboard, return 0.
+     *
+     * Example 1:
+     * Input: [1,2,3,6]
+     * Output: 6
+     * Explanation: We have two disjoint subsets {1,2,3} and {6}, which have the same sum = 6.
+     *
+     * Example 2:
+     * Input: [1,2,3,4,5,6]
+     * Output: 10
+     * Explanation: We have two disjoint subsets {2,3,5} and {4,6}, which have the same sum = 10.
+     *
+     * Example 3:
+     * Input: [1,2]
+     * Output: 0
+     * Explanation: The billboard cannot be supported, so we return 0.
+     *
+     * Note:
+     * 0 <= rods.length <= 20
+     * 1 <= rods[i] <= 1000
+     * The sum of rods is at most 5000.
+     * @param rods
+     * @return
+     */
+    public int tallestBillboard(int[] rods) {
+        int midSum = 0;
+        for (int i=0; i<rods.length; i++) {
+            midSum += rods[i];
+        }
+        return tallestBillboardDFS(rods, 0, 0, 0, midSum/2, new HashMap());
+    }
+
+    private int tallestBillboardDFS(int[] rods, int i, int s1, int s2, int mSum, Map<String, Integer> dp) {
+        if (s1 > mSum || s2 > mSum) {
+            return -1;
+        }
+        if (i == rods.length) {
+            return s1 == s2 ? s1 : -1;
+        }
+
+        String dpKey = i + " " + Math.abs(s1 - s2);
+
+        if (dp.containsKey(dpKey)) {
+            return dp.get(dpKey) == -1 ? -1 : Math.max(s1, s2) + dp.get(dpKey);
+        }
+
+        int lBeam = tallestBillboardDFS(rods, i + 1, s1 + rods[i], s2, mSum, dp);
+        int rBeam = tallestBillboardDFS(rods, i + 1, s1, s2 + rods[i], mSum, dp);
+        int discard = tallestBillboardDFS(rods, i + 1, s1, s2, mSum, dp);
+        int ans = Math.max(discard, Math.max(lBeam, rBeam));
+
+        dp.put(dpKey, ans == -1 ? -1 : ans - Math.max(s1, s2));
+
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-music-playlists/
+     * Your music player contains N different songs and she wants to listen to L (not necessarily different) songs during your trip.
+     * You create a playlist so that:
+     *
+     * Every song is played at least once
+     * A song can only be played again only if K other songs have been played
+     * Return the number of possible playlists.  As the answer can be very large, return it modulo 10^9 + 7.
+     *
+     * Example 1:
+     * Input: N = 3, L = 3, K = 1
+     * Output: 6
+     * Explanation: There are 6 possible playlists. [1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1].
+     *
+     * Example 2:
+     * Input: N = 2, L = 3, K = 0
+     * Output: 6
+     * Explanation: There are 6 possible playlists. [1, 1, 2], [1, 2, 1], [2, 1, 1], [2, 2, 1], [2, 1, 2], [1, 2, 2]
+     *
+     * Example 3:
+     * Input: N = 2, L = 3, K = 1
+     * Output: 2
+     * Explanation: There are 2 possible playlists. [1, 2, 1], [2, 1, 2]
+     *
+     * Note:
+     * 0 <= K < N <= L <= 100
+     */
+    //F(N,L,K) = F(N - 1, L - 1, K) * N + F(N, L - 1, K) * (N - K)
+    //    F(N - 1, L - 1, K)
+    //    If only N - 1 in the L - 1 first songs.
+    //    We need to put the rest one at the end of music list.
+    //    Any song can be this last song, so there are N possible combinations.
+    //
+    //    F(N, L - 1, K)
+    //    If already N in the L - 1 first songs.
+    //    We can put any song at the end of music list,
+    //    but it should be different from K last song.
+    //    We have N - K choices.
+    private long mod = (long)1e9 + 7;
+    public int numMusicPlaylists(int N, int L, int K) {
+        long[][] dp = new long[N + 1][L + 1];
+        for (int i = K + 1; i <= N; ++i) {
+            for (int j = i; j <= L; ++j) {
+                if ((i == j) || (i == K + 1)) {
+                    dp[i][j] = factorial(i);
+                } else {
+                    dp[i][j] = (dp[i - 1][j - 1] * i + dp[i][j - 1] * (i - K)) % mod;
+                }
+            }
+        }
+        return (int) dp[N][L];
+    }
+    private long factorial(int n) {
+        return n > 0 ? (factorial(n - 1) * n % mod) : 1;
+    }
+
+    /**
+     * https://leetcode.com/problems/student-attendance-record-ii/
+     *
+     * Given a positive integer n, return the number of all possible attendance records with length n, which will be regarded
+     * as rewardable. The answer may be very large, return it after mod 109 + 7.
+     *
+     * A student attendance record is a string that only contains the following three characters:
+     *
+     * 'A' : Absent.
+     * 'L' : Late.
+     * 'P' : Present.
+     * A record is regarded as rewardable if it doesn't contain more than one 'A' (absent) or more than two continuous 'L' (late).
+     *
+     * Example 1:
+     * Input: n = 2
+     * Output: 8
+     * Explanation:
+     * There are 8 records with length 2 will be regarded as rewardable:
+     * "PP" , "AP", "PA", "LP", "PL", "AL", "LA", "LL"
+     * Only "AA" won't be regarded as rewardable owing to more than one absent times.
+     * Note: The value of n won't exceed 100,000.
+     * @param n
+     * @return
+     */
+    //https://leetcode.com/problems/student-attendance-record-ii/discuss/101643/Share-my-O(n)-C%2B%2B-DP-solution-with-thinking-process-and-explanation
+    //Trick: consider end with P and end with L first, then insert A into both sequence.
+    public int checkRecord(int n) {
+        int mod = 1000000007;
+        long[] dpP = new long[n+1]; //end with P w/o A
+        long[] dpL = new long[n+1]; //end with L w/o A
+        dpP[0] = dpP[1] = dpL[1] = 1;
+        for(int i = 2; i <= n; i++){
+            dpP[i] = (dpP[i-1] + dpL[i-1]) % mod;
+            dpL[i] = (dpP[i-1] + dpP[i-2]) % mod;
+        }
+        long res = (dpP[n] + dpL[n]) % mod;
+        //insert A
+        for(int i = 0; i < n; i++){
+            long s = ((dpP[i] + dpL[i])%mod * (dpP[n-i-1] + dpL[n-i-1])%mod )% mod;
+            res = (res + s) % mod;
+        }
+        return (int) res;
+    }
+
+//    private int res = 0;
+//    private char[] chars = {'A', 'L', 'P'};
+//    public int checkRecord(int n) {
+//        StringBuilder sb = new StringBuilder();
+//        checkRecordHelper(n, sb, 0);
+//        return res;
+//    }
+//
+//    private void checkRecordHelper(int n, StringBuilder sb, int pos) {
+//        if (pos == n) {
+//            res = (res + 1) % 1000000007;
+//            return;
+//        }
+//        for (int i=0; i<3; i++) {
+//            if (i==0 && sb.indexOf("A") != -1) {
+//                continue;
+//            }
+//            if (i==1 && (sb.length() >= 2 && sb.charAt(sb.length() -1) == 'L' && sb.charAt(sb.length() - 2) == 'L')) {
+//                continue;
+//            }
+//            sb.append(chars[i]);
+//            checkRecordHelper(n, sb, pos+1);
+//            sb.setLength(sb.length() - 1);
+//        }
+//    }
 
     /**
      * https://leetcode.com/problems/stickers-to-spell-word/
@@ -120,49 +386,6 @@ public class HardDPExe {
             dp[4][i] = (dp[2][i-1] + dp[3][i-1])%MOD;
         }
         return (int)((dp[0][n-1] + dp[1][n-1] + dp[2][n-1] + dp[3][n-1] + dp[4][n-1])%MOD);
-    }
-
-    /**
-     * https://leetcode.com/problems/smallest-rectangle-enclosing-black-pixels/
-     * An image is represented by a binary matrix with 0 as a white pixel and 1 as a black pixel.
-     * The black pixels are connected, i.e., there is only one black region.
-     * Pixels are connected horizontally and vertically. Given the location (x, y) of one of the black pixels,
-     * return the area of the smallest (axis-aligned) rectangle that encloses all black pixels.
-     *
-     * Example:
-     *
-     * Input:
-     * [
-     *   "0010",
-     *   "0110",
-     *   "0100"
-     * ]
-     * and x = 0, y = 2
-     *
-     * Output: 6
-     */
-    private int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, maxX = 0, maxY = 0;
-    public int minArea(char[][] image, int x, int y) {
-        if (image == null || image.length == 0 || image[0].length == 0) {
-            return 0;
-        }
-        minAreaDFS(image, x, y);
-        return(maxX - minX + 1) * (maxY - minY + 1);
-    }
-    private void minAreaDFS(char[][] image, int x, int y){
-        int m = image.length, n = image[0].length;
-        if (x < 0 || y < 0 || x >= m || y >= n || image[x][y] == '0') {
-            return;
-        }
-        image[x][y] = '0';
-        minX = Math.min(minX, x);
-        maxX = Math.max(maxX, x);
-        minY = Math.min(minY, y);
-        maxY = Math.max(maxY, y);
-        minAreaDFS(image, x + 1, y);
-        minAreaDFS(image, x - 1, y);
-        minAreaDFS(image, x, y - 1);
-        minAreaDFS(image, x, y + 1);
     }
 
     /**

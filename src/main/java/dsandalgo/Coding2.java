@@ -1212,24 +1212,6 @@ public class Coding2 {
         TreeNode(int x) { val = x; }
     }
 
-    public int minSubArrayLen(int s, int[] nums) {
-        if(nums == null) return 0;
-        int ans = Integer.MAX_VALUE;
-        int sum = 0;
-        int localAns = 0;
-        for(int i = 0, j = 0;i< nums.length;i++){
-            sum += nums[i];
-            localAns++;
-            while(sum >= s){
-                ans = Math.min(ans,localAns);
-                localAns--;
-                sum -= nums[j];
-                j++;
-            }
-        }
-        return (ans == Integer.MAX_VALUE)?0: ans;
-    }
-
     public boolean containsNearbyDuplicate(int[] nums, int k) {
         Map<Integer, Integer> map = new HashMap<>();
         for (int i=0; i<nums.length; i++) {

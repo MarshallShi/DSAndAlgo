@@ -13,6 +13,78 @@ public class HardBacktrackExe {
     }
 
     /**
+     * https://leetcode.com/problems/zuma-game/
+     * Think about Zuma Game. You have a row of balls on the table, colored red(R), yellow(Y), blue(B), green(G),
+     * and white(W). You also have several balls in your hand.
+     *
+     * Each time, you may choose a ball in your hand, and insert it into the row (including the leftmost place and
+     * rightmost place). Then, if there is a group of 3 or more balls in the same color touching, remove these balls.
+     * Keep doing this until no more balls can be removed.
+     *
+     * Find the minimal balls you have to insert to remove all the balls on the table.
+     * If you cannot remove all the balls, output -1.
+     *
+     *
+     * Example 1:
+     * Input: board = "WRRBBW", hand = "RB"
+     * Output: -1
+     * Explanation: WRRBBW -> WRR[R]BBW -> WBBW -> WBB[B]W -> WW
+     * Example 2:
+     * Input: board = "WWRRBBWW", hand = "WRBRW"
+     * Output: 2
+     * Explanation: WWRRBBWW -> WWRR[R]BBWW -> WWBBWW -> WWBB[B]WW -> WWWW -> empty
+     * Example 3:
+     * Input: board = "G", hand = "GGGGG"
+     * Output: 2
+     * Explanation: G -> G[G] -> GG[G] -> empty
+     * Example 4:
+     * Input: board = "RBYYBBRRB", hand = "YRBGB"
+     * Output: 3
+     * Explanation: RBYYBBRRB -> RBYY[Y]BBRRB -> RBBBRRB -> RRRB -> B -> B[B] -> BB[B] -> empty
+     *
+     * Constraints:
+     * You may assume that the initial row of balls on the table won’t have any 3 or more consecutive balls with the same color.
+     * The number of balls on the table won't exceed 16, and the string represents these balls is called "board" in the input.
+     * The number of balls in your hand won't exceed 5, and the string represents these balls is called "hand" in the input.
+     * Both input strings will be non-empty and only contain characters 'R','Y','B','G','W'.
+     */
+    public int findMinStep(String board, String hand) {
+        int[] handCount = new int[128];
+        for (int i = 0; i < hand.length(); i++) {
+            handCount[hand.charAt(i)]++;
+        }
+        return findMinStepDFS(board, handCount);
+    }
+    private int findMinStepDFS(String s, int[] h) {
+        if ("".equals(s)) {
+            return 0;
+        }
+        int  res = 2 * s.length() + 1;
+        for (int i = 0; i < s.length();) {
+            int j = i++;
+            while(i < s.length() && s.charAt(i) == s.charAt(j)) i++;
+            int inc = 3 - i + j;
+            if (h[s.charAt(j)] >= inc) {
+                //TRICK: if inc less than 0, meaning from last round's remaining, don't need ball from hand.
+                int used = inc <= 0 ? 0 : inc;
+                //use these balls.
+                h[s.charAt(j)] -= used;
+                //removed all the consecutive balls to next round, it could be from last round.
+                int temp = findMinStepDFS(s.substring(0, j) + s.substring(i), h);
+                if(temp >= 0) {
+                    res = Math.min(res, used + temp);
+                }
+                //backtrack.
+                h[s.charAt(j)] += used;
+            }
+        }
+        if (res == 2 * s.length() + 1) {
+            return -1;
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/count-vowels-permutation/
      *
      * Given an integer n, your task is to count how many strings of length n can be formed under the following rules:
