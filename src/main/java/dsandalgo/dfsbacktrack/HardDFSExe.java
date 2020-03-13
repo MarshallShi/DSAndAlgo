@@ -23,11 +23,189 @@ public class HardDFSExe {
 
     public static void main(String[] args) {
         HardDFSExe exe = new HardDFSExe();
-        int[][] graph = {{1},{0,2,4},{1,3,4},{2},{1,2}};
-        //System.out.println(exe.findMinStep("WWRRBBWW", "WRBRW"));
+        int[][] graph = {{1,0,0,0,0,0},{0,1,0,0,0,0},{0,0,1,0,0,0},{0,0,0,1,1,0},{0,0,0,1,1,0},{0,0,0,0,0,1}};
+        int[] ini = {5,0};
+        //[[1,0,0,0,0,0],[0,1,0,0,0,0],[0,0,1,0,0,0],[0,0,0,1,1,0],[0,0,0,1,1,0],[0,0,0,0,0,1]]
+        //[5,0]
+        System.out.println(exe.minMalwareSpread(graph, ini));
     }
 
+    /**
+     * https://leetcode.com/problems/minimize-malware-spread-ii/
+     * @param graph
+     * @param initial
+     * @return
+     */
+    public int minMalwareSpread_II(int[][] graph, int[] initial) {
+        //Sort to meet the order requirement..
+        Arrays.sort(initial);
+        Set<Integer> mal = new HashSet<>();
+        for (int n : initial) {
+            mal.add(n);
+        }
+        int max = -1, ret = -1;
+        for (int n : initial) {
+            int save = 0;
+            Set<Integer> visited = new HashSet<>();
+            //exclude current node.
+            visited.add(n);
+            for (int i = 0; i<graph.length; i++) {
+                if(i != n && graph[n][i] == 1) {
+                    int temp = minMalwareSpreadDFSII(i, visited, mal, graph);
+                    // encountered malware during exploration, meaning this whole branch doesn't count/contribute
+                    if (temp < 0) continue;
+                    save += temp;
+                }
+            }
+            if(save > max){
+                ret = n;
+                max = save;
+            }
+        }
+        return ret;
+    }
 
+    private int minMalwareSpreadDFSII(int n, Set<Integer> visited, Set<Integer> mal, int[][] graph){
+        if (visited.contains(n)) return 0;
+        if (mal.contains(n)) return -1;
+        visited.add(n);
+        int ret = 1; // current node saved (at least for now)
+        for (int i = 0; i < graph.length; i++) {
+            if (i != n && graph[n][i] == 1) {
+                int temp = minMalwareSpreadDFSII(i, visited, mal, graph);
+                if (temp == -1) {
+                    mal.add(n); // has neighbor malware, marked as malware as well
+                    return -1; // return -1, indicating there's malware downstream in this branch, whole branch unqualified!
+                }
+                ret += temp;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimize-malware-spread/
+     * In a network of nodes, each node i is directly connected to another node j if and only if graph[i][j] = 1.
+     *
+     * Some nodes initial are initially infected by malware.  Whenever two nodes are directly connected and at least
+     * one of those two nodes is infected by malware, both nodes will be infected by malware.  This spread of malware
+     * will continue until no more nodes can be infected in this manner.
+     *
+     * Suppose M(initial) is the final number of nodes infected with malware in the entire network, after the spread of malware stops.
+     *
+     * We will remove one node from the initial list.  Return the node that if removed, would minimize M(initial).
+     * If multiple nodes could be removed to minimize M(initial), return such a node with the smallest index.
+     *
+     * Note that if a node was removed from the initial list of infected nodes, it may still be infected
+     * later as a result of the malware spread.
+     *
+     * Example 1:
+     *
+     * Input: graph = [[1,1,0],[1,1,0],[0,0,1]], initial = [0,1]
+     * Output: 0
+     * Example 2:
+     *
+     * Input: graph = [[1,0,0],[0,1,0],[0,0,1]], initial = [0,2]
+     * Output: 0
+     * Example 3:
+     *
+     * Input: graph = [[1,1,1],[1,1,1],[1,1,1]], initial = [1,2]
+     * Output: 1
+     */
+    public int minMalwareSpread(int[][] graph, int[] initial) {
+        int minSpread = Integer.MAX_VALUE;
+        int removedIdx = Integer.MAX_VALUE;
+        for (int i=0; i<initial.length; i++) {
+            boolean[] infected = new boolean[graph.length];
+            for (int j=0; j<initial.length; j++) {
+                if (j != i) {
+                    minMalwareSpreadDFS(graph, infected, initial[j]);
+                }
+            }
+            int res = 0;
+            for (int k=0; k<infected.length; k++) {
+                if (infected[k]) res++;
+            }
+            if (res < minSpread) {
+                minSpread = res;
+                removedIdx = initial[i];
+            } else {
+                if (res == minSpread) {
+                    if (initial[i] < removedIdx) {
+                        removedIdx = initial[i];
+                    }
+                }
+            }
+        }
+        return removedIdx;
+    }
+
+    private void minMalwareSpreadDFS(int[][] graph, boolean[] infected, int start) {
+        infected[start] = true;
+        for (int i=0; i<graph.length; i++) {
+            if (graph[i][start] == 1 && infected[i] == false) {
+                minMalwareSpreadDFS(graph, infected, i);
+            }
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/making-a-large-island/
+     * In a 2D grid of 0s and 1s, we change at most one 0 to a 1.
+     *
+     * After, what is the size of the largest island? (An island is a 4-directionally connected group of 1s).
+     *
+     * Example 1:
+     *
+     * Input: [[1, 0], [0, 1]]
+     * Output: 3
+     * Explanation: Change one 0 to 1 and connect two 1s, then we get an island with area = 3.
+     * Example 2:
+     *
+     * Input: [[1, 1], [1, 0]]
+     * Output: 4
+     * Explanation: Change the 0 to 1 and make the island bigger, only one island with area = 4.
+     * Example 3:
+     *
+     * Input: [[1, 1], [1, 1]]
+     * Output: 4
+     * Explanation: Can't change any 0 to 1, only one island with area = 4.
+     *
+     *
+     * Notes:
+     *
+     * 1 <= grid.length = grid[0].length <= 50.
+     * 0 <= grid[i][j] <= 1.
+     */
+    public int largestIsland(int[][] grid) {
+        int max = 0, m = grid.length, n = grid[0].length;
+        boolean hasZero = false;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == 0) {
+                    grid[i][j] = 1;
+                    max = Math.max(max,largestIslandDFS(i, j, grid, new boolean[m][n]));
+                    if (max == m*n) {
+                        return max;
+                    }
+                    grid[i][j] = 0;
+                    hasZero = true;
+                }
+            }
+        }
+        return hasZero ? max : m*n;
+    }
+    private int largestIslandDFS(int i, int j, int[][] grid,boolean[][] visited){
+        if(i < 0 || j < 0 || i >= grid.length || j >= grid[0].length || grid[i][j] == 0 || visited[i][j]) {
+            return 0;
+        }
+        visited[i][j] = true;
+        int result = 1 + largestIslandDFS(i-1,j,grid,visited) +
+                largestIslandDFS(i+1,j,grid,visited) +
+                largestIslandDFS(i,j+1,grid,visited) +
+                largestIslandDFS(i,j-1,grid,visited);
+        return result;
+    }
 
     /**
      * https://leetcode.com/problems/smallest-rectangle-enclosing-black-pixels/

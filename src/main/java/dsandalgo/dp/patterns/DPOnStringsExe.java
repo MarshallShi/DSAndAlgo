@@ -173,10 +173,6 @@ public class DPOnStringsExe {
      * @return
      */
     public String longestPalindrome_1(String s) {
-        //a substring start at i, end at j;
-        //dp[i][j] = true then i to j is palindrome.
-        //dp[i][j] = false then i to j is not palindrome.
-
         int n = s.length();
         if (n<=1) {
             return s;
@@ -205,7 +201,6 @@ public class DPOnStringsExe {
     }
 
     /**
-     * HARD
      * https://leetcode.com/problems/palindrome-partitioning-ii/
      *
      * Given a string s, partition s such that every substring of the partition is a palindrome.

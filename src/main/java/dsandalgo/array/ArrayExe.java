@@ -44,6 +44,86 @@ public class ArrayExe {
     }
 
     /**
+     * https://leetcode.com/problems/smallest-rotation-with-highest-score/
+     *  Given an array A, we may rotate it by a non-negative integer K so that the array becomes A[K], A[K+1],
+     *  A{K+2], ... A[A.length - 1], A[0], A[1], ..., A[K-1].  Afterward, any entries that are less than or
+     *  equal to their index are worth 1 point.
+     *
+     * For example, if we have [2, 4, 1, 3, 0], and we rotate by K = 2, it becomes [1, 3, 0, 2, 4].
+     * This is worth 3 points because 1 > 0 [no points], 3 > 1 [no points], 0 <= 2 [one point], 2 <= 3 [one point], 4 <= 4 [one point].
+     *
+     * Over all possible rotations, return the rotation index K that corresponds to the highest
+     * score we could receive.  If there are multiple answers, return the smallest such index K.
+     *
+     * Example 1:
+     * Input: [2, 3, 1, 4, 0]
+     * Output: 3
+     * Explanation:
+     * Scores for each K are listed below:
+     * K = 0,  A = [2,3,1,4,0],    score 2
+     * K = 1,  A = [3,1,4,0,2],    score 3
+     * K = 2,  A = [1,4,0,2,3],    score 3
+     * K = 3,  A = [4,0,2,3,1],    score 4
+     * K = 4,  A = [0,2,3,1,4],    score 3
+     * So we should choose K = 3, which has the highest score.
+     *
+     *
+     *
+     * Example 2:
+     * Input: [1, 3, 0, 2, 4]
+     * Output: 0
+     * Explanation:  A will always have 3 points no matter how it shifts.
+     * So we will choose the smallest K, which is 0.
+     * Note:
+     *
+     * A will have length at most 20000.
+     * A[i] will be in the range [0, A.length].
+     */
+    /*
+   The question is to find the number of rotations K to maximize the score.
+   We know that only when A[i] <= i can we gain score. The algorithm has 2 steps:
+   1) For each A[i], we get all possible rotations K for wich A[i] <= i as an interval [k1, k2].
+      If K falls in the interval, that means after K rotations, A[i] will gain 1 point.
+   2) Find K that appears in the most intervals.
+      That means it will gain score for the most elements in A[i].
+
+   Details of each step:
+   Step 1: how can we get the interval [k1, k2] ?
+   In general, for each A[i], [(i+1) % N, (i-A[i]+N) % N] will be an interval of K
+   where we will gain points after rotating K times.
+
+   Step 2: for all the intervals [k1, k2], [k3, k4], ...
+   find the K that appears in the most intervals. We simply loop through all possible K
+   and add one if it enters and interval, and subtract one if it exit from an interval.
+   */
+    public int bestRotation(int[] A) {
+        int N = A.length;
+        int[] rotations = new int[N];
+
+        // loop through A[i]
+        for (int i = 0; i < N; i++) {
+            int leftK = (i+1) % N;
+            int rightK = (i-A[i]+1+N) % N;
+            rotations[leftK]++; // gaining interval starts
+            rotations[rightK]--; // losing interval starts;
+            if (leftK > rightK) rotations[0]++;
+        }
+
+        // loop through number of rotations K
+        // and find the K that overlaps the most intervals
+        int best = -N;
+        int ans = 0, overlaps = 0;
+        for (int k = 0; k < N; k++) {
+            overlaps += rotations[k];
+            if (overlaps > best) {
+                best = overlaps;
+                ans = k;
+            }
+        }
+        return ans;
+    }
+
+    /**
      * https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/
      * @param nums
      * @return

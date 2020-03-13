@@ -15,8 +15,161 @@ public class HardBFSExe {
 
     public static void main(String[] args) {
         HardBFSExe exe = new HardBFSExe();
-        String[] grid = {"@.a.#","###.#","b.A.B"};
-        System.out.println(exe.shortestPathAllKeys(grid));
+        int[][] grid = {{0,1,1},{1,1,1},{1,0,0}};
+        System.out.println(exe.shortestPath(grid, 1));
+    }
+
+    /**
+     * https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/
+     * Given a m * n grid, where each cell is either 0 (empty) or 1 (obstacle). In one step, you can move up, down,
+     * left or right from and to an empty cell.
+     *
+     * Return the minimum number of steps to walk from the upper left corner (0, 0) to the lower right corner (m-1, n-1)
+     * given that you can eliminate at most k obstacles. If it is not possible to find such walk return -1.
+     *
+     *
+     * Example 1:
+     * Input:
+     * grid =
+     * [[0,0,0],
+     *  [1,1,0],
+     *  [0,0,0],
+     *  [0,1,1],
+     *  [0,0,0]],
+     * k = 1
+     * Output: 6
+     * Explanation:
+     * The shortest path without eliminating any obstacle is 10.
+     * The shortest path with one obstacle elimination at position (3,2) is 6. Such path is
+     * (0,0) -> (0,1) -> (0,2) -> (1,2) -> (2,2) -> (3,2) -> (4,2).
+     *
+     * Example 2:
+     * Input:
+     * grid =
+     * [[0,1,1],
+     *  [1,1,1],
+     *  [1,0,0]],
+     * k = 1
+     * Output: -1
+     * Explanation:
+     * We need to eliminate at least two obstacles to find such a walk.
+     *
+     * Constraints:
+     * grid.length == m
+     * grid[0].length == n
+     * 1 <= m, n <= 40
+     * 1 <= k <= m*n
+     * grid[i][j] == 0 or 1
+     * grid[0][0] == grid[m-1][n-1] == 0
+     */
+    public int shortestPath(int[][] grid, int k) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int[][] dirs = new int[][]{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        //Trick is the state, add the current remaining k in the state.
+        int[] startPos = {0,0,k};
+        boolean[][][] seen = new boolean[m][n][k+1];
+        seen[0][0][k] = true;
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(startPos);
+        int res = 0;
+        while (!q.isEmpty()) {
+            int s = q.size();
+            for (int i=0; i<s; i++) {
+                int[] cur = q.poll();
+                if (cur[0] == m-1 && cur[1] == n-1) {
+                    return res;
+                }
+                for (int[] dir : dirs) {
+                    int n_x = cur[0] + dir[0];
+                    int n_y = cur[1] + dir[1];
+                    if (n_x >=0 && n_x < m && n_y>=0 && n_y < n) {
+                        if (grid[n_x][n_y] == 0 && !seen[n_x][n_y][cur[2]]) {
+                            q.offer(new int[]{n_x, n_y, cur[2]});
+                            seen[n_x][n_y][cur[2]] = true;
+                        } else {
+                            if (grid[n_x][n_y] == 1 && cur[2] > 0 && !seen[n_x][n_y][cur[2] - 1]) {
+                                q.offer(new int[]{n_x, n_y, cur[2] - 1});
+                                seen[n_x][n_y][cur[2] - 1] = true;
+                            }
+                        }
+                    }
+                }
+            }
+            res++;
+        }
+        return -1;
+    }
+
+    /**
+     * https://leetcode.com/problems/k-similar-strings/
+     * Strings A and B are K-similar (for some non-negative integer K) if we can swap the positions of two
+     * letters in A exactly K times so that the resulting string equals B.
+     *
+     * Given two anagrams A and B, return the smallest K for which A and B are K-similar.
+     *
+     * Example 1:
+     *
+     * Input: A = "ab", B = "ba"
+     * Output: 1
+     * Example 2:
+     *
+     * Input: A = "abc", B = "bca"
+     * Output: 2
+     * Example 3:
+     *
+     * Input: A = "abac", B = "baca"
+     * Output: 2
+     * Example 4:
+     *
+     * Input: A = "aabc", B = "abca"
+     * Output: 2
+     * Note:
+     *
+     * 1 <= A.length == B.length <= 20
+     * A and B contain only lowercase letters from the set {'a', 'b', 'c', 'd', 'e', 'f'}
+     */
+    public int kSimilarity(String A, String B) {
+        if (A.equals(B)) return 0;
+        Queue<String> q = new LinkedList<>();
+        Set<String> set = new HashSet<>();
+        q.offer(A);
+        set.add(A);
+        int ret = 1;
+        while (!q.isEmpty()) {
+            int s = q.size();
+            for (int i=0; i<s; i++) {
+                String cur = q.poll();
+                int j = 0;
+                //pruning.
+                while (cur.charAt(j) == B.charAt(j)) {
+                    j++;
+                }
+
+                for (int k=j+1; k<cur.length(); k++){
+                    //no need to swap.
+                    if (cur.charAt(k) == B.charAt(k) || cur.charAt(k) != B.charAt(j)) {
+                        continue;
+                    }
+                    //swap
+                    char[] nextCharArry = cur.toCharArray();
+                    char temp = nextCharArry[j];
+                    nextCharArry[j] = nextCharArry[k];
+                    nextCharArry[k] = temp;
+                    String nextStr = new String(nextCharArry);
+
+                    if (nextStr.equals(B)) {
+                        return ret;
+                    }
+                    if (!set.contains(nextStr)) {
+                        set.add(nextStr);
+                        q.add(nextStr);
+                    }
+                }
+            }
+            ret++;
+        }
+        return ret;
     }
 
     /**

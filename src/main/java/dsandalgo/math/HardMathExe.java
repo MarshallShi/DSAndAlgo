@@ -7,7 +7,81 @@ public class HardMathExe {
 
     public static void main(String[] args) {
         HardMathExe exe = new HardMathExe();
-        System.out.println(exe.newInteger(92));
+        System.out.println("4132870520750868772");
+        System.out.println(Long.MAX_VALUE);
+    }
+
+
+    /**
+     * https://leetcode.com/problems/number-of-digit-one/
+     * Given an integer n, count the total number of digit 1 appearing in all non-negative integers less than or equal to n.
+     *
+     * Example:
+     *
+     * Input: 13
+     * Output: 6
+     * Explanation: Digit 1 occurred in the following numbers: 1, 10, 11, 12, 13.
+     */
+    public int countDigitOne(int n) {
+        if (n <= 0) return 0;
+        int q = n, x = 1, ans = 0;
+        do {
+            int digit = q % 10;
+            q /= 10;
+            ans += q * x;
+            if (digit == 1) ans += n % x + 1;
+            if (digit >  1) ans += x;
+            x *= 10;
+        } while (q > 0);
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/digit-count-in-range/
+     * Given an integer d between 0 and 9, and two positive integers low and high as lower and upper bounds,
+     * respectively. Return the number of times that d occurs as a digit in all integers between low and high,
+     * including the bounds low and high.
+     *
+     * Example 1:
+     * Input: d = 1, low = 1, high = 13
+     * Output: 6
+     * Explanation:
+     * The digit d=1 occurs 6 times in 1,10,11,12,13. Note that the digit d=1 occurs twice in the number 11.
+     *
+     * Example 2:
+     * Input: d = 3, low = 100, high = 250
+     * Output: 35
+     * Explanation:
+     * The digit d=3 occurs 35 times in 103,113,123,130,131,...,238,239,243.
+     *
+     * Note:
+     * 0 <= d <= 9
+     * 1 <= low <= high <= 2×10^8
+     */
+    public int digitsCount(int d, int low, int high) {
+        return digitsCountHelper(high, d) - digitsCountHelper(low - 1, d);
+    }
+
+    private int digitsCountHelper(int n, int d) {
+        if(n < 0 || n < d) {
+            return 0;
+        }
+        int count = 0;
+        for (long i = 1; i <= n; i*= 10) {
+            long divider = i * 10;
+            count += (n / divider) * i;
+            if (d > 0) {
+                count += Math.min(Math.max(n % divider - d * i + 1, 0), i); // comment1: tailing number need to be large than d *  i to qualify.
+            } else {
+                if (n / divider > 0) {
+                    if (i > 1) {  // comment2: when d == 0, we need avoid to take numbers like 0xxxx into account.
+                        count -= i;
+                        count += Math.min(n % divider + 1, i);
+                    }
+                }
+            }
+        }
+        return count;
     }
 
     /**https://leetcode.com/problems/super-washing-machines/

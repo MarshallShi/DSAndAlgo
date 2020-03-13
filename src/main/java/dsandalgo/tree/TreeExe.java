@@ -25,6 +25,37 @@ public class TreeExe {
         System.out.println(n);
     }
 
+
+    /**
+     * https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/
+     * @param original
+     * @param cloned
+     * @param target
+     * @return
+     */
+    public final TreeNode getTargetCopy(final TreeNode original, final TreeNode cloned, final TreeNode target) {
+        //if (original == null) return null;
+        //        if (original == target) return cloned;
+        //        TreeNode left = getTargetCopy(original.left, cloned.left, target);
+        //        TreeNode right = getTargetCopy(original.right, cloned.right, target);
+        //        return left == null ? right : left;
+
+        if (original == null) {
+            return null;
+        }
+        if (original == target) {
+            return cloned;
+        } else {
+            TreeNode leftResult = getTargetCopy(original.left, cloned.left, target);
+            TreeNode rightResult = getTargetCopy(original.right, cloned.right, target);
+            if (leftResult == null) {
+                return rightResult;
+            } else {
+                return leftResult;
+            }
+        }
+    }
+
     /**
      * https://leetcode.com/problems/longest-zigzag-path-in-a-binary-tree/
      * Given a binary tree root, a ZigZag path for a binary tree is defined as follow:

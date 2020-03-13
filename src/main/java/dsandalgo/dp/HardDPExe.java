@@ -14,8 +14,337 @@ public class HardDPExe {
 
     public static void main(String[] args) {
         HardDPExe exe = new HardDPExe();
-        String[] strs = {"with", "example", "science"};
-        System.out.println(exe.numMusicPlaylists(100, 101, 9));
+        int[] arr1 = {1,5,3,6,7};
+        int[] arr2 = {1,3,2,4};
+        //System.out.println(exe.digitsCount(1, 1, 13));
+    }
+
+    /**
+     * https://leetcode.com/problems/valid-permutations-for-di-sequence/
+     * We are given S, a length n string of characters from the set {'D', 'I'}.
+     * (These letters stand for "decreasing" and "increasing".)
+     *
+     * A valid permutation is a permutation P[0], P[1], ..., P[n] of integers {0, 1, ..., n}, such that for all i:
+     *
+     * If S[i] == 'D', then P[i] > P[i+1], and;
+     * If S[i] == 'I', then P[i] < P[i+1].
+     * How many valid permutations are there?  Since the answer may be large, return your answer modulo 10^9 + 7.
+     *
+     *
+     * Example 1:
+     * Input: "DID"
+     * Output: 5
+     * Explanation:
+     * The 5 valid permutations of (0, 1, 2, 3) are:
+     * (1, 0, 3, 2)
+     * (2, 0, 3, 1)
+     * (2, 1, 3, 0)
+     * (3, 0, 2, 1)
+     * (3, 1, 2, 0)
+     *
+     * Note:
+     * 1 <= S.length <= 200
+     * S consists only of characters from the set {'D', 'I'}.
+     */
+    //Given a string DI-seq S, let dp[i][j] represents the number of permutation of number 0, 1, ... , i,
+    //satisfying DI-rule S.substr(0, i), and ending with digit j.
+    //if(S[i-1] == 'D')
+    //   dp[i][j] = dp[i-1][j] + dp[i-1][j+1] + ... + dp[i-1][i-1]
+    //if(S[i-1] == 'I')
+    //   dp[i][j] = dp[i-1][0] + dp[i-1][1] + ... + dp[i-1][j-1]
+    public int numPermsDISequence(String S) {
+        int n = S.length(), mod = (int)1e9 + 7;
+        int[][] dp = new int[n + 1][n + 1];
+        for (int j = 0; j <= n; j++) {
+            dp[0][j] = 1;
+        }
+        for (int i = 0; i < n; i++) {
+            if (S.charAt(i) == 'I') {
+                for (int j = 0, cur = 0; j < n - i; j++) {
+                    dp[i + 1][j] = cur = (cur + dp[i][j]) % mod;
+                }
+            } else {
+                for (int j = n - i - 1, cur = 0; j >= 0; j--) {
+                    dp[i + 1][j] = cur = (cur + dp[i][j + 1]) % mod;
+                }
+            }
+        }
+        return dp[n][0];
+    }
+
+    /**
+     * https://leetcode.com/problems/valid-palindrome-iii/
+     * Given a string s and an integer k, find out if the given string is a K-Palindrome or not.
+     *
+     * A string is K-Palindrome if it can be transformed into a palindrome by removing at most k characters from it.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: s = "abcdeca", k = 2
+     * Output: true
+     * Explanation: Remove 'b' and 'e' characters.
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= s.length <= 1000
+     * s has only lowercase English letters.
+     * 1 <= k <= s.length
+     */
+    public boolean isValidPalindrome(String s, int k) {
+        int longestPalin = 0;
+        int n = s.length();
+        if (n <= 1) {
+            longestPalin = n;
+        } else {
+            if (n == 2) {
+                if (s.charAt(0) == s.charAt(1)) {
+                    longestPalin = 2;
+                } else {
+                    longestPalin = 1;
+                }
+            } else {
+                int[][] cache = new int[s.length()][s.length()];
+                for (int i=0; i<cache.length; i++) {
+                    Arrays.fill(cache[i], -1);
+                }
+                longestPalin = isValidPalindromeDFS(s, 0, s.length()-1, cache);
+            }
+        }
+        if (s.length() - longestPalin <= k) {
+            return true;
+        }
+        return false;
+    }
+
+    private int isValidPalindromeDFS(String s, int start, int end, int[][] cache){
+        if (start > end) {
+            return 0;
+        }
+        if (start == end) {
+            return 1;
+        }
+        if (cache[start][end] != -1) {
+            return cache[start][end];
+        }
+        int temp = 0;
+        if (s.charAt(start) == s.charAt(end)) {
+            temp = 2 + isValidPalindromeDFS(s, start+1, end-1, cache);
+        } else {
+            temp = Math.max(isValidPalindromeDFS(s, start+1, end, cache), isValidPalindromeDFS(s, start, end-1, cache));
+        }
+        cache[start][end] = temp;
+        return temp;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-sum-of-3-non-overlapping-subarrays/
+     *
+     * In a given array nums of positive integers, find three non-overlapping subarrays with maximum sum.
+     *
+     * Each subarray will be of size k, and we want to maximize the sum of all 3*k entries.
+     *
+     * Return the result as a list of indices representing the starting position of each interval (0-indexed).
+     * If there are multiple answers, return the lexicographically smallest one.
+     *
+     * Example:
+     *
+     * Input: [1,2,1,2,6,7,5,1], 2
+     * Output: [0, 3, 5]
+     * Explanation: Subarrays [1, 2], [2, 6], [7, 5] correspond to the starting indices [0, 3, 5].
+     * We could have also taken [2, 1], but an answer of [1, 3, 5] would be lexicographically larger.
+     *
+     *
+     * Note:
+     *
+     * nums.length will be between 1 and 20000.
+     * nums[i] will be between 1 and 65535.
+     * k will be between 1 and floor(nums.length / 3).
+     * @param nums
+     * @param k
+     * @return
+     */
+    //Trick: to find for each index, what's the max k sub array before or after it.
+    //When we go through each k sub array, then we can concatenate the result for maximum.
+    public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
+        int n = nums.length, maxsum = 0;
+        int[] presum = new int[n+1], posLeft = new int[n], posRight = new int[n], ans = new int[3];
+        for (int i = 0; i < n; i++) {
+            presum[i+1] = presum[i] + nums[i];
+        }
+        // DP for starting index of the left max sum interval
+        for (int i = k, tot = presum[k] - presum[0]; i < n; i++) {
+            if (presum[i+1]-presum[i+1-k] > tot) {
+                posLeft[i] = i+1-k;
+                tot = presum[i+1]-presum[i+1-k];
+            } else {
+                posLeft[i] = posLeft[i-1];
+            }
+        }
+        // DP for starting index of the right max sum interval
+        // caution: the condition is ">= tot" for right interval, and "> tot" for left interval
+        posRight[n-k] = n-k;
+        for (int i = n-k-1, tot = presum[n]-presum[n-k]; i >= 0; i--) {
+            if (presum[i+k]-presum[i] >= tot) {
+                posRight[i] = i;
+                tot = presum[i+k]-presum[i];
+            }
+            else
+                posRight[i] = posRight[i+1];
+        }
+        // test all possible middle interval
+        for (int i = k; i <= n-2*k; i++) {
+            int l = posLeft[i-1], r = posRight[i+k];
+            int tot = (presum[i+k]-presum[i]) + (presum[l+k]-presum[l]) + (presum[r+k]-presum[r]);
+            if (tot > maxsum) {
+                maxsum = tot;
+                ans[0] = l; ans[1] = i; ans[2] = r;
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/make-array-strictly-increasing/
+     * Given two integer arrays arr1 and arr2, return the minimum number of operations (possibly zero) needed to make arr1 strictly increasing.
+     *
+     * In one operation, you can choose two indices 0 <= i < arr1.length and 0 <= j < arr2.length and do the assignment arr1[i] = arr2[j].
+     *
+     * If there is no way to make arr1 strictly increasing, return -1.
+     *
+     * Example 1:
+     *
+     * Input: arr1 = [1,5,3,6,7], arr2 = [1,3,2,4]
+     * Output: 1
+     * Explanation: Replace 5 with 2, then arr1 = [1, 2, 3, 6, 7].
+     * Example 2:
+     *
+     * Input: arr1 = [1,5,3,6,7], arr2 = [4,3,1]
+     * Output: 2
+     * Explanation: Replace 5 with 3 and then replace 3 with 4. arr1 = [1, 3, 4, 6, 7].
+     * Example 3:
+     *
+     * Input: arr1 = [1,5,3,6,7], arr2 = [1,6,3,3]
+     * Output: -1
+     * Explanation: You can't make arr1 strictly increasing.
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= arr1.length, arr2.length <= 2000
+     * 0 <= arr1[i], arr2[i] <= 10^9
+     */
+    public int makeArrayIncreasing(int[] arr1, int[] arr2) {
+        int[] sorted_deduped_arr2 = Arrays.stream(arr2).distinct().sorted().toArray();
+        int res = makeArrayIncreasingDFS(arr1, sorted_deduped_arr2, 0, Integer.MIN_VALUE, new HashMap<String, Integer>());
+        return res == Integer.MAX_VALUE ? -1 : res;
+    }
+    private int makeArrayIncreasingDFS(int[] arr1, int[] arr2, int idx, int prev, Map<String, Integer> memo) {
+        String key = idx + "," + prev;
+        if (memo.containsKey(key)) {
+            return memo.get(key);
+        }
+        if (idx >= arr1.length) {
+            return 0;
+        }
+        int j = Arrays.binarySearch(arr2, prev);
+        j = j < 0 ? -(j + 1) : j + 1;
+        //Below is do one operation.
+        int resultDropCur = Integer.MAX_VALUE;
+        if (j < arr2.length) {
+            resultDropCur = makeArrayIncreasingDFS(arr1, arr2, idx + 1, arr2[j], memo);
+        }
+        if (resultDropCur != Integer.MAX_VALUE) {
+            resultDropCur++;
+        }
+        //Below is keep cur number, move on to next.
+        int resultKeepCur = Integer.MAX_VALUE;
+        if (prev < arr1[idx]) {
+            //only this case can move on.
+            resultKeepCur =  makeArrayIncreasingDFS(arr1, arr2, idx + 1, arr1[idx], memo);
+        }
+        memo.put(key, Math.min(resultDropCur, resultKeepCur));
+        return memo.get(key);
+    }
+
+    /**
+     * https://leetcode.com/problems/smallest-sufficient-team/
+     * In a project, you have a list of required skills req_skills, and a list of people.
+     * The i-th person people[i] contains a list of skills that person has.
+     *
+     * Consider a sufficient team: a set of people such that for every required skill in req_skills,
+     * there is at least one person in the team who has that skill.  We can represent these teams by the index of each person: for example,
+     * team = [0, 1, 3] represents the people with skills people[0], people[1], and people[3].
+     *
+     * Return any sufficient team of the smallest possible size, represented by the index of each person.
+     *
+     * You may return the answer in any order.  It is guaranteed an answer exists.
+     *
+     *
+     * Example 1:
+     * Input: req_skills = ["java","nodejs","reactjs"], people = [["java"],["nodejs"],["nodejs","reactjs"]]
+     * Output: [0,2]
+     *
+     * Example 2:
+     * Input: req_skills = ["algorithms","math","java","reactjs","csharp","aws"],
+     * people = [["algorithms","math","java"],["algorithms","math","reactjs"],["java","csharp","aws"],["reactjs","csharp"],["csharp","math"],["aws","java"]]
+     * Output: [1,2]
+     *
+     * Constraints:
+     * 1 <= req_skills.length <= 16
+     * 1 <= people.length <= 60
+     * 1 <= people[i].length, req_skills[i].length, people[i][j].length <= 16
+     * Elements of req_skills and people[i] are (respectively) distinct.
+     * req_skills[i][j], people[i][j][k] are lowercase English letters.
+     * Every skill in people[i] is a skill in req_skills.
+     * It is guaranteed a sufficient team exists.
+     */
+    private List<Integer> ans = new ArrayList<Integer>();
+    public int[] smallestSufficientTeam(String[] req_skills, List<List<String>> people) {
+        Map<String, Integer> skillIndex = new HashMap<>();
+        for (int i=0; i<req_skills.length; i++) {
+            skillIndex.put(req_skills[i], i);
+        }
+        int target = (int)Math.pow(2, req_skills.length) - 1;
+        int[] pe = new int[people.size()];
+        for (int i = 0; i < pe.length; i++) {
+            for (String p : people.get(i)) {
+                int skill = skillIndex.get(p);
+                pe[i] += 1 << skill;
+            }
+        }
+        smallestSufficientTeamDFS(pe, 0, new ArrayList<Integer>(), target);
+
+        int[] ret = new int[ans.size()];
+        for (int i=0; i<ans.size(); i++) {
+            ret[i] = ans.get(i);
+        }
+        return ret;
+    }
+
+    private void smallestSufficientTeamDFS(int[] pe, int state, ArrayList<Integer> temp, int target) {
+        if (state == target) {
+            if (ans.size() == 0 || ans.size() > temp.size()) {
+                ans = new ArrayList<Integer>(temp);
+            }
+            return;
+        }
+        if (ans.size() != 0 && temp.size() >= ans.size()) return;
+
+        int zeroBit = 0;
+        while (((state>>zeroBit)&1) == 1) {
+            zeroBit++;
+        }
+        for (int i = 0; i < pe.length; i++) {
+            int per = pe[i];
+            if (((per>>zeroBit)&1) == 1) {
+                temp.add(i);
+                smallestSufficientTeamDFS(pe,state|per, temp, target);
+                temp.remove(temp.size() - 1);
+            }
+        }
     }
 
     /**
