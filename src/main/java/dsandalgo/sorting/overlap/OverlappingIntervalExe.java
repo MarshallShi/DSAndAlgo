@@ -28,9 +28,104 @@ public class OverlappingIntervalExe {
         List<String> lst = new ArrayList<String>();
         //[[1,3,2],[2,4,3],[0,2,-2]]
 
-        int[][] ar = {{-6,9},{1,6},{8,10},{-1,4},{-6,-2},{-9,8},{-5,3},{0,3}};
+        int[][] ar = {{1, 3},{1, 4},{2, 5},{3, 5}};
 
-        System.out.println(exe.findPoisonedDuration(aa, 2));
+        System.out.println(exe.intersectionSizeTwo(ar));
+    }
+
+    /**
+     * https://leetcode.com/problems/course-schedule-iii/
+     *
+     * There are n different online courses numbered from 1 to n. Each course has some duration(course length) t and closed on dth day.
+     * A course should be taken continuously for t days and must be finished before or on the dth day. You will start at the 1st day.
+     *
+     * Given n online courses represented by pairs (t,d), your task is to find the maximal number of courses that can be taken.
+     *
+     * Example:
+     *
+     * Input: [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]
+     * Output: 3
+     * Explanation:
+     * There're totally 4 courses, but you can take 3 courses at most:
+     * First, take the 1st course, it costs 100 days so you will finish it on the 100th day, and ready to take the next course on the 101st day.
+     * Second, take the 3rd course, it costs 1000 days so you will finish it on the 1100th day, and ready to take the next course on the 1101st day.
+     * Third, take the 2nd course, it costs 200 days so you will finish it on the 1300th day.
+     * The 4th course cannot be taken now, since you will finish it on the 3300th day, which exceeds the closed date.
+     *
+     *
+     * Note:
+     *
+     * The integer 1 <= d, t, n <= 10,000.
+     * You can't take two courses simultaneously.
+     *
+     * https://leetcode.com/problems/course-schedule-iii/discuss/104845/Short-Java-code-using-PriorityQueue
+     */
+    public int scheduleCourse(int[][] courses) {
+        //Sort the courses by their deadlines (Greedy! We have to deal with courses with early deadlines first)
+        Arrays.sort(courses,(a,b)->a[1]-b[1]);
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a,b)->b-a);
+        int time = 0;
+        for (int[] c : courses) {
+            time += c[0]; // add current course to a priority queue
+            pq.add(c[0]);
+            if (time > c[1]) {
+                //If time exceeds, drop the previous course which costs the most time. (That must be the best choice!)
+                time -= pq.poll();
+            }
+        }
+        return pq.size();
+    }
+
+    /**
+     * https://leetcode.com/problems/set-intersection-size-at-least-two/
+     * An integer interval [a, b] (for integers a < b) is a set of all consecutive integers from a to b, including a and b.
+     *
+     * Find the minimum size of a set S such that for every integer interval A in intervals, the intersection of S with A has size at least 2.
+     *
+     * Example 1:
+     * Input: intervals = [[1, 3], [1, 4], [2, 5], [3, 5]]
+     * Output: 3
+     * Explanation:
+     * Consider the set S = {2, 3, 4}.  For each interval, there are at least 2 elements from S in the interval.
+     * Also, there isn't a smaller size set that fulfills the above condition.
+     * Thus, we output the size of this set, which is 3.
+     * Example 2:
+     * Input: intervals = [[1, 2], [2, 3], [2, 4], [4, 5]]
+     * Output: 5
+     * Explanation:
+     * An example of a minimum sized set is {1, 2, 3, 4, 5}.
+     * Note:
+     *
+     * intervals will have length in range [1, 3000].
+     * intervals[i] will have length 2, representing some integer interval.
+     * intervals[i][j] will be an integer in [0, 10^8].
+     */
+    public int intersectionSizeTwo(int[][] intervals) {
+        int res = 2;
+        if (intervals == null || intervals.length == 0) {
+            return res;
+        }
+        Arrays.sort(intervals, (a, b)-> a[1] != b[1] ? a[1] - b[1] : b[0] - a[0]);
+        //known two rightmost point in the set/res
+        int left = intervals[0][1] - 1;
+        int right = intervals[0][1];
+        for (int i = 1; i < intervals.length; i++) {
+            int[] curr = intervals[i];
+            // 1. one element of the set is in the interval
+            // 2. no elemnet of the set is in the interval
+            if (left < curr[0] && curr[0] <= right) {
+                res++;
+                left = right;
+                right = curr[1];
+            } else {
+                if (curr[0] > right) {
+                    res += 2;
+                    left = curr[1] - 1;
+                    right = curr[1];
+                }
+            }
+        }
+        return res;
     }
 
     /**

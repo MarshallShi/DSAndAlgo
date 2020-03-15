@@ -38,41 +38,85 @@ public class SubsequenceExe {
      * The length of S will be in the range [1, 1000].
      * Each character S[i] will be in the set {'a', 'b', 'c', 'd'}.
      */
-    //Trick: get all the pair of possible palindromic chars position, start, end.
-    //recursively get the result.
     public int countPalindromicSubsequences(String str) {
-        TreeSet<Integer>[] positions = new TreeSet[26];
-        Integer[][] cache = new Integer[str.length()][str.length()];
-        for (int i = 0; i < positions.length; i++) {
-            positions[i] = new TreeSet();
-        }
-        for (int i = 0; i < str.length(); i++) {
-            positions[str.charAt(i) - 'a'].add(i);
-        }
-        return helper(positions, cache, 0, str.length() - 1);
-    }
-    private int helper(TreeSet[] positions, Integer[][] cache, int start, int end) {
-        if (start > end) return 0;
-        if (cache[start][end] != null) return cache[start][end];
-        int ans = 0;
-        for (int i = 0; i < positions.length; i++) {
-            Integer subStart = (Integer)positions[i].ceiling(start);
-            Integer subEnd = (Integer)positions[i].floor(end);
-            if (subStart == null) continue; // checked subsequences are less than start
-            if (subStart > end) continue;// checked subsequences are greater than end
-            if (subStart == subEnd) {
-                //itself is palindromic
-                ans = ans + 1;
-            } else {
-                //the two same chars, will form at least two: a.a, aa?
-                ans = ans + 2;
+        int n = str.length();
+        int mod = 1000000007;
+        int[][][] dp = new int[4][n][n];
+        for (int i = n-1; i >= 0; --i) {
+            for (int j = i; j < n; ++j) {
+                for (int k = 0; k < 4; ++k) {
+                    char c = (char) ('a' + k);
+                    if (j == i) {
+                        if (str.charAt(i) == c) {
+                            dp[k][i][j] = 1;
+                        } else {
+                            dp[k][i][j] = 0;
+                        }
+                    } else { // j > i
+                        if (str.charAt(i) != c) {
+                            dp[k][i][j] = dp[k][i+1][j];
+                        } else {
+                            if (str.charAt(j) != c) {
+                                dp[k][i][j] = dp[k][i][j-1];
+                            } else { // S[i] == S[j] == c
+                                if (j == i+1) {
+                                    dp[k][i][j] = 2; // "aa" : {"a", "aa"}
+                                } else { // length is > 2
+                                    dp[k][i][j] = 2;
+                                    for (int m = 0; m < 4; ++m) { // count each one within subwindows [i+1][j-1]
+                                        dp[k][i][j] += dp[m][i+1][j-1];
+                                        dp[k][i][j] %= mod;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            ans = ans + helper(positions, cache, subStart + 1, subEnd - 1);
         }
-        ans  = ans % 1000000007;
-        cache[start][end] = ans;
+        int ans = 0;
+        for (int k = 0; k < 4; ++k) {
+            ans += dp[k][0][n-1];
+            ans %= mod;
+        }
         return ans;
     }
+
+    //Trick: get all the pair of possible palindromic chars position, start, end.
+    //recursively get the result.
+//    public int countPalindromicSubsequences(String str) {
+//        TreeSet<Integer>[] positions = new TreeSet[26];
+//        Integer[][] cache = new Integer[str.length()][str.length()];
+//        for (int i = 0; i < positions.length; i++) {
+//            positions[i] = new TreeSet();
+//        }
+//        for (int i = 0; i < str.length(); i++) {
+//            positions[str.charAt(i) - 'a'].add(i);
+//        }
+//        return countPalindromicSubsequencesHelper(positions, cache, 0, str.length() - 1);
+//    }
+//    private int countPalindromicSubsequencesHelper(TreeSet[] positions, Integer[][] cache, int start, int end) {
+//        if (start > end) return 0;
+//        if (cache[start][end] != null) return cache[start][end];
+//        int ans = 0;
+//        for (int i = 0; i < positions.length; i++) {
+//            Integer subStart = (Integer)positions[i].ceiling(start);
+//            Integer subEnd = (Integer)positions[i].floor(end);
+//            if (subStart == null) continue; // checked subsequences are less than start
+//            if (subStart > end) continue;// checked subsequences are greater than end
+//            if (subStart == subEnd) {
+//                //itself is palindromic
+//                ans = ans + 1;
+//            } else {
+//                //the two same chars, will form at least two: a.a, aa?
+//                ans = ans + 2;
+//            }
+//            ans = ans + countPalindromicSubsequencesHelper(positions, cache, subStart + 1, subEnd - 1);
+//        }
+//        ans  = ans % 1000000007;
+//        cache[start][end] = ans;
+//        return ans;
+//    }
 
     /**
      * https://leetcode.com/problems/distinct-subsequences-ii/

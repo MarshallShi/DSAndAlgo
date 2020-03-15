@@ -87,23 +87,25 @@ public class SnakeGame {
      * So we don't need to move every cell as part of the move!!!!!!
      */
     public int move(String direction) {
-
         // the new head is based on the current head
         // the tail is removed, but can be returned back if food is found
         Point head = snakeBody.getFirst();
         Point newHead = new Point(head.i, head.j);
         Point tail = snakeBody.removeLast();
-
-        if (direction.equals("U")){
+        if (direction.equals("U")) {
             newHead.i--;
-        } else if(direction.equals("D")){
-            newHead.i++;
-        } else if(direction.equals("L")){
-            newHead.j--;
-        } else{
-            newHead.j++;
+        } else {
+            if (direction.equals("D")) {
+                newHead.i++;
+            } else {
+                if (direction.equals("L")) {
+                    newHead.j--;
+                } else {
+                    newHead.j++;
+                }
+            }
         }
-        if (newHead.i < 0 || newHead.i == height || newHead.j < 0 || newHead.j == width || snakeBody.contains(newHead)) {
+        if (newHead.i < 0 || newHead.i == height || newHead.j < 0 || newHead.j == width || snakeContainPoint(newHead)) {
             return -1;
         }
         snakeBody.addFirst(newHead);
@@ -114,6 +116,15 @@ public class SnakeGame {
         return score;
     }
 
+    private boolean snakeContainPoint(Point p){
+        for (Point existingP : snakeBody) {
+            if (existingP.isEqual(p)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     class Point{
         int i;
         int j;
@@ -121,5 +132,29 @@ public class SnakeGame {
             this.i=i;
             this.j=j;
         }
+        boolean isEqual(Point _p){
+            return _p.i == this.i && _p.j == this.j;
+        }
+    }
+
+    public static void main(String[] args) {
+        int[][] food = {{2,0},{0,0},{0,2},{0,1},{2,2},{0,1}};
+        SnakeGame sg = new SnakeGame(3, 3, food);
+        System.out.print(sg.move("D") + " ");
+        System.out.print(sg.move("D") + " ");
+        System.out.print(sg.move("R") + " ");
+        System.out.print(sg.move("U") + " ");
+        System.out.print(sg.move("U") + " ");
+        System.out.print(sg.move("L") + " ");
+        System.out.print(sg.move("D") + " ");
+        System.out.print(sg.move("R") + " ");
+        System.out.print(sg.move("R") + " ");
+        System.out.print(sg.move("U") + " ");
+        System.out.print(sg.move("L") + " ");
+        System.out.print(sg.move("L") + " ");
+        System.out.print(sg.move("D") + " ");
+        System.out.print(sg.move("R") + " ");
+        System.out.print(sg.move("U") + " ");
+        //[null,0,1,1,1,1,2,2,2,2,3,4,4,4,4,-1]
     }
 }

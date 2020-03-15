@@ -2,13 +2,15 @@ package dsandalgo.dfsbacktrack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RecursiveSolution {
 
     public static void main(String[] args) {
         RecursiveSolution exe = new RecursiveSolution();
-        System.out.println(exe.strobogrammaticInRange("0", "0"));
+        //System.out.println(exe.evaluate("(mult 3 (add 2 3))"));
     }
 
     /**

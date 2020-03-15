@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 public class StringHardExe {
@@ -15,7 +17,118 @@ public class StringHardExe {
         StringHardExe exe = new StringHardExe();
         String[] str = {"plain", "amber", "blade"};
         List<String> s = Arrays.asList(str);
-        System.out.println(exe.minAbbreviation("apple", str));
+        System.out.println(exe.rearrangeString("aaadbbcc", 2));
+    }
+
+    /**
+     * https://leetcode.com/problems/rearrange-string-k-distance-apart/
+     * Given a non-empty string s and an integer k, rearrange the string such that the same characters are at least distance k from each other.
+     *
+     * All input strings are given in lowercase letters. If it is not possible to rearrange the string, return an empty string "".
+     *
+     * Example 1:
+     * Input: s = "aabbcc", k = 3
+     * Output: "abcabc"
+     * Explanation: The same letters are at least distance 3 from each other.
+     *
+     * Example 2:
+     * Input: s = "aaabc", k = 3
+     * Output: ""
+     * Explanation: It is not possible to rearrange the string.
+     *
+     * Example 3:
+     * Input: s = "aaadbbcc", k = 2
+     * Output: "abacabcd"
+     * Explanation: The same letters are at least distance 2 from each other.
+     *
+     * @param s
+     * @param k
+     * @return
+     */
+    public String rearrangeString(String s, int k) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[1] == o2[1]) {
+                    return o1[0] - o2[0];
+                }
+                return o2[1] - o1[1];
+            }
+        });
+        int[] pos = new int[26];
+        for (int i=0; i<s.length(); i++) {
+            pos[s.charAt(i)-'a']++;
+        }
+        for (int i=0; i<26; i++) {
+            if (pos[i] != 0) {
+                pq.offer(new int[]{i, pos[i]});
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!pq.isEmpty()) {
+            List<int[]> cur = new ArrayList<>();
+            for (int i=0; i<k; i++) {
+                if (!pq.isEmpty()) {
+                    cur.add(pq.poll());
+                }
+            }
+            for (int[] chCount : cur) {
+                if (sb.length() > 0) {
+                    for (int j=1; j<=k-1; j++) {
+                        if (sb.length()-j >=0 && (sb.charAt(sb.length()-j) == (char)('a' + chCount[0]))) {
+                            return "";
+                        }
+                    }
+                }
+                sb.append((char)('a' + chCount[0]));
+                if (chCount[1] > 1) {
+                    pq.offer(new int[]{chCount[0], chCount[1]-1});
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * https://leetcode.com/problems/string-transforms-into-another-string/
+     * Given two strings str1 and str2 of the same length, determine whether you can transform str1 into str2 by doing zero or more conversions.
+     *
+     * In one conversion you can convert all occurrences of one character in str1 to any other lowercase English character.
+     *
+     * Return true if and only if you can transform str1 into str2.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: str1 = "aabcc", str2 = "ccdee"
+     * Output: true
+     * Explanation: Convert 'c' to 'e' then 'b' to 'd' then 'a' to 'c'. Note that the order of conversions matter.
+     * Example 2:
+     *
+     * Input: str1 = "leetcode", str2 = "codeleet"
+     * Output: false
+     * Explanation: There is no way to transform str1 to str2.
+     *
+     *
+     * Note:
+     *
+     * 1 <= str1.length == str2.length <= 10^4
+     * Both str1 and str2 contain only lowercase English letters.
+     */
+    //Record the mapping, all mapping should be the same for same char.
+    public boolean canConvert(String str1, String str2) {
+        if (str1.equals(str2)) {
+            return true;
+        }
+        Map<Character, Character> dp = new HashMap<>();
+        for (int i = 0; i < str1.length(); ++i) {
+            if (dp.getOrDefault(str1.charAt(i), str2.charAt(i)) != str2.charAt(i)) {
+                return false;
+            }
+            dp.put(str1.charAt(i), str2.charAt(i));
+        }
+        return new HashSet<Character>(dp.values()).size() < 26;
     }
 
     /**
@@ -487,125 +600,6 @@ public class StringHardExe {
             if (isScramble(s1.substring(0,i), s2.substring(len-i)) && isScramble(s1.substring(i), s2.substring(0,len-i))) return true;
         }
         return false;
-    }
-
-    /**
-     * https://leetcode.com/problems/parsing-a-boolean-expression/
-     * Return the result of evaluating a given boolean expression, represented as a string.
-     *
-     * An expression can either be:
-     *
-     * "t", evaluating to True;
-     * "f", evaluating to False;
-     * "!(expr)", evaluating to the logical NOT of the inner expression expr;
-     * "&(expr1,expr2,...)", evaluating to the logical AND of 2 or more inner expressions expr1, expr2, ...;
-     * "|(expr1,expr2,...)", evaluating to the logical OR of 2 or more inner expressions expr1, expr2, ...
-     *
-     *
-     * Example 1:
-     *
-     * Input: expression = "!(f)"
-     * Output: true
-     * Example 2:
-     *
-     * Input: expression = "|(f,t)"
-     * Output: true
-     * Example 3:
-     *
-     * Input: expression = "&(t,f)"
-     * Output: false
-     * Example 4:
-     *
-     * Input: expression = "|(&(t,f,t),!(t))"
-     * Output: false
-     *
-     *
-     * Constraints:
-     *
-     * 1 <= expression.length <= 20000
-     * expression[i] consists of characters in {'(', ')', '&', '|', '!', 't', 'f', ','}.
-     * expression is a valid expression representing a boolean, as given in the description.
-     */
-    public boolean parseBoolExpr(String expression) {
-        if (expression.equals("t")) {
-            return true;
-        }
-        if (expression.equals("f")) {
-            return false;
-        }
-        char[] arr = expression.toCharArray();
-        char op = arr[0];
-        boolean result = false;
-        if (op != '|') {
-            result = true;
-        }
-        int count = 0;
-        for (int i = 1, pre = 2; i < arr.length; i++) {
-            char c = arr[i];
-            if (c == '(') {
-                count++;
-            }
-            if (c == ')') {
-                count--;
-            }
-            //Recursive call when met end of () or a comma ,.
-            if (c == ',' && count == 1 || c == ')' && count == 0) {
-                boolean next = parseBoolExpr(expression.substring(pre, i));
-                pre = i + 1;
-                if (op == '|') {
-                    result |= next;
-                } else {
-                    if (op == '&') {
-                        result &= next;
-                    } else {
-                        result = !next;
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * https://leetcode.com/problems/brace-expansion-ii/
-     * Under a grammar given below, strings can represent a set of lowercase words.  Let's use R(expr) to denote the set of words the expression represents.
-     *
-     * Grammar can best be understood through simple examples:
-     *
-     * Single letters represent a singleton set containing that word.
-     * R("a") = {"a"}
-     * R("w") = {"w"}
-     * When we take a comma delimited list of 2 or more expressions, we take the union of possibilities.
-     * R("{a,b,c}") = {"a","b","c"}
-     * R("{{a,b},{b,c}}") = {"a","b","c"} (notice the final set only contains each word at most once)
-     * When we concatenate two expressions, we take the set of possible concatenations between two words where the first word
-     * comes from the first expression and the second word comes from the second expression.
-     * R("{a,b}{c,d}") = {"ac","ad","bc","bd"}
-     * R("a{b,c}{d,e}f{g,h}") = {"abdfg", "abdfh", "abefg", "abefh", "acdfg", "acdfh", "acefg", "acefh"}
-     * Formally, the 3 rules for our grammar:
-     *
-     * For every lowercase letter x, we have R(x) = {x}
-     * For expressions e_1, e_2, ... , e_k with k >= 2, we have R({e_1,e_2,...}) = R(e_1) ∪ R(e_2) ∪ ...
-     * For expressions e_1 and e_2, we have R(e_1 + e_2) = {a + b for (a, b) in R(e_1) × R(e_2)}, where + denotes
-     * concatenation, and × denotes the cartesian product.
-     * Given an expression representing a set of words under the given grammar, return the sorted list of words that the expression represents.
-     *
-     * Example 1:
-     * Input: "{a,b}{c,{d,e}}"
-     * Output: ["ac","ad","ae","bc","bd","be"]
-     *
-     * Example 2:
-     * Input: "{{a,z},a{b,c},{ab,z}}"
-     * Output: ["a","ab","ac","z"]
-     * Explanation: Each distinct word is written only once in the final answer.
-     *
-     * Constraints:
-     * 1 <= expression.length <= 60
-     * expression[i] consists of '{', '}', ','or lowercase English letters.
-     * The given expression represents a set of words based on the grammar given in the description.
-     */
-    public List<String> braceExpansionII(String expression) {
-        return null;
     }
 
     /**

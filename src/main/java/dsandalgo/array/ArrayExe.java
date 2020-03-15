@@ -19,28 +19,57 @@ public class ArrayExe {
 
     public static void main(String[] args) {
         ArrayExe exe = new ArrayExe();
+        int[] c = {1,2,2};
+        System.out.println(exe.candy(c));
+    }
 
-        int[] king = {0,0};
-
-        int[] time = {-1, 0, 1, 2, -1, -4};
-        int[] nums = {1,2,3,4,4,3,2,1};
-        char[] ch = {'a','b','b','b','b'};
-
-        int[] A = {3,5,1,2,3}, B = {3,6,3,3,4};
-
-        int[][] arrr = {{1,2},{1,2},{1,1},{2,2},{1,2}};
-        //[-10,-5,-2,0,4,5,6,7,8,9,10]
-
-
-        int[] g = {9,77,63,22,92,9,14,54,8,38,18,19,38,68,58,19};
-        int X = 3;
-
-        int[][] mat = {{1,2,3,4,5},{2,4,5,8,10},{3,5,7,9,11},{1,3,5,7,9}};
-
-        int[] arr = {1,-1};
-
-        int[] c = {8,1,2,2,3};
-        System.out.println(exe.smallerNumbersThanCurrent(c));
+    /**
+     * https://leetcode.com/problems/candy/
+     * There are N children standing in a line. Each child is assigned a rating value.
+     *
+     * You are giving candies to these children subjected to the following requirements:
+     *
+     * Each child must have at least one candy.
+     * Children with a higher rating get more candies than their neighbors.
+     * What is the minimum candies you must give?
+     *
+     * Example 1:
+     *
+     * Input: [1,0,2]
+     * Output: 5
+     * Explanation: You can allocate to the first, second and third child with 2, 1, 2 candies respectively.
+     * Example 2:
+     *
+     * Input: [1,2,2]
+     * Output: 4
+     * Explanation: You can allocate to the first, second and third child with 1, 2, 1 candies respectively.
+     *              The third child gets 1 candy because it satisfies the above two conditions.
+     */
+    public int candy(int[] ratings) {
+        int pre = 1, countDown = 0, total = 1;
+        for (int i = 1; i < ratings.length; i++) {
+            if (ratings[i] >= ratings[i - 1]) {
+                if (countDown > 0) {
+                    total += countDown * (countDown + 1) / 2;   // progression part
+                    if (countDown >= pre) { // check if pre is tall enough
+                        total += countDown - pre + 1;
+                    }
+                    pre = 1;    // when ascending and there is countDown, prev should be 1
+                    countDown = 0;
+                }
+                pre = ratings[i] == ratings[i - 1] ? 1 : pre + 1;   // when equals to previous one, set to 1. Else set to prev + 1
+                total += pre;
+            } else {
+                countDown++;
+            }
+        }
+        if (countDown > 0) {    // check if there is countDown in the end
+            total += countDown * (countDown + 1) / 2;
+            if (countDown >= pre) {
+                total += countDown - pre + 1;
+            }
+        }
+        return total;
     }
 
     /**

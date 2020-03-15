@@ -2,6 +2,7 @@ package dsandalgo.bfs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -15,8 +16,172 @@ public class HardBFSExe {
 
     public static void main(String[] args) {
         HardBFSExe exe = new HardBFSExe();
-        int[][] grid = {{0,1,1},{1,1,1},{1,0,0}};
-        System.out.println(exe.shortestPath(grid, 1));
+        int[][] grid = {{0,3},{1,0},{1,1},{1,2},{1,3}};
+        int[] s = {0,0};
+        int[] t = {0,2};
+        System.out.println(exe.isEscapePossible(grid, s, t));
+    }
+
+    /**
+     * https://leetcode.com/problems/trapping-rain-water-ii/
+     * Given an m x n matrix of positive integers representing the height of each unit cell in a 2D elevation map,
+     * compute the volume of water it is able to trap after raining.
+     *
+     * Example:
+     *
+     * Given the following 3x6 height map:
+     * [
+     *   [1,4,3,1,3,2],
+     *   [3,2,1,3,2,4],
+     *   [2,3,3,2,3,1]
+     * ]
+     *
+     * Return 4.
+     *
+     * The above image represents the elevation map [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]] before the rain.
+     *
+     * After the rain, water is trapped between the blocks. The total volume of water trapped is 4.
+     *
+     * Constraints:
+     * 1 <= m, n <= 110
+     * 0 <= heightMap[i][j] <= 20000
+     */
+    class Cell {
+        int row;
+        int col;
+        int height;
+        public Cell(int row, int col, int height) {
+            this.row = row;
+            this.col = col;
+            this.height = height;
+        }
+    }
+    //Intuition: the border will determine the amout, so keep borders as boundary in the Priority Queue, and keep updating it.
+    //Start from the boundary, BFS the grid
+    public int trapRainWater(int[][] heights) {
+        if (heights == null || heights.length == 0 || heights[0].length == 0)
+            return 0;
+
+        PriorityQueue<Cell> queue = new PriorityQueue<>(1, new Comparator<Cell>(){
+            public int compare(Cell a, Cell b) {
+                return a.height - b.height;
+            }
+        });
+
+        int m = heights.length;
+        int n = heights[0].length;
+        boolean[][] visited = new boolean[m][n];
+
+        // Initially, add all the Cells which are on borders to the queue.
+        for (int i = 0; i < m; i++) {
+            visited[i][0] = true;
+            visited[i][n - 1] = true;
+            queue.offer(new Cell(i, 0, heights[i][0]));
+            queue.offer(new Cell(i, n - 1, heights[i][n - 1]));
+        }
+
+        for (int i = 0; i < n; i++) {
+            visited[0][i] = true;
+            visited[m - 1][i] = true;
+            queue.offer(new Cell(0, i, heights[0][i]));
+            queue.offer(new Cell(m - 1, i, heights[m - 1][i]));
+        }
+
+        // from the borders, pick the shortest cell visited and check its neighbors:
+        // if the neighbor is shorter, collect the water it can trap and update its height as its height plus the water trapped
+        // add all its neighbors to the queue.
+        int[][] dirs = new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int res = 0;
+        while (!queue.isEmpty()) {
+            Cell cell = queue.poll();
+            for (int[] dir : dirs) {
+                int row = cell.row + dir[0];
+                int col = cell.col + dir[1];
+                if (row >= 0 && row < m && col >= 0 && col < n && !visited[row][col]) {
+                    visited[row][col] = true;
+                    res += Math.max(0, cell.height - heights[row][col]);
+                    queue.offer(new Cell(row, col, Math.max(heights[row][col], cell.height)));
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/escape-a-large-maze/
+     * In a 1 million by 1 million grid, the coordinates of each grid square are (x, y) with 0 <= x, y < 10^6.
+     *
+     * We start at the source square and want to reach the target square.  Each move, we can walk to a
+     * 4-directionally adjacent square in the grid that isn't in the given list of blocked squares.
+     *
+     * Return true if and only if it is possible to reach the target square through a sequence of moves.
+     *
+     * Example 1:
+     * Input: blocked = [[0,1],[1,0]], source = [0,0], target = [0,2]
+     * Output: false
+     * Explanation:
+     * The target square is inaccessible starting from the source square, because we can't walk outside the grid.
+     *
+     * Example 2:
+     * Input: blocked = [], source = [0,0], target = [999999,999999]
+     * Output: true
+     * Explanation:
+     * Because there are no blocked cells, it's possible to reach the target square.
+     *
+     * Note:
+     * 0 <= blocked.length <= 200
+     * blocked[i].length == 2
+     * 0 <= blocked[i][j] < 10^6
+     * source.length == target.length == 2
+     * 0 <= source[i][j], target[i][j] < 10^6
+     * source != target
+     */
+    //Trick: key observation is the constraint. 0 <= blocked.length <= 200
+    //meaning after 200*2 steps of BFS, if there is still further path, then safely it can reach out.
+    //from both source and target.
+    public boolean isEscapePossible(int[][] blocked, int[] source, int[] target) {
+        if (blocked.length==0) {
+            return true;
+        }
+        Set<String> set = new HashSet<>();
+        for(int[] ele: blocked){
+            set.add(ele[0] + " " + ele[1]);
+        }
+        return checkHelper(set, source, target) && checkHelper(set, target, source);
+    }
+    public boolean checkHelper(Set<String> set, int[] source, int[] target){
+        int[][] dirs = new int[][]{{-1, 0},{1, 0}, {0, 1}, {0, -1}};
+        int max_size = 2 * set.size();
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(source);
+        Set<String> seen = new HashSet<>();
+        seen.add(source[0]+" "+source[1]);
+        int level = 0;
+        while(queue.size()!=0){
+            int size = queue.size();
+            for(int i=0;i<size;i++){
+                int[] cur = queue.poll();
+                for(int[] dir:dirs){
+                    int x = dir[0] + cur[0];
+                    int y = dir[1] + cur[1];
+                    if (x == target[0] && y == target[1]) {
+                        return true;
+                    }
+                    if(x>=0 && x<(int)(1e6) && y>=0 && y<(int)(1e6) && !seen.contains(x+" "+y) && !set.contains(x+" "+y)){
+                        seen.add(x+" "+y);
+                        queue.add(new int[]{x, y});
+                    }
+                }
+            }
+            level++;
+            if (level == max_size){
+                break;
+            }
+            if(queue.size() == 0){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

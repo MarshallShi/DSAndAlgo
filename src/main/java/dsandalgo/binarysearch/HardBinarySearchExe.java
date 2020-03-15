@@ -14,6 +14,63 @@ public class HardBinarySearchExe {
     }
 
     /**
+     * https://leetcode.com/problems/nth-magical-number/
+     * A positive integer is magical if it is divisible by either A or B.
+     * Return the N-th magical number.  Since the answer may be very large, return it modulo 10^9 + 7.
+     *
+     * Example 1:
+     *
+     * Input: N = 1, A = 2, B = 3
+     * Output: 2
+     * Example 2:
+     *
+     * Input: N = 4, A = 2, B = 3
+     * Output: 6
+     * Example 3:
+     *
+     * Input: N = 5, A = 2, B = 4
+     * Output: 10
+     * Example 4:
+     *
+     * Input: N = 3, A = 6, B = 4
+     * Output: 8
+     *
+     *
+     * Note:
+     *
+     * 1 <= N <= 10^9
+     * 2 <= A <= 40000
+     * 2 <= B <= 40000
+     */
+    //Get gcd (greatest common divisor) and lcm (least common multiple) of (A, B).
+    //(a, b) = (A, B) while b > 0: (a, b) = (b, a % b)
+    //then, gcd = a and lcm = A * B / a
+    //
+    //How many magic numbers <= x ?
+    //By inclusion exclusion principle, we have:
+    //x / A + x / B - x / lcm
+    //
+    //Set our binary search range
+    //Lower bound is min(A, B), I just set left = 2.
+    //Upper bound is N * min(A, B), I just set right = 10 ^ 14.
+    //
+    //binary search, find the smallest x that x / A + x / B - x / lcm = N
+    public int nthMagicalNumber(int N, int A, int B) {
+        long a = A, b = B, tmp, l = 2, r = (long)1e14, mod = (long)1e9 + 7;
+        while (b > 0) {
+            tmp = a;
+            a = b;
+            b = tmp % b;
+        }
+        while (l < r) {
+            long m = (l + r) / 2;
+            if (m / A + m / B - m / (A * B / a) < N) l = m + 1;
+            else r = m;
+        }
+        return (int)(l % mod);
+    }
+
+    /**
      * https://leetcode.com/problems/minimize-max-distance-to-gas-station/
      * On a horizontal number line, we have gas stations at positions stations[0], stations[1], ..., stations[N-1], where N = stations.length.
      *
