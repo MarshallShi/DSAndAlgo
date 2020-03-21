@@ -1,7 +1,5 @@
 package dsandalgo;
 
-import dsandalgo.unionfind.UnionFind;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;

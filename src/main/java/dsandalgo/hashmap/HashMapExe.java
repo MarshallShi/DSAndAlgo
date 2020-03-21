@@ -16,18 +16,67 @@ public class HashMapExe {
     public static void main(String[] args) {
         HashMapExe exe = new HashMapExe();
 
-        int[] groupSizes = {2,1,3,3,3,2};
+        int[] groupSizes = {1,1,1,2,2,2,3,3,3,4,4,4,5};
         String[] input = {"root/a 1.txt(abcd) 2.txt(efgh)", "root/c 3.txt(abcd)", "root/c/d 4.txt(efgh)", "root 4.txt(efgh)"};
         int[][] richer = {{1,2},{2,1},{1,0},{0,1}};
         int[] quiet = {3,2,5,4,6,1,7,0};
 
-        exe.minAreaFreeRect(richer);
+        exe.maxEqualFreq(groupSizes);
     }
 
     public HashMapExe(){
 
     }
 
+
+    /**
+     * https://leetcode.com/problems/maximum-equal-frequency/
+     * Given an array nums of positive integers, return the longest possible length of an array prefix of nums, such that it is possible to remove exactly one element from this prefix so that every number that has appeared in it will have the same number of occurrences.
+     *
+     * If after removing one element there are no remaining elements, it's still considered that every appeared number has the same number of ocurrences (0).
+     *
+     * Example 1:
+     *
+     * Input: nums = [2,2,1,1,5,3,3,5]
+     * Output: 7
+     * Explanation: For the subarray [2,2,1,1,5,3,3] of length 7, if we remove nums[4]=5, we will get [2,2,1,1,3,3], so that each number will appear exactly twice.
+     * Example 2:
+     *
+     * Input: nums = [1,1,1,2,2,2,3,3,3,4,4,4,5]
+     * Output: 13
+     * Example 3:
+     *
+     * Input: nums = [1,1,1,2,2,2]
+     * Output: 5
+     * Example 4:
+     *
+     * Input: nums = [10,2,8,9,3,8,1,5,2,3,7,6]
+     * Output: 8
+     *
+     * Constraints:
+     * 2 <= nums.length <= 10^5
+     * 1 <= nums[i] <= 10^5
+     */
+    //Trick: record the frequency map, check if current count is the 'same count'
+    public int maxEqualFreq(int[] nums) {
+        Map<Integer, Integer> countMap = new HashMap<>();
+        Map<Integer, Integer> freqMap = new HashMap<>();
+        int res = 0;
+        for (int i = 0; i < nums.length; i++) {
+            countMap.put(nums[i], countMap.getOrDefault(nums[i], 0) + 1);
+            int count = countMap.get(nums[i]);
+            freqMap.put(count, freqMap.getOrDefault(count, 0) + 1);
+            if (count * freqMap.get(count) == i + 1) {
+                int size = (i == nums.length - 1) ? i : i + 2;
+                res = Math.max(size, res);
+            } else {
+                if (count * freqMap.get(count) == i) {
+                    res = Math.max(i + 1, res);
+                }
+            }
+        }
+        return res;
+    }
 
     /**
      * https://leetcode.com/problems/grid-illumination/
