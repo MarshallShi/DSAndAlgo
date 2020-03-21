@@ -15,13 +15,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-public class CodingEx {
+public class Coding5 {
 
     public static Map<String, Integer> ret = new HashMap<String, Integer>();
 
     public static void main(String args[]) {
 
-        CodingEx ex = new CodingEx();
+        Coding5 ex = new Coding5();
         int[] nums1 = {1,2,3,0,0,0};
         int[] nums2 = {2,5,6};
         TreeNode root = ex.creaeAOneTree();
@@ -1467,34 +1467,6 @@ public class CodingEx {
         }
         return counter;
     }
-//
-//    public static int countSubstrings(String s) {
-//        if (s == null || s.length() == 0) {
-//            return 0;
-//        }
-//        int[][] dp = new int[s.length()][s.length()];
-//        int i, j;
-//        int counter = 0;
-//        for (i = 0; i<s.length(); i++) {
-//            dp[i][i] = 1;
-//        }
-//        for (i = 0; i<s.length(); i++) {
-//            for (j = 0; j<s.length(); j++) {
-//                dp[i-1][j+1]
-//                if (s.charAt(i+j-1) == s.charAt(j) && dp[i+j][j] == 1) {
-//                    dp[i+j-1][j] = 1;
-//                }
-//            }
-//        }
-//        for (i = 0; i<s.length(); i++) {
-//            for (j = 0; j<s.length(); j++) {
-//                if (dp[i][j] == 1) {
-//                    counter ++;
-//                }
-//            }
-//        }
-//        return counter;
-//    }
 
     public static int numTrees(int n) {
         int[] dp = new int[n + 1];

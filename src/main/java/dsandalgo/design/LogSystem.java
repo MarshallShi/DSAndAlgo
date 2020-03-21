@@ -1,8 +1,11 @@
-package dsandalgo.string;
+package dsandalgo.design;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * https://leetcode.com/problems/design-log-storage-system/
+ */
 public class LogSystem {
 
     private List<String> allLogTimeStamp;

@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-public class AddAndSearchWord {
+public class Coding1 {
 
     public static void main(String[] args){
-        AddAndSearchWord test = new AddAndSearchWord();
+        Coding1 test = new Coding1();
         List<String> dict = new ArrayList<String>();
         dict.add("cat");
         dict.add("bat");
@@ -192,21 +192,6 @@ public class AddAndSearchWord {
         return counter;
     }
 
-    //public int nthSuperUglyNumber(int n, int[] primes) {
-//        int[] uglyNumbers = new int[n+1];
-//        uglyNumbers[0] = 1;
-//        uglyNumbers[1] = 1;
-//        for (int i=1; i<n+1;i++) {
-//            int prev = uglyNumbers[i-1];
-//            int next = prev*primes[0];
-//            for (int j=0; j<primes.length; j++) {
-//                next = Math.min(next, primes[j]*prev);
-//            }
-//            uglyNumbers[i] = next;
-//        }
-//        return uglyNumbers[n];
-    //}
-
     private List<List<Integer>> ret = new ArrayList<List<Integer>>();
 
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
@@ -252,44 +237,6 @@ public class AddAndSearchWord {
             max = Math.max(r-l+1, max);
         }
         return max;
-    }
-
-    public String decodeAtIndex(String S, int K) {
-        if (S == null || S.length() ==0) {
-            return S;
-        }
-        Stack<Character> stack = new Stack<Character>();
-        int counter = 0;
-        for (int i=0; i<S.length(); i++) {
-            char ch = S.charAt(i);
-            int chAsInt = Character.isDigit(ch) ? Integer.parseInt(ch + "") : 0;
-            if (chAsInt > 0 ) {
-                //For numbers, need to get the while string.
-                if (!stack.isEmpty()) {
-                    String toRepeat = "";
-                    while (!stack.isEmpty()) {
-                        toRepeat = stack.pop().toString() + toRepeat;
-                    }
-                    counter = 0;
-                    for (int j = 0; j<chAsInt; j++) {
-                        for (int k=0; k<toRepeat.length(); k++) {
-                            stack.push(toRepeat.charAt(k));
-                            counter++;
-                            if (counter == K) {
-                                return toRepeat.charAt(k) + "";
-                            }
-                        }
-                    }
-                }
-            } else {
-                stack.push(ch);
-                counter++;
-                if (counter == K) {
-                    return ch + "";
-                }
-            }
-        }
-        return "";
     }
 
     public boolean find132pattern(int[] nums) {
@@ -556,7 +503,7 @@ public class AddAndSearchWord {
 
     private TrieNode root;
     /** Initialize your data structure here. */
-    public AddAndSearchWord() {
+    public Coding1() {
         root = new TrieNode();
     }
 

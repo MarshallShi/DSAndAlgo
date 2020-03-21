@@ -1,16 +1,13 @@
 package dsandalgo.unionfind;
 
-import java.time.temporal.ValueRange;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 
 public class UnionFindExe {
@@ -1344,7 +1341,7 @@ public class UnionFindExe {
             return 0;
         }
         Map<Integer, Integer> map = new HashMap<Integer, Integer>(); //<value, index>
-        UFForLongestConsecutiveSequence uf = new UFForLongestConsecutiveSequence(nums.length);
+        LongestConsecutiveSequence uf = new LongestConsecutiveSequence(nums.length);
         for (int i=0; i<nums.length; i++) {
             if (!map.containsKey(nums[i])) {
                 if (map.containsKey(nums[i] - 1)) {

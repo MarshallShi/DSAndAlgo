@@ -1,6 +1,5 @@
 package dsandalgo;
 
-import dsandalgo.unionfind.UFForLongestConsecutiveSequence;
 import dsandalgo.unionfind.UnionFind;
 
 import java.util.ArrayList;
