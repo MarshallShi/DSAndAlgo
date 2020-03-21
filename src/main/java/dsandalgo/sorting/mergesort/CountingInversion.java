@@ -26,7 +26,7 @@ public class CountingInversion {
      *
      * The idea is similar to "merge" in merge-sort. Merge two sorted lists into one output list, but we also count the inversion.
      *
-     * Everytime a_i is appended to the output, no new inversions are encountered, since a_i is smaller than everything left in list B.  If b_j is appended to the output, then it is smaller than all the remaining items in A, we increase the number of count of inversions by the number of elements remaining in A.
+     * Every time a_i is appended to the output, no new inversions are encountered, since a_i is smaller than everything left in list B.  If b_j is appended to the output, then it is smaller than all the remaining items in A, we increase the number of count of inversions by the number of elements remaining in A.
      *
      * merge-and-count(A,B)
      *   ;  A,B two input lists (sorted)

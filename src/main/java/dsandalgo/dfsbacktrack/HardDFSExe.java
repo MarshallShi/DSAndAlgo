@@ -28,6 +28,105 @@ public class HardDFSExe {
         System.out.println(exe.judgePoint24(ini));
     }
 
+
+    /**
+     * https://leetcode.com/problems/bricks-falling-when-hit/
+     * We have a grid of 1s and 0s; the 1s in a cell represent bricks.  A brick will not drop if and only if it is directly connected to the top of the grid, or at least one of its (4-way) adjacent bricks will not drop.
+     *
+     * We will do some erasures sequentially. Each time we want to do the erasure at the location (i, j), the brick (if it exists) on that location will disappear, and then some other bricks may drop because of that erasure.
+     *
+     * Return an array representing the number of bricks that will drop after each erasure in sequence.
+     *
+     * Example 1:
+     * Input:
+     * grid = [[1,0,0,0],[1,1,1,0]]
+     * hits = [[1,0]]
+     * Output: [2]
+     * Explanation:
+     * If we erase the brick at (1, 0), the brick at (1, 1) and (1, 2) will drop. So we should return 2.
+     * Example 2:
+     * Input:
+     * grid = [[1,0,0,0],[1,1,0,0]]
+     * hits = [[1,1],[1,0]]
+     * Output: [0,0]
+     * Explanation:
+     * When we erase the brick at (1, 0), the brick at (1, 1) has already disappeared due to the last move. So each erasure will cause no bricks dropping.  Note that the erased brick (1, 0) will not be counted as a dropped brick.
+     *
+     *
+     * Note:
+     *
+     * The number of rows and columns in the grid will be in the range [1, 200].
+     * The number of erasures will not exceed the area of the grid.
+     * It is guaranteed that each erasure will be different from any other erasure, and located inside the grid.
+     * An erasure may refer to a location with no brick - if it does, no bricks drop.
+     */
+    //Trick: reverse thinking.
+    //set the hit one with 0 or negative; update the grid with dfs; reverse apply the back and check how many are connected.
+    public int[] hitBricks(int[][] grid, int[][] hits) {
+        int m = grid.length, n = grid[0].length;
+        int len = hits.length;
+        int[] res = new int[len];
+
+        for (int[] hit : hits) {
+            int x = hit[0];
+            int y = hit[1];
+            grid[x][y]--;
+        }
+
+        for (int j = 0; j < n; j++) {
+            if (grid[0][j] == 1) {
+                hitBricksDFS(grid, 0, j);
+            }
+        }
+
+        for (int i = len - 1; i >= 0; i--) {
+            int x = hits[i][0], y = hits[i][1];
+            grid[x][y]++;
+            if (grid[x][y] == 0) {
+                continue;
+            }
+            if (!connectedToTop(grid, x, y)) {
+                continue;
+            }
+            res[i] = hitBricksDFS(grid, x, y) - 1; //exclude the hit one...
+        }
+        return res;
+    }
+
+    private int[][] directions = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
+
+    private int hitBricksDFS(int[][] grid, int i, int j) {
+        //set grid[i][j] from 1 to 2, and cnt the total number of connected spots...
+        int m = grid.length, n = grid[0].length;
+        grid[i][j] = 2;
+        int cnt = 1;
+        for (int[] dir : directions) {
+            int x = i + dir[0];
+            int y = j + dir[1];
+            if (x < 0 || x >= m || y < 0 || y >= n || grid[x][y] != 1) {
+                continue;
+            }
+            cnt += hitBricksDFS(grid, x, y);
+        }
+        return cnt;
+    }
+
+    private boolean connectedToTop(int[][] grid, int x, int y) {
+        int m = grid.length, n = grid[0].length;
+        if (x == 0) {
+            return true;
+        }
+        for (int[] dir : directions) {
+            int i = x + dir[0];
+            int j = y + dir[1];
+            if (i < 0 || i >= m || j < 0 || j >= n || grid[i][j] != 2) {
+                continue;
+            }
+            return true;
+        }
+        return false;
+    }
+
     /**
      * https://leetcode.com/problems/24-game/
      * You have 4 cards each containing a number from 1 to 9. You need to judge whether they could operated through *, /, +, -, (, )

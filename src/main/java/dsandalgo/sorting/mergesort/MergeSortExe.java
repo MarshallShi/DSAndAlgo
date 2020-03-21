@@ -6,6 +6,10 @@ import java.util.List;
 
 public class MergeSortExe {
 
+    public static void main(String args[]) {
+
+    }
+
     /**
      * https://leetcode.com/problems/count-of-range-sum/
      * Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
@@ -23,8 +27,9 @@ public class MergeSortExe {
     public int countRangeSum(int[] nums, int lower, int upper) {
         int n = nums.length;
         long[] sums = new long[n + 1];
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < n; ++i) {
             sums[i + 1] = sums[i] + nums[i];
+        }
         return countWhileMergeSort(sums, 0, n + 1, lower, upper);
     }
 
@@ -36,9 +41,15 @@ public class MergeSortExe {
         int j = mid, k = mid, t = mid;
         long[] cache = new long[end - start];
         for (int i = start, r = 0; i < mid; ++i, ++r) {
-            while (k < end && sums[k] - sums[i] < lower) k++;
-            while (j < end && sums[j] - sums[i] <= upper) j++;
-            while (t < end && sums[t] < sums[i]) cache[r++] = sums[t++];
+            while (k < end && sums[k] - sums[i] < lower) {
+                k++;
+            }
+            while (j < end && sums[j] - sums[i] <= upper) {
+                j++;
+            }
+            while (t < end && sums[t] < sums[i]) {
+                cache[r++] = sums[t++];
+            }
             cache[r] = sums[i];
             count += j - k;
         }
@@ -71,6 +82,7 @@ public class MergeSortExe {
             this.val = val;
         }
     }
+    //There are Merge Sort, BST, BIT based solutions, all O(nlogn)
     public List<Integer> countSmaller(int[] nums) {
         List<Integer> res = new ArrayList<>();
         if (nums == null || nums.length == 0) {
@@ -129,19 +141,40 @@ public class MergeSortExe {
      * @return
      */
     public int reversePairs(int[] nums) {
-        if (nums == null || nums.length<2) {
+        return reversePairsSub(nums, 0, nums.length - 1);
+    }
+
+    private int reversePairsSub(int[] nums, int l, int r) {
+        if (l >= r) {
             return 0;
         }
-        int counter = 0;
-        for (int i=0;i<nums.length;i++) {
-            for (int j=i+1; j<nums.length;j++) {
-                long temp = (long)nums[i];
-                long temp2 = 2 * (long)nums[j];
-                if (temp > temp2) {
-                    counter++;
-                }
+
+        int m = l + ((r - l) >> 1);
+        //merge sort.
+        int res = reversePairsSub(nums, l, m) + reversePairsSub(nums, m + 1, r);
+
+        int i = l, j = m + 1, k = 0, p = m + 1;
+
+        //merge
+        int[] merge = new int[r - l + 1];
+
+        while (i <= m) {
+            while (p <= r && (long)nums[i] > 2L * nums[p]) {
+                p++;
             }
+            res += p - (m + 1);
+            while (j <= r && nums[i] >= nums[j]) {
+                merge[k++] = nums[j++];
+            }
+            merge[k++] = nums[i++];
         }
-        return counter;
+
+        while (j <= r) {
+            merge[k++] = nums[j++];
+        }
+
+        System.arraycopy(merge, 0, nums, l, merge.length);
+
+        return res;
     }
 }

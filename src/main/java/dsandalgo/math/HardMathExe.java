@@ -1,5 +1,6 @@
 package dsandalgo.math;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Stack;
 
@@ -7,10 +8,154 @@ public class HardMathExe {
 
     public static void main(String[] args) {
         HardMathExe exe = new HardMathExe();
-        System.out.println("4132870520750868772");
-        System.out.println(Long.MAX_VALUE);
+        //D = ["1","4","9"], N = 1000000000
+        String[] d = {"1","4","9"};
+        System.out.println(exe.atMostNGivenDigitSet(d, 50090000));
     }
 
+    /**
+     * https://leetcode.com/problems/numbers-at-most-n-given-digit-set/
+     * We have a sorted set of digits D, a non-empty subset of {'1','2','3','4','5','6','7','8','9'}.  (Note that '0' is not included.)
+     *
+     * Now, we write numbers using these digits, using each digit as many times as we want.  For example, if D = {'1','3','5'}, we may write numbers such as '13', '551', '1351315'.
+     *
+     * Return the number of positive integers that can be written (using the digits of D) that are less than or equal to N.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: D = ["1","3","5","7"], N = 100
+     * Output: 20
+     * Explanation:
+     * The 20 numbers that can be written are:
+     * 1, 3, 5, 7, 11, 13, 15, 17, 31, 33, 35, 37, 51, 53, 55, 57, 71, 73, 75, 77.
+     * Example 2:
+     *
+     * Input: D = ["1","4","9"], N = 1000000000
+     * Output: 29523
+     * Explanation:
+     * We can write 3 one digit numbers, 9 two digit numbers, 27 three digit numbers,
+     * 81 four digit numbers, 243 five digit numbers, 729 six digit numbers,
+     * 2187 seven digit numbers, 6561 eight digit numbers, and 19683 nine digit numbers.
+     * In total, this is 29523 integers that can be written using the digits of D.
+     *
+     *
+     * Note:
+     *
+     * D is a subset of digits '1'-'9' in sorted order.
+     * 1 <= N <= 10^9
+     */
+    //The first loop handles the count of x, xx, xxx which x belongs to D. the sum is 3^1 + 3^2 + 3^3.
+    //The second loop handles xxxx from left most digit.
+    public int atMostNGivenDigitSet(String[] D, int N) {
+        String s = Integer.toString(N);
+        int res = 0;
+        for (int i = 1; i < s.length(); i++) {
+            //Math calc. for less than the length of N.
+            res += Math.pow(D.length, i);
+        }
+        for (int i = 0; i < s.length(); i++) {
+            boolean haveSame = false;
+            for (int j = 0; j < D.length; j++) {
+                if (D[j].charAt(0) < s.charAt(i)) {
+                    res += Math.pow(D.length, s.length() - i - 1);
+                }
+                if (D[j].charAt(0) == s.charAt(i)) {
+                    haveSame = true;
+                    if (i == s.length() - 1) {
+                        res += 1;
+                    }
+                }
+            }
+            if (!haveSame) {
+                return res;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/preimage-size-of-factorial-zeroes-function/
+     * @param K
+     * @return
+     */
+    //https://leetcode.com/problems/preimage-size-of-factorial-zeroes-function/discuss/117821/Four-binary-search-solutions-based-on-different-ideas
+    public int preimageSizeFZF(int K) {
+        return (int)(binarySearch(K) - binarySearch(K - 1));
+    }
+
+    private long binarySearch(int K) {
+        long l = 0, r =  5L * (K + 1);
+        while (l <= r) {
+            long m = l + (r - l) / 2;
+            long k = numOfTrailingZeros(m);
+            if (k <= K) {
+                l = m + 1;
+            } else {
+                r = m - 1;
+            }
+        }
+        return r;
+    }
+
+    private long numOfTrailingZeros(long x) {
+        long res = 0;
+        for (; x > 0; x /= 5) {
+            res += x/5;
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/patching-array/discuss/78488/Solution-%2B-explanation
+     * Given a sorted positive integer array nums and an integer n, add/patch elements to the array such that any
+     * number in range [1, n] inclusive can be formed by the sum of some elements in the array.
+     * Return the minimum number of patches required.
+     *
+     * Example 1:
+     *
+     * Input: nums = [1,3], n = 6
+     * Output: 1
+     * Explanation:
+     * Combinations of nums are [1], [3], [1,3], which form possible sums of: 1, 3, 4.
+     * Now if we add/patch 2 to nums, the combinations are: [1], [2], [3], [1,3], [2,3], [1,2,3].
+     * Possible sums are 1, 2, 3, 4, 5, 6, which now covers the range [1, 6].
+     * So we only need 1 patch.
+     * Example 2:
+     *
+     * Input: nums = [1,5,10], n = 20
+     * Output: 2
+     * Explanation: The two patches can be [2, 4].
+     * Example 3:
+     *
+     * Input: nums = [1,2,2], n = 5
+     * Output: 0
+     */
+    public int minPatches(int[] nums, int n) {
+        long missing = 1;
+        int patches = 0, i = 0;
+        while (missing <= n) {
+            if (i < nums.length && nums[i] <= missing) {
+                missing += nums[i++];
+            } else {
+                missing += missing;
+                patches++;
+            }
+        }
+        return patches;
+    }
+
+    /**
+     * https://leetcode.com/problems/chalkboard-xor-game/
+     * @param nums
+     * @return
+     */
+    public boolean xorGame(int[] nums) {
+        int xor = 0;
+        for (int i: nums) xor ^= i;
+        return xor == 0 || nums.length % 2 == 0;
+    }
 
     /**
      * https://leetcode.com/problems/self-crossing/

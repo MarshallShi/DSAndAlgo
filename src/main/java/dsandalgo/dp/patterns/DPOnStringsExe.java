@@ -41,7 +41,44 @@ public class DPOnStringsExe {
 
     public static void main(String[] args) {
         DPOnStringsExe exe = new DPOnStringsExe();
-        System.out.println(exe.shortestCommonSupersequence("delete", "leet"));
+        System.out.println(exe.minCut_II("delete"));
+    }
+
+    /**
+     * https://leetcode.com/problems/palindrome-partitioning-ii/
+     * Given a string s, partition s such that every substring of the partition is a palindrome.
+     *
+     * Return the minimum cuts needed for a palindrome partitioning of s.
+     *
+     * Example:
+     *
+     * Input: "aab"
+     * Output: 1
+     * Explanation: The palindrome partitioning ["aa","b"] could be produced using 1 cut.
+     */
+    public int minCut_II(String s) {
+        int len = s.length();
+        boolean[][] cache = new boolean[len][len];
+        int[] dp = new int[len];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        for (int i = 0; i < len; i++) {
+            //check from i to 0, if any palindrome
+            for (int j = i; j >= 0; j--) {
+                if (s.charAt(i) != s.charAt(j)) {
+                    continue;
+                }
+                if (j + 1 > i - 1 || cache[j + 1][i - 1]) {
+                    cache[j][i] = true;
+                    int temp = 0;
+                    if (j - 1 >= 0) {
+                        temp = dp[j - 1];
+                    }
+                    //update dp for the cur min.
+                    dp[i] = Math.min(dp[i], temp + 1);
+                }
+            }
+        }
+        return dp[len - 1] - 1;
     }
 
     /**

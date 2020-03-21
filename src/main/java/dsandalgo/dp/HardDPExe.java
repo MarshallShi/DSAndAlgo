@@ -14,9 +14,212 @@ public class HardDPExe {
 
     public static void main(String[] args) {
         HardDPExe exe = new HardDPExe();
-        int[] arr1 = {1,5,3,6,7};
-        int[] arr2 = {1,3,2,4};
-        //System.out.println(exe.digitsCount(1, 1, 13));
+        int[] arr1 = {3, 4, 6, 5};
+        int[] arr2 = {9, 1, 2, 5, 8, 3};
+        int target = 100;
+        int startFuel = 10;
+        int[][] stations = {{10,60},{20,30},{30,30},{60,40}};
+        System.out.println(exe.findRotateSteps("godding", "gd"));
+    }
+
+
+    /**
+     * https://leetcode.com/problems/profitable-schemes/
+     * There are G people in a gang, and a list of various crimes they could commit.
+     *
+     * The i-th crime generates a profit[i] and requires group[i] gang members to participate.
+     *
+     * If a gang member participates in one crime, that member can't participate in another crime.
+     *
+     * Let's call a profitable scheme any subset of these crimes that generates at least P profit, and the total number of gang members participating in that subset of crimes is at most G.
+     *
+     * How many schemes can be chosen?  Since the answer may be very large, return it modulo 10^9 + 7.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: G = 5, P = 3, group = [2,2], profit = [2,3]
+     * Output: 2
+     * Explanation:
+     * To make a profit of at least 3, the gang could either commit crimes 0 and 1, or just crime 1.
+     * In total, there are 2 schemes.
+     * Example 2:
+     *
+     * Input: G = 10, P = 5, group = [2,3,5], profit = [6,7,8]
+     * Output: 7
+     * Explanation:
+     * To make a profit of at least 5, the gang could commit any crimes, as long as they commit one.
+     * There are 7 possible schemes: (0), (1), (2), (0,1), (0,2), (1,2), and (0,1,2).
+     *
+     *
+     * Note:
+     *
+     * 1 <= G <= 100
+     * 0 <= P <= 100
+     * 1 <= group[i] <= 100
+     * 0 <= profit[i] <= 100
+     * 1 <= group.length = profit.length <= 100
+     */
+    public int profitableSchemes(int G, int P, int[] group, int[] profit) {
+        int len = group.length;
+        Integer[][][] memo = new Integer[len][G + 1][P + 1];
+        return profitableSchemesDFS(0, G, P, group, profit, memo);
+    }
+
+    private static final int MOD = (int) 1e9 + 7;
+
+    private int profitableSchemesDFS(int idx, int G, int P, int[] group, int[] profit, Integer[][][] memo) {
+        if (idx == group.length) {
+            return 0;
+        }
+        int actP = Math.max(P, 0);
+        if (memo[idx][G][actP] != null) {
+            return memo[idx][G][actP];
+        }
+        int res = 0;
+        //Use this group.
+        if (G >= group[idx]) {
+            if (P - profit[idx] <= 0) {
+                res++;
+            }
+            //once use this group, reduce both G and P.
+            res += profitableSchemesDFS(idx + 1, G - group[idx], P - profit[idx], group, profit, memo);
+            res %= MOD;
+        }
+        //Don't use this group, just increase the idx
+        res += profitableSchemesDFS(idx + 1, G, P, group, profit, memo);
+        res %= MOD;
+        memo[idx][G][actP] = res;
+        return res;
+    }
+
+    //Bottom up.
+    //dp[i][j] means the count of schemes with i profit and j members.
+    //The dp equation is simple here:
+    //dp[i + p][j + g] += dp[i][j]) if i + p < P
+    //dp[P][j + g] += dp[i][j]) if i + p >= P
+    public int profitableSchemes_bottomup(int G, int P, int[] group, int[] profit) {
+        int[][] dp = new int[P + 1][G + 1];
+        dp[0][0] = 1;
+        int res = 0, mod = (int)1e9 + 7;
+        for (int k = 0; k < group.length; k++) {
+            int g = group[k], p = profit[k];
+            for (int i = P; i >= 0; i--) {
+                for (int j = G - g; j >= 0; j--) {
+                    dp[Math.min(i + p, P)][j + g] = (dp[Math.min(i + p, P)][j + g] + dp[i][j]) % mod;
+                }
+            }
+        }
+        for (int x : dp[P]) {
+            res = (res + x) % mod;
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/freedom-trail/
+     * In the video game Fallout 4, the quest "Road to Freedom" requires players to reach a metal dial called the "Freedom Trail Ring",
+     * and use the dial to spell a specific keyword in order to open the door.
+     *
+     * Given a string ring, which represents the code engraved on the outer ring and another string key, which represents
+     * the keyword needs to be spelled. You need to find the minimum number of steps in order to spell all the characters in the keyword.
+     *
+     * Initially, the first character of the ring is aligned at 12:00 direction. You need to spell all the characters in the
+     * string key one by one by rotating the ring clockwise or anticlockwise to make each character of the string key aligned
+     * at 12:00 direction and then by pressing the center button.
+     *
+     * At the stage of rotating the ring to spell the key character key[i]:
+     *
+     * You can rotate the ring clockwise or anticlockwise one place, which counts as 1 step. The final purpose of the rotation is
+     * to align one of the string ring's characters at the 12:00 direction, where this character must equal to the character key[i].
+     * If the character key[i] has been aligned at the 12:00 direction, you need to press the center button to spell, which also
+     * counts as 1 step. After the pressing, you could begin to spell the next character in the key (next stage),
+     * otherwise, you've finished all the spelling.
+     * Example:
+     *
+     * Input: ring = "godding", key = "gd"
+     * Output: 4
+     * Explanation:
+     * For the first key character 'g', since it is already in place, we just need 1 step to spell this character.
+     * For the second key character 'd', we need to rotate the ring "godding" anticlockwise by two steps to make it become "ddinggo".
+     * Also, we need 1 more step for spelling.
+     * So the final output is 4.
+     * Note:
+     *
+     * Length of both ring and key will be in range 1 to 100.
+     * There are only lowercase letters in both strings and might be some duplcate characters in both strings.
+     * It's guaranteed that string key could always be spelled by rotating the string ring.
+     */
+    private Map<String, Map<Integer, Integer>> rotateStepsCache;
+
+    public int findRotateSteps(String ring, String key) {
+        rotateStepsCache = new HashMap<>();
+        return findRotateStepsDFS(ring, key, 0);
+    }
+
+    private int findRotateStepsDFS(String ring, String key, int i) {
+        if (i == key.length()) {
+            return 0;
+        }
+        int res = 0;
+        char ch = key.charAt(i);
+        if (rotateStepsCache.containsKey(ring) && rotateStepsCache.get(ring).containsKey(i)) {
+            return rotateStepsCache.get(ring).get(i);
+        }
+        int f = findPos(ring, ch);
+        int b = findBackPos(ring, ch);
+        //trick: next step start from the new string...
+        int forward = 1 + f + findRotateStepsDFS(ring.substring(f) + ring.substring(0, f), key, i + 1);
+        //next step also start from the new string...
+        int back = 1 + ring.length() - b + findRotateStepsDFS(ring.substring(b) + ring.substring(0, b), key, i + 1);
+        res = Math.min(forward, back);
+        Map<Integer, Integer> ans = rotateStepsCache.getOrDefault(ring, new HashMap<>());
+        ans.put(i, res);
+        rotateStepsCache.put(ring, ans);
+        return res;
+    }
+
+    // find first occurrence clockwise
+    private int findPos(String ring, char ch) {
+        return ring.indexOf(ch);
+    }
+
+    //find first occurrence  anti-clockwise
+    private int findBackPos(String ring, char ch) {
+        if (ring.charAt(0) == ch) return 0;
+        for (int i = ring.length() - 1; i > 0; i--) {
+            if (ring.charAt(i) == ch) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-number-of-taps-to-open-to-water-a-garden/
+     * @param n
+     * @param A
+     * @return
+     */
+    //dp[i] is the minimum number of taps to water [0, i].
+    //Initialize dp[i] with max = n + 2
+    //dp[0] = [0] as we need no tap to water nothing.
+    //
+    //Find the leftmost point of garden to water with tap i.
+    //Find the rightmost point of garden to water with tap i.
+    //We can water [left, right] with onr tap,
+    //and water [0, left - 1] with dp[left - 1] taps.
+    public int minTaps(int n, int[] A) {
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, n + 2);
+        dp[0] = 0;
+        for (int i = 0; i <= n; ++i) {
+            for (int j = Math.max(i - A[i] + 1, 0); j <= Math.min(i + A[i], n); ++j) {
+                dp[j] = Math.min(dp[j], dp[Math.max(0, i - A[i])] + 1);
+            }
+        }
+        return dp[n]  < n + 2 ? dp[n] : -1;
     }
 
     /**

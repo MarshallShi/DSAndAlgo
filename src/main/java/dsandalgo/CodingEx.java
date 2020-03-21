@@ -1015,38 +1015,6 @@ public class CodingEx {
         return ret;
     }
 
-    public static void merge(int[] nums1, int m, int[] nums2, int n) {
-        int[] temp = new int[m+n];
-        int i=0, j=0, idx = 0;
-        while (i<m && j<n) {
-            if (nums1[i] <= nums2[j]) {
-                temp[idx] = nums1[i];
-                i++;
-            } else {
-                temp[idx] = nums2[j];
-                j++;
-            }
-            idx++;
-        }
-        if (i<m) {
-            while (i<m) {
-                temp[idx] = nums1[i];
-                i++;
-                idx++;
-            }
-        }
-        if (j<n) {
-            while (j<n) {
-                temp[idx] = nums2[j];
-                j++;
-                idx++;
-            }
-        }
-        for (i=0; i<m+n; i++) {
-            nums1[i] = temp[i];
-        }
-    }
-
     public static List<Integer> largestDivisibleSubset(int[] nums) {
         List<Integer> subset = new ArrayList<Integer>();
         int i;

@@ -2,7 +2,6 @@ package dsandalgo.unionfind;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,175 @@ public class UnionFindHardExe {
         int[] wells = {1,2,2};
         int[][] pipes = {{1,2,1},{2,3,1}};
         //System.out.println(exe.minCostToSupplyWater(3, wells, pipes));
+    }
+
+
+    /**
+     * https://leetcode.com/problems/similar-string-groups/
+     * Two strings X and Y are similar if we can swap two letters (in different positions) of X, so that it equals Y. Also two strings X and Y are similar if they are equal.
+     *
+     * For example, "tars" and "rats" are similar (swapping at positions 0 and 2), and "rats" and "arts" are similar, but "star" is not similar to "tars", "rats", or "arts".
+     *
+     * Together, these form two connected groups by similarity: {"tars", "rats", "arts"} and {"star"}.  Notice that "tars" and "arts" are in the same group even though they are not similar.  Formally, each group is such that a word is in the group if and only if it is similar to at least one other word in the group.
+     *
+     * We are given a list A of strings.  Every string in A is an anagram of every other string in A.  How many groups are there?
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: A = ["tars","rats","arts","star"]
+     * Output: 2
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= A.length <= 2000
+     * 1 <= A[i].length <= 1000
+     * A.length * A[i].length <= 20000
+     * All words in A consist of lowercase letters only.
+     * All words in A have the same length and are anagrams of each other.
+     * The judging time limit has been increased for this question.
+     */
+    public int numSimilarGroups(String[] A) {
+        UnionFindSimilarGroups ufsg = new UnionFindSimilarGroups(A.length);
+        for (int i=0; i<A.length-1; i++) {
+            for (int j=i+1; j<A.length; j++) {
+                if (isSimilarGroup(A[i], A[j])) {
+                    ufsg.union(i, j);
+                }
+            }
+        }
+        return ufsg.size;
+    }
+
+    private boolean isSimilarGroup(String s, String t){
+        int res = 0;
+        for (int i=0; i<s.length(); i++) {
+            if (s.charAt(i) != t.charAt(i)) {
+                res++;
+            }
+            if (res > 2) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    class UnionFindSimilarGroups {
+        public int size;
+        public int[] parent;
+        public UnionFindSimilarGroups(int size) {
+            this.size = size;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public void union(int a, int b) {
+            int parB = find(b);
+            int parA = find(a);
+            if (parB != parA) {
+                parent[parB] = parent[parA];
+                size--;
+            }
+        }
+
+        public int find(int x) {
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/largest-component-size-by-common-factor/
+     * Given a non-empty array of unique positive integers A, consider the following graph:
+     * There are A.length nodes, labelled A[0] to A[A.length - 1];
+     * There is an edge between A[i] and A[j] if and only if A[i] and A[j] share a common factor greater than 1.
+     * Return the size of the largest connected component in the graph.
+     *
+     * Example 1:
+     * Input: [4,6,15,35]
+     * Output: 4
+     *
+     * Example 2:
+     * Input: [20,50,9,63]
+     * Output: 2
+     *
+     * Example 3:
+     * Input: [2,3,6,7,4,12,21,39]
+     * Output: 8
+     *
+     * Note:
+     *
+     * 1 <= A.length <= 20000
+     * 1 <= A[i] <= 100000
+     */
+    //Time complexity: O(N*sqrt(Max val of A[i]))
+    public int largestComponentSize(int[] A) {
+        int N = A.length;
+        // key is the lowest possible factor, val is the node index
+        Map<Integer, Integer> map = new HashMap<>();
+        UFComponentSize uf = new UFComponentSize(N);
+        for (int i = 0; i < N; i++) {
+            int a = A[i];
+            for (int j = 2; j * j <= a; j++) {
+                if (a % j == 0) {
+                    if (!map.containsKey(j)) {
+                        //this means that no index has claimed the factor yet
+                        map.put(j, i);
+                    } else {
+                        //this means that one index already claimed, so union that one with current
+                        uf.union(i, map.get(j));
+                    }
+                    if (!map.containsKey(a/j)) {
+                        map.put(a/j, i);
+                    } else {
+                        uf.union(i, map.get(a/j));
+                    }
+                }
+            }
+            //a could be factor too. Don't miss this
+            if (!map.containsKey(a)) {
+                map.put(a, i);
+            } else {
+                uf.union(i, map.get(a));
+            }
+        }
+        return uf.max;
+    }
+
+    class UFComponentSize {
+        int[] parent;
+        int[] size;
+        int max;
+        public UFComponentSize(int N){
+            parent = new int[N];
+            size = new int[N];
+            max = 1;
+            for (int i = 0; i < N; i++){
+                parent[i] = i;
+                size[i] = 1;
+            }
+        }
+        public int find(int x){
+            if (x == parent[x]) {
+                return x;
+            }
+            return parent[x] = find(parent[x]);
+        }
+        public void union(int x, int y){
+            int rootX = find(x);
+            int rootY = find(y);
+            if (rootX != rootY){
+                parent[rootX] = rootY;
+                size[rootY] += size[rootX];
+                max = Math.max(max, size[rootY]);
+            }
+        }
     }
 
     /**

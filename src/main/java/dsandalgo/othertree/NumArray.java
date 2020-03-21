@@ -2,6 +2,18 @@ package dsandalgo.othertree;
 
 public class NumArray {
 
+    class SegmentTreeNode {
+        SegmentTreeNode left;
+        SegmentTreeNode right;
+        int sum;
+        int start;
+        int end;
+        public SegmentTreeNode(int s, int e) {
+            this.start = s;
+            this.end = e;
+        }
+    }
+
     SegmentTreeNode root = null;
 
     public NumArray(int[] nums) {
