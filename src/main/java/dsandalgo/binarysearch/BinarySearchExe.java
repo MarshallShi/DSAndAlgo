@@ -12,7 +12,45 @@ public class BinarySearchExe {
     public static void main(String[] args) {
         BinarySearchExe exe = new BinarySearchExe();
         int[] nums = {1,3,5};
-        System.out.println(exe.search_33(nums, 1));
+        System.out.println(Arrays.binarySearch(nums, 6));
+    }
+
+    /**
+     * https://leetcode.com/problems/find-the-distance-value-between-two-arrays/
+     * @param arr1
+     * @param arr2
+     * @param d
+     * @return
+     */
+    public int findTheDistanceValue(int[] arr1, int[] arr2, int d) {
+        int ans = 0;
+        Arrays.sort(arr2);
+        for (int i=0; i<arr1.length; i++) {
+            int pos = Arrays.binarySearch(arr2, arr1[i]);
+            if (pos >= 0) {
+                continue;
+            } else {
+                int insertPos = -1 - pos;
+                if (insertPos == arr2.length) {
+                    if (Math.abs(arr1[i] - arr2[arr2.length - 1]) <= d) {
+                        continue;
+                    }
+                } else {
+                    if (insertPos == 0) {
+                        if (Math.abs(arr1[i] - arr2[0]) <= d) {
+                            continue;
+                        }
+                    } else {
+                        //in the middle
+                        if (Math.abs(arr1[i] - arr2[insertPos]) <= d || Math.abs(arr1[i] - arr2[insertPos - 1]) <= d) {
+                            continue;
+                        }
+                    }
+                }
+            }
+            ans++;
+        }
+        return ans;
     }
 
     /**

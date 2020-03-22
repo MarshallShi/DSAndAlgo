@@ -313,4 +313,8 @@ public class LineSweepExe {
         }
         return result;
     }
+
+    //1. Cloest points.
+    //2. Overlap rectangle
+    //3. Convex Hull
 }

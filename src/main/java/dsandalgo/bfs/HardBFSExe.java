@@ -16,10 +16,171 @@ public class HardBFSExe {
 
     public static void main(String[] args) {
         HardBFSExe exe = new HardBFSExe();
-        int[][] grid = {{0,3},{1,0},{1,1},{1,2},{1,3}};
-        int[] s = {0,0};
-        int[] t = {0,2};
-        System.out.println(exe.isEscapePossible(grid, s, t));
+        int[][] grid = {{2,1},{3,2},{4,1},{5,1},{6,4},{7,1},{8,7}};
+        System.out.println(exe.frogPosition(8, grid, 7, 7));
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-moves-to-reach-target-with-rotations/
+     * In an n*n grid, there is a snake that spans 2 cells and starts moving from the top left corner at (0, 0) and (0, 1). The grid has empty cells represented by zeros and blocked cells represented by ones. The snake wants to reach the lower right corner at (n-1, n-2) and (n-1, n-1).
+     *
+     * In one move the snake can:
+     *
+     * Move one cell to the right if there are no blocked cells there. This move keeps the horizontal/vertical position of the snake as it is.
+     * Move down one cell if there are no blocked cells there. This move keeps the horizontal/vertical position of the snake as it is.
+     * Rotate clockwise if it's in a horizontal position and the two cells under it are both empty. In that case the snake moves from (r, c) and (r, c+1) to (r, c) and (r+1, c).
+     *
+     * Rotate counterclockwise if it's in a vertical position and the two cells to its right are both empty. In that case the snake moves from (r, c) and (r+1, c) to (r, c) and (r, c+1).
+     *
+     * Return the minimum number of moves to reach the target.
+     *
+     * If there is no way to reach the target, return -1.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: grid = [[0,0,0,0,0,1],
+     *                [1,1,0,0,1,0],
+     *                [0,0,0,0,1,1],
+     *                [0,0,1,0,1,0],
+     *                [0,1,1,0,0,0],
+     *                [0,1,1,0,0,0]]
+     * Output: 11
+     * Explanation:
+     * One possible solution is [right, right, rotate clockwise, right, down, down, down, down, rotate counterclockwise, right, down].
+     * Example 2:
+     *
+     * Input: grid = [[0,0,1,1,1,1],
+     *                [0,0,0,0,1,1],
+     *                [1,1,0,0,0,1],
+     *                [1,1,1,0,0,1],
+     *                [1,1,1,0,0,1],
+     *                [1,1,1,0,0,0]]
+     * Output: 9
+     *
+     *
+     * Constraints:
+     *
+     * 2 <= n <= 100
+     * 0 <= grid[i][j] <= 1
+     * It is guaranteed that the snake starts at empty cells.
+     */
+    //Use the coordinate of the snake tail (up/left part), r, c, and the row difference between head and tail, dr,
+    // to describe the position of the snake. Obviously, dr = 0 and dr = 1 indicate that the snake is in horizontal and vertical positions, respectively;
+    //Use a Queue and a HashSet to perform BFS traversal and prune duplicates;
+    //In order to create hash for HashSet, use r + "," + c + "," + dr to encode snake position.
+    public int minimumMoves(int[][] g) {
+        int n = g.length;
+        int[] start = {0, 0, 0, 0}, target = {n - 1, n - 2, 0};
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(start);
+        Set<String> seen = new HashSet<>();
+        while (!q.isEmpty()) {
+            int[] pos = q.poll();
+            int r = pos[0], c = pos[1], dr = pos[2], steps = pos[3];        // snake tail row, column, row difference, steps.
+            // reach target.
+            if (Arrays.equals(Arrays.copyOf(pos, 3), target)) {
+                return steps;
+            }
+            if (seen.add(r + "," + c + "," + dr)) {                         // prune duplicates.
+                if (dr == 0) {                                              // horizontal position.
+                    if (r + 1 < n && g[r + 1][c] + g[r + 1][c + 1] == 0) {
+                        // the two cells below are empty: down and colock-wise rotation.
+                        q.addAll(Arrays.asList(new int[]{r + 1, c, 0, steps + 1}, new int[]{r, c, 1, steps + 1}));
+                    }
+                    if (c + 2 < n && g[r][c + 2] == 0) {                      // the right cell is empty.
+                        q.offer(new int[]{r, c + 1, 0, steps + 1});         // right.
+                    }
+                } else {                                                     // vertical position.
+                    if (c + 1 < n && g[r][c + 1] + g[r + 1][c + 1] == 0) {
+                        // the two cells right are empty: right and counterclock-wise rotation.
+                        q.addAll(Arrays.asList(new int[]{r, c + 1, 1, steps + 1}, new int[]{r, c, 0, steps + 1}));
+                    }
+                    if (r + 2 < n && g[r + 2][c] == 0) {
+                        // the below cell is empty.
+                        q.offer(new int[]{r + 1, c, 1, steps + 1});         // down.
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * https://leetcode.com/problems/frog-position-after-t-seconds/
+     * @param n
+     * @param edges
+     * @param t
+     * @param target
+     * @return
+     */
+    public double frogPosition(int n, int[][] edges, int t, int target) {
+        if (edges == null || edges.length == 0) {
+            return 1;
+        }
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (int i=0; i<edges.length; i++) {
+            graph.putIfAbsent(edges[i][0], new ArrayList<Integer>());
+            graph.get(edges[i][0]).add(edges[i][1]);
+
+            graph.putIfAbsent(edges[i][1], new ArrayList<Integer>());
+            graph.get(edges[i][1]).add(edges[i][0]);
+        }
+        Queue<PairPosPro> q = new LinkedList<>();
+        PairPosPro start = new PairPosPro(1, 1);
+        q.offer(start);
+        boolean[] visited = new boolean[n+1];
+        visited[1] = true;
+        while (!q.isEmpty() && t-- > 0) {
+            int s = q.size();
+            for (int i=0; i<s; i++) {
+                PairPosPro cur = q.poll();
+                if (graph.containsKey(cur.position)) {
+                    int size = graph.get(cur.position).size();
+                    for (int nexpos : graph.get(cur.position)) {
+                        if (visited[nexpos]) {
+                            size--;
+                        }
+                    }
+                    if (size > 0) {
+                        for (int nexpos : graph.get(cur.position)) {
+                            if (!visited[nexpos]) {
+                                if (nexpos == target && noFurtherJump(graph, visited, nexpos)) {
+                                    return cur.probability * (1/(double)size);
+                                } else {
+                                    q.offer(new PairPosPro(nexpos, cur.probability * (1/(double)size)));
+                                }
+                                visited[nexpos] = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+
+    private boolean noFurtherJump(Map<Integer, List<Integer>> graph, boolean[] visited, int nexpos) {
+        if (graph.containsKey(nexpos)) {
+            for (int nx : graph.get(nexpos)) {
+                if (!visited[nx]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    class PairPosPro{
+        int position;
+        double probability;
+        public PairPosPro(int _pos, double _pro){
+            this.position = _pos;
+            this.probability = _pro;
+        }
     }
 
     /**

@@ -2,6 +2,8 @@ package dsandalgo.math;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 public class HardMathExe {
@@ -10,7 +12,233 @@ public class HardMathExe {
         HardMathExe exe = new HardMathExe();
         //D = ["1","4","9"], N = 1000000000
         String[] d = {"1","4","9"};
-        System.out.println(exe.atMostNGivenDigitSet(d, 50090000));
+        int[] digits = {8,6,7,1,0};
+        System.out.println(exe.largestMultipleOfThree(digits));
+    }
+
+    /**
+     * https://leetcode.com/problems/transform-to-chessboard/
+     * An N x N board contains only 0s and 1s. In each move, you can swap any 2 rows with each other, or any 2 columns with each other.
+     *
+     * What is the minimum number of moves to transform the board into a "chessboard" - a board where no 0s and no 1s are 4-directionally adjacent?
+     * If the task is impossible, return -1.
+     *
+     * Examples:
+     * Input: board = [[0,1,1,0],[0,1,1,0],[1,0,0,1],[1,0,0,1]]
+     * Output: 2
+     * Explanation:
+     * One potential sequence of moves is shown below, from left to right:
+     *
+     * 0110     1010     1010
+     * 0110 --> 1010 --> 0101
+     * 1001     0101     1010
+     * 1001     0101     0101
+     *
+     * The first move swaps the first and second column.
+     * The second move swaps the second and third row.
+     *
+     *
+     * Input: board = [[0, 1], [1, 0]]
+     * Output: 0
+     * Explanation:
+     * Also note that the board with 0 in the top left corner,
+     * 01
+     * 10
+     *
+     * is also a valid chessboard.
+     *
+     * Input: board = [[1, 0], [1, 0]]
+     * Output: -1
+     * Explanation:
+     * No matter what sequence of moves you make, you cannot end with a valid chessboard.
+     * Note:
+     *
+     * board will have the same number of rows and columns, a number in the range [2, 30].
+     * board[i][j] will be only 0s or 1s.
+     */
+    public int movesToChessboard(int[][] b) {
+        int N = b.length, rowSum = 0, colSum = 0, rowSwap = 0, colSwap = 0;
+        for (int i = 0; i < N; ++i){
+            for (int j = 0; j < N; ++j) {
+                if ((b[0][0] ^ b[i][0] ^ b[0][j] ^ b[i][j]) == 1) {
+                    return -1;
+                }
+            }
+        }
+        for (int i = 0; i < N; ++i) {
+            rowSum += b[0][i];
+            colSum += b[i][0];
+            if (b[i][0] == i % 2) {
+                rowSwap++;
+            }
+            if (b[0][i] == i % 2) {
+                colSwap++;
+            }
+        }
+        if (rowSum != N / 2 && rowSum != (N + 1) / 2) {
+            return -1;
+        }
+        if (colSum != N / 2 && colSum != (N + 1) / 2) {
+            return -1;
+        }
+        if (N % 2 == 1) {
+            if (colSwap % 2 == 1) {
+                colSwap = N - colSwap;
+            }
+            if (rowSwap % 2 == 1) {
+                rowSwap = N - rowSwap;
+            }
+        } else {
+            colSwap = Math.min(N - colSwap, colSwap);
+            rowSwap = Math.min(N - rowSwap, rowSwap);
+        }
+        return (colSwap + rowSwap) / 2;
+    }
+
+    /**
+     * https://leetcode.com/problems/largest-multiple-of-three/
+     * Given an integer array of digits, return the largest multiple of three that can be formed by concatenating some of the given digits in any order.
+     *
+     * Since the answer may not fit in an integer data type, return the answer as a string.
+     *
+     * If there is no answer return an empty string.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: digits = [8,1,9]
+     * Output: "981"
+     * Example 2:
+     *
+     * Input: digits = [8,6,7,1,0]
+     * Output: "8760"
+     * Example 3:
+     *
+     * Input: digits = [1]
+     * Output: ""
+     * Example 4:
+     *
+     * Input: digits = [0,0,0,0,0,0]
+     * Output: "0"
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= digits.length <= 10^4
+     * 0 <= digits[i] <= 9
+     * The returning answer must not contain unnecessary leading zeros.
+     */
+    public String largestMultipleOfThree(int[] digits) {
+        //Bucket sort
+        int[] cnt = new int[10];
+        for (int d : digits) {
+            cnt[d]++;
+        }
+        int remain1Cnt = cnt[1] + cnt[4] + cnt[7]; // Number of elements with remainder = 1
+        int remain2Cnt = cnt[2] + cnt[5] + cnt[8]; // Number of elements with remainder = 2
+        int remainSum = (remain1Cnt + 2 * remain2Cnt) % 3;
+
+        //Choose which one to delete.
+        if (remainSum == 1) {
+            // Delete 1 smallest digit with remainder = 1 or Delete 2 smallest digits with remainder = 2
+            if (remain1Cnt >= 1) {
+                remain1Cnt -= 1;
+            } else {
+                remain2Cnt -= 2;
+            }
+        } else {
+            if (remainSum == 2) {
+                // Delete 1 smallest digit with remainder = 2 or Delete 2 smallest digits with remainder = 1
+                if (remain2Cnt >= 1) {
+                    remain2Cnt -= 1;
+                } else {
+                    remain1Cnt -= 2;
+                }
+            }
+        }
+
+        //Construct the result, from high to low.
+        StringBuilder sb = new StringBuilder();
+        for (int d = 9; d >= 0; d--) {
+            if (d % 3 == 0) {
+                while (cnt[d]-- > 0) sb.append(d);
+            } else {
+                if (d % 3 == 1) {
+                    while (cnt[d]-- > 0 && remain1Cnt-- > 0) sb.append(d);
+                } else {
+                    while (cnt[d]-- > 0 && remain2Cnt-- > 0) sb.append(d);
+                }
+            }
+        }
+        // Remove leading 0 case [0,...,0]
+        if (sb.length() > 0 && sb.charAt(0) == '0') {
+            return "0";
+        }
+        return sb.toString();
+    }
+
+    /**
+     * https://leetcode.com/problems/max-points-on-a-line/
+     * Given n points on a 2D plane, find the maximum number of points that lie on the same straight line.
+     *
+     * Example 1:
+     *
+     * Input: [[1,1],[2,2],[3,3]]
+     * Output: 3
+     * Explanation:
+     * ^
+     * |
+     * |        o
+     * |     o
+     * |  o
+     * +------------->
+     * 0  1  2  3  4
+     * Example 2:
+     *
+     * Input: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+     * Output: 4
+     * Explanation:
+     * ^
+     * |
+     * |  o
+     * |     o        o
+     * |        o
+     * |  o        o
+     * +------------------->
+     * 0  1  2  3  4  5  6
+     * NOTE: input types have been changed on April 15, 2019. Please reset to default code definition to get new method signature.
+     */
+    public int maxPoints(int[][] points) {
+        if (points == null) return 0;
+        int solution = 0;
+        for (int i = 0; i < points.length; i++) {
+            Map<String, Integer> map = new HashMap<>();
+            int duplicate = 0;
+            int max = 0;
+            for (int j = i + 1; j < points.length; j++) {
+                int deltaX = points[j][0] - points[i][0];
+                int deltaY = points[j][1] - points[i][1];
+                if (deltaX == 0 && deltaY == 0) {
+                    duplicate++;
+                    continue;
+                }
+                int gcd = maxPointGCD(deltaX, deltaY);
+                int dX = deltaX / gcd;
+                int dY = deltaY / gcd;
+                map.put(dX + "," + dY, map.getOrDefault(dX + "," + dY, 0) + 1);
+                max = Math.max(max, map.get(dX + "," + dY));
+            }
+            solution = Math.max(solution, max + duplicate + 1);
+        }
+        return solution;
+    }
+
+    private int maxPointGCD(int a, int b) {
+        if (b == 0) {
+            return a;
+        }
+        return maxPointGCD(b, a % b);
     }
 
     /**

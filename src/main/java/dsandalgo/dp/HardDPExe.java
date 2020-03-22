@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class HardDPExe {
 
@@ -19,9 +16,127 @@ public class HardDPExe {
         int target = 100;
         int startFuel = 10;
         int[][] stations = {{10,60},{20,30},{30,30},{60,40}};
-        System.out.println(exe.findRotateSteps("godding", "gd"));
+        System.out.println(exe.leastOpsExpressTarget(5, 525));
     }
 
+
+    /**
+     * https://leetcode.com/problems/cat-and-mouse/
+     */
+    private int[][][] catMouseDP;
+    public int catMouseGame(int[][] graph) {
+        int n = graph.length;
+        catMouseDP = new int[2*n][n][n];
+        for (int i=0; i<catMouseDP.length; i++) {
+            for(int j=0;  j<catMouseDP[0].length; j++){
+                Arrays.fill(catMouseDP[i][j],-1);
+            }
+        }
+        return seach(graph, 0, 1,2);
+    }
+    // t is which step, x is mouse location, y is cat location
+    private int seach(int[][] graph, int t, int x, int y){
+        if (t == graph.length * 2) return 0;
+        if (x == y) return catMouseDP[t][x][y] = 2;
+        if (x == 0) return catMouseDP[t][x][y] = 1;
+        if (catMouseDP[t][x][y] != -1) return catMouseDP[t][x][y];
+        int who = t % 2;
+        boolean flag;
+        if (who == 0) { // mouse's turn
+            flag = true; // by default, is cat win
+            for (int i = 0; i < graph[x].length; i++) {
+                int nxt = seach(graph, t + 1, graph[x][i], y);
+                if (nxt == 1) return catMouseDP[t][x][y] = 1;
+                else if (nxt != 2) flag = false;
+            }
+            if (flag) return catMouseDP[t][x][y] = 2;
+            else return catMouseDP[t][x][y] = 0;
+        }
+        else { // cat's turn
+            flag = true; // by default is mouse win
+            for (int i = 0; i < graph[y].length; i++)
+                if (graph[y][i] != 0) {
+                    int nxt = seach(graph, t + 1, x, graph[y][i]);
+                    if (nxt == 2) return catMouseDP[t][x][y] = 2;
+                    else if (nxt != 1) flag = false;
+                }
+            if (flag) return catMouseDP[t][x][y] = 1;
+            else return catMouseDP[t][x][y] = 0;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/least-operators-to-express-number/
+     * Given a single positive integer x, we will write an expression of the form x (op1) x (op2) x (op3) x ... where each operator op1, op2, etc. is either addition, subtraction, multiplication, or division (+, -, *, or /).  For example, with x = 3, we might write 3 * 3 / 3 + 3 - 3 which is a value of 3.
+     *
+     * When writing such an expression, we adhere to the following conventions:
+     *
+     * The division operator (/) returns rational numbers.
+     * There are no parentheses placed anywhere.
+     * We use the usual order of operations: multiplication and division happens before addition and subtraction.
+     * It's not allowed to use the unary negation operator (-).  For example, "x - x" is a valid expression as it only uses subtraction, but "-x + x" is not because it uses negation.
+     * We would like to write an expression with the least number of operators such that the expression equals the given target.  Return the least number of operators used.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: x = 3, target = 19
+     * Output: 5
+     * Explanation: 3 * 3 + 3 * 3 + 3 / 3.  The expression contains 5 operations.
+     * Example 2:
+     *
+     * Input: x = 5, target = 501
+     * Output: 8
+     * Explanation: 5 * 5 * 5 * 5 - 5 * 5 * 5 + 5 / 5.  The expression contains 8 operations.
+     * Example 3:
+     *
+     * Input: x = 100, target = 100000000
+     * Output: 3
+     * Explanation: 100 * 100 * 100 * 100.  The expression contains 3 operations.
+     *
+     *
+     * Note:
+     *
+     * 2 <= x <= 100
+     * 1 <= target <= 2 * 10^8
+     */
+    //trick: aggressively apply product
+    private Map<Integer, Integer> leastOpsCache = new HashMap<>();
+
+    public int leastOpsExpressTarget(int x, int target) {
+        if (target == 1) {
+            //already reach, or just add one /
+            return x == 1 ? 0 : 1;
+        }
+        if (leastOpsCache.containsKey(target)) {
+            return leastOpsCache.get(target);
+        }
+        long product = x;
+        int count = 0;
+        while (product < target) {
+            count++;
+            product *= x;
+        }
+
+        // candidate1 : in the form : x*x*...*x - (......) = target
+        int cand1 = Integer.MAX_VALUE;
+        if (product == target) {
+            cand1 = count;
+        } else {
+            if (product - target < target) {
+                cand1 = count + leastOpsExpressTarget(x, (int)(product - target)) + 1;
+            }
+        }
+
+        // candidate2 : in the form : x*x*...*x + (......) = target
+        product /= x;
+        int cand2 = leastOpsExpressTarget(x, (int)(target - product)) + (count == 0 ? 2 : count);
+
+        int res = Math.min(cand1, cand2);
+        leastOpsCache.put(target, res);
+        return res;
+    }
 
     /**
      * https://leetcode.com/problems/profitable-schemes/

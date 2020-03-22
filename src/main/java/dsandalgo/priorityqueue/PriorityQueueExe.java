@@ -25,7 +25,109 @@ public class PriorityQueueExe {
         int target = 100;
         int startFuel = 10;
         int[][] stations = {{10,60},{20,30},{30,30},{60,40}};
-        System.out.println(pqexe.minRefuelStops(100, startFuel, stations));
+        System.out.println(pqexe.getKth(12, 15, 2));
+    }
+
+    /**
+     * https://leetcode.com/problems/sort-integers-by-the-power-value/
+     * @param lo
+     * @param hi
+     * @param k
+     * @return
+     */
+    public int getKth(int lo, int hi, int k) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[1] == o2[1]) {
+                    return o2[0] - o1[0];
+                }
+                return o2[1] - o1[1];
+            }
+        });
+        for (int i=lo; i<=hi; i++) {
+            if (pq.size() < k) {
+                pq.offer(new int[]{i, getPower(i)});
+            } else {
+                int curPower = getPower(i);
+                int[] top = pq.peek();
+                if (top[1] > curPower || (top[1] == curPower && top[0] > i)) {
+                    pq.poll();
+                    pq.offer(new int[]{i, curPower});
+                }
+            }
+        }
+        return pq.poll()[0];
+    }
+
+    private int getPower(int num) {
+        int count = 0;
+        while (num != 1) {
+            if (num % 2 == 0) {
+                num = num/2;
+            } else {
+                num = 3*num +1;
+            }
+            count++;
+        }
+        return count;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-performance-of-a-team/
+     * There are n engineers numbered from 1 to n and two arrays: speed and efficiency, where speed[i] and efficiency[i] represent the speed and efficiency for the i-th engineer respectively. Return the maximum performance of a team composed of at most k engineers, since the answer can be a huge number, return this modulo 10^9 + 7.
+     *
+     * The performance of a team is the sum of their engineers' speeds multiplied by the minimum efficiency among their engineers.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 2
+     * Output: 60
+     * Explanation:
+     * We have the maximum performance of the team by selecting engineer 2 (with speed=10 and efficiency=4) and engineer 5 (with speed=5 and efficiency=7). That is, performance = (10 + 5) * min(4, 7) = 60.
+     * Example 2:
+     *
+     * Input: n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 3
+     * Output: 68
+     * Explanation:
+     * This is the same example as the first but k = 3. We can select engineer 1, engineer 2 and engineer 5 to get the maximum performance of the team. That is, performance = (2 + 10 + 5) * min(5, 4, 7) = 68.
+     * Example 3:
+     *
+     * Input: n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 4
+     * Output: 72
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= n <= 10^5
+     * speed.length == n
+     * efficiency.length == n
+     * 1 <= speed[i] <= 10^5
+     * 1 <= efficiency[i] <= 10^8
+     * 1 <= k <= n
+     */
+    public int maxPerformance(int n, int[] speed, int[] efficiency, int k) {
+        int[][] ess = new int[n][2];
+        for (int i = 0; i < n; ++i) {
+            ess[i] = new int[] {efficiency[i], speed[i]};
+        }
+        //sort by efficiency desc
+        Arrays.sort(ess, (a, b) -> b[0] - a[0]);
+        //pq sort by speed increase, so always poll the slowest
+        PriorityQueue<Integer> pq = new PriorityQueue<>(k, (a, b) -> a - b);
+        long res = 0, sumS = 0;
+        for (int[] es : ess) {
+            pq.add(es[1]);
+            sumS = (sumS + es[1]);
+            if (pq.size() > k) {
+                sumS -= pq.poll();
+            }
+            //current es[0] always the one to use as it is lowest till now.
+            res = Math.max(res, (sumS * es[0]));
+        }
+        return (int) (res % (long)(1e9 + 7));
     }
 
     /**

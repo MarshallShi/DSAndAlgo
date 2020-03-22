@@ -30,6 +30,39 @@ public class HashMapExe {
 
 
     /**
+     * https://leetcode.com/problems/cinema-seat-allocation/
+     * @param n
+     * @param reservedSeats
+     * @return
+     */
+    public int maxNumberOfFamilies(int n, int[][] reservedSeats) {
+        int m = reservedSeats.length, ans = 0;
+        Map<Integer, HashSet<Integer>> map = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            map.putIfAbsent(reservedSeats[i][0], new HashSet<>());
+            map.get(reservedSeats[i][0]).add(reservedSeats[i][1]);
+        }
+        ans += 2 * n - 2 * map.size();
+        Set<Integer> keys = map.keySet();
+        for (Integer row : keys) {
+            boolean flag = false;
+            Set<Integer> reserved = map.get(row);
+            if (!reserved.contains(2) && !reserved.contains(3) && !reserved.contains(4) && !reserved.contains(5)) {
+                ans++;
+                flag = true;
+            }
+            if (!reserved.contains(6) && !reserved.contains(7) && !reserved.contains(8) && !reserved.contains(9)) {
+                ans++;
+                flag = true;
+            }
+            if (!flag && !reserved.contains(4) && !reserved.contains(5) && !reserved.contains(6) && !reserved.contains(7)) {
+                ans++;
+            }
+        }
+        return ans;
+    }
+
+    /**
      * https://leetcode.com/problems/maximum-equal-frequency/
      * Given an array nums of positive integers, return the longest possible length of an array prefix of nums, such that it is possible to remove exactly one element from this prefix so that every number that has appeared in it will have the same number of occurrences.
      *
