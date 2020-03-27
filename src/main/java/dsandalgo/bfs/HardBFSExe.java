@@ -17,7 +17,235 @@ public class HardBFSExe {
     public static void main(String[] args) {
         HardBFSExe exe = new HardBFSExe();
         int[][] grid = {{2,1},{3,2},{4,1},{5,1},{6,4},{7,1},{8,7}};
-        System.out.println(exe.frogPosition(8, grid, 7, 7));
+        //System.out.println(exe.frogPosition(8, grid, 7, 7));
+        System.out.println(exe.racecar(24));
+    }
+
+    /**
+     * https://leetcode.com/problems/race-car/
+     * Your car starts at position 0 and speed +1 on an infinite number line.  (Your car can go into negative positions.)
+     *
+     * Your car drives automatically according to a sequence of instructions A (accelerate) and R (reverse).
+     *
+     * When you get an instruction "A", your car does the following: position += speed, speed *= 2.
+     *
+     * When you get an instruction "R", your car does the following: if your speed is positive then speed = -1 , otherwise speed = 1.  (Your position stays the same.)
+     *
+     * For example, after commands "AAR", your car goes to positions 0->1->3->3, and your speed goes to 1->2->4->-1.
+     *
+     * Now for some target position, say the length of the shortest sequence of instructions to get there.
+     *
+     * Example 1:
+     * Input:
+     * target = 3
+     * Output: 2
+     * Explanation:
+     * The shortest instruction sequence is "AA".
+     * Your position goes from 0->1->3.
+     * Example 2:
+     * Input:
+     * target = 6
+     * Output: 5
+     * Explanation:
+     * The shortest instruction sequence is "AAARA".
+     * Your position goes from 0->1->3->7->7->6.
+     *
+     *
+     * Note:
+     *
+     * 1 <= target <= 10000.
+     */
+    public int racecar(int target) {
+        Set<String> visited = new HashSet<>();
+        Queue<StateNode> queue = new LinkedList<>();
+        queue.add(new StateNode(1, 0));
+        int distance = 0;
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
+            for (int i = 0; i < levelSize; i++) {
+                StateNode cur = queue.poll();
+                if (cur.position == target) {
+                    return distance;
+                }
+                // if A
+                int nextPosition = cur.position + cur.speed;
+                int nextSpeed = cur.speed * 2;
+                if (!visited.contains(nextSpeed + "," + nextPosition) && Math.abs(target - nextPosition) < target) {
+                    visited.add(nextSpeed + "," + nextPosition);
+                    queue.offer(new StateNode(nextSpeed, nextPosition));
+                }
+                // if R
+                nextPosition = cur.position;
+                nextSpeed = cur.speed > 0 ? -1 : 1;
+                if (!visited.contains(nextSpeed + "," + nextPosition) && Math.abs(target - nextPosition) < target) {
+                    visited.add(nextSpeed + "," + nextPosition);
+                    queue.offer(new StateNode(nextSpeed, nextPosition));
+                }
+            }
+            distance++;
+        }
+        return -1;
+    }
+
+    class StateNode {
+        int speed;
+        int position;
+
+        public StateNode(int speed, int position) {
+            this.speed = speed;
+            this.position = position;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-moves-to-move-a-box-to-their-target-location/
+     *
+     * Storekeeper is a game in which the player pushes boxes around in a warehouse trying to get them to target locations.
+     *
+     * The game is represented by a grid of size m x n, where each element is a wall, floor, or a box.
+     *
+     * Your task is move the box 'B' to the target position 'T' under the following rules:
+     *
+     * Player is represented by character 'S' and can move up, down, left, right in the grid if it is a floor (empy cell).
+     * Floor is represented by character '.' that means free cell to walk.
+     * Wall is represented by character '#' that means obstacle  (impossible to walk there).
+     * There is only one box 'B' and one target cell 'T' in the grid.
+     * The box can be moved to an adjacent free cell by standing next to the box and then moving in the direction of the box. This is a push.
+     * The player cannot walk through the box.
+     * Return the minimum number of pushes to move the box to the target. If there is no way to reach the target, return -1.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: grid = [["#","#","#","#","#","#"],
+     *                ["#","T","#","#","#","#"],
+     *                ["#",".",".","B",".","#"],
+     *                ["#",".","#","#",".","#"],
+     *                ["#",".",".",".","S","#"],
+     *                ["#","#","#","#","#","#"]]
+     * Output: 3
+     * Explanation: We return only the number of times the box is pushed.
+     * Example 2:
+     *
+     * Input: grid = [["#","#","#","#","#","#"],
+     *                ["#","T","#","#","#","#"],
+     *                ["#",".",".","B",".","#"],
+     *                ["#","#","#","#",".","#"],
+     *                ["#",".",".",".","S","#"],
+     *                ["#","#","#","#","#","#"]]
+     * Output: -1
+     * Example 3:
+     *
+     * Input: grid = [["#","#","#","#","#","#"],
+     *                ["#","T",".",".","#","#"],
+     *                ["#",".","#","B",".","#"],
+     *                ["#",".",".",".",".","#"],
+     *                ["#",".",".",".","S","#"],
+     *                ["#","#","#","#","#","#"]]
+     * Output: 5
+     * Explanation:  push the box down, left, left, up and up.
+     * Example 4:
+     *
+     * Input: grid = [["#","#","#","#","#","#","#"],
+     *                ["#","S","#",".","B","T","#"],
+     *                ["#","#","#","#","#","#","#"]]
+     * Output: -1
+     *
+     *
+     * Constraints:
+     *
+     * m == grid.length
+     * n == grid[i].length
+     * 1 <= m <= 20
+     * 1 <= n <= 20
+     * grid contains only characters '.', '#',  'S' , 'T', or 'B'.
+     * There is only one character 'S', 'B' and 'T' in the grid.
+     */
+    public int minPushBox(char[][] grid) {
+        int[] box = null, target = null, storekeeper = null;
+        int n = grid.length, m = grid[0].length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 'B') {
+                    box = new int[]{i, j};
+                } else {
+                    if (grid[i][j] == 'T') {
+                        target = new int[]{i, j};
+                    } else {
+                        if (grid[i][j] == 'S') {
+                            storekeeper = new int[]{i, j};
+                        }
+                    }
+                }
+            }
+        }
+        //Integer value of the box and storekeeper position
+        Queue<Integer> q = new LinkedList<>();
+        Map<Integer, Integer> dis = new HashMap<>();
+        int start = encodeState(box[0], box[1], storekeeper[0], storekeeper[1]);
+        dis.put(start, 0);
+        q.offer(start);
+        int ret = Integer.MAX_VALUE;
+        int[][] moves = new int[][]{{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            int[] du = decodeState(u);
+            //prune
+            if (dis.get(u) >= ret) {
+                continue;
+            }
+            if (du[0] == target[0] && du[1] == target[1]) {
+                ret = Math.min(ret, dis.get(u));
+                continue;
+            }
+            int[] b = new int[]{du[0], du[1]};
+            int[] s = new int[]{du[2], du[3]};
+            // move the storekeeper for 1 step
+            for (int[] move : moves) {
+                int nsx = s[0] + move[0];
+                int nsy = s[1] + move[1];
+                if (nsx < 0 || nsx >= n || nsy < 0 || nsy >= m || grid[nsx][nsy] == '#') continue;
+                // if it meet the box, then the box move in the same direction
+                if (nsx == b[0] && nsy == b[1]) {
+                    int nbx = b[0] + move[0];
+                    int nby = b[1] + move[1];
+                    if (nbx < 0 || nbx >= n || nby < 0 || nby >= m || grid[nbx][nby] == '#') continue;
+                    int v = encodeState(nbx, nby, nsx, nsy);
+                    //prune
+                    if (dis.containsKey(v) && dis.get(v) <= dis.get(u) + 1) {
+                        continue;
+                    }
+                    dis.put(v, dis.get(u) + 1);
+                    q.offer(v);
+                } else {
+                    // if the storekeeper doesn't meet the box, the position of the box do not change
+                    int v = encodeState(b[0], b[1], nsx, nsy);
+                    //prune
+                    if (dis.containsKey(v) && dis.get(v) <= dis.get(u)) {
+                        continue;
+                    }
+                    dis.put(v, dis.get(u));
+                    q.offer(v);
+                }
+            }
+        }
+        return ret == Integer.MAX_VALUE ? -1 : ret;
+    }
+
+    private int encodeState(int bx, int by, int sx, int sy) {
+        return (bx << 24) | (by << 16) | (sx << 8) | sy;
+    }
+
+    private int[] decodeState(int num) {
+        int[] ret = new int[4];
+        ret[0] = (num >>> 24) & 0xff;
+        ret[1] = (num >>> 16) & 0xff;
+        ret[2] = (num >>> 8) & 0xff;
+        ret[3] = num & 0xff;
+        return ret;
     }
 
     /**

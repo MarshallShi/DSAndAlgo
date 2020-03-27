@@ -1,9 +1,13 @@
 package dsandalgo.math;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 public class HardMathExe {
@@ -13,8 +17,180 @@ public class HardMathExe {
         //D = ["1","4","9"], N = 1000000000
         String[] d = {"1","4","9"};
         int[] digits = {8,6,7,1,0};
-        System.out.println(exe.largestMultipleOfThree(digits));
+        System.out.println(exe.numDupDigitsAtMostN(262));
     }
+
+    /**
+     * https://leetcode.com/problems/smallest-good-base/
+     * For an integer n, we call k>=2 a good base of n, if all digits of n base k are 1.
+     *
+     * Now given a string representing n, you should return the smallest good base of n in string format.
+     *
+     * Example 1:
+     *
+     * Input: "13"
+     * Output: "3"
+     * Explanation: 13 base 3 is 111.
+     *
+     *
+     * Example 2:
+     *
+     * Input: "4681"
+     * Output: "8"
+     * Explanation: 4681 base 8 is 11111.
+     *
+     *
+     * Example 3:
+     *
+     * Input: "1000000000000000000"
+     * Output: "999999999999999999"
+     * Explanation: 1000000000000000000 base 999999999999999999 is 11.
+     *
+     *
+     * Note:
+     *
+     * The range of n is [3, 10^18].
+     * The string representing n is always valid and will not have leading zeros.
+     */
+    public String smallestGoodBase(String n) {
+        long num = Long.valueOf(n);
+
+        for (int m = (int) (Math.log(num + 1) / Math.log(2)); m > 2; m--) {
+
+            long l = (long) (Math.pow(num + 1, 1.0 / m));
+            long r = (long) (Math.pow(num, 1.0 / (m - 1)));
+
+            while (l <= r) {
+                long k = l + ((r - l) >> 1);
+                long f = 0L;
+                for (int i = 0; i < m; i++, f = f * k + 1) ;
+                if (num == f) {
+                    return String.valueOf(k);
+                } else if (num < f) {
+                    r = k - 1;
+                } else {
+                    l = k + 1;
+                }
+            }
+        }
+
+        return String.valueOf(num - 1);
+    }
+
+    /**
+     * https://leetcode.com/problems/sum-of-subsequence-widths/
+     * Given an array of integers A, consider all non-empty subsequences of A.
+     *
+     * For any sequence S, let the width of S be the difference between the maximum and minimum element of S.
+     *
+     * Return the sum of the widths of all subsequences of A.
+     *
+     * As the answer may be very large, return the answer modulo 10^9 + 7.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [2,1,3]
+     * Output: 6
+     * Explanation:
+     * Subsequences are [1], [2], [3], [2,1], [2,3], [1,3], [2,1,3].
+     * The corresponding widths are 0, 0, 0, 1, 1, 2, 2.
+     * The sum of these widths is 6.
+     *
+     *
+     * Note:
+     *
+     * 1 <= A.length <= 20000
+     * 1 <= A[i] <= 20000
+     */
+    //Sort the array.
+    //Then for each number A[i]:
+    //There are i smaller numbers,
+    //so there are 2 ^ i sequences in which A[i] is maximum.
+    //we should do res += A[i] * (2 ^ i)
+    //There are n - i - 1 bigger numbers,
+    //so there are 2 ^ (n - i - 1) sequences in which A[i] is minimum.
+    //we should do res -= A[i] * (n - i - 1)
+    public int sumSubseqWidths(int[] A) {
+        Arrays.sort(A);
+        long numOfSubseq = 1, res = 0, mod = (long)1e9 + 7;
+        int n = A.length;
+        for (int i = 0; i < n; ++i) {
+            //TRICK: to avoid overflow of 2^(n-i-1) from the other end,
+            //Leverage the reverse side, from high to low, we need to subtract the same.
+            res = (res + A[i] * numOfSubseq - A[n - i - 1] * numOfSubseq) % mod;
+            numOfSubseq = numOfSubseq * 2 % mod;
+        }
+        return (int)((res + mod) % mod);
+    }
+
+    /**
+     * https://leetcode.com/problems/numbers-with-repeated-digits/
+     * Given a positive integer N, return the number of positive integers less than or equal to N that have at least 1 repeated digit.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: 20
+     * Output: 1
+     * Explanation: The only positive number (<= 20) with at least 1 repeated digit is 11.
+     * Example 2:
+     *
+     * Input: 100
+     * Output: 10
+     * Explanation: The positive numbers (<= 100) with atleast 1 repeated digit are 11, 22, 33, 44, 55, 66, 77, 88, 99, and 100.
+     * Example 3:
+     *
+     * Input: 1000
+     * Output: 262
+     *
+     *
+     * Note:
+     *
+     * 1 <= N <= 10^9
+     */
+    //https://leetcode.com/problems/numbers-with-repeated-digits/discuss/256866/Python-O(logN)-solution-with-clear-explanation
+    public int numDupDigitsAtMostN(int N) {
+        // Transform N + 1 to arrayList
+        List<Integer> modsList = new ArrayList<Integer>();
+        for (int x = N + 1; x > 0; x /= 10) {
+            //always add to first, so the highest digit is the start.
+            modsList.add(0, x % 10);
+        }
+
+        // Count the number with digits < N
+        int res = 0, n = modsList.size();
+        for (int i = 1; i < n; ++i) {
+            //first digit: non 0, so 9 possibility.
+            //rest of the digit: pick i - 1 digits from 9 available digits.
+            res += 9 * permutation(9, i - 1);
+        }
+        // Count the number with same prefix
+        Set<Integer> seen = new HashSet<>();
+        for (int i = 0; i < n; ++i) {
+            for (int j = i > 0 ? 0 : 1; j < modsList.get(i); ++j) {
+                //avoid duplicate with higher digits.
+                if (!seen.contains(j)) {
+                    //TRICK: i is current used highest digits, so remaining choices are from 9 - i digits.
+                    //We can only choose total: n - i + 1 digits
+                    res += permutation(9 - i, n - i - 1);
+                }
+            }
+            if (seen.contains(modsList.get(i))) {
+                break;
+            }
+            seen.add(modsList.get(i));
+        }
+        return N - res;
+    }
+
+
+    private int permutation(int m, int n) {
+        return n == 0 ? 1 : permutation(m, n - 1) * (m - n + 1);
+    }
+
 
     /**
      * https://leetcode.com/problems/transform-to-chessboard/

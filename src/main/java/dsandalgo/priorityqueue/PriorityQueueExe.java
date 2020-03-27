@@ -29,6 +29,30 @@ public class PriorityQueueExe {
     }
 
     /**
+     * https://leetcode.com/problems/construct-target-array-with-multiple-sums/
+     * @param target
+     * @return
+     */
+    public boolean isPossible(int[] target) {
+        long s = 0;
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+        for (int n : target) {
+            s += n;
+            pq.add(n);
+        }
+        while (s > 1 && pq.peek() > s / 2) {
+            int cur = pq.poll();
+            s -= cur;
+            if (s <= 1) {
+                return s == 0 ? false : true;
+            }
+            pq.add(cur % (int)s);
+            s += cur % s;
+        }
+        return s == target.length;
+    }
+
+    /**
      * https://leetcode.com/problems/sort-integers-by-the-power-value/
      * @param lo
      * @param hi

@@ -11,14 +11,292 @@ public class HardDPExe {
 
     public static void main(String[] args) {
         HardDPExe exe = new HardDPExe();
-        int[] arr1 = {3, 4, 6, 5};
+        int[] arr1 = {1,2,4,-1,2};
         int[] arr2 = {9, 1, 2, 5, 8, 3};
         int target = 100;
         int startFuel = 10;
-        int[][] stations = {{10,60},{20,30},{30,30},{60,40}};
-        System.out.println(exe.leastOpsExpressTarget(5, 525));
+        List<String> lst = new ArrayList<>();
+        lst.add("E23");
+        lst.add("2X2");
+        lst.add("12S");
+        System.out.println(exe.findIntegers(48));
     }
 
+    /**
+     * https://leetcode.com/problems/non-negative-integers-without-consecutive-ones/
+     * Given a positive integer n, find the number of non-negative integers less than or equal to n, whose binary representations do NOT contain consecutive ones.
+     *
+     * Example 1:
+     * Input: 5
+     * Output: 5
+     * Explanation:
+     * Here are the non-negative integers <= 5 with their corresponding binary representations:
+     * 0 : 0
+     * 1 : 1
+     * 2 : 10
+     * 3 : 11
+     * 4 : 100
+     * 5 : 101
+     * Among them, only integer 3 disobeys the rule (two consecutive ones) and the other 5 satisfy the rule.
+     * Note: 1 <= n <= 109
+     */
+    //Let endWithZero[i] be the number of binary strings of length i which do not contain any two consecutive 1’s and which end in 0.
+    //Similarly, let endWithOnes[i] be the number of such strings which end in 1.
+    //We can append either 0 or 1 to a string ending in 0, but we can only append 0 to a string ending in 1. This yields the recurrence relation:
+    //endWithZero[i] = endWithZero[i - 1] + endWithOnes[i - 1];
+    //endWithOnes[i] = endWithZero[i - 1]; //no consecutive one.
+    //The base cases of above recurrence are endWithZero[1] = endWithOnes[1] = 1.
+    //The total number of strings of length i is endWithZero[i] + endWithOnes[i].
+    public int findIntegers(int num) {
+        //Convert to string, use the string algo to get the max number.
+        StringBuilder sb = new StringBuilder(Integer.toBinaryString(num)).reverse();
+        int n = sb.length();
+        int[] endWithZero = new int[n];
+        int[] endWithOnes = new int[n];
+        endWithZero[0] = endWithOnes[0] = 1;
+        for (int i = 1; i < n; i++) {
+            endWithZero[i] = endWithZero[i - 1] + endWithOnes[i - 1];
+            endWithOnes[i] = endWithZero[i - 1]; //no consecutive one.
+        }
+        int result = endWithZero[n - 1] + endWithOnes[n - 1];
+
+        //Remove the ones over counted
+        for (int i = n - 2; i >= 0; i--) {
+            if (sb.charAt(i) == '1' && sb.charAt(i + 1) == '1') break;
+            if (sb.charAt(i) == '0' && sb.charAt(i + 1) == '0') result -= endWithOnes[i];
+        }
+
+        return result;
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-paths-with-max-score/
+     * You are given a square board of characters. You can move on the board starting at the bottom right square marked with the character 'S'.
+     *
+     * You need to reach the top left square marked with the character 'E'. The rest of the squares are labeled either with a numeric character 1, 2, ..., 9 or with an obstacle 'X'. In one move you can go up, left or up-left (diagonally) only if there is no obstacle there.
+     *
+     * Return a list of two integers: the first integer is the maximum sum of numeric characters you can collect, and the second is the number of such paths that you can take to get that maximum sum, taken modulo 10^9 + 7.
+     *
+     * In case there is no path, return [0, 0].
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: board = ["E23","2X2","12S"]
+     * Output: [7,1]
+     * Example 2:
+     *
+     * Input: board = ["E12","1X1","21S"]
+     * Output: [4,2]
+     * Example 3:
+     *
+     * Input: board = ["E11","XXX","11S"]
+     * Output: [0,0]
+     *
+     *
+     * Constraints:
+     *
+     * 2 <= board.length == board[i].length <= 100
+     */
+    class Pair {
+        int val;
+        long paths;
+        Pair(int val, long paths) {
+            this.val = val;
+            this.paths = paths;
+        }
+    }
+
+    public Pair func(List<String> arr, int i, int j, Pair[][] dp) {
+        if (i == 0 && j == 0) {
+            return new Pair(0, 1);
+        }
+        if (i < 0 || j < 0 || arr.get(i).charAt(j) == 'X') {
+            return new Pair(Integer.MIN_VALUE, 0);
+        }
+        if (dp[i][j] != null) {
+            return dp[i][j];
+        }
+        int curr = 0;
+        if (arr.get(i).charAt(j) != 'S') {
+            curr = (arr.get(i).charAt(j)) - '0';
+        }
+        Pair x1 = func(arr, i - 1, j, dp);
+        Pair x2 = func(arr, i, j - 1, dp);
+        Pair x3 = func(arr, i - 1, j - 1, dp);
+        Pair max = new Pair(Integer.MIN_VALUE, 0);
+        if (x1.val != Integer.MIN_VALUE) {
+            max = new Pair(x1.val, x1.paths);
+        }
+        if (x2.val != Integer.MIN_VALUE) {
+            if (x2.val > max.val) {
+                max = new Pair(x2.val, x2.paths);
+            } else {
+                if (x2.val == max.val) {
+                    max = new Pair(max.val, (max.paths + x2.paths) % 1000000007);
+                }
+            }
+        }
+        if (x3.val != Integer.MIN_VALUE) {
+            if (x3.val > max.val) {
+                max = new Pair(x3.val, x3.paths);
+            } else {
+                if (x3.val == max.val) {
+                    max = new Pair(max.val, (max.paths + x3.paths) % 1000000007);
+                }
+            }
+        }
+        if (max.val != Integer.MIN_VALUE) {
+            max.val += curr;
+        }
+        return dp[i][j] = max;
+    }
+
+    public int[] pathsWithMaxScore(List<String> board) {
+        int n = board.size();
+        Pair[][] dp = new Pair[n][n];
+        Pair ans = func(board, n - 1, n - 1, dp);
+        if (ans.val == Integer.MIN_VALUE) {
+            return new int[2];
+        }
+        int[] ret = new int[2];
+        ret[0] = ans.val;
+        ret[1] = (int) ans.paths;
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/valid-permutations-for-di-sequence/
+     * We are given S, a length n string of characters from the set {'D', 'I'}.
+     * (These letters stand for "decreasing" and "increasing".)
+     *
+     * A valid permutation is a permutation P[0], P[1], ..., P[n] of integers {0, 1, ..., n}, such that for all i:
+     *
+     * If S[i] == 'D', then P[i] > P[i+1], and;
+     * If S[i] == 'I', then P[i] < P[i+1].
+     * How many valid permutations are there?  Since the answer may be large, return your answer modulo 10^9 + 7.
+     *
+     *
+     * Example 1:
+     * Input: "DID"
+     * Output: 5
+     * Explanation:
+     * The 5 valid permutations of (0, 1, 2, 3) are:
+     * (1, 0, 3, 2)
+     * (2, 0, 3, 1)
+     * (2, 1, 3, 0)
+     * (3, 0, 2, 1)
+     * (3, 1, 2, 0)
+     *
+     * Note:
+     * 1 <= S.length <= 200
+     * S consists only of characters from the set {'D', 'I'}.
+     */
+    private static final int DIV = 1000000007;
+    private int[] seen = null;
+    private Integer[][] dp = null;
+
+    public int numPermsDISequence(String s) {
+        dp = new Integer[s.length()][s.length() + 1];
+        seen = new int[s.length() + 1];
+        int count = 0;
+        for (int i = 0; i <= s.length(); i++) {
+            seen[i] = 1;
+            count = count % DIV + numPermsDFS(s, 0, i) % DIV;
+            seen[i] = 0;
+        }
+        return count % DIV;
+    }
+
+    private int numPermsDFS(String s, int j, int p) {
+        if (j == s.length()) return 1;
+        if (dp[j][p] != null) return dp[j][p];
+        char ch = s.charAt(j);
+        int count = 0;
+        if (ch == 'D') {
+            for (int i = p - 1; i >= 0; i--) {
+                if (seen[i] == 1) continue;
+                seen[i] = 1;
+                count = count % DIV + numPermsDFS(s, j + 1, i) % DIV;
+                seen[i] = 0;
+            }
+        } else {
+            for (int i = p + 1; i <= s.length(); i++) {
+                if (seen[i] == 1) continue;
+                seen[i] = 1;
+                count = count % DIV + numPermsDFS(s, j + 1, i) % DIV;
+                seen[i] = 0;
+            }
+        }
+        dp[j][p] = count % DIV;
+        return dp[j][p];
+    }
+
+    /**
+     * https://leetcode.com/problems/coin-path/
+     * Given an array A (index starts at 1) consisting of N integers: A1, A2, ..., AN and an integer B. The integer B denotes that from any place (suppose the index is i) in the array A, you can jump to any one of the place in the array A indexed i+1, i+2, …, i+B if this place can be jumped to. Also, if you step on the index i, you have to pay Ai coins. If Ai is -1, it means you can’t jump to the place indexed i in the array.
+     *
+     * Now, you start from the place indexed 1 in the array A, and your aim is to reach the place indexed N using the minimum coins. You need to return the path of indexes (starting from 1 to N) in the array you should take to get to the place indexed N using minimum coins.
+     *
+     * If there are multiple paths with the same cost, return the lexicographically smallest such path.
+     *
+     * If it's not possible to reach the place indexed N then you need to return an empty array.
+     *
+     * Example 1:
+     *
+     * Input: [1,2,4,-1,2], 2
+     * Output: [1,3,5]
+     *
+     *
+     * Example 2:
+     *
+     * Input: [1,2,4,-1,2], 1
+     * Output: []
+     *
+     *
+     * Note:
+     *
+     * Path Pa1, Pa2, ..., Pan is lexicographically smaller than Pb1, Pb2, ..., Pbm, if and only if at the first i where Pai and Pbi differ, Pai < Pbi; when no such i exists, then n < m.
+     * A1 >= 0. A2, ..., AN (if exist) will in the range of [-1, 100].
+     * Length of A is in the range of [1, 1000].
+     * B is in the range of [1, 100].
+     */
+    public List<Integer> cheapestJump(int[] A, int B) {
+        List<Integer> res = new ArrayList<>();
+        if (A == null || A.length < 1 || A[A.length - 1] < 0) {
+            return res;
+        }
+        int[] forward = new int[A.length];
+        int[] cost = new int[A.length];
+        Arrays.fill(forward, -1);
+        //defaults to max.
+        Arrays.fill(cost, Integer.MAX_VALUE);
+        cost[A.length - 1] = A[A.length - 1];
+        //from end to start reverse thinking, track the which j is used to reach i.
+        for (int i = forward.length - 2; i >= 0; i--) {
+            if (A[i] == -1) {
+                continue;
+            }
+            for (int j = i + 1; j <= Math.min(i + B, A.length - 1); j++) {
+                if (cost[i] > cost[j] + A[i] && cost[j] != Integer.MAX_VALUE) {
+                    cost[i] = cost[j] + A[i];
+                    forward[i] = j;
+                }
+            }
+        }
+
+        if (cost[0] == Integer.MAX_VALUE) {
+            return res;
+        }
+        //re construct path.
+        int k = 0;
+        while (k != -1) {
+            res.add(k + 1);
+            k = forward[k];
+        }
+        return res;
+    }
 
     /**
      * https://leetcode.com/problems/cat-and-mouse/
@@ -428,59 +706,6 @@ public class HardDPExe {
         }
         memo_ms.put(state, max);
         return max;
-    }
-
-    /**
-     * https://leetcode.com/problems/valid-permutations-for-di-sequence/
-     * We are given S, a length n string of characters from the set {'D', 'I'}.
-     * (These letters stand for "decreasing" and "increasing".)
-     *
-     * A valid permutation is a permutation P[0], P[1], ..., P[n] of integers {0, 1, ..., n}, such that for all i:
-     *
-     * If S[i] == 'D', then P[i] > P[i+1], and;
-     * If S[i] == 'I', then P[i] < P[i+1].
-     * How many valid permutations are there?  Since the answer may be large, return your answer modulo 10^9 + 7.
-     *
-     *
-     * Example 1:
-     * Input: "DID"
-     * Output: 5
-     * Explanation:
-     * The 5 valid permutations of (0, 1, 2, 3) are:
-     * (1, 0, 3, 2)
-     * (2, 0, 3, 1)
-     * (2, 1, 3, 0)
-     * (3, 0, 2, 1)
-     * (3, 1, 2, 0)
-     *
-     * Note:
-     * 1 <= S.length <= 200
-     * S consists only of characters from the set {'D', 'I'}.
-     */
-    //Given a string DI-seq S, let dp[i][j] represents the number of permutation of number 0, 1, ... , i,
-    //satisfying DI-rule S.substr(0, i), and ending with digit j.
-    //if(S[i-1] == 'D')
-    //   dp[i][j] = dp[i-1][j] + dp[i-1][j+1] + ... + dp[i-1][i-1]
-    //if(S[i-1] == 'I')
-    //   dp[i][j] = dp[i-1][0] + dp[i-1][1] + ... + dp[i-1][j-1]
-    public int numPermsDISequence(String S) {
-        int n = S.length(), mod = (int)1e9 + 7;
-        int[][] dp = new int[n + 1][n + 1];
-        for (int j = 0; j <= n; j++) {
-            dp[0][j] = 1;
-        }
-        for (int i = 0; i < n; i++) {
-            if (S.charAt(i) == 'I') {
-                for (int j = 0, cur = 0; j < n - i; j++) {
-                    dp[i + 1][j] = cur = (cur + dp[i][j]) % mod;
-                }
-            } else {
-                for (int j = n - i - 1, cur = 0; j >= 0; j--) {
-                    dp[i + 1][j] = cur = (cur + dp[i][j + 1]) % mod;
-                }
-            }
-        }
-        return dp[n][0];
     }
 
     /**

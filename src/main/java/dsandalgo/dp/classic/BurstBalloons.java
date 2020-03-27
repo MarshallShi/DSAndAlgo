@@ -203,16 +203,14 @@ public class BurstBalloons {
         if (s == null || s.length() == 0) {
             return 0;
         }
-
-        int n = s.length();
+        char[] arr = s.toCharArray();
+        int n = arr.length;
         int[][] dp = new int[n][n];
-        for (int i = 0; i < n; i++) {
+        dp[0][0] = 1;
+        for (int i = 1; i < n; i++) {
             dp[i][i] = 1;
-            if (i < n - 1) {
-                dp[i][i + 1] = s.charAt(i) == s.charAt(i + 1) ? 1 : 2;
-            }
+            dp[i-1][i] = arr[i-1] == arr[i] ? 1 : 2;
         }
-
         for (int len = 2; len < n; len++) {
             for (int start = 0; start + len < n; start++) {
                 dp[start][start + len] = len + 1;
@@ -225,7 +223,120 @@ public class BurstBalloons {
                 }
             }
         }
+        return dp[0][n-1];
+    }
 
-        return dp[0][n - 1];
+
+    /**
+     * https://leetcode.com/problems/palindrome-removal/
+     * Given an integer array arr, in one move you can select a palindromic subarray arr[i], arr[i+1], ..., arr[j] where i <= j, and remove that subarray from the given array. Note that after removing a subarray, the elements on the left and on the right of that subarray move to fill the gap left by the removal.
+     *
+     * Return the minimum number of moves needed to remove all numbers from the array.
+     *
+     * Example 1:
+     *
+     * Input: arr = [1,2]
+     * Output: 2
+     * Example 2:
+     *
+     * Input: arr = [1,3,4,1,5]
+     * Output: 3
+     * Explanation: Remove [4] then remove [1,3,1] then remove [5].
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= arr.length <= 100
+     * 1 <= arr[i] <= 20
+     */
+    //dp[i][j] represents minimum moves to remove all numbers in range [i, j]
+    //when handling [i, j], we have 2 options:
+    //treat the first element as a single palindrome, dp[i][j] = 1 + dp[i+1][j]
+    //scan through [i, j], for any position k where arr[k] == arr[i], handle the string separately as [i, k] and [k+1, j], dp[i][j] = dp[i+1][k-1] + dp[k+1][j]
+    public int minimumMoves(int[] arr) {
+        int n = arr.length;
+        int[][] dp = new int[n][n];
+        dp[0][0] = 1;
+        for (int i = 1; i < n; i++) {
+            dp[i][i] = 1;
+            dp[i-1][i] = arr[i-1] == arr[i] ? 1 : 2;
+        }
+        for (int len = 3; len <= n; len++) {
+            for (int start = 0; start + len - 1 < n; start++) {
+                int end = start + len - 1;
+                dp[start][end] = Integer.MAX_VALUE;
+                for (int i = start; i <= end; i++) {
+                    if (arr[start] == arr[i]) {
+                        int temp = 1;
+                        if (start + 1 <= i - 1) {
+                            temp = dp[start+1][i-1];
+                        }
+                        if (i + 1 < n) {
+                            temp += dp[i+1][end];
+                        }
+                        dp[start][end] = Math.min(dp[start][end], temp);
+                    }
+                }
+            }
+        }
+        return dp[0][n-1];
+    }
+
+    public int minimumMoves_2(int[] A) {
+        int N = A.length;
+        //  declare dp array, all defaults to 0.
+        int[][] dp = new int[N + 1][N + 1];
+        // loop for subarray length we are considering
+        for (int len = 1; len <= N; len++) {
+            // loop with two variables i and j, denoting starting and ending of subarray
+            for (int i = 0, j = len - 1; j < N; i++, j++) {
+                // If subarray length is 1, then 1 step will be needed
+                if (len == 1) {
+                    dp[i][j] = 1;
+                } else {
+                    // delete A[i] individually and assign result for subproblem (i+1,j)
+                    dp[i][j] = 1 + dp[i + 1][j];
+                    // if current and next element are same, choose min from current and subproblem (i+2,j)
+                    if (A[i] == A[i + 1]) {
+                        dp[i][j] = Math.min(1 + dp[i + 2][j], dp[i][j]);
+                    }
+                    // loop over all right elements and suppose Kth element is same as A[i] then
+                    // choose minimum from current and two subarray after ignoring ith and A[K]
+                    for (int K = i + 2; K <= j; K++) {
+                        if (A[i] == A[K]) {
+                            dp[i][j] = Math.min(dp[i + 1][K - 1] + dp[K + 1][j], dp[i][j]);
+                        }
+                    }
+                }
+            }
+        }
+        return dp[0][N - 1];
+    }
+
+
+    int[][] minimumMovesCache;
+    public int minimumMoves_topdown(int[] A) {
+        int n = A.length;
+        minimumMovesCache = new int[n][n];
+        return minimumMovesDFS(0, n - 1, A);
+    }
+    int minimumMovesDFS(int i, int j, int[] A) {
+        if (i > j) {
+            return 0;
+        }
+        if (minimumMovesCache[i][j] > 0) {
+            return minimumMovesCache[i][j];
+        }
+        int res = minimumMovesDFS(i, j - 1, A) + 1;
+        if (j > 0 && A[j] == A[j - 1]) {
+            res = Math.min(res, minimumMovesDFS(i, j - 2, A) + 1);
+        }
+        for (int k = i; k < j - 1; ++k) {
+            if (A[k] == A[j]) {
+                res = Math.min(res, minimumMovesDFS(i, k - 1, A) + minimumMovesDFS(k + 1, j - 1, A));
+            }
+        }
+        minimumMovesCache[i][j] = res;
+        return res;
     }
 }

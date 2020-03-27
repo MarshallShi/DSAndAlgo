@@ -22,9 +22,8 @@ public class StringExe {
     public static void main(String[] args) {
         StringExe exe = new StringExe();
         String[] ranks = {"WXYZ","XYZW"};
-        System.out.println(exe.sortString("spo"));
+        //System.out.println(exe.longestPrefix("blablabla"));
     }
-
 
     /**
      * https://leetcode.com/problems/increasing-decreasing-string/

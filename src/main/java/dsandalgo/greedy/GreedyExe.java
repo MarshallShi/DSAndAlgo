@@ -2,6 +2,7 @@ package dsandalgo.greedy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,9 +15,11 @@ public class GreedyExe{
 
     public static void main(String[] args) {
         GreedyExe exe = new GreedyExe();
-        int[] nums = {1,2,2,3,3,4,4};
-        System.out.println(exe.canDivideIntoSubsequences(nums, 3));
+        int[] nums = {5, 8};
+        //System.out.println(exe.isPossible_2(nums));
     }
+
+
 
     /**
      * https://leetcode.com/problems/create-maximum-number/

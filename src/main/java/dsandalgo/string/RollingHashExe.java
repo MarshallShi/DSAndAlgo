@@ -6,7 +6,35 @@ public class RollingHashExe {
 
     public static void main(String[] args) {
         RollingHashExe exe = new RollingHashExe();
-        System.out.println(exe.distinctEchoSubstrings("abcabcabc"));
+        System.out.println(exe.longestPrefix("blablabla"));
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-happy-prefix/
+     * @param s
+     * @return
+     */
+    public String longestPrefix(String s) {
+        long hashLow = 0, hashHigh = 0, mul = 1, len = 0, mod = 1000000007;
+        //i: from low to high; j: from high to low.
+        //Compute their rolling hash respectively.
+        for (int i = 0, j = s.length() - 1; j > 0 && i < s.length() - 1; ++i, --j) {
+            //low to high: always multiply a number, then plus the current char.
+            int lo = s.charAt(i) - 'a';
+            hashLow = (hashLow * 26 + lo) % mod;
+
+            //high to low: use hi to mulitply current mul then plus existing hash.
+            int hi = s.charAt(j) - 'a';
+            hashHigh = (hashHigh + mul * hi) % mod;
+            //iterative mulitply to avoid overflow.
+            mul = mul * 26 % mod;
+
+            //better to do a compare to avoid collision due to the mod.
+            if (hashLow == hashHigh) {
+                len = i + 1;
+            }
+        }
+        return s.substring(0, (int)len);
     }
 
     /**
