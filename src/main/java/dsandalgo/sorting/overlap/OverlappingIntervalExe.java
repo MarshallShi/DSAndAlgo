@@ -859,38 +859,23 @@ public class OverlappingIntervalExe {
      * @return
      */
     public int[][] merge(int[][] intervals) {
-        List<int[]> list = new ArrayList<int[]>();
-        for (int i=0; i<intervals.length; i++) {
-            list.add(intervals[i]);
+        if (intervals.length <= 1) {
+            return intervals;
         }
-        list.sort(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return o1[0] - o2[0];
+        // Sort by ascending starting point
+        Arrays.sort(intervals, (i1, i2) -> Integer.compare(i1[0], i2[0]));
+        List<int[]> result = new ArrayList<>();
+        int[] newInterval = intervals[0];
+        result.add(newInterval);
+        for (int[] interval : intervals) {
+            if (interval[0] <= newInterval[1]) {// Overlapping intervals, move the end if needed
+                newInterval[1] = Math.max(newInterval[1], interval[1]);
+            } else {                             // Disjoint intervals, add the new interval to the list
+                newInterval = interval;
+                result.add(newInterval);
             }
-        });
-        List<int[]> resultList = new ArrayList<int[]>();
-        for (int i=0; i<list.size(); i++) {
-            int[] cur = list.get(i);
-            while (i != list.size() - 1) {
-                if (cur[1] >= list.get(i+1)[1]) {
-                    i++;
-                } else {
-                    if ((cur[1] >= list.get(i+1)[0]) && (cur[1] <= list.get(i+1)[1]))  {
-                        cur[1] = list.get(i+1)[1];
-                        i++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-            resultList.add(cur);
         }
-        int[][] ret = new int[resultList.size()][2];
-        for (int i=0; i<resultList.size(); i++) {
-            ret[i] = resultList.get(i);
-        }
-        return ret;
+        return result.toArray(new int[result.size()][]);
     }
 
     /**
@@ -898,7 +883,7 @@ public class OverlappingIntervalExe {
      *
      * Example:
      *
-     * Input:
+     * Input:F
      * [[10,16], [2,8], [1,6], [7,12]]
      *
      * Output:

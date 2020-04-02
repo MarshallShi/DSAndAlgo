@@ -24,6 +24,67 @@ public class ArrayExe {
     }
 
     /**
+     * https://leetcode.com/problems/count-number-of-teams/
+     * There are n soldiers standing in a line. Each soldier is assigned a unique rating value.
+     *
+     * You have to form a team of 3 soldiers amongst them under the following rules:
+     *
+     * Choose 3 soldiers with index (i, j, k) with rating (rating[i], rating[j], rating[k]).
+     * A team is valid if:  (rating[i] < rating[j] < rating[k]) or (rating[i] > rating[j] > rating[k]) where (0 <= i < j < k < n).
+     * Return the number of teams you can form given the conditions. (soldiers can be part of multiple teams).
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: rating = [2,5,3,4,1]
+     * Output: 3
+     * Explanation: We can form three teams given the conditions. (2,3,4), (5,4,1), (5,3,1).
+     * Example 2:
+     *
+     * Input: rating = [2,1,3]
+     * Output: 0
+     * Explanation: We can't form any team given the conditions.
+     * Example 3:
+     *
+     * Input: rating = [1,2,3,4]
+     * Output: 4
+     *
+     *
+     * Constraints:
+     *
+     * n == rating.length
+     * 1 <= n <= 200
+     * 1 <= rating[i] <= 10^5
+     */
+    public int numTeams(int[] rating) {
+        int res = 0;
+        for (int i = 1; i < rating.length - 1; ++i) {
+            //less 0: left hand less;  less 1: right hand less.
+            //greater 0: left hand greater; greater 1: right hand greater.
+            int less[] = new int[2], greater[] = new int[2];
+            for (int j = 0; j < rating.length; ++j) {
+                if (rating[i] < rating[j]) {
+                    if (j > i) {
+                        ++less[1];
+                    } else {
+                        ++less[0];
+                    }
+                }
+                if (rating[i] > rating[j]) {
+                    if (j > i) {
+                        ++greater[1];
+                    } else {
+                        ++greater[0];
+                    }
+                }
+            }
+            res += less[0] * greater[1] + greater[0] * less[1];
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/smallest-rotation-with-highest-score/
      *
      * Given an array A, we may rotate it by a non-negative integer K so that the array becomes A[K], A[K+1], A{K+2], ... A[A.length - 1], A[0], A[1], ..., A[K-1].  Afterward, any entries that are less than or equal to their index are worth 1 point.
@@ -1087,39 +1148,45 @@ public class ArrayExe {
      */
     public int trap(int[] height) {
         int n = height.length;
-        if(n == 0) {
+        if (n == 0) {
             return 0;
         }
         int[] leftMax = new int[n];
         int[] rightMax = new int[n];
         leftMax[0] = height[0];
-        rightMax[n-1] = height[n-1];
-        for(int i = 1; i <n; i++ ) {
-            leftMax[i] = Math.max(leftMax[i-1], height[i]);
+        rightMax[n - 1] = height[n - 1];
+        for (int i = 1; i < n; i++) {
+            leftMax[i] = Math.max(leftMax[i - 1], height[i]);
         }
-        for(int i = n-2; i >= 0; i--) {
-            rightMax[i] = Math.max(rightMax[i+1], height[i]);
+        for (int i = n - 2; i >= 0; i--) {
+            rightMax[i] = Math.max(rightMax[i + 1], height[i]);
         }
-        int water=0;
-        for(int i=0; i < n; i++) {
+        int water = 0;
+        for (int i = 0; i < n; i++) {
             water += Math.min(rightMax[i], leftMax[i]) - height[i];
         }
         return water;
     }
 
     public int trap_oneLoop(int A[], int n) {
-        int left=0; int right=n-1;
-        int res=0;
-        int maxleft=0, maxright=0;
-        while(left<=right){
-            if(A[left]<=A[right]){
-                if(A[left]>=maxleft) maxleft=A[left];
-                else res+=maxleft-A[left];
+        int left = 0;
+        int right = n - 1;
+        int res = 0;
+        int maxleft = 0, maxright = 0;
+        while (left <= right) {
+            if (A[left] <= A[right]) {
+                if (A[left] >= maxleft) {
+                    maxleft = A[left];
+                } else {
+                    res += maxleft - A[left];
+                }
                 left++;
-            }
-            else{
-                if(A[right]>=maxright) maxright= A[right];
-                else res+=maxright-A[right];
+            } else {
+                if (A[right] >= maxright) {
+                    maxright = A[right];
+                } else {
+                    res += maxright - A[right];
+                }
                 right--;
             }
         }

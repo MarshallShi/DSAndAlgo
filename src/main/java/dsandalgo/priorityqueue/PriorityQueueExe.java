@@ -28,6 +28,232 @@ public class PriorityQueueExe {
         System.out.println(pqexe.getKth(12, 15, 2));
     }
 
+    public class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x; }
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
+     * Use DP + Priority Queue.
+     */
+    private static int[][] dir = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    private int maxLen = 0;
+    public int longestIncreasingPath(int[][] matrix) {
+        if (matrix == null || matrix.length == 0) return 0;
+
+        int n = matrix.length;
+        int m = matrix[0].length;
+
+        PriorityQueue<int[]> maxPQ = new PriorityQueue<>((a, b) -> b[2] - a[2]);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                maxPQ.offer(new int[]{i, j, matrix[i][j]});
+            }
+        }
+
+        int[][] dp = new int[n][m];
+        while (!maxPQ.isEmpty()) {
+            int[] cell = maxPQ.poll();
+            int i = cell[0], j = cell[1];
+            dp[i][j] = 1;
+            for (int[] d: dir) {
+                int newI = i + d[0], newJ = j + d[1];
+                if (newI < 0 || newI >= n || newJ < 0 || newJ >= m || matrix[i][j] >= matrix[newI][newJ]) continue;
+                dp[i][j] = Math.max(dp[i][j], dp[newI][newJ] + 1);
+            }
+
+            maxLen = Math.max(maxLen, dp[i][j]);
+        }
+
+        return maxLen;
+    }
+
+    /**
+     * https://leetcode.com/problems/k-closest-points-to-origin/
+     * We have a list of points on the plane.  Find the K closest points to the origin (0, 0).
+     *
+     * (Here, the distance between two points on a plane is the Euclidean distance.)
+     *
+     * You may return the answer in any order.  The answer is guaranteed to be unique (except for the order that it is in.)
+     *
+     * Example 1:
+     *
+     * Input: points = [[1,3],[-2,2]], K = 1
+     * Output: [[-2,2]]
+     * Explanation:
+     * The distance between (1, 3) and the origin is sqrt(10).
+     * The distance between (-2, 2) and the origin is sqrt(8).
+     * Since sqrt(8) < sqrt(10), (-2, 2) is closer to the origin.
+     * We only want the closest K = 1 points from the origin, so the answer is just [[-2,2]].
+     *
+     * Example 2:
+     *
+     * Input: points = [[3,3],[5,-1],[-2,4]], K = 2
+     * Output: [[3,3],[-2,4]]
+     * (The answer [[-2,4],[3,3]] would also be accepted.)
+     *
+     * Note:
+     * 1 <= K <= points.length <= 10000
+     * -10000 < points[i][0] < 10000
+     * -10000 < points[i][1] < 10000
+     */
+    public int[][] kClosest(int[][] points, int K) {
+        PriorityQueue<int[]> pq = new PriorityQueue<int[]>((p1, p2) -> p2[0] * p2[0] + p2[1] * p2[1] - p1[0] * p1[0] - p1[1] * p1[1]);
+        for (int[] p : points) {
+            pq.offer(p);
+            if (pq.size() > K) {
+                pq.poll();
+            }
+        }
+        int[][] res = new int[K][2];
+        while (K > 0) {
+            res[--K] = pq.poll();
+        }
+        return res;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/meeting-rooms-ii/
+     * Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), find the minimum number of conference rooms required.
+     *
+     * Example 1:
+     *
+     * Input: [[0, 30],[5, 10],[15, 20]]
+     * Output: 2
+     * Example 2:
+     *
+     * Input: [[7,10],[2,4]]
+     * Output: 1
+     * NOTE: input types have been changed on April 15, 2019. Please reset to default code definition to get new method signature.
+     */
+    public int minMeetingRooms(int[][] intervals) {
+        if (intervals == null || intervals.length == 0) return 0;
+        // Sort the intervals by start time
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) { return a[0] - b[0]; }
+        });
+        // Use a min heap to track the minimum end time of merged intervals
+        PriorityQueue<int[]> heap = new PriorityQueue<int[]>(intervals.length, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) { return a[1] - b[1]; }
+        });
+        // start with the first meeting, put it to a meeting room
+        heap.offer(intervals[0]);
+        for (int i = 1; i < intervals.length; i++) {
+            // get the meeting room that finishes earliest
+            int[] finishEarliest = heap.poll();
+            if (intervals[i][0] >= finishEarliest[1]) {
+                // if the current meeting starts right after
+                // there's no need for a new room, merge the interval
+                finishEarliest[1] = intervals[i][1];
+            } else {
+                // otherwise, this meeting needs a new room
+                heap.offer(intervals[i]);
+            }
+            // don't forget to put the meeting room back
+            heap.offer(finishEarliest);
+        }
+        return heap.size();
+    }
+
+    /**
+     * https://leetcode.com/problems/merge-k-sorted-lists/
+     * Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+     *
+     * Example:
+     *
+     * Input:
+     * [
+     *   1->4->5,
+     *   1->3->4,
+     *   2->6
+     * ]
+     * Output: 1->1->2->3->4->4->5->6
+     * @param lists
+     * @return
+     */
+    public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) {
+            return null;
+        }
+        PriorityQueue<ListNode> pq = new PriorityQueue<ListNode>(new Comparator<ListNode>() {
+            @Override
+            public int compare(ListNode o1, ListNode o2) {
+                return o1.val - o2.val;
+            }
+        });
+        ListNode root = new ListNode(-1);
+        ListNode head = root;
+        for (int i=0; i<lists.length; i++) {
+            pq.offer(lists[i]);
+        }
+        while (!pq.isEmpty()) {
+            ListNode top = pq.poll();
+            head.next = new ListNode(top.val);
+            head = head.next;
+            if (top.next != null) {
+                pq.offer(top.next);
+            }
+        }
+        return root.next;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-time-to-build-blocks/
+     * You are given a list of blocks, where blocks[i] = t means that the i-th block needs t units of time to be built. A block can only be built by exactly one worker.
+     *
+     * A worker can either split into two workers (number of workers increases by one) or build a block then go home. Both decisions cost some time.
+     *
+     * The time cost of spliting one worker into two workers is given as an integer split. Note that if two workers split at the same time, they split in parallel so the cost would be split.
+     *
+     * Output the minimum time needed to build all blocks.
+     *
+     * Initially, there is only one worker.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: blocks = [1], split = 1
+     * Output: 1
+     * Explanation: We use 1 worker to build 1 block in 1 time unit.
+     * Example 2:
+     *
+     * Input: blocks = [1,2], split = 5
+     * Output: 7
+     * Explanation: We split the worker into 2 workers in 5 time units then assign each of them to a block so the cost is 5 + max(1, 2) = 7.
+     * Example 3:
+     *
+     * Input: blocks = [1,2,3], split = 1
+     * Output: 4
+     * Explanation: Split 1 worker into 2, then assign the first worker to the last block and split the second worker into 2.
+     * Then, use the two unassigned workers to build the first two blocks.
+     * The cost is 1 + max(3, 1 + max(1, 2)) = 4.
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= blocks.length <= 1000
+     * 1 <= blocks[i] <= 10^5
+     * 1 <= split <= 100
+     */
+    //Huffman algo.
+    //Trick: greedily remove the elements from lowest value and second lowest value.
+    public int minBuildTime(int[] blocks, int split) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        for (int b : blocks) {
+            pq.offer(b);
+        }
+        while (pq.size() > 1) {
+            int small = pq.poll();
+            int bigger = pq.poll();
+            pq.offer(bigger + split);
+        }
+        return pq.poll();
+    }
+
     /**
      * https://leetcode.com/problems/construct-target-array-with-multiple-sums/
      * @param target

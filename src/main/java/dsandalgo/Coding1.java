@@ -22,42 +22,7 @@ public class Coding1 {
         String[] emails = {"test.email+alex@leetcode.com","test.e.mail+bob.cathy@leetcode.com","testemail+david@lee.tcode.com"};
         //int[][] matrix = {{1,   3,  5,  7}, {10, 11, 16, 20}, {23, 30, 34, 50}};
         int[][] matrix = {{}};
-        System.out.println(test.minWindow("ADOBECODEBANC", "ABC"));
-    }
-
-    public String minWindow(String s, String t) {
-        Map<Character, Integer> tCounters = new HashMap<Character, Integer>();
-        int i=0, j=0;
-        for (i=0; i<t.length(); i++) {
-            tCounters.putIfAbsent(t.charAt(i), 0);
-            tCounters.put(t.charAt(i), tCounters.get(t.charAt(i)) + 1);
-        }
-        int counter = t.length();
-        i = 0;
-        int len = Integer.MAX_VALUE, begin = 0;
-        for (j=0; j<s.length(); j++) {
-            if (tCounters.containsKey(s.charAt(j))) {
-                if (tCounters.get(s.charAt(j)) > 0) {
-                    counter--;
-                }
-                tCounters.put(s.charAt(j), tCounters.get(s.charAt(j)) - 1);
-            }
-            while (counter == 0) {
-                len = Math.min(len, j - i + 1);
-                if (len == j - i + 1) {
-                    begin = i;
-                }
-                if (tCounters.containsKey(s.charAt(i))) {
-                    tCounters.put(s.charAt(i), tCounters.get(s.charAt(i)) + 1);
-                    if (tCounters.get(s.charAt(i)) > 0) {
-                        counter++;
-                    }
-                }
-                i++;
-            }
-
-        }
-        return s.substring(begin, begin + len);
+        //System.out.println(test.minWindow("ADOBECODEBANC", "ABC"));
     }
 
     public String decodeString(String s) {
@@ -478,27 +443,6 @@ public class Coding1 {
             fast++;
         }
         return slow;
-    }
-
-    public int lengthOfLongestSubstring(String s) {
-        if (s == null || s.length() == 0) {
-            return 0;
-        }
-        if (s.length() == 1) {
-            return 1;
-        }
-        int slow = 0, fast = 0;
-        Map<Character, Integer> map = new HashMap<Character, Integer>();
-        int maxLen = 0;
-        while (fast < s.length() && slow <= fast) {
-            if(map.containsKey(s.charAt(fast))) {
-                slow = Math.max(slow,map.get(s.charAt(fast)) + 1);
-            }
-            map.put(s.charAt(fast), fast);
-            maxLen = Math.max(fast - slow + 1, maxLen);
-            fast++;
-        }
-        return maxLen;
     }
 
     private TrieNode root;

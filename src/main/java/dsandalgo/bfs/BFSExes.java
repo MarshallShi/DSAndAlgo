@@ -41,6 +41,129 @@ public class BFSExes {
     }
 
     /**
+     * https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+     * Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent.
+     *
+     * A mapping of digit to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.
+     *
+     *
+     *
+     * Example:
+     *
+     * Input: "23"
+     * Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+     * Note:
+     *
+     * Although the above answer is in lexicographical order, your answer could be in any order you want.
+     */
+    public List<String> letterCombinations(String digits) {
+        LinkedList<String> ans = new LinkedList<String>();
+        if (digits.isEmpty()) return ans;
+        //0 and 1 just place holder in the array to ease the manipulation of idx.
+        String[] mapping = new String[]{"0", "1", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        ans.add("");
+        //push all the in progress string back to the queue, append next char.
+        while (ans.peek().length() != digits.length()) {
+            String remove = ans.remove();
+            String map = mapping[digits.charAt(remove.length()) - '0'];
+            for (char c : map.toCharArray()) {
+                ans.addLast(remove + c);
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/rotting-oranges/
+     * In a given grid, each cell can have one of three values:
+     *
+     * the value 0 representing an empty cell;
+     * the value 1 representing a fresh orange;
+     * the value 2 representing a rotten orange.
+     * Every minute, any fresh orange that is adjacent (4-directionally) to a rotten orange becomes rotten.
+     *
+     * Return the minimum number of minutes that must elapse until no cell has a fresh orange.  If this is impossible, return -1 instead.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: [[2,1,1],[1,1,0],[0,1,1]]
+     * Output: 4
+     * Example 2:
+     *
+     * Input: [[2,1,1],[0,1,1],[1,0,1]]
+     * Output: -1
+     * Explanation:  The orange in the bottom left corner (row 2, column 0) is never rotten, because rotting only happens 4-directionally.
+     * Example 3:
+     *
+     * Input: [[0,2]]
+     * Output: 0
+     * Explanation:  Since there are already no fresh oranges at minute 0, the answer is just 0.
+     *
+     *
+     * Note:
+     *
+     * 1 <= grid.length <= 10
+     * 1 <= grid[0].length <= 10
+     * grid[i][j] is only 0, 1, or 2.
+     */
+    public int orangesRotting(int[][] grid) {
+        if (grid == null || grid.length == 0) {
+            return -1;
+        }
+        int m = grid.length;
+        int n = grid[0].length;
+        int fresh = 0;
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 2) {
+                    queue.offer(i * n + j);
+                }
+                if (grid[i][j] == 1) {
+                    fresh++;
+                }
+            }
+        }
+        int time = 0;
+        int[][] dirs = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+        while (!queue.isEmpty()) {
+            if (fresh > 0) {
+                int size = queue.size();
+                for (int i = 0; i < size; i++) {
+                    int cur = queue.poll();
+                    int x = cur / n;
+                    int y = cur % n;
+                    for (int[] dir : dirs) {
+                        int nextX = x + dir[0];
+                        int nextY = y + dir[1];
+                        if (rottenTheOrange(grid, nextX, nextY)) {
+                            queue.offer(nextX * n + nextY);
+                            fresh--;
+                        }
+                    }
+                }
+                time++;
+            }
+            if (fresh == 0) {
+                break;
+            }
+        }
+        return fresh == 0 ? time : -1;
+    }
+
+    private boolean rottenTheOrange(int[][] grid, int i, int j) {
+        if (i >= 0 && i < grid.length && j >= 0 && j < grid[0].length && grid[i][j] == 1) {
+            grid[i][j] = 2;
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * https://leetcode.com/problems/check-if-there-is-a-valid-path-in-a-grid/
      */
     //the idea is you need to check port direction match, you can go to next cell and check whether you can come back.

@@ -16,6 +16,114 @@ public class BinarySearchExe {
     }
 
     /**
+     * https://leetcode.com/problems/find-in-mountain-array/
+     * (This problem is an interactive problem.)
+     *
+     * You may recall that an array A is a mountain array if and only if:
+     *
+     * A.length >= 3
+     * There exists some i with 0 < i < A.length - 1 such that:
+     * A[0] < A[1] < ... A[i-1] < A[i]
+     * A[i] > A[i+1] > ... > A[A.length - 1]
+     * Given a mountain array mountainArr, return the minimum index such that mountainArr.get(index) == target.  If such an index doesn't exist, return -1.
+     *
+     * You can't access the mountain array directly.  You may only access the array using a MountainArray interface:
+     *
+     * MountainArray.get(k) returns the element of the array at index k (0-indexed).
+     * MountainArray.length() returns the length of the array.
+     * Submissions making more than 100 calls to MountainArray.get will be judged Wrong Answer.  Also, any solutions that attempt to circumvent the judge will result in disqualification.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: array = [1,2,3,4,5,3,1], target = 3
+     * Output: 2
+     * Explanation: 3 exists in the array, at index=2 and index=5. Return the minimum index, which is 2.
+     * Example 2:
+     *
+     * Input: array = [0,1,2,4,2,1], target = 3
+     * Output: -1
+     * Explanation: 3 does not exist in the array, so we return -1.
+     *
+     *
+     * Constraints:
+     *
+     * 3 <= mountain_arr.length() <= 10000
+     * 0 <= target <= 10^9
+     * 0 <= mountain_arr.get(index) <= 10^9
+     */
+    interface MountainArray{
+        public int get(int index);
+        public int length();
+    }
+    //Apply binary search in the whole array for peak;
+    //Apply binery search in lower and high ends respectively.
+    int findInMountainArray(int target, MountainArray A) {
+        int n = A.length(), l, r, m, peak = 0;
+        // find index of peak
+        l  = 0;
+        r = n - 1;
+        while (l < r) {
+            m = l + (r - l) / 2;
+            if (A.get(m) < A.get(m + 1)) {
+                l = peak = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        // find target in the left of peak
+        l = 0;
+        r = peak;
+        while (l <= r) {
+            m = l + (r - l) / 2;
+            if (A.get(m) < target) {
+                l = m + 1;
+            } else {
+                if (A.get(m) > target) {
+                    r = m - 1;
+                } else {
+                    return m;
+                }
+            }
+        }
+        // find target in the right of peak
+        l = peak;
+        r = n - 1;
+        while (l <= r) {
+            m = l + (r - l) / 2;
+            if (A.get(m) > target) {
+                l = m + 1;
+            } else {
+                if (A.get(m) < target) {
+                    r = m - 1;
+                } else {
+                    return m;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * https://leetcode.com/problems/peak-index-in-a-mountain-array/
+     * @param A
+     * @return
+     */
+    public int peakIndexInMountainArray(int[] A) {
+        int l = 0, r = A.length - 1, m;
+        while (l < r) {
+            m = l + (r - l) / 2;
+            if (A[m] < A[m + 1]) {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        return l;
+    }
+
+    /**
      * https://leetcode.com/problems/find-the-distance-value-between-two-arrays/
      * @param arr1
      * @param arr2
@@ -264,33 +372,41 @@ public class BinarySearchExe {
      * @return
      */
     public int search_33(int[] nums, int target) {
-        if (nums == null || nums.length == 0) {
-            return -1;
-        }
-        int lo = 0;
-        int hi = nums.length - 1;
-        while (lo < hi) {
-            int mid = lo + (hi - lo) / 2;
-            if (nums[lo] < nums[mid]) {
-                if (nums[mid] >= target && target >= nums[lo]) {
-                    hi = mid;
-                } else {
-                    lo = mid;
-                }
+        if (nums == null || nums.length == 0) return -1;
+        int l = 0, r = nums.length - 1, m = 0;
+        // find out the index of the smallest element.
+        while (l < r) {
+            m = l + (r - l) / 2;
+            if (nums[m] > nums[r]) {
+                l = m + 1;
             } else {
-                if (nums[lo] > nums[mid]) {
-                    if (nums[mid] <= target && target <= nums[hi]) {
-                        lo = mid;
-                    } else {
-                        hi = mid;
-                    }
+                r = m;
+            }
+        }
+
+        // since we now know the start, find out if the target is to left or right of start in the array.
+        int s = l;
+        l = 0;
+        r = nums.length - 1;
+        if (target >= nums[s] && target <= nums[r]) {
+            l = s;
+        } else {
+            r = s;
+        }
+        // the regular search.
+        while (l <= r) {
+            m = l + (r - l) / 2;
+            if (nums[m] == target) {
+                return m;
+            } else {
+                if (nums[m] > target) {
+                    r = m - 1;
                 } else {
-                    break;
+                    l = m + 1;
                 }
             }
         }
-        if (nums[lo] == target) return lo;
-        if (nums[hi] == target) return hi;
+
         return -1;
     }
 	

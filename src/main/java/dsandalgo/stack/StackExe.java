@@ -600,4 +600,46 @@ public class StackExe {
         }
         return "";
     }
+
+
+    /**
+     * https://leetcode.com/problems/valid-parentheses/
+     * @param s
+     * @return
+     */
+    private char[][] brackets = {{'(',')'},{'{','}'},{'[',']'}};
+    private boolean isOpen(char ch){
+        for (char[] bras : brackets) {
+            if (bras[0] == ch) return true;
+        }
+        return false;
+    }
+    private boolean isMatching(char ch1, char ch2){
+        for (char[] bras : brackets) {
+            if (bras[0] == ch1 && bras[1] == ch2) return true;
+        }
+        return false;
+    }
+    public boolean isValid(String s) {
+        if (s == null  || s.length() == 0) {
+            return true;
+        }
+        if (s.length() % 2 != 0) {
+            return false;
+        }
+        if (!isOpen(s.charAt(0))) {
+            return false;
+        }
+        Stack<Character> stack = new Stack<Character>();
+        for (int i=0; i<s.length(); i++) {
+            if (isOpen(s.charAt(i))) {
+                stack.push(s.charAt(i));
+            } else {
+                if (s.isEmpty() || !isMatching(stack.pop(), s.charAt(i))) {
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
+    }
 }

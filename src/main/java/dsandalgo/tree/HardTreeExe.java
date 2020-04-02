@@ -11,6 +11,49 @@ public class HardTreeExe {
     }
 
     /**
+     * https://leetcode.com/problems/binary-tree-maximum-path-sum/
+     * Given a non-empty binary tree, find the maximum path sum.
+     *
+     * For this problem, a path is defined as any sequence of nodes from some starting node to any node in the tree along the parent-child connections. The path must contain at least one node and does not need to go through the root.
+     *
+     * Example 1:
+     *
+     * Input: [1,2,3]
+     *
+     *        1
+     *       / \
+     *      2   3
+     *
+     * Output: 6
+     * Example 2:
+     *
+     * Input: [-10,9,20,null,null,15,7]
+     *
+     *    -10
+     *    / \
+     *   9  20
+     *     /  \
+     *    15   7
+     *
+     * Output: 42
+     */
+    public int maxPathSum(TreeNode root) {
+        int[] max = new int[1];
+        max[0] = Integer.MIN_VALUE;
+        maxPathSum(max, root);
+        return max[0];
+    }
+
+    private int maxPathSum(int[] max, TreeNode root){
+        if (root == null) return 0;
+        int leftMax =  Math.max(0, maxPathSum(max, root.left));
+        int rightMax = Math.max(0, maxPathSum(max, root.right));
+        max[0] = Math.max(max[0],  root.val + leftMax + rightMax);
+        return root.val + Math.max(leftMax,rightMax);
+    }
+
+
+    /**
      * https://leetcode.com/problems/k-th-smallest-in-lexicographical-order/
      * Given integers n and k, find the lexicographically k-th smallest integer in the range from 1 to n.
      *

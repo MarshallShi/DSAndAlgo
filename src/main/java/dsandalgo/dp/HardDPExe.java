@@ -6,21 +6,162 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 public class HardDPExe {
 
     public static void main(String[] args) {
         HardDPExe exe = new HardDPExe();
-        int[] arr1 = {1,2,4,-1,2};
-        int[] arr2 = {9, 1, 2, 5, 8, 3};
-        int target = 100;
-        int startFuel = 10;
-        List<String> lst = new ArrayList<>();
-        lst.add("E23");
-        lst.add("2X2");
-        lst.add("12S");
-        System.out.println(exe.findIntegers(48));
+        int[] arr1 = {11,22,7,7,7,7,7,7,7,22,13};
+        //System.out.println(exe.minJumps(arr1));
     }
+
+    /**
+     * https://leetcode.com/problems/k-inverse-pairs-array/
+     * Given two integers n and k, find how many different arrays consist of numbers from 1 to n such that there are exactly k inverse pairs.
+     *
+     * We define an inverse pair as following: For ith and jth element in the array, if i < j and a[i] > a[j] then it's an inverse pair; Otherwise, it's not.
+     *
+     * Since the answer may be very large, the answer should be modulo 109 + 7.
+     *
+     * Example 1:
+     *
+     * Input: n = 3, k = 0
+     * Output: 1
+     * Explanation:
+     * Only the array [1,2,3] which consists of numbers from 1 to 3 has exactly 0 inverse pair.
+     *
+     *
+     * Example 2:
+     *
+     * Input: n = 3, k = 1
+     * Output: 2
+     * Explanation:
+     * The array [1,3,2] and [2,1,3] have exactly 1 inverse pair.
+     *
+     *
+     * Note:
+     *
+     * The integer n is in the range [1, 1000] and k is in the range [0, 1000].
+     */
+    //For example, if we have some permutation of 1...4
+    //5 x x x x creates 4 new inverse pairs
+    //x 5 x x x creates 3 new inverse pairs
+    //...
+    //x x x x 5 creates 0 new inverse pairs
+    //O(n * k ^ 2) Solution
+    //We can use this formula to solve this problem
+    //dp[i][j] //represent the number of permutations of (1...n) with k inverse pairs.
+    //dp[i][j] = dp[i-1][j] + dp[i-1][j-1] + dp[i-1][j-2] + ..... +dp[i-1][j - i + 1]
+    public int kInversePairs(int n, int k) {
+        int[][] dp = new int[n + 1][k + 1];
+        dp[0][0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                for (int m = 0; m <= k; m++) {
+                    if (m - j >= 0 && m - j <= k) {
+                        dp[i][m] = (dp[i][m] + dp[i - 1][m - j]) % 1000000007;
+                    }
+                }
+            }
+        }
+        return dp[n][k];
+    }
+
+    /**
+     * https://leetcode.com/problems/jump-game-iv/
+     * Given an array of integers arr, you are initially positioned at the first index of the array.
+     *
+     * In one step you can jump from index i to index:
+     *
+     * i + 1 where: i + 1 < arr.length.
+     * i - 1 where: i - 1 >= 0.
+     * j where: arr[i] == arr[j] and i != j.
+     * Return the minimum number of steps to reach the last index of the array.
+     *
+     * Notice that you can not jump outside of the array at any time.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: arr = [100,-23,-23,404,100,23,23,23,3,404]
+     * Output: 3
+     * Explanation: You need three jumps from index 0 --> 4 --> 3 --> 9. Note that index 9 is the last index of the array.
+     * Example 2:
+     *
+     * Input: arr = [7]
+     * Output: 0
+     * Explanation: Start index is the last index. You don't need to jump.
+     * Example 3:
+     *
+     * Input: arr = [7,6,9,6,9,6,9,7]
+     * Output: 1
+     * Explanation: You can jump directly from index 0 to index 7 which is last index of the array.
+     * Example 4:
+     *
+     * Input: arr = [6,1,9]
+     * Output: 2
+     * Example 5:
+     *
+     * Input: arr = [11,22,7,7,7,7,7,7,7,22,13]
+     * Output: 3
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= arr.length <= 5 * 10^4
+     * -10^8 <= arr[i] <= 10^8
+     */
+    //Instead, it should be a BFS solution, not DFS + Memo.
+//
+//    public int minJumps_TLE(int[] arr) {
+//        Map<Integer, List<Integer>> map = new HashMap<>();
+//        boolean[] seen = new boolean[arr.length];
+//        for (int i=0; i<arr.length; i++) {
+//            List<Integer> lst = map.getOrDefault(arr[i],new ArrayList<Integer>());
+//            lst.add(i);
+//            map.put(arr[i], lst);
+//        }
+//        seen[0] = true;
+//        return minJumpsDFS(arr, 0, seen, map);
+//    }
+//
+//    private int minJumpsDFS(int[] arr, int pos, boolean[] seen, Map<Integer, List<Integer>> map) {
+//        if (pos == arr.length - 1) {
+//            return 0;
+//        }
+//        int tempRes = Integer.MAX_VALUE;
+//        if (pos + 1 < arr.length && !seen[pos+1]) {
+//            seen[pos+1] = true;
+//            int temp = minJumpsDFS(arr, pos + 1, seen, map);
+//            if (temp != Integer.MAX_VALUE) {
+//                tempRes = Math.min(tempRes, 1 + temp);
+//            }
+//            seen[pos+1] = false;
+//        }
+//        if (pos - 1 >= 0 && !seen[pos-1]) {
+//            seen[pos-1] = true;
+//            int temp = minJumpsDFS(arr, pos - 1, seen, map);
+//            if (temp != Integer.MAX_VALUE) {
+//                tempRes = Math.min(tempRes, 1 + temp);
+//            }
+//            seen[pos-1] = false;
+//        }
+//        List<Integer> lst = map.get(arr[pos]);
+//        if (lst.size() > 1) {
+//            for (int idx : lst) {
+//                if (idx == pos || seen[idx]) continue;
+//                seen[idx] = true;
+//                int temp = minJumpsDFS(arr, idx, seen, map);
+//                if (temp != Integer.MAX_VALUE) {
+//                    tempRes = Math.min(tempRes, 1 + temp);
+//                }
+//                seen[idx] = false;
+//            }
+//        }
+//        return tempRes;
+//    }
 
     /**
      * https://leetcode.com/problems/non-negative-integers-without-consecutive-ones/
@@ -314,32 +455,55 @@ public class HardDPExe {
     }
     // t is which step, x is mouse location, y is cat location
     private int seach(int[][] graph, int t, int x, int y){
-        if (t == graph.length * 2) return 0;
-        if (x == y) return catMouseDP[t][x][y] = 2;
-        if (x == 0) return catMouseDP[t][x][y] = 1;
-        if (catMouseDP[t][x][y] != -1) return catMouseDP[t][x][y];
+        if (t == graph.length * 2) {
+            return 0;
+        }
+        if (x == y) {
+            return catMouseDP[t][x][y] = 2;
+        }
+        if (x == 0) {
+            return catMouseDP[t][x][y] = 1;
+        }
+        if (catMouseDP[t][x][y] != -1) {
+            return catMouseDP[t][x][y];
+        }
         int who = t % 2;
         boolean flag;
         if (who == 0) { // mouse's turn
             flag = true; // by default, is cat win
             for (int i = 0; i < graph[x].length; i++) {
                 int nxt = seach(graph, t + 1, graph[x][i], y);
-                if (nxt == 1) return catMouseDP[t][x][y] = 1;
-                else if (nxt != 2) flag = false;
+                if (nxt == 1) {
+                    return catMouseDP[t][x][y] = 1;
+                } else {
+                    if (nxt != 2) {
+                        flag = false;
+                    }
+                }
             }
-            if (flag) return catMouseDP[t][x][y] = 2;
-            else return catMouseDP[t][x][y] = 0;
-        }
-        else { // cat's turn
+            if (flag) {
+                return catMouseDP[t][x][y] = 2;
+            } else {
+                return catMouseDP[t][x][y] = 0;
+            }
+        } else { // cat's turn
             flag = true; // by default is mouse win
             for (int i = 0; i < graph[y].length; i++)
                 if (graph[y][i] != 0) {
                     int nxt = seach(graph, t + 1, x, graph[y][i]);
-                    if (nxt == 2) return catMouseDP[t][x][y] = 2;
-                    else if (nxt != 1) flag = false;
+                    if (nxt == 2) {
+                        return catMouseDP[t][x][y] = 2;
+                    } else {
+                        if (nxt != 1) {
+                            flag = false;
+                        }
+                    }
                 }
-            if (flag) return catMouseDP[t][x][y] = 1;
-            else return catMouseDP[t][x][y] = 0;
+            if (flag) {
+                return catMouseDP[t][x][y] = 1;
+            } else {
+                return catMouseDP[t][x][y] = 0;
+            }
         }
     }
 
@@ -379,17 +543,19 @@ public class HardDPExe {
      * 2 <= x <= 100
      * 1 <= target <= 2 * 10^8
      */
-    //trick: aggressively apply product
+    //trick: aggressively apply product, if the result can't meet target,
     private Map<Integer, Integer> leastOpsCache = new HashMap<>();
 
     public int leastOpsExpressTarget(int x, int target) {
         if (target == 1) {
-            //already reach, or just add one /
+            //already reach, or just add one division
             return x == 1 ? 0 : 1;
         }
         if (leastOpsCache.containsKey(target)) {
             return leastOpsCache.get(target);
         }
+
+        //apply as much as product first.
         long product = x;
         int count = 0;
         while (product < target) {
@@ -405,6 +571,7 @@ public class HardDPExe {
             if (product - target < target) {
                 cand1 = count + leastOpsExpressTarget(x, (int)(product - target)) + 1;
             }
+            //otherwise, this path is dropped, as cand1 is MAX_VALUE
         }
 
         // candidate2 : in the form : x*x*...*x + (......) = target

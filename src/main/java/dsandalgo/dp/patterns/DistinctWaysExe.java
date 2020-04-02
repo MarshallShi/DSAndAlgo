@@ -432,14 +432,6 @@ public class DistinctWaysExe {
     }
 
     /**
-     * https://leetcode.com/problems/knight-probability-in-chessboard/
-     *
-     */
-    public double knightProbability(int N, int K, int r, int c) {
-        return 0d;
-    }
-
-    /**
      * https://leetcode.com/problems/target-sum/
      *
      * You are given a list of non-negative integers, a1, a2, ..., an, and a target, S.
@@ -510,8 +502,7 @@ public class DistinctWaysExe {
     /**
      * https://leetcode.com/problems/knight-dialer/
      *
-     *
-     * */
+     */
     public int knightDialer(int N) {
         if (N == 1) return 10;
         long mod = 1000000007;

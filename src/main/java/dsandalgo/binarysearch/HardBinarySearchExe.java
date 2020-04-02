@@ -5,12 +5,11 @@ import java.util.TreeSet;
 public class HardBinarySearchExe {
 
     public static void main(String[] args) {
-        int[] wts = {3,6,12,19,33,44,67,72,89,95};
+        int[] nums1 = {3,6,12,19,33,44,67,72,89,95};
+        int[] nums2 = {9,21,29,88};
         HardBinarySearchExe exe = new HardBinarySearchExe();
         int[][] mat = {{1,0,1},{0,-2,3}};
-        //[3,6,12,19,33,44,67,72,89,95]
-        //2
-        System.out.println(exe.minmaxGasDist(wts, 2));
+        System.out.println(exe.findMedianSortedArrays(nums1, nums2));
     }
 
     /**
@@ -339,54 +338,34 @@ public class HardBinarySearchExe {
      * nums2 = [3, 4]
      *
      * The median is (2 + 3)/2 = 2.5
-     *
-     * @param nums1
-     * @param nums2
-     * @return
      */
-
     //https://leetcode.com/problems/median-of-two-sorted-arrays/discuss/2481/Share-my-O(log(min(mn)))-solution-with-explanation
-
+    //Binary search idea: apply the binary search in shorter array to gain better performance.
+    //Once get the mid idx number, we know what to pick from the longer array, use the feature: left part < right part, in both array, so we can decide next move.
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
         int m = nums1.length;
         int n = nums2.length;
-
         if (m > n) {
             return findMedianSortedArrays(nums2, nums1);
         }
-
         int i = 0, j = 0, imin = 0, imax = m, half = (m + n + 1) / 2;
-
         double maxLeft = 0, minRight = 0;
-
-        while (imin <= imax){
-
+        while (imin <= imax) {
+            //i: index in shorter array, testing this idx.
             i = (imin + imax) / 2;
-
+            //j: index in the longer array.
             j = half - i;
-
             if (j > 0 && i < m && nums2[j - 1] > nums1[i]) {
-
                 imin = i + 1;
-
             } else if (i > 0 && j < n && nums1[i - 1] > nums2[j]) {
-
                 imax = i - 1;
-
             } else {
-
                 if (i == 0) {
-
-                    maxLeft = (double)nums2[j - 1];
-
+                    maxLeft = (double) nums2[j - 1];
                 } else if (j == 0) {
-
-                    maxLeft = (double)nums1[i - 1];
-
+                    maxLeft = (double) nums1[i - 1];
                 } else {
-
-                    maxLeft = (double)Math.max(nums1[i - 1], nums2[j - 1]);
-
+                    maxLeft = (double) Math.max(nums1[i - 1], nums2[j - 1]);
                 }
                 break;
             }
@@ -395,13 +374,12 @@ public class HardBinarySearchExe {
             return maxLeft;
         }
         if (i == m) {
-            minRight = (double)nums2[j];
-        }else if(j == n) {
-            minRight = (double)nums1[i];
-        }else{
-            minRight = (double)Math.min(nums1[i], nums2[j]);
+            minRight = (double) nums2[j];
+        } else if (j == n) {
+            minRight = (double) nums1[i];
+        } else {
+            minRight = (double) Math.min(nums1[i], nums2[j]);
         }
-
-        return (double)(maxLeft + minRight) / 2;
+        return (double) (maxLeft + minRight) / 2;
     }
 }

@@ -1179,6 +1179,15 @@ public class BitExe {
      * @param num
      * @return
      */
+    public int[] countBits(int num) {
+        int[] f = new int[num + 1];
+        for (int i = 1; i <= num; i++) {
+            //example: 000110, 000111, they can be based on 00011 + (i&1)
+            f[i] = f[i >> 1] + (i & 1);
+        }
+        return f;
+    }
+
     public int[] countBits_BruteForce(int num) {
         int[] ret = new int[num+1];
         if (num == 0) {
@@ -1197,19 +1206,6 @@ public class BitExe {
             ret[i] = count;
         }
         return ret;
-    }
-
-    /**
-     * Obervasion: f(i) = f(i/2) + 1?
-     * @param num
-     * @return
-     */
-    public int[] countBits(int num) {
-        int[] f = new int[num + 1];
-        for (int i=1; i<=num; i++) {
-            f[i] = f[i >> 1] + (i & 1);
-        }
-        return f;
     }
 
     /**

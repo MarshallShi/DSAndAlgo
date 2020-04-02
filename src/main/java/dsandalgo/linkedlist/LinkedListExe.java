@@ -1,10 +1,7 @@
 package dsandalgo.linkedlist;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -21,6 +18,78 @@ public class LinkedListExe {
         LinkedListExe exe = new LinkedListExe();
         exe.splitListToParts(exe.createList(), 5);
         //System.out.println(ret);
+    }
+
+    /**
+     * https://leetcode.com/problems/reverse-linked-list/
+     * Reverse a singly linked list.
+     *
+     * Example:
+     *
+     * Input: 1->2->3->4->5->NULL
+     * Output: 5->4->3->2->1->NULL
+     * Follow up:
+     *
+     * A linked list can be reversed either iteratively or recursively. Could you implement both?
+     */
+    public ListNode reverseList(ListNode head) {
+        /* iterative solution */
+        ListNode prevHead = null;
+        while (head != null) {
+            ListNode recordNext = head.next;
+            head.next = prevHead;
+            prevHead = head;
+            head = recordNext;
+        }
+        return prevHead;
+    }
+
+    public ListNode reverseList_recursive(ListNode head) {
+        /* recursive solution */
+        return reverseListHelper(head, null);
+    }
+
+    private ListNode reverseListHelper(ListNode head, ListNode newHead) {
+        if (head == null) {
+            return newHead;
+        }
+        ListNode next = head.next;
+        head.next = newHead;
+        return reverseListHelper(next, head);
+    }
+
+    /**
+     * https://leetcode.com/problems/add-two-numbers/
+     * @param l1
+     * @param l2
+     * @return
+     */
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        int carrier = 0;
+        ListNode dummy = new ListNode(0), tail = dummy;
+
+        // iterate two list, add each position until 2 lists are finished && left equals to 0
+        while (!(l1 == null && l2 == null && carrier == 0)) {
+            // trick: is number1 finished?
+            int add1 = l1 != null ? l1.val : 0;
+            // trick: is number2 finished?
+            int add2 = l2 != null ? l2.val : 0;
+            int sum = add1 + add2 + carrier;
+            carrier = sum / 10;
+
+            ListNode newNode = new ListNode(sum % 10);
+            tail.next = newNode;
+            tail = newNode;
+
+            if (l1 != null) {
+                l1 = l1.next;
+            }
+            if (l2 != null) {
+                l2 = l2.next;
+            }
+        }
+
+        return dummy.next;
     }
 
     /**

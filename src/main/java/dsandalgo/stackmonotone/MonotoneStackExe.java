@@ -3,10 +3,8 @@ package dsandalgo.stackmonotone;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -21,11 +19,8 @@ import java.util.Stack;
  *   in_stk.push(A[i]);
  * }
  *
- *
  * More questions to do in the bottom of this post:
  * https://leetcode.com/problems/sum-of-subarray-minimums/discuss/178876/stack-solution-with-very-detailed-explanation-step-by-step
- *
- * TODO:
  *
  * Maximal Rectangle(please do this problem after you solve the above one)
  * Trapping Rain Water (challenge)
@@ -53,6 +48,15 @@ public class MonotoneStackExe {
     public static void main(String[] args) {
         MonotoneStackExe exe = new MonotoneStackExe();
         int[] nums = {2,1,5,6,2,3};
+        //     *   ["1","0","1","0","0"],
+        //     *   ["1","0","1","1","1"],
+        //     *   ["1","1","1","1","1"],
+        //     *   ["1","0","0","1","0"]
+        char[][] input = {
+                {'1','0','1','0','0'},
+                {'1','0','1','1','1'},
+                {'1','1','1','1','1'},
+                {'1','0','0','1','0'}};
         System.out.println(exe.largestRectangleArea(nums));
     }
 
@@ -113,7 +117,7 @@ public class MonotoneStackExe {
      */
     //https://leetcode.com/problems/largest-rectangle-in-histogram/discuss/28900/O(n)-stack-based-JAVA-solution
     //http://www.geeksforgeeks.org/largest-rectangle-under-histogram/
-    public static int largestRectangleArea(int[] height) {
+    public int largestRectangleArea_arr(int[] height) {
         if (height == null || height.length == 0) {
             return 0;
         }
@@ -147,22 +151,28 @@ public class MonotoneStackExe {
         return maxArea;
     }
 
-    public int largestRectangleArea_stack(int[] height) {
+    public int largestRectangleArea(int[] height) {
         int len = height.length;
-        Stack<Integer> stack = new Stack<Integer>();
-        int maxArea = 0;
-        for(int idx = 0; idx <= len; idx++){
-            int h = (idx == len ? 0 : height[idx]);
-            if (stack.isEmpty() || h >= height[stack.peek()]){
-                stack.push(idx);
+        Stack<Integer> stack = new Stack<>();
+        int max = 0;
+        for (int i = 0; i <= len; i++) {
+            //To cover the last column's height comparison with an non existing next column.
+            int curH = (i == len ? 0 : height[i]);
+            if (stack.isEmpty() || curH >= height[stack.peek()]) {
+                stack.push(i);
             } else {
-                int popped = stack.pop();
-                maxArea = Math.max(maxArea, height[popped] * (stack.isEmpty() ? idx : idx - 1 - stack.peek()));
-                //revert the for loop's increment, back to check again in next round
-                idx--;
+                while (!stack.isEmpty() && curH < height[stack.peek()]) {
+                    int prevHeightIdx = stack.pop();
+                    int lengthToMultiply = i;
+                    if (!stack.isEmpty()) {
+                        lengthToMultiply = i - 1 - stack.peek();
+                    }
+                    max = Math.max(max, height[prevHeightIdx] * lengthToMultiply);
+                }
+                stack.push(i);
             }
         }
-        return maxArea;
+        return max;
     }
 
     /**
@@ -190,31 +200,35 @@ public class MonotoneStackExe {
         int m = matrix.length;
         int n = matrix[0].length;
         // row based height array, next row's height will change base on previous row.
-        int[] heights = new int[n+1];
+        // length to be n+1 so we cover the last column, as it need the next non existing column to compare with it.
+        int[] height = new int[n + 1];
         int max = 0;
 
-        for (int row=0; row<m; row++) {
-            Stack<Integer> stack = new Stack<Integer>();
-            for (int i=0; i<n+1; i++) {
+        for (int row = 0; row < m; row++) {
+            Stack<Integer> stack = new Stack<>();
+            for (int i = 0; i < n + 1; i++) {
                 //update the heights in for current new row.
                 if (i < n) {
                     if (matrix[row][i] == '1') {
-                        heights[i] = heights[i] + 1;
+                        height[i] = height[i] + 1;
                     } else {
                         //reset to 0.
-                        heights[i] = 0;
+                        height[i] = 0;
                     }
                 }
+                //If i==n, height[i] default value is 0.
+                int curH = height[i];
                 //apply largestRectangleArea algo.
-                if (stack.isEmpty() || heights[stack.peek()] <= heights[i]) {
+                if (stack.isEmpty() || height[stack.peek()] <= curH) {
                     stack.push(i);
                 } else {
-                    while (!stack.isEmpty() && heights[i] < heights[stack.peek()]) {
-                        int top = stack.pop();
-                        int area = heights[top] * (stack.isEmpty() ? i : (i - stack.peek() - 1));
-                        if (area > max) {
-                            max = area;
+                    while (!stack.isEmpty() && curH < height[stack.peek()]) {
+                        int prevHeightIdx = stack.pop();
+                        int lengthToMultiply = i;
+                        if (!stack.isEmpty()) {
+                            lengthToMultiply = i - 1 - stack.peek();
                         }
+                        max = Math.max(max, height[prevHeightIdx] * lengthToMultiply);
                     }
                     stack.push(i);
                 }

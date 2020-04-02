@@ -192,22 +192,6 @@ public class Coding2 {
         System.out.println("");
     }
 
-    public int maxArea(int[] height) {
-        int res = 0;
-        int i=0, j=height.length - 1;
-        while (i<j) {
-            res = Math.max(res, (j-i)*Math.min(height[i], height[j]));
-            if (height[i] < height[j]) {
-                i++;
-            } else {
-                j--;
-            }
-        }
-        return res;
-    }
-
-
-
     private int ret996 = 0;
 
     public int numSquarefulPerms(int[] A) {
@@ -718,30 +702,6 @@ public class Coding2 {
         return sb.reverse().toString();
     }
 
-    private String[] mapping = new String[] {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
-
-    public List<String> letterCombinations(String digits) {
-        //String[] mapping = new String[] {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
-        List<String> ret = new LinkedList<String>();
-        backtrackLetterComb(ret, digits, new StringBuilder(), 0);
-        return ret;
-    }
-
-    public void backtrackLetterComb(List<String> ret, String digits, StringBuilder sb, int pos){
-        if (pos == digits.length()) {
-            String temp = new String(sb.toString());
-            ret.add(temp);
-            return;
-        }
-        String mappedString = mapping[Character.getNumericValue(digits.charAt(pos))];
-        for (int i=0; i<mappedString.length(); i++) {
-            int curLen = sb.length();
-            sb.append(mappedString.charAt(i));
-            backtrackLetterComb(ret, digits, sb, pos+1);
-            sb.setLength(curLen);
-        }
-    }
-
     public class IndexAndCharacter {
         public int idx;
         public char special;
@@ -1126,41 +1086,6 @@ public class Coding2 {
         return ret;
     }
 
-    public int[][] merge(int[][] intervals) {
-        List<int[]> list = new ArrayList<int[]>();
-        for (int i=0; i<intervals.length; i++) {
-            list.add(intervals[i]);
-        }
-        list.sort(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return o1[0] - o2[0];
-            }
-        });
-        List<int[]> resultList = new ArrayList<int[]>();
-        for (int i=0; i<list.size(); i++) {
-            int[] cur = list.get(i);
-            while (i != list.size() - 1) {
-                if (cur[1] >= list.get(i+1)[1]) {
-                    i++;
-                } else {
-                    if ((cur[1] >= list.get(i+1)[0]) && (cur[1] <= list.get(i+1)[1]))  {
-                        cur[1] = list.get(i+1)[1];
-                        i++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-            resultList.add(cur);
-        }
-        int[][] ret = new int[resultList.size()][2];
-        for (int i=0; i<resultList.size(); i++) {
-            ret[i] = resultList.get(i);
-        }
-        return ret;
-    }
-
     public int thirdMax(int[] nums) {
         if (nums == null || nums.length == 0) {
             return -1;
@@ -1531,41 +1456,6 @@ public class Coding2 {
             toOffer[j] = input[j];
         }
         return toOffer;
-    }
-
-
-    public int[][] kClosest(int[][] points, int K) {
-        PriorityQueue<Integer[]> pq = new PriorityQueue<Integer[]>(K, new Comparator<Integer[]>() {
-            public int compare(Integer[] o1, Integer[] o2) {
-                return  (o2[0]*o2[0]+o2[1]*o2[1]) - (o1[0]*o1[0]+o1[1]*o1[1]);
-            }
-        });
-        for (int i=0; i<points.length; i++) {
-            int[] temp = points[i];
-            Integer[] toOffer = new Integer[temp.length];
-            for(int j=0; j<temp.length; j++) {
-                toOffer[j] = temp[j];
-            }
-            if (pq.size() < K) {
-                pq.offer(toOffer);
-            } else {
-                Integer[] toCompare = pq.peek();
-                if ((toCompare[0]*toCompare[0]+toCompare[1]*toCompare[1]) > (toOffer[0]*toOffer[0]+toOffer[1]*toOffer[1])) {
-                    pq.poll();
-                    pq.offer(toOffer);
-                }
-            }
-        }
-        int[][] ret = new int[K][2];
-        for (int i=0; i<K; i++) {
-            Integer[] input = pq.poll();
-            int[] tmp = new int[input.length];
-            for(int j=0; j<input.length; j++) {
-                tmp[j] = input[j];
-            }
-            ret[i] = tmp;
-        }
-        return ret;
     }
 
     public String reorganizeString(String s) {

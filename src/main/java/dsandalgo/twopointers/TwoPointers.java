@@ -1,11 +1,127 @@
 package dsandalgo.twopointers;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TwoPointers {
 
     public static void main(String[] args) {
 
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-window-substring/
+     * Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+     *
+     * Example:
+     *
+     * Input: S = "ADOBECODEBANC", T = "ABC"
+     * Output: "BANC"
+     * Note:
+     *
+     * If there is no such window in S that covers all characters in T, return the empty string "".
+     * If there is such window, you are guaranteed that there will always be only one unique minimum window in S.
+     */
+    //https://leetcode.com/problems/minimum-window-substring/discuss/26808/Here-is-a-10-line-template-that-can-solve-most-'substring'-problems
+    public String minWindow_76(String s, String t) {
+        int[] map = new int[128];
+        for (char c : t.toCharArray()) {
+            map[c]++;
+        }
+        int start = 0, end = 0, minStart = 0, minLen = Integer.MAX_VALUE, counter = t.length();
+        while (end < s.length()) {
+            char c1 = s.charAt(end);
+            if (map[c1] > 0) {
+                counter--;
+            }
+            map[c1]--;
+            end++;
+            while (counter == 0) {
+                if (minLen > end - start) {
+                    minLen = end - start;
+                    minStart = start;
+                }
+                char c2 = s.charAt(start);
+                map[c2]++;
+                if (map[c2] > 0) {
+                    counter++;
+                }
+                start++;
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(minStart, minStart + minLen);
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-substring-without-repeating-characters/
+     * Given a string, find the length of the longest substring without repeating characters.
+     *
+     * Example 1:
+     *
+     * Input: "abcabcbb"
+     * Output: 3
+     * Explanation: The answer is "abc", with the length of 3.
+     * Example 2:
+     *
+     * Input: "bbbbb"
+     * Output: 1
+     * Explanation: The answer is "b", with the length of 1.
+     * Example 3:
+     *
+     * Input: "pwwkew"
+     * Output: 3
+     * Explanation: The answer is "wke", with the length of 3.
+     * Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
+     */
+    public int lengthOfLongestSubstring(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        if (s.length() == 1) {
+            return 1;
+        }
+        int slow = 0, fast = 0;
+        Map<Character, Integer> map = new HashMap<Character, Integer>();
+        int maxLen = 0;
+        while (fast < s.length() && slow <= fast) {
+            if(map.containsKey(s.charAt(fast))) {
+                slow = Math.max(slow,map.get(s.charAt(fast)) + 1);
+            }
+            map.put(s.charAt(fast), fast);
+            maxLen = Math.max(fast - slow + 1, maxLen);
+            fast++;
+        }
+        return maxLen;
+    }
+
+    /**
+     * https://leetcode.com/problems/container-with-most-water/
+     * Given n non-negative integers a1, a2, ..., an , where each represents a point at coordinate (i, ai).
+     * n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0).
+     * Find two lines, which together with x-axis forms a container, such that the container contains the most water.
+     *
+     * Note: You may not slant the container and n is at least 2.
+     *
+     * The above vertical lines are represented by array [1,8,6,2,5,4,8,3,7]. In this case,
+     * the max area of water (blue section) the container can contain is 49.
+     *
+     * Example:
+     * Input: [1,8,6,2,5,4,8,3,7]
+     * Output: 49
+     */
+    public int maxArea(int[] height) {
+        int res = 0;
+        int i = 0, j = height.length - 1;
+        while (i < j) {
+            res = Math.max(res, (j - i) * Math.min(height[i], height[j]));
+            if (height[i] < height[j]) {
+                i++;
+            } else {
+                j--;
+            }
+        }
+        return res;
     }
 
     /**

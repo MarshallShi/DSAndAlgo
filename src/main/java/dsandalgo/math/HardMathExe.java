@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +18,148 @@ public class HardMathExe {
         //D = ["1","4","9"], N = 1000000000
         String[] d = {"1","4","9"};
         int[] digits = {8,6,7,1,0};
-        System.out.println(exe.numDupDigitsAtMostN(262));
+        System.out.println(exe.superpalindromesInRange("4", "1000"));
+    }
+
+    /**
+     * https://leetcode.com/problems/super-palindromes/
+     * Let's say a positive integer is a superpalindrome if it is a palindrome, and it is also the square of a palindrome.
+     *
+     * Now, given two positive integers L and R (represented as strings), return the number of superpalindromes in the inclusive range [L, R].
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: L = "4", R = "1000"
+     * Output: 4
+     * Explanation: 4, 9, 121, and 484 are superpalindromes.
+     * Note that 676 is not a superpalindrome: 26 * 26 = 676, but 26 is not a palindrome.
+     *
+     *
+     * Note:
+     *
+     * 1 <= len(L) <= 18
+     * 1 <= len(R) <= 18
+     * L and R are strings representing integers in the range [1, 10^18).
+     * int(L) <= int(R)
+     * @param L
+     * @param R
+     * @return
+     */
+    public int superpalindromesInRange(String L, String R) {
+        Long l = Long.valueOf(L), r = Long.valueOf(R);
+        int result = 0;
+        long start = (long) Math.sqrt(l);
+        for (long i = start; i * i <= r; ) {
+            //get next super palindrome, then jump to next, instead of go through all numbers.
+            long p = nextSuperpalindromes(i);
+            if (p * p <= r && isP(p * p)) {
+                result++;
+            }
+            i = p + 1;
+        }
+        return result;
+    }
+
+    private long nextSuperpalindromes(long num) {
+        String s = Long.toString(num);
+        int N = s.length();
+        String half = s.substring(0, (N + 1) / 2);
+        String reverse = new StringBuilder(half.substring(0, N / 2)).reverse().toString();
+        long first = Long.valueOf(half + reverse);
+        if (first >= num) {
+            return first;
+        }
+        String nexthalf = Long.toString(Long.valueOf(half) + 1);
+        String reverseNextHalf = new StringBuilder(nexthalf.substring(0, N / 2)).reverse().toString();
+        long second = Long.valueOf(nexthalf + reverseNextHalf);
+        return second;
+    }
+
+    private boolean isP(long l) {
+        String s = "" + l;
+        int i = 0, j = s.length() - 1;
+        while (i < j) {
+            if (s.charAt(i++) != s.charAt(j--)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/reverse-subarray-to-maximize-array-value/
+     * You are given an integer array nums. The value of this array is defined as the sum of |nums[i]-nums[i+1]| for all 0 <= i < nums.length-1.
+     *
+     * You are allowed to select any subarray of the given array and reverse it. You can perform this operation only once.
+     *
+     * Find maximum possible value of the final array.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: nums = [2,3,1,5,4]
+     * Output: 10
+     * Explanation: By reversing the subarray [3,1,5] the array becomes [2,5,1,3,4] whose value is 10.
+     * Example 2:
+     *
+     * Input: nums = [2,4,9,24,2,1,10]
+     * Output: 68
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= nums.length <= 3*10^4
+     * -10^5 <= nums[i] <= 10^5
+     */
+    //There are only three cases: reverse the prefix subarray, postfix array or the mid subarray.
+    //For the mid case, assuming we are reversing a,b....c,d to a,c...b,d, the difference would be: |c-a|+|d-b|-|b-a|-|d-c|
+    //
+    //So we are trying to maxmize it: max(|c-a|+|d-b|-|b-a|-|d-c|) where (c,d) is current pair, and (a,b) is the pair in front of it.
+    // This can be simplified as below removing the abs operators:
+    //
+    //max(c-a+d-b-|b-a|-|d-c|)
+    //max(c-a+b-d-|b-a|-|d-c|)
+    //max(a-c+d-b-|b-a|-|d-c|)
+    //max(a-c+b-d-|b-a|-|d-c|)
+    //we separate (a,b) and (c,d) and (c,d) for current pair is constant and can be moved out of the max operator:
+    //
+    //max(-a-b-|b-a|)+c+d-|d-c|
+    //max(-a+b-|b-a|)+c-d-|d-c|
+    //max(a-b-|b-a|)-c+d-|d-c|
+    //max(a+b-|b-a|)-c-d-|d-c|
+    //and we can keep the record of the history max and thus reduce the two loops into one loop (just similar to the optimization in best time to buy and sell stocks):
+    //mx0=max(-a-b-|b-a|)
+    //mx1=max(-a+b-|b-a|)
+    //mx2=max(a-b-|b-a|)
+    //mx3=max(a+b-|b-a|)
+    public int maxValueAfterReverse(int[] nums) {
+        int ans = 0;
+        int n = nums.length;
+        //the reversed array cover prefix, suffix, or in the middle.
+        int maxpre, maxsuf, maxmid;
+        int mx0, mx1, mx2, mx3;
+        maxpre = maxsuf = maxmid = Integer.MIN_VALUE;
+        mx0 = mx1 = mx2 = mx3 = Integer.MIN_VALUE;
+        for (int i = 0; i < n - 1; i++) {
+            int a = nums[i], b = nums[i + 1];
+            int diff = Math.abs(a - b);
+            ans += diff;
+            maxpre = Math.max(maxpre, Math.abs(nums[0] - b) - diff);
+            maxsuf = Math.max(maxsuf, Math.abs(nums[n - 1] - a) - diff);
+            if (mx0 > Integer.MIN_VALUE) {
+                maxmid = Math.max(maxmid, Math.max(
+                        Math.max(mx3 + a + b - diff, mx2 + a - b - diff), Math.max(mx1 - a + b - diff,
+                                mx0 - a - b - diff)));
+            }
+            mx0 = Math.max(mx0, a + b - diff);
+            mx1 = Math.max(mx1, a - b - diff);
+            mx2 = Math.max(mx2, -a + b - diff);
+            mx3 = Math.max(mx3, -a - b - diff);
+        }
+        return ans + Math.max(Math.max(maxpre, maxsuf), maxmid);
     }
 
     /**
@@ -742,66 +884,6 @@ public class HardMathExe {
             }
         }
         return count;
-    }
-
-    /**https://leetcode.com/problems/super-washing-machines/
-     * You have n super washing machines on a line. Initially, each washing machine has some dresses or is empty.
-     *
-     * For each move, you could choose any m (1 ≤ m ≤ n) washing machines, and pass one dress of each washing machine to
-     * one of its adjacent washing machines at the same time .
-     *
-     * Given an integer array representing the number of dresses in each washing machine from left to right on the line,
-     * you should find the minimum number of moves to make all the washing machines have the same number of dresses.
-     * If it is not possible to do it, return -1.
-     *
-     * Example1
-     *
-     * Input: [1,0,5]
-     *
-     * Output: 3
-     *
-     * Explanation:
-     * 1st move:    1     0 <-- 5    =>    1     1     4
-     * 2nd move:    1 <-- 1 <-- 4    =>    2     1     3
-     * 3rd move:    2     1 <-- 3    =>    2     2     2
-     * Example2
-     *
-     * Input: [0,3,0]
-     *
-     * Output: 2
-     *
-     * Explanation:
-     * 1st move:    0 <-- 3     0    =>    1     2     0
-     * 2nd move:    1     2 --> 0    =>    1     1     1
-     * Example3
-     *
-     * Input: [0,2,0]
-     *
-     * Output: -1
-     *
-     * Explanation:
-     * It's impossible to make all the three washing machines have the same number of dresses.
-     * Note:
-     * The range of n is [1, 10000].
-     * The range of dresses number in a super washing machine is [0, 1e5].
-     *
-     * https://leetcode.com/problems/super-washing-machines/discuss/99185/Super-Short-and-Easy-Java-O(n)-Solution
-     */
-    public int findMinMoves(int[] machines) {
-        int total = 0;
-        for (int load : machines) {
-            total += load;
-        }
-        if (total%machines.length != 0) {
-            return -1;
-        }
-        int avg = total/machines.length, cnt = 0, max = 0;
-        for (int load: machines) {
-            int diff = load - avg;
-            cnt += diff; //load - avg is "gain/lose"
-            max = Math.max(Math.max(max, Math.abs(cnt)), diff);
-        }
-        return max;
     }
 
     /**

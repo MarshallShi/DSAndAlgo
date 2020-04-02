@@ -16,10 +16,99 @@ public class HardBFSExe {
 
     public static void main(String[] args) {
         HardBFSExe exe = new HardBFSExe();
-        int[][] grid = {{2,1},{3,2},{4,1},{5,1},{6,4},{7,1},{8,7}};
+        int[] arr1 = {11,22,7,7,7,7,7,7,7,22,13};
         //System.out.println(exe.frogPosition(8, grid, 7, 7));
-        System.out.println(exe.racecar(24));
+        System.out.println(exe.minJumps(arr1));
     }
+
+    /**
+     * https://leetcode.com/problems/jump-game-iv/
+     * Given an array of integers arr, you are initially positioned at the first index of the array.
+     *
+     * In one step you can jump from index i to index:
+     *
+     * i + 1 where: i + 1 < arr.length.
+     * i - 1 where: i - 1 >= 0.
+     * j where: arr[i] == arr[j] and i != j.
+     * Return the minimum number of steps to reach the last index of the array.
+     *
+     * Notice that you can not jump outside of the array at any time.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: arr = [100,-23,-23,404,100,23,23,23,3,404]
+     * Output: 3
+     * Explanation: You need three jumps from index 0 --> 4 --> 3 --> 9. Note that index 9 is the last index of the array.
+     * Example 2:
+     *
+     * Input: arr = [7]
+     * Output: 0
+     * Explanation: Start index is the last index. You don't need to jump.
+     * Example 3:
+     *
+     * Input: arr = [7,6,9,6,9,6,9,7]
+     * Output: 1
+     * Explanation: You can jump directly from index 0 to index 7 which is last index of the array.
+     * Example 4:
+     *
+     * Input: arr = [6,1,9]
+     * Output: 2
+     * Example 5:
+     *
+     * Input: arr = [11,22,7,7,7,7,7,7,7,22,13]
+     * Output: 3
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= arr.length <= 5 * 10^4
+     * -10^8 <= arr[i] <= 10^8
+     */
+    public int minJumps(int[] arr) {
+        Queue<Integer> q = new LinkedList<Integer>();
+        q.offer(0);
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        boolean[] seen = new boolean[arr.length];
+        for (int i=0; i<arr.length; i++) {
+            List<Integer> lst = map.getOrDefault(arr[i],new ArrayList<Integer>());
+            lst.add(i);
+            map.put(arr[i], lst);
+        }
+        seen[0] = true;
+        int level = 0;
+        while (!q.isEmpty()) {
+            int s = q.size();
+            for (int i=0; i<s; i++) {
+                int idx = q.poll();
+                if (idx == arr.length - 1) {
+                    return level;
+                } else {
+                    if (idx + 1 < arr.length && !seen[idx + 1]) {
+                        q.offer(idx + 1);
+                        seen[idx + 1] = true;
+                    }
+                    if (idx - 1 >= 0 && !seen[idx - 1]) {
+                        q.offer(idx - 1);
+                        seen[idx - 1] = true;
+                    }
+                    List<Integer> sameValIdxList = map.get(arr[idx]);
+                    if (sameValIdxList.size() > 1) {
+                        for (int j = sameValIdxList.size() - 1; j>=0; j--) {
+                            if (sameValIdxList.get(j) == idx || seen[sameValIdxList.get(j)]) continue;
+                            q.offer(sameValIdxList.get(j));
+                            seen[sameValIdxList.get(j)] = true;
+                        }
+                    }
+                    sameValIdxList.clear();
+                }
+            }
+            level++;
+        }
+        return -1;
+    }
+
 
     /**
      * https://leetcode.com/problems/race-car/
@@ -1086,72 +1175,50 @@ public class HardBFSExe {
      * @return
      */
     public int slidingPuzzle(int[][] board) {
-        int[][] dirs = {{0,1}, {0, -1}, {1, 0}, {-1, 0}};
-        int[][] target = {{1,2,3},{4,5,0}};
-        String targetKey = getPositionKey(target);
-        Queue<int[][]> q = new LinkedList<int[][]>();
-        Set<String> seen = new HashSet<String>();
-        seen.add(getPositionKey(board));
-        q.offer(board);
-        int level = 0;
-        while (!q.isEmpty()) {
-            int s = q.size();
-            for (int i=0; i<s; i++) {
-                int[][] curBoard = q.poll();
-                if (targetKey.equals(getPositionKey(curBoard))) {
-                    return level;
-                } else {
-                    int[] zeroPos = findZeroPos(curBoard);
-                    for (int d=0; d<dirs.length; d++) {
-                        int nx = zeroPos[0] + dirs[d][0];
-                        int ny = zeroPos[1] + dirs[d][1];
-                        if (nx >= 0 && nx < 2 && ny >= 0 && ny < 3) {
-                            int[][] nextBoard = getNewBoard(curBoard, zeroPos[0], zeroPos[1], nx, ny);
-                            if (!seen.contains(getPositionKey(nextBoard))) {
-                                q.offer(nextBoard);
-                                seen.add(getPositionKey(nextBoard));
-                            }
-                        }
+        String target = "123450";
+        String start = "";
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                start += board[i][j];
+            }
+        }
+        HashSet<String> visited = new HashSet<>();
+        // all the positions 0 can be swapped to
+        int[][] dirs = new int[][] { { 1, 3 }, { 0, 2, 4 },
+                { 1, 5 }, { 0, 4 }, { 1, 3, 5 }, { 2, 4 } };
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(start);
+        visited.add(start);
+        int res = 0;
+        while (!queue.isEmpty()) {
+            // level count, has to use size control here, otherwise not needed
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                String cur = queue.poll();
+                if (cur.equals(target)) {
+                    return res;
+                }
+                int zero = cur.indexOf('0');
+                // swap if possible
+                for (int dir : dirs[zero]) {
+                    String next = swap(cur, zero, dir);
+                    if (visited.contains(next)) {
+                        continue;
                     }
+                    visited.add(next);
+                    queue.offer(next);
+
                 }
             }
-            level++;
+            res++;
         }
         return -1;
     }
 
-    private int[][] getNewBoard(int[][] curBoard, int zeroPo, int zeroPo1, int nx, int ny) {
-        int[][] newBoard = new int[2][3];
-        for (int i=0; i<2; i++) {
-            for (int j=0; j<3; j++) {
-                newBoard[i][j] = curBoard[i][j];
-            }
-        }
-        newBoard[zeroPo][zeroPo1] = curBoard[nx][ny];
-        newBoard[nx][ny] = 0;
-        return newBoard;
-    }
-
-    private int[] findZeroPos(int[][] board) {
-        int[] ret = new int[2];
-        for (int i=0; i<2; i++) {
-            for (int j=0; j<3; j++) {
-                if (board[i][j] == 0) {
-                    ret[0] = i;
-                    ret[1] = j;
-                }
-            }
-        }
-        return ret;
-    }
-
-    private String getPositionKey(int[][] board) {
-        StringBuilder sb = new StringBuilder();
-        for (int i=0; i<board.length; i++) {
-            for (int j=0; j<board[i].length; j++) {
-                sb.append(i + "," + j + ":" + board[i][j] + ";");
-            }
-        }
+    private String swap(String str, int i, int j) {
+        StringBuilder sb = new StringBuilder(str);
+        sb.setCharAt(i, str.charAt(j));
+        sb.setCharAt(j, str.charAt(i));
         return sb.toString();
     }
 

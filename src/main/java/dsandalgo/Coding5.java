@@ -1112,70 +1112,6 @@ public class Coding5 {
         return counter;
     }
 
-    public static int maximalRectangle(char[][] matrix) {
-        int n = matrix.length;
-        if (n == 0) return 0;
-        int m = matrix[0].length;
-        if (m == 0) return 0;
-        int i, j;
-        if (n==1) {
-            for (i=0; i<m; i++) {
-                if (matrix[0][i] == '1') {
-                    return 1;
-                }
-            }
-            return 0;
-        }
-        int[][] dp = new int[n][m];
-
-        boolean haveOne = false;
-        for (i=0; i<n; i++) {
-            if (matrix[i][m-1] == '1') {
-                if (i==0) {
-                    dp[i][m-1] = 1;
-                } else {
-                    dp[i][m-1] = 1 + dp[i-1][m-1];
-                }
-                haveOne = true;
-            } else {
-                dp[i][m-1] = 0;
-            }
-        }
-        for (i=0; i<m; i++) {
-            if (matrix[n-1][i] == '1') {
-                if (i==0) {
-                    dp[n-1][i] = 1;
-                } else {
-                    dp[n-1][i] = 1 + dp[n-1][i-1];
-                }
-                haveOne = true;
-            } else {
-                dp[n-1][i] = 0;
-            }
-        }
-        int max = 0;
-        if (haveOne) {
-            max = 1;
-        }
-        for (i=1; i<m; i++) {
-            for (j=1; j<n; j++) {
-                if (matrix[i][j] == '1') {
-                    if (matrix[i+1][j] == '1' && matrix[i][j+1] == '1') {
-                        dp[i][j] = 1 + Math.min(dp[i+1][j+1], Math.min(dp[i][j+1], dp[i+1][j]));
-                    } else {
-                        dp[i][j] = 1;
-                    }
-                } else {
-                    dp[i][j] = 0;
-                }
-                if (dp[i][j] > max) {
-                    max = dp[i][j];
-                }
-            }
-        }
-        return max*max;
-    }
-
     public List<List<String>> printTree(TreeNode root) {
         int level = getLevel(root);
         int total = 1;
@@ -1869,40 +1805,6 @@ public class Coding5 {
             dp[i] = possibleNext;
         }
         return (int)dp[n];
-    }
-
-    public static boolean isValid(String s) {
-        if (s == null  || s.length() == 0) {
-            return true;
-        }
-        if (s.length() % 2 != 0) {
-            return false;
-        }
-        if (s.charAt(0) == ')' || s.charAt(0) == '}' || s.charAt(0) == ']') {
-            return false;
-        }
-        Stack<Character> stack = new Stack<Character>();
-        for (int i=0; i<s.length(); i++) {
-            if (s.charAt(i) == '(' || s.charAt(i) =='{' || s.charAt(i) =='[') {
-                stack.push(s.charAt(i));
-            } else {
-                if (!stack.isEmpty()) {
-                    Character ch = stack.peek();
-                    if ((s.charAt(i) == ')' && ch == '(') || (s.charAt(i) == '}' && ch == '{') || (s.charAt(i) == ']' && ch == '[')){
-                        stack.pop();
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-        }
-        if (stack.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public static boolean canJump(int[] nums) {

@@ -8,9 +8,6 @@ public class PreSumExe {
     public static void main(String[] args) {
         PreSumExe exe = new PreSumExe();
         //int[] A = {3,8,1,3,2,1,8,9,0};
-        //System.out.println(exe.maxSumTwoNoOverlap(A, 3, 2));
-        int[] A = {6,5,2,2,5,1,9,4};
-        System.out.println(exe.subarraySum(A, 10));
 
         int[] B = {3,8,1,3,2,1,8,9,0};
         //System.out.println(exe.maxSumTwoNoOverlap(B, 3, 2));
@@ -104,36 +101,6 @@ public class PreSumExe {
             }
         }
         return res;
-    }
-
-    /**
-     * https://leetcode.com/problems/subarray-sum-equals-k/description/
-     *
-     * Given an array of integers and an integer k, you need to find the total number of
-     * continuous subarrays whose sum equals to k.
-     *
-     * Example 1:
-     * Input:nums = [1,1,1], k = 2
-     * Output: 2
-     *
-     * Note:
-     * The length of the array is in range [1, 20,000].
-     * The range of numbers in the array is [-1000, 1000] and the range of the integer k is [-1e7, 1e7].
-     */
-    public int subarraySum(int[] nums, int k) {
-        int sum = 0, result = 0;
-        Map<Integer, Integer> preSum = new HashMap<>();
-        preSum.put(0, 1);
-
-        for (int i = 0; i < nums.length; i++) {
-            sum += nums[i];
-            if (preSum.containsKey(sum - k)) {
-                result += preSum.get(sum - k);
-            }
-            preSum.put(sum, preSum.getOrDefault(sum, 0) + 1);
-        }
-
-        return result;
     }
 
     /**

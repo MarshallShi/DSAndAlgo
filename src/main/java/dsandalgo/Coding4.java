@@ -450,76 +450,6 @@ public class Coding4 {
         return res;
     }
 
-    public int orangesRotting(int[][] grid) {
-        int[][] directions = {{0,1}, {1,0}, {-1,0}, {0,-1}};
-        int m = grid.length;
-        int n = grid[0].length;
-        boolean foundStartPos = false;
-        int countFresh = 0, countRot = 0;
-        LinkedList<int[]> queue = new LinkedList<int[]>();
-        for (int i=0; i<m; i++) {
-            for (int j=0; j<n; j++) {
-                if (grid[i][j] == 2) {
-                    countRot++;
-                    for (int k=0; k<directions.length; k++) {
-                        int newX = i+directions[k][0];
-                        int newY = j+directions[k][1];
-                        if (newX < m && newX>=0 && newY < n && newY>=0){
-                            if (grid[newX][newY] == 1) {
-                                int[] startPos = new int[2];
-                                startPos[0] = i;
-                                startPos[1] = j;
-                                queue.add(startPos);
-                                foundStartPos = true;
-                            }
-                        }
-                    }
-                }
-                if (grid[i][j] == 1) {
-                    countFresh++;
-                }
-            }
-        }
-        if (!foundStartPos) {
-            if (countFresh > 0) {
-                return -1;
-            }
-            return 0;
-        }
-
-        int level = -1;
-        while (!queue.isEmpty()) {
-            level++;
-            int s = queue.size();
-            for (int i=0; i<s; i++) {
-                int[] pos = queue.pop();
-                for (int k=0; k<directions.length; k++) {
-                    int newX = pos[0]+directions[k][0];
-                    int newY = pos[1]+directions[k][1];
-                    if (newX < m && newX>=0 && newY < n && newY>=0){
-                        if (grid[newX][newY] == 1) {
-                            int[] newPos = new int[2];
-                            newPos[0] = newX;
-                            newPos[1] = newY;
-                            queue.add(newPos);
-                            grid[newX][newY] = 2;
-                        }
-                    }
-                }
-            }
-        }
-        for (int i=0; i<m; i++) {
-            for (int j=0; j<n; j++) {
-                if (grid[i][j] == 1) {
-                    return -1;
-                }
-            }
-        }
-        return level;
-    }
-
-
-
     /**
      * Input: A = ["amazon","apple","facebook","google","leetcode"], B = ["ec","oc","ceo"]
      * Output: ["facebook","leetcode"]
@@ -584,58 +514,6 @@ public class Coding4 {
             chars[i] = (char)((chars[i] - 'a' + shifts[i])%26 + 'a');
         }
         return new String(chars);
-    }
-
-    /**
-     * Input: (7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)
-     * Output: 7 -> 8 -> 0 -> 7
-     * @param l1
-     * @param l2
-     * @return
-     */
-    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-        Stack<ListNode> l1Stack = new Stack<ListNode>();
-        while (l1 != null) {
-            l1Stack.push(l1);
-            l1 = l1.next;
-        }
-        Stack<ListNode> l2Stack = new Stack<ListNode>();
-        while (l2 != null) {
-            l2Stack.push(l2);
-            l2 = l2.next;
-        }
-        ListNode curTop = null;
-        ListNode newTop = null;
-        int carrier = 0;
-        while (!l1Stack.isEmpty() && !l2Stack.isEmpty()) {
-            int l1Val = l1Stack.pop().val;
-            int l2Val = l2Stack.pop().val;
-            if (l1Val + l2Val + carrier >= 10) {
-                newTop = new ListNode((l1Val + l2Val + carrier - 10));
-                carrier = 1;
-            } else {
-                newTop = new ListNode((l1Val + l2Val + carrier));
-                carrier = 0;
-            }
-            newTop.next = curTop;
-            curTop = newTop;
-        }
-        if (l1Stack.isEmpty() || l2Stack.isEmpty()) {
-            Stack<ListNode> remainStack = l1Stack.isEmpty() ? l2Stack : l1Stack;
-            while (!remainStack.isEmpty()) {
-                int lRemain = remainStack.pop().val;
-                if (lRemain + carrier >= 10) {
-                    newTop = new ListNode((lRemain + carrier - 10));
-                    carrier = 1;
-                } else {
-                    newTop = new ListNode((lRemain + carrier));
-                    carrier = 0;
-                }
-                newTop.next = curTop;
-                curTop = newTop;
-            }
-        }
-        return curTop;
     }
 
     /**
@@ -928,67 +806,6 @@ public class Coding4 {
         return root;
     }
 
-
-    /**
-     * Input:
-     * gas  = [1,2,3,4,5]
-     * cost = [3,4,5,1,2]
-     *
-     * Output: 3
-     * @param gas
-     * @param cost
-     * @return
-     */
-    public int canCompleteCircuit(int[] gas, int[] cost) {
-        for (int startIdx=0; startIdx<gas.length; startIdx++) {
-            int steps = 0;
-            int remainingGas = 0;
-            boolean canContinue = true;
-            while (steps < gas.length) {
-                int idx = (startIdx + steps) % gas.length;
-                if(gas[idx] + remainingGas < cost[idx]) {
-                    canContinue = false;
-                    break;
-                } else {
-                    remainingGas = remainingGas + gas[idx] - cost[idx];
-                    steps++;
-                }
-            }
-            if (canContinue) {
-                return startIdx;
-            }
-        }
-        return -1;
-    }
-
-    PriorityQueue<ListNode> pq;
-
-    public ListNode mergeKLists(ListNode[] lists) {
-        if (lists == null || lists.length == 0) {
-            return null;
-        }
-        pq = new PriorityQueue<ListNode>(new Comparator<ListNode>() {
-            @Override
-            public int compare(ListNode o1, ListNode o2) {
-                return o1.val - o2.val;
-            }
-        });
-        ListNode root = new ListNode(-1);
-        ListNode head = root;
-        for (int i=0; i<lists.length; i++) {
-            pq.offer(lists[i]);
-        }
-        while (!pq.isEmpty()) {
-            ListNode top = pq.poll();
-            head.next = new ListNode(top.val);
-            head = head.next;
-            if (top.next != null) {
-                pq.offer(top.next);
-            }
-        }
-        return root.next;
-    }
-
     public boolean isLongPressedName(String name, String typed) {
         if (name == null || typed == null) {
             return false;
@@ -1126,41 +943,6 @@ public class Coding4 {
             max = Math.max(max, curMax);
         }
         return max;
-    }
-
-    private Map<Integer,Integer> map;
-    private Deque<Integer> deque;
-    private int capacity;
-    public void init(int _capacity) {
-        map = new HashMap<Integer, Integer>();
-        deque = new LinkedList<Integer>();
-        capacity = _capacity;
-    }
-
-    public int get(int key) {
-        if (map.containsKey(key)) {
-            deque.remove(Integer.valueOf(key));
-            deque.addLast(Integer.valueOf(key));
-            return map.get(key);
-        } else {
-            return -1;
-        }
-    }
-
-    public void put(int key, int value) {
-        if (map.containsKey(key)) {
-            deque.remove(Integer.valueOf(key));
-            deque.addLast(Integer.valueOf(key));
-            map.put(key, value);
-        } else {
-            if (deque.size() == capacity) {
-                int evictedKey = (Integer)deque.peekFirst();
-                map.remove(evictedKey);
-                deque.removeFirst();
-            }
-            deque.addLast(key);
-            map.put(key, value);
-        }
     }
 
     public class TreeNode {

@@ -492,65 +492,54 @@ public class TopologicalSortingExe {
      * @return
      */
     public String alienOrder(String[] words) {
-        //using topological sorting, implementation based on BFS.
-        Map<Character, List<Character>> map = new HashMap<Character, List<Character>>();
-        int[] indegree = new int[26];
-        Set<Character> set = new HashSet<Character>();
-        if (words == null || words.length < 1) {
-            return "";
+        String result = "";
+        if (words == null || words.length == 0) return result;
+
+        Map<Character, Set<Character>> map = new HashMap<Character, Set<Character>>();
+        Map<Character, Integer> indegree = new HashMap<Character, Integer>();
+        for (String s : words) {
+            for (char c : s.toCharArray()) indegree.put(c, 0);
         }
-        int k=0;
-        String base = words[0];
-        while (k<base.length()) {
-            set.add(base.charAt(k));
-            k++;
-        }
-        for (int i=1; i<words.length; i++) {
-            int j=0;
-            k=0;
-            while (k<words[i].length()) {
-                set.add(words[i].charAt(k));
-                k++;
+        //input words are sorted already, so compare the two, build the in degree
+        for (int i = 0; i < words.length - 1; i++) {
+            String cur = words[i];
+            String next = words[i + 1];
+            if (cur.length() > next.length() && cur.indexOf(next) == 0) {
+                return "";
             }
-            k=0;
-            while (j<base.length() && k<words[i].length()) {
-                if (base.charAt(j) == words[i].charAt(k)) {
-                    j++;
-                    k++;
-                } else {
+            int length = Math.min(cur.length(), next.length());
+            for (int j = 0; j < length; j++) {
+                char c1 = cur.charAt(j);
+                char c2 = next.charAt(j);
+                if (c1 != c2) {
+                    Set<Character> set = new HashSet<Character>();
+                    if (map.containsKey(c1)) set = map.get(c1);
+                    if (!set.contains(c2)) {
+                        set.add(c2);
+                        map.put(c1, set);
+                        indegree.put(c2, indegree.get(c2) + 1);
+                    }
                     break;
                 }
             }
-            if (j<base.length() && k<words[i].length()) {
-                if (map.get(base.charAt(j)) == null) {
-                    map.put(base.charAt(j), new ArrayList<Character>());
-                }
-                map.get(base.charAt(j)).add(words[i].charAt(k));
-                indegree[words[i].charAt(k) - 'a']++;
-            }
-            base = words[i];
         }
-        Queue<Character> queue = new LinkedList<Character>();
-        for (Character ch : set) {
-            if (indegree[ch - 'a'] == 0) {
-                queue.offer(ch);
-            }
+        Queue<Character> q = new LinkedList<Character>();
+        for (char c : indegree.keySet()) {
+            if (indegree.get(c) == 0) q.add(c);
         }
-        StringBuilder sb = new StringBuilder();
-        while (!queue.isEmpty()) {
-            Character ch = queue.poll();
-            sb.append(ch);
-            if (map.containsKey(ch)) {
-                List<Character> lst = map.get(ch);
-                for (Character cha : lst) {
-                    indegree[cha - 'a']--;
-                    if (indegree[cha - 'a'] == 0) {
-                        queue.offer(cha);
-                    }
+        //bfs
+        while (!q.isEmpty()) {
+            char c = q.remove();
+            result += c;
+            if (map.containsKey(c)) {
+                for (char c2 : map.get(c)) {
+                    indegree.put(c2, indegree.get(c2) - 1);
+                    if (indegree.get(c2) == 0) q.add(c2);
                 }
             }
         }
-        return sb.length() == set.size() ? sb.toString() : "";
+        if (result.length() != indegree.size()) return "";
+        return result;
     }
 
     /**

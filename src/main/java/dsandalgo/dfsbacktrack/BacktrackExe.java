@@ -20,6 +20,68 @@ public class BacktrackExe {
         System.out.println(backtrack.generateAbbreviations("word"));
     }
 
+
+    /**
+     * https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+     */
+    private String[] mapping = new String[] {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+
+    public List<String> letterCombinations(String digits) {
+        //String[] mapping = new String[] {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        List<String> ret = new LinkedList<String>();
+        backtrackLetterComb(ret, digits, new StringBuilder(), 0);
+        return ret;
+    }
+
+    public void backtrackLetterComb(List<String> ret, String digits, StringBuilder sb, int pos){
+        if (pos == digits.length()) {
+            String temp = new String(sb.toString());
+            ret.add(temp);
+            return;
+        }
+        String mappedString = mapping[Character.getNumericValue(digits.charAt(pos))];
+        for (int i=0; i<mappedString.length(); i++) {
+            int curLen = sb.length();
+            sb.append(mappedString.charAt(i));
+            backtrackLetterComb(ret, digits, sb, pos+1);
+            sb.setLength(curLen);
+        }
+    }
+
+
+    /**
+     * https://leetcode.com/problems/generate-parentheses/
+     * Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+     *
+     * For example, given n = 3, a solution set is:
+     *
+     * [
+     *   "((()))",
+     *   "(()())",
+     *   "(())()",
+     *   "()(())",
+     *   "()()()"
+     * ]
+     */
+    public List<String> generateParenthesis(int n) {
+        List<String> list = new ArrayList<String>();
+        backtrack(list, "", 0, 0, n);
+        return list;
+    }
+
+    private void backtrack(List<String> list, String str, int open, int close, int max) {
+        if (str.length() == max * 2) {
+            list.add(str);
+            return;
+        }
+        if (open < max) {
+            backtrack(list, str + "(", open + 1, close, max);
+        }
+        if (close < open) {
+            backtrack(list, str + ")", open, close + 1, max);
+        }
+    }
+
     /**
      * https://leetcode.com/problems/split-array-into-fibonacci-sequence/
      * @param S

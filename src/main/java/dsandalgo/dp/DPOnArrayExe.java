@@ -14,6 +14,105 @@ public class DPOnArrayExe {
     }
 
     /**
+     * https://leetcode.com/problems/arithmetic-slices-ii-subsequence/
+     * A sequence of numbers is called arithmetic if it consists of at least three elements and if the difference between any two consecutive elements is the same.
+     *
+     * For example, these are arithmetic sequences:
+     *
+     * 1, 3, 5, 7, 9
+     * 7, 7, 7, 7
+     * 3, -1, -5, -9
+     * The following sequence is not arithmetic.
+     *
+     * 1, 1, 2, 5, 7
+     *
+     * A zero-indexed array A consisting of N numbers is given. A subsequence slice of that array is any sequence of integers (P0, P1, ..., Pk) such that 0 ≤ P0 < P1 < ... < Pk < N.
+     *
+     * A subsequence slice (P0, P1, ..., Pk) of array A is called arithmetic if the sequence A[P0], A[P1], ..., A[Pk-1], A[Pk] is arithmetic.
+     * In particular, this means that k ≥ 2.
+     *
+     * The function should return the number of arithmetic subsequence slices in the array A.
+     *
+     * The input contains N integers. Every integer is in the range of -231 and 231-1 and 0 ≤ N ≤ 1000. The output is guaranteed to be less than 231-1.
+     *
+     *
+     * Example:
+     *
+     * Input: [2, 4, 6, 8, 10]
+     *
+     * Output: 7
+     *
+     * Explanation:
+     * All arithmetic subsequence slices are:
+     * [2,4,6]
+     * [4,6,8]
+     * [6,8,10]
+     * [2,4,6,8]
+     * [4,6,8,10]
+     * [2,4,6,8,10]
+     * [2,6,10]
+     */
+    //Use HashMap as dp array, so to avoid the n3.
+    public int numberOfArithmeticSlices(int[] A) {
+        int ret = 0;
+        Map<Integer, Integer>[] maps = new Map[A.length];
+        for (int i = 0; i < A.length; i++) {
+            //Till i, key is the diff, value is the number of arith seq based on diff.
+            maps[i] = new HashMap<>();
+            int num = A[i];
+            for (int j = 0; j < i; j++) {
+                if ((long) num - A[j] > Integer.MAX_VALUE) {
+                    continue;
+                }
+                if ((long) num - A[j] < Integer.MIN_VALUE) {
+                    continue;
+                }
+                int diff = num - A[j];
+                //Get the count from j's map, for the same diff
+                int count = maps[j].getOrDefault(diff, 0);
+                //Update i's map for the same diff.
+                maps[i].put(diff, maps[i].getOrDefault(diff, 0) + count + 1);
+                ret += count;
+            }
+        }
+        return ret;
+    }
+
+    public int numberOfArithmeticSlices_me(int[] A) {
+        int len = A.length;
+        if (len < 3) {
+            return 0;
+        }
+        int minA = Integer.MAX_VALUE, maxA = Integer.MIN_VALUE;
+        for (int i=0; i<len; i++) {
+            minA = Math.min(A[i], minA);
+            maxA = Math.max(A[i], maxA);
+        }
+        int ret = 0;
+        if (minA == maxA) {
+            for (int i=1; i<len-2; i++) {
+                ret += len - i;
+            }
+            return ret;
+        }
+        int k = maxA - minA;
+        int[][] dp = new int[len][k+1];
+        for (int i=0; i<len; i++) {
+            for (int j=0; j<=k; j++) {
+                for (int m=0; m<i; m++) {
+                    if (dp[m][j] > 0) {
+                        dp[i][j] += dp[m][j];
+                    }
+                }
+            }
+        }
+        for (int i=0; i<=k; i++) {
+            ret += dp[len][i];
+        }
+        return ret;
+    }
+
+    /**
      * https://leetcode.com/problems/filling-bookcase-shelves/
      * We have a sequence of books: the i-th book has thickness books[i][0] and height books[i][1].
      *
