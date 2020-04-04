@@ -26,6 +26,156 @@ public class DFSExe {
     }
 
     /**
+     * https://leetcode.com/problems/word-break-ii/
+     * Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, add spaces in s to construct a sentence where
+     * each word is a valid dictionary word. Return all such possible sentences.
+     *
+     * Note:
+     *
+     * The same word in the dictionary may be reused multiple times in the segmentation.
+     * You may assume the dictionary does not contain duplicate words.
+     * Example 1:
+     *
+     * Input:
+     * s = "catsanddog"
+     * wordDict = ["cat", "cats", "and", "sand", "dog"]
+     * Output:
+     * [
+     *   "cats and dog",
+     *   "cat sand dog"
+     * ]
+     * Example 2:
+     *
+     * Input:
+     * s = "pineapplepenapple"
+     * wordDict = ["apple", "pen", "applepen", "pine", "pineapple"]
+     * Output:
+     * [
+     *   "pine apple pen apple",
+     *   "pineapple pen apple",
+     *   "pine applepen apple"
+     * ]
+     * Explanation: Note that you are allowed to reuse a dictionary word.
+     * Example 3:
+     *
+     * Input:
+     * s = "catsandog"
+     * wordDict = ["cats", "dog", "sand", "and", "cat"]
+     * Output:
+     * []
+     */
+    public List<String> wordBreak(String s, List<String> wordDict) {
+        List<String> ret = new ArrayList<String>();
+        Map<String, LinkedList<String>> cache = new HashMap<String, LinkedList<String>>();
+        return wordBreakDFS(s, wordDict, cache);
+    }
+
+    public List<String> wordBreakDFS(String s, List<String> wordDict, Map<String, LinkedList<String>> cache){
+        if (cache.containsKey(s)) {
+            return cache.get(s);
+        }
+        LinkedList<String> res = new LinkedList<String>();
+        if (s.length() == 0) {
+            res.add("");
+            return res;
+        }
+        for (String word : wordDict) {
+            if (s.startsWith(word)) {
+                List<String> sublist = wordBreakDFS(s.substring(word.length()), wordDict, cache);
+                for (String sub : sublist) {
+                    res.add(word + (sub.isEmpty() ? "" : " ") + sub);
+                }
+            }
+        }
+        cache.put(s, res);
+        return res;
+    }
+
+//    HashMap<String,List<String>> wordBreakMap = new HashMap<String,List<String>>();
+//    public List<String> wordBreak(String s, Set<String> wordDict) {
+//        List<String> res = new ArrayList<String>();
+//        if(s == null || s.length() == 0) {
+//            return res;
+//        }
+//        if(wordBreakMap.containsKey(s)) {
+//            return wordBreakMap.get(s);
+//        }
+//        if(wordDict.contains(s)) {
+//            res.add(s);
+//        }
+//        for(int i = 1 ; i < s.length() ; i++) {
+//            String t = s.substring(i);
+//            if(wordDict.contains(t)) {
+//                List<String> temp = wordBreak(s.substring(0 , i) , wordDict);
+//                if(temp.size() != 0) {
+//                    for(int j = 0 ; j < temp.size() ; j++) {
+//                        res.add(temp.get(j) + " " + t);
+//                    }
+//                }
+//            }
+//        }
+//        wordBreakMap.put(s , res);
+//        return res;
+//    }
+
+    /**
+     * https://leetcode.com/problems/word-search/
+     * Given a 2D board and a word, find if the word exists in the grid.
+     *
+     * The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once.
+     *
+     * Example:
+     *
+     * board =
+     * [
+     *   ['A','B','C','E'],
+     *   ['S','F','C','S'],
+     *   ['A','D','E','E']
+     * ]
+     *
+     * Given word = "ABCCED", return true.
+     * Given word = "SEE", return true.
+     * Given word = "ABCB", return false.
+     *
+     *
+     * Constraints:
+     *
+     * board and word consists only of lowercase and uppercase English letters.
+     * 1 <= board.length <= 200
+     * 1 <= board[i].length <= 200
+     * 1 <= word.length <= 10^3
+     */
+    public boolean exist(char[][] board, String word) {
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[i].length; j++){
+                if((word.charAt(0) == board[i][j]) && search(board, word, i, j, 0, visited)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean search(char[][]board, String word, int i, int j, int index, boolean[][] visited){
+        if(index == word.length()){
+            return true;
+        }
+        if(i >= board.length || i < 0 || j >= board[i].length || j < 0 || board[i][j] != word.charAt(index) || visited[i][j]){
+            return false;
+        }
+        visited[i][j] = true;
+        if(search(board, word, i-1, j, index+1, visited) ||
+                search(board, word, i+1, j, index+1, visited) ||
+                search(board, word, i, j-1, index+1, visited) ||
+                search(board, word, i, j+1, index+1, visited)){
+            return true;
+        }
+        visited[i][j] = false;
+        return false;
+    }
+
+    /**
      * https://leetcode.com/problems/number-of-islands/
      * @param grid
      * @return

@@ -89,30 +89,20 @@ public class DPOnStringExe {
      * @return
      */
     public int longestStrChain(String[] words) {
-        Arrays.sort(words, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.length() - o2.length();
-            }
-        });
-        int longestChain = 1;
-        Map<String,Integer> dp = new HashMap<String,Integer>();
-        int minWordLen = words[0].length();
-        int i = 0;
-        while (i<words.length && words[i].length() == minWordLen) {
-            dp.put(words[i], 1);
-            i++;
-        }
-        for (int j=i; j<words.length; j++) {
+        //dp map store for each word, the longest str chain.
+        Map<String, Integer> dp = new HashMap<>();
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        int res = 0;
+        for (String word : words) {
             int best = 0;
-            for (int k = 0; k < words[j].length(); ++k) {
-                String prev = words[j].substring(0, k) + words[j].substring(k + 1);
+            for (int i = 0; i < word.length(); ++i) {
+                String prev = word.substring(0, i) + word.substring(i + 1);
                 best = Math.max(best, dp.getOrDefault(prev, 0) + 1);
             }
-            dp.put(words[j], best);
-            longestChain = Math.max(best, longestChain);
+            dp.put(word, best);
+            res = Math.max(res, best);
         }
-        return longestChain;
+        return res;
     }
 
     private boolean oneLetterDiff(String word2, String word1, Map<String,int[]> map) {

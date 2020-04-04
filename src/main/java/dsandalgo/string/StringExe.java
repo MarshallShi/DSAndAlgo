@@ -26,6 +26,29 @@ public class StringExe {
     }
 
     /**
+     * https://leetcode.com/problems/valid-palindrome/
+     * @param s
+     * @return
+     */
+    public boolean isPalindrome_125(String s) {
+        char[] arr = s.toCharArray();
+        for (int i = 0, j = arr.length - 1; i < j; ) {
+            if (!Character.isLetterOrDigit(arr[i])) {
+                i++;
+                continue;
+            }
+            if (!Character.isLetterOrDigit(arr[j])) {
+                j--;
+                continue;
+            }
+            if (Character.toLowerCase(arr[i++]) != Character.toLowerCase(arr[j--])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * https://leetcode.com/problems/increasing-decreasing-string/
      * @param s
      * @return
@@ -1340,65 +1363,6 @@ public class StringExe {
                 perV.deleteCharAt(perV.length() - 1);
             }
             ret.add(perV.toString());
-        }
-        return ret;
-    }
-
-    /**
-     * https://leetcode.com/problems/palindrome-pairs/
-     *
-     * Given a list of unique words, find all pairs of distinct indices (i, j) in the given list, so that the concatenation
-     * of the two words, i.e. words[i] + words[j] is a palindrome.
-     *
-     * Example 1:
-     *
-     * Input: ["abcd","dcba","lls","s","sssll"]
-     * Output: [[0,1],[1,0],[3,2],[2,4]]
-     * Explanation: The palindromes are ["dcbaabcd","abcddcba","slls","llssssll"]
-     *
-     * Example 2:
-     *
-     * Input: ["bat","tab","cat"]
-     * Output: [[0,1],[1,0]]
-     * Explanation: The palindromes are ["battab","tabbat"]
-     *
-     * @param words
-     * @return
-     */
-    public List<List<Integer>> palindromePairs(String[] words) {
-        List<List<Integer>> ret = new ArrayList<>();
-        if (words == null || words.length < 2) {
-            return ret;
-        }
-        Map<String, Integer> map = new HashMap<String, Integer>();
-        for (int i=0; i<words.length; i++) {
-            map.put(words[i], i);
-        }
-        for (int i=0; i<words.length; i++) {
-            for (int j=0; j<=words[i].length(); j++) {
-                String str1 = words[i].substring(0, j);
-                //leverage if str1 is palindrome, then str2 must be forming the palindrome with another word, so reversed value must be existing.
-                String str2 = words[i].substring(j);
-                if (isPalindrome(str1)) {
-                    String str2rvs = new StringBuilder(str2).reverse().toString();
-                    if (map.containsKey(str2rvs) && map.get(str2rvs) != i) {
-                        List<Integer> list = new ArrayList<Integer>();
-                        list.add(map.get(str2rvs));
-                        list.add(i);
-                        ret.add(list);
-                    }
-                }
-                if (isPalindrome(str2)) {
-                    String str1rvs = new StringBuilder(str1).reverse().toString();
-                    // check "str.length() != 0" to avoid duplicates
-                    if (map.containsKey(str1rvs) && map.get(str1rvs) != i && str2.length()!=0) {
-                        List<Integer> list = new ArrayList<Integer>();
-                        list.add(i);
-                        list.add(map.get(str1rvs));
-                        ret.add(list);
-                    }
-                }
-            }
         }
         return ret;
     }

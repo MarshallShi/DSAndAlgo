@@ -28,6 +28,24 @@ public class MathExe {
     }
 
     /**
+     * https://leetcode.com/problems/add-strings/
+     * @param num1
+     * @param num2
+     * @return
+     */
+    public String addStrings(String num1, String num2) {
+        StringBuilder sb = new StringBuilder();
+        int carry = 0;
+        for (int i = num1.length() - 1, j = num2.length() - 1; i >= 0 || j >= 0 || carry == 1; i--, j--) {
+            int x = i < 0 ? 0 : num1.charAt(i) - '0';
+            int y = j < 0 ? 0 : num2.charAt(j) - '0';
+            sb.append((x + y + carry) % 10);
+            carry = (x + y + carry) / 10;
+        }
+        return sb.reverse().toString();
+    }
+
+    /**
      * https://leetcode.com/problems/airplane-seat-assignment-probability/
      * n passengers board an airplane with exactly n seats. The first passenger has lost the ticket and picks a seat randomly.
      * But after that, the rest of passengers will:
@@ -1560,12 +1578,11 @@ public class MathExe {
      */
     public String fractionToDecimal(int numerator, int denominator) {
         StringBuilder result = new StringBuilder();
-
+        //preprocess the number and sign
         String sign = (numerator < 0 == denominator < 0 || numerator == 0) ? "" : "-";
-
         long num = Math.abs((long) numerator);
         long den = Math.abs((long) denominator);
-
+        //normal divide
         result.append(sign);
         result.append(num / den);
         long remainder = num % den;
@@ -1573,17 +1590,19 @@ public class MathExe {
             return result.toString();
         }
         result.append(".");
-
-        HashMap<Long, Integer> hashMap = new HashMap<Long, Integer>();
-        while (!hashMap.containsKey(remainder)) {
-            hashMap.put(remainder, result.length());
+        //handle the possible repeating remainder
+        Map<Long, Integer> remainderMap = new HashMap<>();
+        while (!remainderMap.containsKey(remainder)) {
+            remainderMap.put(remainder, result.length());
+            //Division with remainder
             result.append(10 * remainder / den);
             remainder = 10 * remainder % den;
         }
-
-        int index = hashMap.get(remainder);
+        //find the repeating remainder index.
+        int index = remainderMap.get(remainder);
         result.insert(index, "(");
         result.append(")");
+        //avoid the edge case 0.
         return result.toString().replace("(0)", "");
     }
 

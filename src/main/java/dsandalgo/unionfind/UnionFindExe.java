@@ -62,6 +62,101 @@ public class UnionFindExe {
     }
 
     /**
+     * https://leetcode.com/problems/friend-circles/
+     * There are N students in a class. Some of them are friends, while some are not. Their friendship is transitive in nature. For example, if A is a direct friend of B, and B is a direct friend of C, then A is an indirect friend of C. And we defined a friend circle is a group of students who are direct or indirect friends.
+     *
+     * Given a N*N matrix M representing the friend relationship between students in the class. If M[i][j] = 1, then the ith and jth students are direct friends with each other, otherwise not. And you have to output the total number of friend circles among all the students.
+     *
+     * Example 1:
+     * Input:
+     * [[1,1,0],
+     *  [1,1,0],
+     *  [0,0,1]]
+     * Output: 2
+     * Explanation:The 0th and 1st students are direct friends, so they are in a friend circle.
+     * The 2nd student himself is in a friend circle. So return 2.
+     * Example 2:
+     * Input:
+     * [[1,1,0],
+     *  [1,1,1],
+     *  [0,1,1]]
+     * Output: 1
+     * Explanation:The 0th and 1st students are direct friends, the 1st and 2nd students are direct friends,
+     * so the 0th and 2nd students are indirect friends. All of them are in the same friend circle, so return 1.
+     * Note:
+     * N is in range [1,200].
+     * M[i][i] = 1 for all students.
+     * If M[i][j] = 1, then M[j][i] = 1.
+     */
+    public int findCircleNum(int[][] M) {
+        if (M.length == 1) {
+            return 1;
+        }
+        UFFriendCircle uffc = new UFFriendCircle(M.length);
+        for (int i=0; i<M.length; i++) {
+            for (int j=0; j<M[0].length; j++) {
+                if (M[i][j] == 1) {
+                    uffc.union(i,j);
+                }
+            }
+        }
+        return uffc.count;
+    }
+
+    public class UFFriendCircle {
+
+        int[] parent;
+        int count;
+
+        public UFFriendCircle(int n) {
+            count = n;
+            parent = new int[n];
+            for (int i=0; i<n; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public int find(int i) {
+            if (parent[i] == i) {
+                return i;
+            }
+            parent[i] = find(parent[i]);
+            return parent[i];
+        }
+
+        public void union(int i, int j) {
+            int parentI = find(i);
+            int parentJ = find(j);
+            if (parentI != parentJ) {
+                parent[parentI] = parentJ;
+                count--;
+            }
+        }
+    }
+
+    //Another DFS based solution, if not visited, then it is a new circle.
+    public int findCircleNum_DFS(int[][] M) {
+        boolean[] visited = new boolean[M.length]; //visited[i] means if ith person is visited in this algorithm
+        int count = 0;
+        for(int i = 0; i < M.length; i++) {
+            if(!visited[i]) {
+                findCircleNumDFS(M, visited, i);
+                count++;
+            }
+        }
+        return count;
+    }
+    private void findCircleNumDFS(int[][] M, boolean[] visited, int person) {
+        for(int other = 0; other < M.length; other++) {
+            if(M[person][other] == 1 && !visited[other]) {
+                //We found an unvisited person in the current friend cycle
+                visited[other] = true;
+                findCircleNumDFS(M, visited, other); //Start DFS on this new found person
+            }
+        }
+    }
+
+    /**
      * https://leetcode.com/problems/evaluate-division/
      * Equations are given in the format A / B = k, where A and B are variables represented as strings,
      * and k is a real number (floating point number). Given some queries, return the answers. If the answer
@@ -1336,13 +1431,14 @@ public class UnionFindExe {
      * @param nums
      * @return
      */
-    public int longestConsecutiveUF(int[] nums) {
+    //Solution 1: based on Union Find
+    public int longestConsecutive(int[] nums) {
         if (nums == null || nums.length == 0) {
             return 0;
         }
-        Map<Integer, Integer> map = new HashMap<Integer, Integer>(); //<value, index>
-        LongestConsecutiveSequence uf = new LongestConsecutiveSequence(nums.length);
-        for (int i=0; i<nums.length; i++) {
+        Map<Integer, Integer> map = new HashMap<>(); //<value, index>
+        UFLongestConsecutiveSequence uf = new UFLongestConsecutiveSequence(nums.length);
+        for (int i = 0; i < nums.length; i++) {
             if (!map.containsKey(nums[i])) {
                 if (map.containsKey(nums[i] - 1)) {
                     uf.union(i, map.get(nums[i] - 1));
@@ -1356,11 +1452,55 @@ public class UnionFindExe {
         return uf.maxUnion();
     }
 
-    public int longestConsecutive(int[] nums) {
+    public class UFLongestConsecutiveSequence {
+
+        int[] father;
+
+        UFLongestConsecutiveSequence(int n) {
+            father = new int[n];
+            for (int i = 0; i < n; i++) {
+                father[i] = i;
+            }
+        }
+
+        public void union(int idx1, int idx2) {
+            int find1 = find(idx1);
+            int find2 = find(idx2);
+            if (find1 != find2) {
+                father[find1] = find2;
+            }
+        }
+
+        public int find(int idx) {
+            if (father[idx] == idx) {
+                return idx;
+            }
+            father[idx] = find(father[idx]);
+            return father[idx];
+        }
+
+        public int maxUnion() {
+            int[] counter = new int[father.length];
+            int max = Integer.MIN_VALUE;
+            for (int i = 0; i < counter.length; i++) {
+                int j = i;
+                while (father[j] != j) {
+                    j = father[j];
+                }
+                counter[father[j]]++;
+                max = Math.max(max, counter[father[j]]);
+            }
+            return max;
+        }
+    }
+
+    //Solution 2: based on map, store each number's max consecutive length, for each new number, update left and right number's longest length
+    public int longestConsecutive_2(int[] nums) {
         if (nums == null || nums.length == 0) {
             return 0;
         }
-        Map<Integer, Integer> map = new HashMap<Integer, Integer>(); //<value, lengthOfLongest>
+        //In the map, key is the number, value is the length of consecutive length
+        Map<Integer, Integer> map = new HashMap<>(); //<value, lengthOfLongest>
         int longestCon = 0;
         for (int i=0; i<nums.length; i++) {
             if (!map.containsKey(nums[i])) {

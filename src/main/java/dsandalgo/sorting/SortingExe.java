@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -21,9 +22,162 @@ public class SortingExe {
 
         int[] difficulty = {85,47,57};
         int[] profit = {24,66,99};
-        int[] worker = {1,2,3,5};
-        System.out.println(exe.kthSmallestPrimeFraction(worker, 3));
+        int[] worker = {1,3,-1,-3,5,3,6,7};
+        System.out.println(exe.maxSlidingWindow(worker, 3));
     }
+
+    /**
+     * https://leetcode.com/problems/sliding-window-maximum/
+     * Given an array nums, there is a sliding window of size k which is moving from the very left of the array to the very right.
+     * You can only see the k numbers in the window. Each time the sliding window moves right by one position. Return the max sliding window.
+     *
+     * Follow up:
+     * Could you solve it in linear time?
+     *
+     * Example:
+     *
+     * Input: nums = [1,3,-1,-3,5,3,6,7], and k = 3
+     * Output: [3,3,5,5,6,7]
+     * Explanation:
+     *
+     * Window position                Max
+     * ---------------               -----
+     * [1  3  -1] -3  5  3  6  7       3
+     *  1 [3  -1  -3] 5  3  6  7       3
+     *  1  3 [-1  -3  5] 3  6  7       5
+     *  1  3  -1 [-3  5  3] 6  7       5
+     *  1  3  -1  -3 [5  3  6] 7       6
+     *  1  3  -1  -3  5 [3  6  7]      7
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= nums.length <= 10^5
+     * -10^4 <= nums[i] <= 10^4
+     * 1 <= k <= nums.length
+     */
+    //Trick: use double ended queue to manage the sorting.
+    public int[] maxSlidingWindow(int[] a, int k) {
+        int n = a.length;
+        if (n == 0) {
+            return a;
+        }
+        int[] result = new int[n - k + 1];
+        //double end linked list, deque
+        LinkedList<Integer> dq = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            //remove the out of range index.
+            if (!dq.isEmpty() && dq.peekFirst() < i - k + 1) {
+                dq.poll();
+            }
+            //remove the useless small numbers from end, once the new number is in.
+            while (!dq.isEmpty() && a[i] >= a[dq.peekLast()]) {
+                dq.pollLast();
+            }
+            dq.offer(i);
+            if (i - k + 1 >= 0) {
+                result[i - k + 1] = a[dq.peekFirst()];
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/merge-sorted-array/
+     * Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
+     *
+     * Note:
+     *
+     * The number of elements initialized in nums1 and nums2 are m and n respectively.
+     * You may assume that nums1 has enough space (size that is greater or equal to m + n) to hold additional elements from nums2.
+     * Example:
+     *
+     * Input:
+     * nums1 = [1,2,3,0,0,0], m = 3
+     * nums2 = [2,5,6],       n = 3
+     *
+     * Output: [1,2,2,3,5,6]
+     */
+    public void merge(int[] A, int m, int[] B, int n) {
+        int i = m-1;
+        int j = n-1;
+        int k = m+n-1;
+        while (i >= 0 && j >= 0){
+            if (A[i] > B[j]) {
+                A[k--] = A[i--];
+            } else {
+                A[k--] = B[j--];
+            }
+        }
+        while (j >= 0) {
+            A[k--] = B[j--];
+        }
+    }
+
+
+    /**
+     * https://leetcode.com/problems/search-a-2d-matrix-ii/
+     *
+     * Consider the following matrix:
+     * [
+     *   [1,   4,  7, 11, 15],
+     *   [2,   5,  8, 12, 19],
+     *   [3,   6,  9, 16, 22],
+     *   [10, 13, 14, 17, 24],
+     *   [18, 21, 23, 26, 30]
+     * ]
+     * Given target = 5, return true.
+     * Given target = 20, return false.
+     * @param matrix
+     * @param target
+     * @return
+     */
+    //start search the matrix from top right corner, initialize the current position to top right corner,
+    //if the target is greater than the value in current position, then the target can not be in entire row
+    //of current position because the row is sorted, if the target is less than the value in current position,
+    //then the target can not in the entire column because the column is sorted too.
+    //We can rule out one row or one column each time, so the time complexity is O(m+n).
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if (matrix == null || matrix.length < 1 || matrix[0].length < 1) {
+            return false;
+        }
+        int col = matrix[0].length - 1;
+        int row = 0;
+        while (col >= 0 && row <= matrix.length - 1) {
+            if (target == matrix[row][col]) {
+                return true;
+            } else if (target < matrix[row][col]) {
+                col--;
+            } else if (target > matrix[row][col]) {
+                row++;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * https://leetcode.com/problems/verifying-an-alien-dictionary/
+     */
+    private int[] mapping = new int[26];
+    public boolean isAlienSorted(String[] words, String order) {
+        for (int i = 0; i < order.length(); i++) {
+            mapping[order.charAt(i) - 'a'] = i;
+        }
+        for (int i = 1; i < words.length; i++) {
+            if (bigger(words[i - 1], words[i])) return false;
+        }
+        return true;
+    }
+
+    private boolean bigger(String s1, String s2) {
+        int n = s1.length(), m = s2.length();
+        for (int i = 0; i < n && i < m; ++i) {
+            if (s1.charAt(i) != s2.charAt(i)) return mapping[s1.charAt(i) - 'a'] > mapping[s2.charAt(i) - 'a'];
+        }
+        return n > m;
+    }
+
 
     /**
      * https://leetcode.com/problems/bulb-switcher-iii/

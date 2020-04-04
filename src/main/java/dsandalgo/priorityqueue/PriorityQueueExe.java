@@ -1,12 +1,16 @@
 package dsandalgo.priorityqueue;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,9 +26,6 @@ public class PriorityQueueExe {
 
     public static void main(String[] args) {
         PriorityQueueExe pqexe = new PriorityQueueExe();
-        int target = 100;
-        int startFuel = 10;
-        int[][] stations = {{10,60},{20,30},{30,30},{60,40}};
         System.out.println(pqexe.getKth(12, 15, 2));
     }
 
@@ -32,6 +33,146 @@ public class PriorityQueueExe {
         int val;
         ListNode next;
         ListNode(int x) { val = x; }
+    }
+
+    /**
+     * https://leetcode.com/problems/rearrange-string-k-distance-apart/
+     * Given a non-empty string s and an integer k, rearrange the string such that the same characters are at least distance k from each other.
+     *
+     * All input strings are given in lowercase letters. If it is not possible to rearrange the string, return an empty string "".
+     *
+     * Example 1:
+     * Input: s = "aabbcc", k = 3
+     * Output: "abcabc"
+     * Explanation: The same letters are at least distance 3 from each other.
+     *
+     * Example 2:
+     * Input: s = "aaabc", k = 3
+     * Output: ""
+     * Explanation: It is not possible to rearrange the string.
+     *
+     * Example 3:
+     * Input: s = "aaadbbcc", k = 2
+     * Output: "abacabcd"
+     * Explanation: The same letters are at least distance 2 from each other.
+     *
+     * @param s
+     * @param k
+     * @return
+     */
+    public String rearrangeString(String s, int k) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[1] == o2[1]) {
+                    return o1[0] - o2[0];
+                }
+                return o2[1] - o1[1];
+            }
+        });
+        int[] pos = new int[26];
+        for (int i=0; i<s.length(); i++) {
+            pos[s.charAt(i)-'a']++;
+        }
+        for (int i=0; i<26; i++) {
+            if (pos[i] != 0) {
+                pq.offer(new int[]{i, pos[i]});
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!pq.isEmpty()) {
+            List<int[]> cur = new ArrayList<>();
+            for (int i=0; i<k; i++) {
+                if (!pq.isEmpty()) {
+                    cur.add(pq.poll());
+                }
+            }
+            for (int[] chCount : cur) {
+                if (sb.length() > 0) {
+                    for (int j=1; j<=k-1; j++) {
+                        if (sb.length()-j >=0 && (sb.charAt(sb.length()-j) == (char)('a' + chCount[0]))) {
+                            return "";
+                        }
+                    }
+                }
+                sb.append((char)('a' + chCount[0]));
+                if (chCount[1] > 1) {
+                    pq.offer(new int[]{chCount[0], chCount[1]-1});
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * https://leetcode.com/problems/task-scheduler/
+     * Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks. Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
+     *
+     * However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.
+     *
+     * You need to return the least number of intervals the CPU will take to finish all the given tasks.
+     *
+     *
+     *
+     * Example:
+     *
+     * Input: tasks = ["A","A","A","B","B","B"], n = 2
+     * Output: 8
+     * Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+     *
+     *
+     * Constraints:
+     *
+     * The number of tasks is in the range [1, 10000].
+     * The integer n is in the range [0, 100].
+     */
+    public int leastInterval(char[] tasks, int n) {
+        if (tasks == null || tasks.length == 0)
+            return -1;
+        //build map to sum the amount of each task
+        HashMap<Character,Integer> map = new HashMap<>();
+        for (char ch:tasks){
+            map.put(ch,map.getOrDefault(ch,0)+1);
+        }
+
+        // build queue, sort from descending
+        PriorityQueue<Map.Entry<Character,Integer>> queue = new PriorityQueue<>((a, b)->(b.getValue()-a.getValue()));
+        queue.addAll(map.entrySet());
+
+
+        int cnt = 0;
+        // when queue is not empty, there are remaining tasks
+        while (!queue.isEmpty()){
+            // for each interval
+            int interval = n+1;
+            // list used to update queue
+            List<Map.Entry<Character, Integer>> list = new ArrayList<>();
+
+            // fill the intervals with the next high freq task
+            while (interval > 0 && !queue.isEmpty()){
+                Map.Entry<Character,Integer> entry = queue.poll();
+                entry.setValue(entry.getValue()-1);
+                list.add(entry);
+                // interval shrinks
+                interval --;
+                // one slot is taken
+                cnt ++;
+            }
+
+            // update the value in the map
+            for (Map.Entry<Character,Integer> entry:list){
+                // when there is left task
+                if (entry.getValue() > 0)
+                    queue.offer(entry);
+            }
+            // job done
+            if (queue.isEmpty())
+                break;
+            // if interval is > 0, then the machine can only be idle
+            cnt += interval;
+        }
+
+        return cnt;
     }
 
     /**

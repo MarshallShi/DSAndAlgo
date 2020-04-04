@@ -102,34 +102,6 @@ public class Coding3 {
         return res;
     }
 
-
-    public List<String> wordBreak(String s, List<String> wordDict) {
-        List<String> ret = new ArrayList<String>();
-        Map<String, LinkedList<String>> cache = new HashMap<String, LinkedList<String>>();
-        return wordBreakDFS(s, wordDict, cache);
-    }
-
-    public List<String> wordBreakDFS(String s, List<String> wordDict, Map<String, LinkedList<String>> cache){
-        if (cache.containsKey(s)) {
-            return cache.get(s);
-        }
-        LinkedList<String> res = new LinkedList<String>();
-        if (s.length() == 0) {
-            res.add("");
-            return res;
-        }
-        for (String word : wordDict) {
-            if (s.startsWith(word)) {
-                List<String> sublist = wordBreakDFS(s.substring(word.length()), wordDict, cache);
-                for (String sub : sublist) {
-                    res.add(word + (sub.isEmpty() ? "" : " ") + sub);
-                }
-            }
-        }
-        cache.put(s, res);
-        return res;
-    }
-
     public String multiply(String num1, String num2) {
         List<List<Integer>> calc = new ArrayList<List<Integer>>();
         int startIdx = 0;
@@ -183,37 +155,6 @@ public class Coding3 {
         wordList.add("lot");
         wordList.add("log");
         return wordList;
-    }
-
-    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
-        if (!wordList.contains(endWord)){
-            return 0;
-        }
-        Set<String> wordDict = new HashSet<String>(wordList);
-        Set<String> reached = new HashSet<String>();
-        reached.add(beginWord);
-        wordDict.add(endWord);
-        int distance = 1;
-        while (!reached.contains(endWord)) {
-            Set<String> toAdd = new HashSet<String>();
-            for (String each : reached) {
-                for (int i = 0; i < each.length(); i++) {
-                    char[] chars = each.toCharArray();
-                    for (char ch = 'a'; ch <= 'z'; ch++) {
-                        chars[i] = ch;
-                        String word = new String(chars);
-                        if (wordDict.contains(word)) {
-                            toAdd.add(word);
-                            wordDict.remove(word);
-                        }
-                    }
-                }
-            }
-            distance++;
-            if (toAdd.size() == 0) return 0;
-            reached = toAdd;
-        }
-        return distance;
     }
 
     public int peakIndexInMountainArray(int[] A) {

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Stack;
@@ -31,10 +32,128 @@ public class StackExe {
     }
 
     /**
-     * https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
-     *
+     * https://leetcode.com/problems/decode-string/
      * @param s
      * @return
+     */
+    public String decodeString(String s) {
+        if (s == null || s.length() ==0) {
+            return s;
+        }
+        Stack<String> stack = new Stack<String>();
+        String ret = "";
+        int i = 0;
+        while (i<s.length()) {
+            char ch = s.charAt(i);
+            int chAsInt = Character.isDigit(ch) ? Integer.parseInt(ch + "") : 0;
+            if (chAsInt > 0 ) {
+                String numStr = ""+ chAsInt;
+                while (i+1 < s.length() && s.charAt(i+1) != '[') {
+                    numStr = numStr +s.charAt(i+1);
+                    i++;
+                }
+                stack.push(""+ numStr);
+            } else {
+                if (ch != ']') {
+                    stack.push(""+ ch);
+                } else {
+                    String toRepeat = "";
+                    while (!stack.peek().equals("[")) {
+                        toRepeat = stack.pop() + toRepeat;
+                    }
+                    stack.pop();
+                    int kTimes = Integer.parseInt(stack.pop());
+                    String tempRest = toRepeat;
+                    while (kTimes > 1) {
+                        tempRest = tempRest + toRepeat;
+                        kTimes--;
+                    }
+                    if (stack.isEmpty() && i == s.length() - 1) {
+                        return tempRest;
+                    } else {
+                        for (int j=0; j<tempRest.length(); j++) {
+                            stack.push(""+tempRest.charAt(j));
+                        }
+                    }
+                }
+            }
+            i++;
+        }
+        while (!stack.isEmpty()) {
+            ret = stack.pop() + ret;
+        }
+        return ret;
+    }
+
+    public String decodeString_recursive(String s) {
+        Deque<Character> queue = new LinkedList<>();
+        for (char c : s.toCharArray()) queue.offer(c);
+        return helper(queue);
+    }
+
+    public String helper(Deque<Character> queue) {
+        StringBuilder sb = new StringBuilder();
+        int num = 0;
+        while (!queue.isEmpty()) {
+            char c = queue.poll();
+            if (Character.isDigit(c)) {
+                num = num * 10 + c - '0';
+            } else {
+                if (c == '[') {
+                    String sub = helper(queue);
+                    for (int i = 0; i < num; i++) {
+                        sb.append(sub);
+                    }
+                    num = 0;
+                } else {
+                    if (c == ']') {
+                        break;
+                    } else {
+                        sb.append(c);
+                    }
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/
+     * Given a string s of '(' , ')' and lowercase English characters.
+     *
+     * Your task is to remove the minimum number of parentheses ( '(' or ')', in any positions ) so that the resulting parentheses string is valid and return any valid string.
+     *
+     * Formally, a parentheses string is valid if and only if:
+     *
+     * It is the empty string, contains only lowercase characters, or
+     * It can be written as AB (A concatenated with B), where A and B are valid strings, or
+     * It can be written as (A), where A is a valid string.
+     *
+     *
+     * Example 1:
+     *
+     * Input: s = "lee(t(c)o)de)"
+     * Output: "lee(t(c)o)de"
+     * Explanation: "lee(t(co)de)" , "lee(t(c)ode)" would also be accepted.
+     * Example 2:
+     *
+     * Input: s = "a)b(c)d"
+     * Output: "ab(c)d"
+     * Example 3:
+     *
+     * Input: s = "))(("
+     * Output: ""
+     * Explanation: An empty string is also valid.
+     * Example 4:
+     *
+     * Input: s = "(a(b(c)d)"
+     * Output: "a(b(c)d)"
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= s.length <= 10^5
+     * s[i] is one of  '(' , ')' and lowercase English letters.
      */
     public String minRemoveToMakeValid(String s) {
         StringBuilder sb = new StringBuilder(s);
@@ -55,6 +174,28 @@ public class StackExe {
             sb.setCharAt(st.pop(), '*');
         }
         return sb.toString().replaceAll("\\*", "");
+    }
+
+    //Solution 2: just count the open and close.
+    public String minRemoveToMakeValid_count(String s) {
+        int open = 0;
+        int close = 0;
+        for (int i = 0; i < s.length(); i++)  if (s.charAt(i) == ')') close++;
+
+        StringBuilder sb = new StringBuilder();
+
+        for (char c: s.toCharArray()) {
+            if (c == '(') {
+                if (open == close) continue;
+                open++;
+            } else if (c == ')') {
+                close--;
+                if (open == 0) continue;
+                open--;
+            }
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
     public int longestValidParentheses(String s) {

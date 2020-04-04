@@ -2,6 +2,8 @@ package dsandalgo.sorting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,6 +14,89 @@ public class BucketSortExe {
         BucketSortExe exe  = new BucketSortExe();
         int[][] w = {{0,0},{2,1}};
         int[][] b = {{1,2},{3,3}};
+    }
+
+    /**
+     * https://leetcode.com/problems/top-k-frequent-elements/
+     * Given a non-empty array of integers, return the k most frequent elements.
+     *
+     * Example 1:
+     *
+     * Input: nums = [1,1,1,2,2,3], k = 2
+     * Output: [1,2]
+     * Example 2:
+     *
+     * Input: nums = [1], k = 1
+     * Output: [1]
+     * Note:
+     *
+     * You may assume k is always valid, 1 ≤ k ≤ number of unique elements.
+     * Your algorithm's time complexity must be better than O(n log n), where n is the array's size.
+     */
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> numberFreq = new HashMap<Integer, Integer>();
+        int maxFreq = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            numberFreq.put(nums[i], numberFreq.getOrDefault(nums[i], 0) + 1);
+            maxFreq = Math.max(maxFreq, numberFreq.get(nums[i]));
+        }
+
+        List<Integer>[] bucket = new List[maxFreq + 1];
+        for (Map.Entry entry : numberFreq.entrySet()) {
+            if (bucket[numberFreq.get(entry.getKey())] == null) {
+                bucket[numberFreq.get(entry.getKey())] = new LinkedList<Integer>();
+            }
+            bucket[numberFreq.get(entry.getKey())].add((Integer) entry.getKey());
+        }
+
+        List<Integer> res = new LinkedList<Integer>();
+        for (int i = bucket.length - 1; i > 0 && k > 0; --i) {
+            if (bucket[i] != null) {
+                List<Integer> list = bucket[i];
+                for (int j = 0; j < list.size(); j++) {
+                    if (k > 0) {
+                        res.add(list.get(j));
+                        k--;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+    /**
+     * https://leetcode.com/problems/minimum-time-difference/
+     * Given a list of 24-hour clock time points in "Hour:Minutes" format, find the minimum minutes difference between any two time points in the list.
+     * Example 1:
+     * Input: ["23:59","00:00"]
+     * Output: 1
+     * Note:
+     * The number of time points in the given list is at least 2 and won't exceed 20000.
+     * The input time is legal and ranges from 00:00 to 23:59.
+     */
+    public int findMinDifference(List<String> timePoints) {
+        boolean[] b = new boolean[24 * 60];
+        for(String point: timePoints){
+            String[] time = point.split(":");
+            int m = Integer.parseInt(time[0]) * 60 + Integer.parseInt(time[1]);
+            if(b[m]) return 0;
+            b[m] = true;
+        }
+
+        int pre = - 24 * 60, res = 24 * 60;
+        int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+        for(int i = 0; i < 24 * 60; i++){
+            if(b[i]){
+                res = Math.min(i - pre, res);
+                max = Math.max(i, max);
+                min = Math.min(i, min);
+                pre = i;
+            }
+        }
+        res = Math.min(min + 24 * 60 - max, res);
+        return res;
     }
 
     /**

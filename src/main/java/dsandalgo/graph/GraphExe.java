@@ -239,25 +239,26 @@ public class GraphExe {
      * @param tickets
      * @return
      */
+    private Map<String, PriorityQueue<String>> flights;
+
+    private LinkedList<String> path;
+
     public List<String> findItinerary(List<List<String>> tickets) {
-        LinkedList<String> ret = new LinkedList<String>();
-        Map<String, PriorityQueue<String>> map = new HashMap<String, PriorityQueue<String>>();
-        Stack<String> stack = new Stack<String>();
-        for(List<String> t : tickets) {
-            if(!map.containsKey(t.get(0))) {
-                map.put(t.get(0), new PriorityQueue<String>());
-            }
-            map.get(t.get(0)).offer(t.get(1));
+        flights = new HashMap<>();
+        path = new LinkedList<>();
+        for (List<String> ticket : tickets) {
+            flights.putIfAbsent(ticket.get(0), new PriorityQueue<>());
+            flights.get(ticket.get(0)).add(ticket.get(1));
         }
-        stack.push("JFK");
-        while(!stack.isEmpty()) {
-            String next = stack.peek();
-            if(map.containsKey(next) && map.get(next).size() > 0) {
-                stack.push(map.get(next).poll());
-            } else {
-                ret.addFirst(stack.pop());
-            }
+        findItineraryDFS("JFK");
+        return path;
+    }
+
+    public void findItineraryDFS(String departure) {
+        PriorityQueue<String> arrivals = flights.get(departure);
+        while (arrivals != null && !arrivals.isEmpty()) {
+            findItineraryDFS(arrivals.poll());
         }
-        return ret;
+        path.addFirst(departure);
     }
 }

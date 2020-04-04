@@ -21,6 +21,33 @@ public class HardMathExe {
         System.out.println(exe.superpalindromesInRange("4", "1000"));
     }
 
+
+    /**
+     * https://leetcode.com/discuss/interview-question/396418/
+     */
+    //The formula to rotate any pair of points (x,y) clockwise about the origin is (y, -x), and counter-clockwise is (-y, x) .
+    //The reason we take the GCD of the (dx, dy) is because we are interested in finding the minimum vector ( from Bx, By) which is still an integer(for it to be on a lattice point). GCD is that
+    //property we are looking for . If we just take the rotated vector , it might be too long spanning multiple lattice points, so we take GCD of (dx, dy) first, and then divide with rx , ry
+    //(rotated vector) to get the new vector that hits the first lattice point (a.k.a minimum length)
+    public int[] lattice(int ax, int ay, int bx, int by) {
+        int dx = bx - ax, dy = by - ay;
+
+        // rotate 90
+        int rx = dy, ry = -dx;
+
+        // reduce
+        int gcd = Math.abs(latticeGCD(rx, ry));
+        rx /= gcd;
+        ry /= gcd;
+
+        return new int[]{bx + rx, by + ry};
+    }
+
+    private int latticeGCD(int x, int y) {
+        return y == 0 ? x : latticeGCD(y, x % y);
+    }
+
+
     /**
      * https://leetcode.com/problems/super-palindromes/
      * Let's say a positive integer is a superpalindrome if it is a palindrome, and it is also the square of a palindrome.

@@ -1,5 +1,6 @@
 package dsandalgo.priorityqueue;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -34,37 +35,27 @@ import java.util.PriorityQueue;
  */
 public class MedianFinder {
 
-    private PriorityQueue<Integer> minHeap;
-    private PriorityQueue<Integer> maxHeap;
+    // the size of max queue is always larger or equal to min queue
+    // min is the minHeap, top is the lowest value.
+    private PriorityQueue<Integer> min = new PriorityQueue();
+    // max is the maxHeap, top is the max value.
+    private PriorityQueue<Integer> max = new PriorityQueue(1000, Collections.reverseOrder());
 
-    /** initialize your data structure here. */
-    public MedianFinder() {
-        minHeap = new PriorityQueue<Integer>();
-        maxHeap = new PriorityQueue<Integer>(10, Comparator.reverseOrder());
-    }
-
+    // Adds a number into the data structure.
     public void addNum(int num) {
-        if (num < findMedian()) {
-            maxHeap.add(num);
-        } else {
-            minHeap.add(num);
-        }
-        if (maxHeap.size() > minHeap.size()) {
-            minHeap.add(maxHeap.poll());
-        }
-        if (minHeap.size() - maxHeap.size() > 1) {
-            maxHeap.add(minHeap.poll());
+        max.offer(num);
+        min.offer(max.poll());
+        if (max.size() < min.size()){
+            max.offer(min.poll());
         }
     }
 
+    // Returns the median of current data stream
     public double findMedian() {
-        if (maxHeap.isEmpty() && minHeap.isEmpty()) {
-            return 0;
-        }
-        if (maxHeap.size() == minHeap.size()) {
-            return ((double)maxHeap.peek() + (double)minHeap.peek()) / 2.0;
+        if (max.size() == min.size()) {
+            return (max.peek() + min.peek()) /  2.0;
         } else {
-            return (double)minHeap.peek();
+            return max.peek();
         }
     }
 
@@ -72,8 +63,12 @@ public class MedianFinder {
         MedianFinder findMedian = new MedianFinder();
         findMedian.addNum(1);
         findMedian.addNum(2);
-        System.out.println(findMedian.findMedian());
         findMedian.addNum(3);
+        findMedian.addNum(4);
+        findMedian.addNum(5);
+        findMedian.addNum(6);
+        System.out.println(findMedian.findMedian());
+        findMedian.addNum(7);
         System.out.println(findMedian.findMedian());
     }
 }

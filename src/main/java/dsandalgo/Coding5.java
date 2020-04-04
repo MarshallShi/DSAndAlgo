@@ -192,45 +192,6 @@ public class Coding5 {
         return "";
     }
 
-    public boolean isAlienSorted(String[] words, String order) {
-        Map<Character,Integer> orderMap = new HashMap<Character, Integer>();
-        char[] orderCharArr = order.toCharArray();
-        for (int i=0; i<orderCharArr.length; i++) {
-            orderMap.put(orderCharArr[i], i);
-        }
-        for (int i=1; i<words.length; i++) {
-            String prev = words[i-1];
-            char[] preCharArr = prev.toCharArray();
-            String cur = words[i];
-            char[] curCharArr = cur.toCharArray();
-            int idx = 0;
-            boolean ordered = false, stopped = false;
-            while (idx < preCharArr.length && idx < curCharArr.length) {
-                if (orderMap.get(preCharArr[idx]) < orderMap.get(curCharArr[idx])) {
-                    ordered = true;
-                    break;
-                } else {
-                    if (orderMap.get(preCharArr[idx]) == orderMap.get(curCharArr[idx])) {
-                        idx++;
-                        if (idx == preCharArr.length || idx == curCharArr.length) {
-                            stopped = true;
-                        }
-                    } else {
-                        ordered = false;
-                        break;
-                    }
-                }
-            }
-            if (stopped) {
-                ordered = preCharArr.length < curCharArr.length;
-            }
-            if (!ordered) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public String shortestCompletingWord(String licensePlate, String[] words) {
         int[] licenseAlpha = new int[26];
         char[] lichar = licensePlate.toCharArray();
@@ -938,44 +899,6 @@ public class Coding5 {
         return -1;
     }
 
-    public static List<Integer> topKFrequent(int[] nums, int k) {
-        Map<Integer, Integer> numberFreq = new HashMap<Integer, Integer>();
-        int maxFreq = Integer.MIN_VALUE;
-        for (int i=0; i<nums.length; i++) {
-            if (numberFreq.containsKey(nums[i])) {
-                numberFreq.put(nums[i], numberFreq.get(nums[i]) + 1);
-            } else {
-                numberFreq.put(nums[i], 1);
-            }
-            maxFreq = Math.max(maxFreq, numberFreq.get(nums[i]));
-        }
-
-        List<Integer>[] bucket = new List[maxFreq+1];
-        for (Map.Entry entry : numberFreq.entrySet()){
-            if(bucket[numberFreq.get(entry.getKey())]==null) {
-                bucket[numberFreq.get(entry.getKey())] = new LinkedList<Integer>();
-            }
-            bucket[numberFreq.get(entry.getKey())].add ((Integer)entry.getKey());
-        }
-
-        List<Integer> res = new LinkedList<Integer>();
-        for(int i=bucket.length-1; i>0 && k>0; --i){
-            if(bucket[i]!=null){
-                List<Integer> list = bucket[i];
-                for (int j=0;j<list.size();j++) {
-                    if (k>0) {
-                        res.add(list.get(j));
-                        k--;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return res;
-    }
-
     public static int[][] reconstructQueue(int[][] people) {
         if (people == null || people.length == 0 || people[0].length == 0)
             return new int[0][0];
@@ -1328,43 +1251,6 @@ public class Coding5 {
         return address.replaceAll("\\.", "[.]");
     }
 
-    public static int numDecodings(String s) {
-        if (s.length() > 0 && s.charAt(0) == '0') {
-            return 0;
-        }
-        if (s.length() <= 1 ) {
-            return 1;
-        }
-        if (Integer.parseInt(s.substring(0,2)) <= 26) {
-            String from1Str = s.substring(1, s.length());
-            String from2Str = s.substring(2, s.length());
-            int from1Ret, from2Ret;
-            if (!ret.containsKey(from1Str)) {
-                from1Ret = numDecodings(from1Str);
-                ret.put(from1Str, from1Ret);
-            } else {
-                from1Ret = ret.get(from1Str);
-            }
-            if (!ret.containsKey(from2Str)) {
-                from2Ret = numDecodings(from2Str);
-                ret.put(from2Str, from2Ret);
-            } else {
-                from2Ret = ret.get(from2Str);
-            }
-            return from1Ret + from2Ret;
-        } else {
-            String from1Str = s.substring(1, s.length());
-            int from1Ret;
-            if (!ret.containsKey(from1Str)) {
-                from1Ret = numDecodings(from1Str);
-                ret.put(from1Str, from1Ret);
-            } else {
-                from1Ret = ret.get(from1Str);
-            }
-            return from1Ret;
-        }
-    }
-
     public static int numTilings(int N) {
         if (N == 0) {
             return 0;
@@ -1417,60 +1303,6 @@ public class Coding5 {
             dp[i] = tempSum;
         }
         return dp[n];
-    }
-
-    public static int maximalSquare(char[][] matrix) {
-        int n = matrix.length;
-        if (n == 0) return 0;
-        int m = matrix[0].length;
-        if (m == 0) return 0;
-        int i, j;
-        if (n==1) {
-            for (i=0; i<m; i++) {
-                if (matrix[0][i] == '1') {
-                    return 1;
-                }
-            }
-            return 0;
-        }
-        int[][] dp = new int[n][m];
-
-        boolean haveOne = false;
-        for (i=0; i<n; i++) {
-            if (matrix[i][m-1] == '1') {
-                dp[i][m-1] = 1;
-                haveOne = true;
-            } else {
-                dp[i][m-1] = 0;
-            }
-        }
-        for (i=0; i<m; i++) {
-            if (matrix[n-1][i] == '1') {
-                dp[n-1][i] = 1;
-                haveOne = true;
-            } else {
-                dp[n-1][i] = 0;
-            }
-        }
-        int max = 0;
-        if (haveOne) {
-            max = 1;
-        }
-        for (i=n-2; i>=0; i--) {
-            for (j=m-2; j>=0; j--) {
-                if (matrix[i][j] == '1') {
-                    if (matrix[i+1][j] == '1' && matrix[i][j+1] == '1') {
-                        dp[i][j] = 1 + Math.min(dp[i+1][j+1], Math.min(dp[i][j+1], dp[i+1][j]));
-                    } else {
-                        dp[i][j] = 1;
-                    }
-                }
-                if (dp[i][j] > max) {
-                    max = dp[i][j];
-                }
-            }
-        }
-        return max*max;
     }
 
     public static int findUnsortedSubarray(int[] nums) {
@@ -2114,23 +1946,6 @@ public class Coding5 {
         } else {
             return a;
         }
-    }
-
-    public static int findKthLargest(int[] nums, int k) {
-        if (nums == null) {
-            return -1;
-        }
-        if (nums.length < k) {
-            return -1;
-        }
-        for (int i=0; i<k; i++) {
-            for (int j=i+1; j<nums.length; j++) {
-                if (nums[i] < nums[j]) {
-                    swap(nums, i, j);
-                }
-            }
-        }
-        return nums[k-1];
     }
 
     public static void swap(int[] nums, int i, int j) {

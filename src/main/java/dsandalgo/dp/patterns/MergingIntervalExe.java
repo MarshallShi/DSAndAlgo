@@ -1,5 +1,7 @@
 package dsandalgo.dp.patterns;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -80,6 +82,29 @@ public class MergingIntervalExe {
         }
         while (stack.size() > 2) {
             res += stack.pop() * stack.peek();
+        }
+        return res;
+    }
+
+    public int mctFromLeafValues_Greedy(int[] arr) {
+        int res = 0;
+        List<Integer> nums = new ArrayList<>();
+        for (int a : arr) nums.add(a);
+        while (nums.size() > 1) {
+            int min = Integer.MAX_VALUE, l = 0, r = 0;
+            for (int i = 1; i < nums.size(); i++) {
+                if (nums.get(i) * nums.get(i - 1) < min) {
+                    min = nums.get(i) * nums.get(i - 1);
+                    l = i - 1;
+                    r = i;
+                }
+            }
+            res += min;
+            if (nums.get(l) > nums.get(r)) {
+                nums.remove(r);
+            } else {
+                nums.remove(l);
+            }
         }
         return res;
     }

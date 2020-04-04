@@ -400,31 +400,6 @@ public class Coding4 {
         return res;
     }
 
-    public List<Integer> rightSideView(TreeNode root) {
-        List<Integer> res = new LinkedList<Integer>();
-        if (root == null) {
-            return res;
-        }
-        LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
-        queue.add(root);
-        while (!queue.isEmpty()) {
-            int n = queue.size();
-            for (int i=0; i<n; i++) {
-                TreeNode node = queue.pop();
-                if (i == n-1) {
-                    res.add(node.val);
-                }
-                if (node.left != null) {
-                    queue.add(node.left);
-                }
-                if (node.right != null) {
-                    queue.add(node.right);
-                }
-            }
-        }
-        return res;
-    }
-
     public List<Integer> largestValues(TreeNode root) {
         List<Integer> res = new LinkedList<Integer>();
         if (root == null) {
@@ -563,52 +538,6 @@ public class Coding4 {
             leaves = newLeaves;
         }
         return leaves;
-    }
-
-
-    /**
-     * asteroids = [5, 10, -5]
-     * Output: [5, 10]
-     * @param asteroids
-     * @return
-     */
-    public int[] asteroidCollision(int[] asteroids) {
-        Stack<Integer> stack = new Stack<Integer>();
-        for (int num : asteroids) {
-            if (num > 0) {
-                stack.push(num);
-            } else {
-                if (num < 0) {
-                    boolean processed = false;
-                    while (!stack.isEmpty()) {
-                        int top = stack.peek();
-                        if (top > 0) {
-                            stack.pop();
-                            if (Math.abs(top) > Math.abs(num)) {
-                                processed = true;
-                                stack.push(top);
-                                break;
-                            } else {
-                                if (Math.abs(top) == Math.abs(num)) {
-                                    processed = true;
-                                    break;
-                                }
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                    if (!processed) {
-                        stack.push(num);
-                    }
-                }
-            }
-        }
-        int[] res = new int[stack.size()];
-        for (int i=res.length-1; i>=0; i--) {
-            res[i] = stack.pop();
-        }
-        return res;
     }
 
     /**
@@ -903,26 +832,6 @@ public class Coding4 {
         return list;
     }
 
-    public int firstMissingPositive(int[] nums) {
-        int N = nums.length;
-        //To store all the existing positive numbers, from 1 to N ideally.
-        int[] A = new int[N];
-        for(int i = 0; i < N; i++) {
-            if(nums[i]>0 && nums[i]<=N) {
-                //Fill these valid numbers into A.
-                A[nums[i] - 1] = nums[i];
-            }
-        }
-        //Go through A, find the first value not filled.
-        for(int i = 0; i < N; i++) {
-            if(A[i] != i+1) {
-                return i+1;
-            }
-        }
-        //All filled, so return the max value.
-        return N+1;
-    }
-
     public int maxProduct(int[] nums) {
         int max = 0;
         int curMax = Integer.MIN_VALUE;
@@ -1007,39 +916,6 @@ public class Coding4 {
         }
         prev.next = null;
         return slow;
-    }
-
-    /**
-     * Consider the following matrix:
-     * [
-     *   [1,   4,  7, 11, 15],
-     *   [2,   5,  8, 12, 19],
-     *   [3,   6,  9, 16, 22],
-     *   [10, 13, 14, 17, 24],
-     *   [18, 21, 23, 26, 30]
-     * ]
-     * Given target = 5, return true.
-     * Given target = 20, return false.
-     * @param matrix
-     * @param target
-     * @return
-     */
-    public boolean searchMatrix(int[][] matrix, int target) {
-        if(matrix == null || matrix.length < 1 || matrix[0].length <1) {
-            return false;
-        }
-        int col = matrix[0].length-1;
-        int row = 0;
-        while(col >= 0 && row <= matrix.length-1) {
-            if(target == matrix[row][col]) {
-                return true;
-            } else if(target < matrix[row][col]) {
-                col--;
-            } else if(target > matrix[row][col]) {
-                row++;
-            }
-        }
-        return false;
     }
 
 
@@ -1151,42 +1027,6 @@ public class Coding4 {
       int val;
       ListNode next;
       ListNode(int x) { val = x; }
-    }
-
-    static boolean[][] visited;
-    public boolean exist(char[][] board, String word) {
-        visited = new boolean[board.length][board[0].length];
-
-        for(int i = 0; i < board.length; i++){
-            for(int j = 0; j < board[i].length; j++){
-                if((word.charAt(0) == board[i][j]) && search(board, word, i, j, 0)){
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private boolean search(char[][]board, String word, int i, int j, int index){
-        if(index == word.length()){
-            return true;
-        }
-
-        if(i >= board.length || i < 0 || j >= board[i].length || j < 0 || board[i][j] != word.charAt(index) || visited[i][j]){
-            return false;
-        }
-
-        visited[i][j] = true;
-        if(search(board, word, i-1, j, index+1) ||
-                search(board, word, i+1, j, index+1) ||
-                search(board, word, i, j-1, index+1) ||
-                search(board, word, i, j+1, index+1)){
-            return true;
-        }
-
-        visited[i][j] = false;
-        return false;
     }
 //
 //    class Position{
@@ -1490,35 +1330,6 @@ public class Coding4 {
         int diag = Math.min(deltaX, deltaY);
         int straight = Math.abs(deltaX - deltaY);
         return diag + straight;
-    }
-
-
-
-    public int[] maxSlidingWindow(int[] a, int k) {
-        if (a == null || k <= 0) {
-            return new int[0];
-        }
-        int n = a.length;
-        int[] r = new int[n-k+1];
-        int ri = 0; //slow pointer
-        // store index
-        Deque<Integer> q = new ArrayDeque<Integer>();
-        for (int i = 0; i < a.length; i++) {
-            // remove numbers out of range k
-            while (!q.isEmpty() && q.peek() < i - k + 1) {
-                q.poll();
-            }
-            // remove smaller numbers in k range as they are useless
-            while (!q.isEmpty() && a[q.peekLast()] < a[i]) {
-                q.pollLast();
-            }
-            // q contains index... r contains content
-            q.offer(i);
-            if (i >= k - 1) {
-                r[ri++] = a[q.peek()];
-            }
-        }
-        return r;
     }
 
     public int lastStoneWeight(int[] stones) {

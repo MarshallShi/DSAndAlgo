@@ -2,6 +2,7 @@ package dsandalgo.linkedlist;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -18,6 +19,34 @@ public class LinkedListExe {
         LinkedListExe exe = new LinkedListExe();
         exe.splitListToParts(exe.createList(), 5);
         //System.out.println(ret);
+    }
+
+    /**
+     * https://leetcode.com/problems/asteroid-collision/
+     * asteroids = [5, 10, -5]
+     * Output: [5, 10]
+     * @param asteroids
+     * @return
+     */
+    public int[] asteroidCollision(int[] asteroids) {
+        LinkedList<Integer> s = new LinkedList<>();
+        for (int i : asteroids) {
+            if (i > 0) {
+                s.add(i);
+            } else {
+                while (!s.isEmpty() && s.getLast() > 0 && s.getLast() < -i) {
+                    s.pollLast();
+                }
+                if (!s.isEmpty() && s.getLast() == -i) {
+                    s.pollLast();
+                } else {
+                    if (s.isEmpty() || s.getLast() < 0) {
+                        s.add(i);
+                    }
+                }
+            }
+        }
+        return s.stream().mapToInt(i->i).toArray();
     }
 
     /**

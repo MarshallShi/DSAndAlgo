@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 public class TrieExes {
 
@@ -86,6 +85,154 @@ public class TrieExes {
         String[] words = {"oath","pea","eat","rain"};
         String[] words1 = {"acdb"};
         //System.out.println(exe.lastSubstring("abab"));
+    }
+
+
+    /**
+     * https://leetcode.com/problems/palindrome-pairs/
+     *
+     * Given a list of unique words, find all pairs of distinct indices (i, j) in the given list, so that the concatenation
+     * of the two words, i.e. words[i] + words[j] is a palindrome.
+     *
+     * Example 1:
+     *
+     * Input: ["abcd","dcba","lls","s","sssll"]
+     * Output: [[0,1],[1,0],[3,2],[2,4]]
+     * Explanation: The palindromes are ["dcbaabcd","abcddcba","slls","llssssll"]
+     *
+     * Example 2:
+     *
+     * Input: ["bat","tab","cat"]
+     * Output: [[0,1],[1,0]]
+     * Explanation: The palindromes are ["battab","tabbat"]
+     *
+     * @param words
+     * @return
+     */
+    //Solution 1: brute force, O(n2)
+    public List<List<Integer>> palindromePairs_bruteforce(String[] words) {
+        List<List<Integer>> ret = new ArrayList<>();
+        if (words == null || words.length < 2) {
+            return ret;
+        }
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        for (int i=0; i<words.length; i++) {
+            map.put(words[i], i);
+        }
+        for (int i=0; i<words.length; i++) {
+            for (int j=0; j<=words[i].length(); j++) {
+                String str1 = words[i].substring(0, j);
+                //leverage if str1 is palindrome, then str2 must be forming the palindrome with another word, so reversed value must be existing.
+                String str2 = words[i].substring(j);
+                if (isPalindrome(str1)) {
+                    String str2rvs = new StringBuilder(str2).reverse().toString();
+                    if (map.containsKey(str2rvs) && map.get(str2rvs) != i) {
+                        List<Integer> list = new ArrayList<Integer>();
+                        list.add(map.get(str2rvs));
+                        list.add(i);
+                        ret.add(list);
+                    }
+                }
+                if (isPalindrome(str2)) {
+                    String str1rvs = new StringBuilder(str1).reverse().toString();
+                    // check "str.length() != 0" to avoid duplicates
+                    if (map.containsKey(str1rvs) && map.get(str1rvs) != i && str2.length()!=0) {
+                        List<Integer> list = new ArrayList<Integer>();
+                        list.add(i);
+                        list.add(map.get(str1rvs));
+                        ret.add(list);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    private boolean isPalindrome(String str) {
+        int left = 0;
+        int right = str.length() - 1;
+        while (left <= right) {
+            if (str.charAt(left++) !=  str.charAt(right--)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //Solution 2: Trie, O(n*k2)
+    //Observation: s1 and s2 form palindrome in two cases: 1). 2).
+    //Case 1: the reverse of s2 is a suffix of s1 and the rest part of s1 is a palindrome (that is, the prefix of s1 excluding the previous suffix is a palindrome)
+    //Case 2: the reverse of s1 is a suffix of s2 and the rest part of s2 is a palindrome (that is, the prefix of s2 excluding the previous suffix is a palindrome)
+    //Solution steps:
+    //1. build each word into trie in reverse order, and add the index in the ending char, into the list for mutliple ending.
+    //2. search, once find the position list not null, check if remaining chars form palindrome, if yes all position in the list will form a result pair.
+    public List<List<Integer>> palindromePairs(String[] words) {
+        List<List<Integer>> res = new ArrayList<>();
+
+        TrieNodePalindromePairs root = new TrieNodePalindromePairs();
+
+        for (int i = 0; i < words.length; i++) {
+            addWord(root, words[i], i);
+        }
+
+        for (int i = 0; i < words.length; i++) {
+            search(words, i, root, res);
+        }
+
+        return res;
+    }
+
+    class TrieNodePalindromePairs {
+        TrieNodePalindromePairs[] next;
+        int index;
+        List<Integer> list;
+
+        TrieNodePalindromePairs() {
+            next = new TrieNodePalindromePairs[26];
+            index = -1;
+            list = new ArrayList<>();
+        }
+    }
+
+    private void addWord(TrieNodePalindromePairs root, String word, int index) {
+        for (int i = word.length() - 1; i >= 0; i--) {
+            int j = word.charAt(i) - 'a';
+
+            if (root.next[j] == null) {
+                root.next[j] = new TrieNodePalindromePairs();
+            }
+
+            if (isPalindrome(word, 0, i)) {
+                root.list.add(index);
+            }
+
+            root = root.next[j];
+        }
+
+        root.list.add(index);
+        root.index = index;
+    }
+
+    private void search(String[] words, int i, TrieNodePalindromePairs root, List<List<Integer>> res) {
+        for (int j = 0; j < words[i].length(); j++) {
+            if (root.index >= 0 && root.index != i && isPalindrome(words[i], j, words[i].length() - 1)) {
+                res.add(Arrays.asList(i, root.index));
+            }
+
+            root = root.next[words[i].charAt(j) - 'a'];
+            if (root == null) return;
+        }
+
+        for (int j : root.list) {
+            if (i == j) continue;
+            res.add(Arrays.asList(i, j));
+        }
+    }
+
+    private boolean isPalindrome(String word, int i, int j) {
+        while (i < j) {
+            if (word.charAt(i++) != word.charAt(j--)) return false;
+        }
+        return true;
     }
 
     /**
@@ -286,38 +433,43 @@ public class TrieExes {
     class TrieNode1 {
         TrieNode1[] links;
         String word;
+
         TrieNode1() {
             links = new TrieNode1[26];
         }
     }
-    private int[][] directions = {{1, 0},{-1, 0},{0, 1},{0, -1}};
+
+    private int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
     public List<String> findWords(char[][] board, String[] words) {
-        List<String> res = new ArrayList<String>();
-        if(board == null || board.length == 0 || board[0].length == 0){
+        List<String> res = new ArrayList<>();
+        if (board == null || board.length == 0 || board[0].length == 0) {
             return res;
         }
         int m = board.length, n = board[0].length;
-        TrieNode1 root = buildTree(words);
-        for(int i = 0; i < m; i++){
-            for(int j = 0; j < n; j++){
+        TrieNode1 root = buildTrieTree(words);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
                 int index = board[i][j] - 'a';
-                if(root.links[index] == null){
+                //Trick: skip unnecessary dfs.
+                if (root.links[index] == null) {
                     continue;
                 }
                 TrieNode1 p = root;
                 boolean[][] visited = new boolean[m][n];
-                dfs(p, i, j, res, board, visited);
+                findWordsDFS(p, i, j, res, board, visited);
             }
         }
         return res;
     }
-    private TrieNode1 buildTree(String[] words){
+
+    private TrieNode1 buildTrieTree(String[] words) {
         TrieNode1 root = new TrieNode1();
-        for(String word : words){
+        for (String word : words) {
             TrieNode1 p = root;
-            for(char c : word.toCharArray()){
+            for (char c : word.toCharArray()) {
                 int index = c - 'a';
-                if(p.links[index] == null){
+                if (p.links[index] == null) {
                     p.links[index] = new TrieNode1();
                 }
                 p = p.links[index];
@@ -327,25 +479,25 @@ public class TrieExes {
         return root;
     }
 
-    private void dfs(TrieNode1 p, int i, int j, List<String> res, char[][] board, boolean[][] visited){
-        if(i >= board.length || i < 0 || j >= board[0].length || j < 0 || visited[i][j]){
+    private void findWordsDFS(TrieNode1 p, int i, int j, List<String> res, char[][] board, boolean[][] visited) {
+        if (i >= board.length || i < 0 || j >= board[0].length || j < 0 || visited[i][j]) {
             return;
         }
-        if(p.links[board[i][j] - 'a'] == null){
+        if (p.links[board[i][j] - 'a'] == null) {
             return;
         }
-        if(p.links[board[i][j] - 'a'].word != null){
+        if (p.links[board[i][j] - 'a'].word != null) {
             res.add(p.links[board[i][j] - 'a'].word);
             p.links[board[i][j] - 'a'].word = null;
             //since we have visited this leaf node, then set "word" null , make sure we do not visit it once again.
         }
         visited[i][j] = true;
-        for(int[] dir : directions){
+        for (int[] dir : directions) {
             int newX = i + dir[0];
             int newY = j + dir[1];
-            dfs(p.links[board[i][j] - 'a'], newX, newY, res, board, visited);
+            findWordsDFS(p.links[board[i][j] - 'a'], newX, newY, res, board, visited);
         }
-        visited[i][j] = false;  //very important backtracking!
+        visited[i][j] = false;
     }
 
 

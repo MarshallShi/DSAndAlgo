@@ -2,9 +2,11 @@ package dsandalgo.tree;
 
 import javafx.util.Pair;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -23,6 +25,237 @@ public class TreeExe {
         int[] preorder = {8,5,1,7,10,12};
         TreeNode n = exe.str2tree("4(2(3)(1))(6(5))");
         System.out.println(n);
+    }
+
+
+    /**
+     * https://leetcode.com/problems/validate-binary-search-tree/
+     * Given a binary tree, determine if it is a valid binary search tree (BST).
+     *
+     * Assume a BST is defined as follows:
+     *
+     * The left subtree of a node contains only nodes with keys less than the node's key.
+     * The right subtree of a node contains only nodes with keys greater than the node's key.
+     * Both the left and right subtrees must also be binary search trees.
+     *
+     *
+     * Example 1:
+     *
+     *     2
+     *    / \
+     *   1   3
+     *
+     * Input: [2,1,3]
+     * Output: true
+     * Example 2:
+     *
+     *     5
+     *    / \
+     *   1   4
+     *      / \
+     *     3   6
+     *
+     * Input: [5,1,4,null,null,3,6]
+     * Output: false
+     * Explanation: The root node's value is 5 but its right child's value is 4.
+     */
+    //In order iterative traverse.
+    public boolean isValidBST(TreeNode root) {
+        if (root == null) return true;
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode pre = null;
+        while (root != null || !stack.isEmpty()) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            if (pre != null && root.val <= pre.val) return false;
+            pre = root;
+            root = root.right;
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/binary-tree-inorder-traversal/
+     * Given a binary tree, return the inorder traversal of its nodes' values.
+     *
+     * Example:
+     *
+     * Input: [1,null,2,3]
+     *    1
+     *     \
+     *      2
+     *     /
+     *    3
+     *
+     * Output: [1,3,2]
+     * Follow up: Recursive solution is trivial, could you do it iteratively?
+     */
+    public List<Integer> inorderTraversal_recursive(TreeNode root) {
+        List<Integer> ret = new ArrayList<Integer>();
+        inorderTraversalHelper(root, ret);
+        return ret;
+    }
+
+    public void inorderTraversalHelper(TreeNode node, List<Integer> ret) {
+        if (node == null) {
+            return;
+        }
+        inorderTraversalHelper(node.left, ret);
+        ret.add(node.val);
+        inorderTraversalHelper(node.right, ret);
+    }
+
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode cur = root;
+        while (cur != null || !stack.empty()) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            cur = stack.pop();
+            list.add(cur.val);
+            cur = cur.right;
+        }
+        return list;
+    }
+
+    /**
+     * https://leetcode.com/problems/binary-tree-right-side-view/
+     * Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
+     *
+     * Example:
+     *
+     * Input: [1,2,3,null,5,null,4]
+     * Output: [1, 3, 4]
+     * Explanation:
+     *
+     *    1            <---
+     *  /   \
+     * 2     3         <---
+     *  \     \
+     *   5     4       <---
+     */
+    //BFS
+    public List<Integer> rightSideView_bfs(TreeNode root) {
+        List<Integer> res = new LinkedList<Integer>();
+        if (root == null) {
+            return res;
+        }
+        LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int n = queue.size();
+            for (int i=0; i<n; i++) {
+                TreeNode node = queue.pop();
+                if (i == n-1) {
+                    res.add(node.val);
+                }
+                if (node.left != null) {
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    queue.add(node.right);
+                }
+            }
+        }
+        return res;
+    }
+
+    //DFS
+    public List<Integer> rightSideView(TreeNode root) {
+        ArrayList list = new ArrayList();
+        rightSideView(root, 0, list);
+        return list;
+    }
+
+    public void rightSideView(TreeNode root, int level, ArrayList list) {
+        if (root == null) return;
+        if (list.size() == level) {
+            list.add(root.val);
+        }
+        rightSideView(root.right, level + 1, list);
+        rightSideView(root.left, level + 1, list);
+    }
+
+    /**
+     * https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
+     * Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.
+     *
+     * According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p
+     * and q as the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself).”
+     *
+     * Given the following binary tree:  root = [3,5,1,6,2,0,8,null,null,7,4]
+     *
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+     * Output: 3
+     * Explanation: The LCA of nodes 5 and 1 is 3.
+     * Example 2:
+     *
+     * Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+     * Output: 5
+     * Explanation: The LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself according to the LCA definition.
+     *
+     *
+     * Note:
+     *
+     * All of the nodes' values will be unique.
+     * p and q are different and both values will exist in the binary tree.
+     */
+    //Solution 1: recursive, once we find p ro q is the current node, return the node.
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root == null || root == p || root == q) {
+            //Null or root is the current lowest common ancestor
+            return root;
+        }
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if(left != null && right != null) {
+            //p and q can be found in left and right.
+            return root;
+        }
+        return left != null ? left : right;
+    }
+
+    //Solution 2: iterative.
+    //To find the lowest common ancestor, we need to find where is p and q and a way to track their ancestors.
+    //A parent pointer for each node found is good for the job. After we found both p and q, we create a set of p's ancestors.
+    //Then we travel through q's ancestors, the first one appears in p's is our answer.
+    public TreeNode lowestCommonAncestor_iter(TreeNode root, TreeNode p, TreeNode q) {
+        Map<TreeNode, TreeNode> parent = new HashMap<>();
+        Deque<TreeNode> stack = new ArrayDeque<>();
+        parent.put(root, null);
+        stack.push(root);
+
+        while (!parent.containsKey(p) || !parent.containsKey(q)) {
+            TreeNode node = stack.pop();
+            if (node.left != null) {
+                parent.put(node.left, node);
+                stack.push(node.left);
+            }
+            if (node.right != null) {
+                parent.put(node.right, node);
+                stack.push(node.right);
+            }
+        }
+        Set<TreeNode> ancestors = new HashSet<>();
+        while (p != null) {
+            ancestors.add(p);
+            p = parent.get(p);
+        }
+        while (!ancestors.contains(q)) {
+            q = parent.get(q);
+        }
+        return q;
     }
 
     /**
