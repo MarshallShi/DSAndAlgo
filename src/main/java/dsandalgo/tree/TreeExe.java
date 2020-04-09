@@ -27,6 +27,107 @@ public class TreeExe {
         System.out.println(n);
     }
 
+    /**
+     * https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+     * Given preorder and inorder traversal of a tree, construct the binary tree.
+     *
+     * Note:
+     * You may assume that duplicates do not exist in the tree.
+     *
+     * For example, given
+     *
+     * preorder = [3,9,20,15,7]
+     * inorder = [9,3,15,20,7]
+     * Return the following binary tree:
+     *
+     *     3
+     *    / \
+     *   9  20
+     *     /  \
+     *    15   7
+     */
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        Map<Integer, Integer> inMap = new HashMap<Integer, Integer>();
+        for (int i = 0; i < inorder.length; i++) {
+            inMap.put(inorder[i], i);
+        }
+        TreeNode root = buildTreeHelper(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1, inMap);
+        return root;
+    }
+
+    public TreeNode buildTreeHelper(int[] preorder, int preStart, int preEnd, int[] inorder, int inStart, int inEnd, Map<Integer, Integer> inMap) {
+        if (preStart > preEnd || inStart > inEnd) return null;
+        TreeNode root = new TreeNode(preorder[preStart]);
+        int inRoot = inMap.get(root.val);
+        int numsLeft = inRoot - inStart;
+        root.left = buildTreeHelper(preorder, preStart + 1, preStart + numsLeft, inorder, inStart, inRoot - 1, inMap);
+        root.right = buildTreeHelper(preorder, preStart + numsLeft + 1, preEnd, inorder, inRoot + 1, inEnd, inMap);
+        return root;
+    }
+
+    /**
+     * https://leetcode.com/problems/diameter-of-binary-tree/
+     * Given a binary tree, you need to compute the length of the diameter of the tree. The diameter of a binary tree is the length of
+     * the longest path between any two nodes in a tree. This path may or may not pass through the root.
+     *
+     * Example:
+     * Given a binary tree
+     *           1
+     *          / \
+     *         2   3
+     *        / \
+     *       4   5
+     * Return 3, which is the length of the path [4,2,1,3] or [5,2,1,3].
+     *
+     * Note: The length of path between two nodes is represented by the number of edges between them.
+     */
+    public int diameterOfBinaryTree(TreeNode root) {
+        maxDepth(root);
+        return maxDiameter;
+    }
+
+    private int maxDiameter = 0;
+
+    private int maxDepth(TreeNode root) {
+        if (root == null) return 0;
+
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
+
+        maxDiameter = Math.max(maxDiameter, left + right);
+
+        return Math.max(left, right) + 1;
+    }
+
+    public int diameterOfBinaryTree_iter(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root == null) {
+            return 0;
+        }
+        int overallNodeMax = 0;
+        Stack<TreeNode> nodeStack = new Stack<>();
+        Map<TreeNode, Integer> nodePathCountMap = new HashMap<>();
+        nodeStack.push(root);
+        while (!nodeStack.isEmpty()) {
+            TreeNode node = nodeStack.peek();
+            if (node.left != null && !nodePathCountMap.containsKey(node.left)) {
+                nodeStack.push(node.left);
+            } else if (node.right != null && !nodePathCountMap.containsKey(node.right)) {
+                nodeStack.push(node.right);
+            } else {
+                TreeNode rootNodeEndofPostOrder = nodeStack.pop();
+                int leftMax = nodePathCountMap.getOrDefault(rootNodeEndofPostOrder.left, 0);
+                int rightMax = nodePathCountMap.getOrDefault(rootNodeEndofPostOrder.right, 0);
+                int nodeMax = 1 + Math.max(leftMax, rightMax);
+                nodePathCountMap.put(rootNodeEndofPostOrder, nodeMax);
+                overallNodeMax = Math.max(overallNodeMax, leftMax + rightMax);
+            }
+
+        }
+        return overallNodeMax;
+    }
 
     /**
      * https://leetcode.com/problems/validate-binary-search-tree/

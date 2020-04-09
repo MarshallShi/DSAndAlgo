@@ -2,6 +2,9 @@ package dsandalgo.stack;
 
 import java.util.Stack;
 
+/**
+ * https://leetcode.com/problems/max-stack/
+ */
 public class MaxStack {
 
     class MaxStackElement {

@@ -198,29 +198,41 @@ public class StackExe {
         return sb.toString();
     }
 
+    /**
+     * https://leetcode.com/problems/longest-valid-parentheses/
+     * Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
+     *
+     * Example 1:
+     *
+     * Input: "(()"
+     * Output: 2
+     * Explanation: The longest valid parentheses substring is "()"
+     * Example 2:
+     *
+     * Input: ")()())"
+     * Output: 4
+     * Explanation: The longest valid parentheses substring is "()()"
+     */
+    //we only update the result (max) when we find a "pair".
+    //If we find a pair. We throw this pair away and see how big the gap is between current and previous invalid.
+    //EX: "( )( )"
+    //stack: -1, 0,
+    //when we get to index 1 ")", the peek is "(" so we pop it out and see what's before "(".
+    //In this example it's -1. So the gap is "current_index" - (-1) = 2.
+    //The idea only update the result (max) when we find a "pair" and push -1 to stack first covered all edge cases.
     public int longestValidParentheses(String s) {
-        int size = s.length(), res = 0;
-        if (size < 2) {
-            return res;
-        }
-        Stack<Integer> si = new Stack<>();
-        for(int i = 0; i < size; ++i) {
-            if('(' == s.charAt(i)) {
-                si.push(i);
+        Stack<Integer> stack = new Stack<>();
+        int result = 0;
+        stack.push(-1);
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == ')' && stack.size() > 1 && s.charAt(stack.peek()) == '(') {
+                stack.pop();
+                result = Math.max(result, i - stack.peek());
             } else {
-                if (si.empty()) {
-                    si.push(i);
-                } else {
-                    if(s.charAt(si.peek()) == '(') {
-                        si.pop();
-                        res = Math.max(i - (si.empty()? -1: si.peek()), res);
-                    } else {
-                        si.push(i);
-                    }
-                }
+                stack.push(i);
             }
         }
-        return res;
+        return result;
     }
 
     /**

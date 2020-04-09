@@ -122,6 +122,42 @@ public class LinkedListExe {
     }
 
     /**
+     * https://leetcode.com/problems/add-two-numbers-ii/
+     * @param l1
+     * @param l2
+     * @return
+     */
+    public ListNode addTwoNumbers_II(ListNode l1, ListNode l2) {
+        Stack<ListNode> l1Stack = new Stack<ListNode>();
+        while (l1 != null) {
+            l1Stack.push(l1);
+            l1 = l1.next;
+        }
+        Stack<ListNode> l2Stack = new Stack<ListNode>();
+        while (l2 != null) {
+            l2Stack.push(l2);
+            l2 = l2.next;
+        }
+        ListNode curTop = null;
+        ListNode newTop = null;
+        int carrier = 0;
+        while (!(l1Stack.isEmpty() && l2Stack.isEmpty() && carrier == 0)) {
+            int l1Val = l1Stack.isEmpty() ? 0 : l1Stack.pop().val;
+            int l2Val = l2Stack.isEmpty() ? 0 : l2Stack.pop().val;
+            if (l1Val + l2Val + carrier >= 10) {
+                newTop = new ListNode(l1Val + l2Val + carrier - 10);
+                carrier = 1;
+            } else {
+                newTop = new ListNode(l1Val + l2Val + carrier);
+                carrier = 0;
+            }
+            newTop.next = curTop;
+            curTop = newTop;
+        }
+        return curTop;
+    }
+
+    /**
      * https://leetcode.com/problems/remove-zero-sum-consecutive-nodes-from-linked-list/
      * Given the head of a linked list, we repeatedly delete consecutive sequences of nodes that sum to 0 until there are no such sequences.
      *

@@ -19,8 +19,99 @@ public class ArrayExe {
 
     public static void main(String[] args) {
         ArrayExe exe = new ArrayExe();
-        int[] c = {3,4,-1,1};
-        System.out.println(exe.firstMissingPositive(c));
+        int[] c = {1,3,2,3,5,0};
+        //System.out.println(exe.countElements(c));
+    }
+
+    /**
+     * https://leetcode.com/problems/diagonal-traverse/
+     * Given a matrix of M x N elements (M rows, N columns), return all elements of the matrix in diagonal order as shown in the below image.
+     *
+     *
+     *
+     * Example:
+     *
+     * Input:
+     * [
+     *  [ 1, 2, 3 ],
+     *  [ 4, 5, 6 ],
+     *  [ 7, 8, 9 ]
+     * ]
+     *
+     * Output:  [1,2,4,7,5,3,6,8,9]
+     *
+     * Explanation:
+     *
+     *
+     *
+     * Note:
+     *
+     * The total number of elements of the given matrix will not exceed 10,000.
+     */
+    public int[] findDiagonalOrder(int[][] matrix) {
+        if (matrix == null || matrix.length == 0) return new int[0];
+        int row = 0, col = 0, pos = 0, m = matrix.length, n=matrix[0].length, output [] = new int[m * n];
+        //Get all the element one by one according to the position.
+        for (pos = 0; pos < m * n; pos++) {
+            output[pos] = matrix[row][col];
+            if ((row + col) % 2 == 0) {
+                // The direction is always up when the sum of row & col is even
+                // For last column, go down
+                if (col == n-1) {
+                    row++;
+                } else{
+                    // For first row & non-last columns, go right
+                    if (row == 0) {
+                        col++;
+                    } else {
+                        // For not first row & non-last columns, go up and to the right
+                        row--;
+                        col++;
+                    }
+                }
+            } else {
+                // The direction is always down when the sum of row & col is odd
+                // For last row, go right
+                if (row == m-1) {
+                    col++;
+                } else {
+                    if (col == 0) {
+                        //  For non-last row & first column, go down
+                        row++;
+                    } else {
+                        // For non-last row & non-first column, go down and to the left
+                        row++;
+                        col--;
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
+    /**
+     * https://leetcode.com/problems/summary-ranges/
+     * @param nums
+     * @return
+     */
+    public List<String> summaryRanges(int[] nums) {
+        List<String> list = new ArrayList();
+        if (nums.length == 1) {
+            list.add(nums[0] + "");
+            return list;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            int a = nums[i];
+            while (i + 1 < nums.length && (nums[i + 1] - nums[i]) == 1) {
+                i++;
+            }
+            if (a != nums[i]) {
+                list.add(a + "->" + nums[i]);
+            } else {
+                list.add(a + "");
+            }
+        }
+        return list;
     }
 
     /**
@@ -1483,26 +1574,20 @@ public class ArrayExe {
      * @return
      */
     public int compress(char[] chars) {
-        int i = 0, j = 0;
-        while (i<chars.length) {
-            int len = 1;
-            while (i+1 < chars.length && chars[i] == chars[i+1]) {
-                i++;
-                len++;
+        int indexAns = 0, index = 0;
+        while (index < chars.length) {
+            char currentChar = chars[index];
+            int count = 0;
+            while (index < chars.length && chars[index] == currentChar) {
+                index++;
+                count++;
             }
-            chars[j] = chars[i];
-            if (len > 1) {
-                String strOfInt = String.valueOf(len);
-                for (int k=1; k<=strOfInt.length(); k++) {
-                    chars[j+k] = strOfInt.charAt(k-1);
-                }
-                j = j + strOfInt.length() + 1;
-            } else {
-                j++;
+            chars[indexAns++] = currentChar;
+            if (count != 1) {
+                for (char c : Integer.toString(count).toCharArray()) chars[indexAns++] = c;
             }
-            i++;
         }
-        return j;
+        return indexAns;
     }
 
     /**

@@ -293,29 +293,6 @@ public class Coding5 {
         return areaOfSqrA + areaOfSqrB - overlap;
     }
 
-    public boolean isPalindrome(int x) {
-        if (x < 0) {
-            return false;
-        }
-        if (x < 10) {
-            return true;
-        }
-        LinkedList<Integer> reversed = new LinkedList<Integer>();
-        int input = x;
-        while (x != 0) {
-            reversed.add(x%10);
-            x = x/10;
-        }
-        int y = 0;
-        for (int i=0; i<reversed.size(); i++) {
-            y = y + reversed.get(i);
-            if (i != reversed.size()-1) {
-                y = y*10;
-            }
-        }
-        return input == y;
-    }
-
     public int findPairs(int[] nums, int k) {
         Map<Integer, LinkedList<Integer>> map = new HashMap<Integer, LinkedList<Integer>>();
         Arrays.sort(nums);

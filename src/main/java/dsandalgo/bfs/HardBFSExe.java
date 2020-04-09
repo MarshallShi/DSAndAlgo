@@ -22,6 +22,114 @@ public class HardBFSExe {
     }
 
     /**
+     * https://leetcode.com/problems/word-ladder-ii/
+     *
+     * Given two words (beginWord and endWord), and a dictionary's word list, find all shortest transformation
+     * sequence(s) from beginWord to endWord, such that:
+     *
+     * Only one letter can be changed at a time
+     * Each transformed word must exist in the word list. Note that beginWord is not a transformed word.
+     * Note:
+     *
+     * Return an empty list if there is no such transformation sequence.
+     * All words have the same length.
+     * All words contain only lowercase alphabetic characters.
+     * You may assume no duplicates in the word list.
+     * You may assume beginWord and endWord are non-empty and are not the same.
+     *
+     * Example 1:
+     *
+     * Input:
+     * beginWord = "hit",
+     * endWord = "cog",
+     * wordList = ["hot","dot","dog","lot","log","cog"]
+     *
+     * Output:
+     * [
+     *   ["hit","hot","dot","dog","cog"],
+     *   ["hit","hot","lot","log","cog"]
+     * ]
+     *
+     * Example 2:
+     *
+     * Input:
+     * beginWord = "hit"
+     * endWord = "cog"
+     * wordList = ["hot","dot","dog","lot","log"]
+     *
+     * Output: []
+     *
+     * Explanation: The endWord "cog" is not in wordList, therefore no possible transformation.
+     * @param beginWord
+     * @param endWord
+     * @param wordList
+     * @return
+     */
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        List<List<String>> res = new ArrayList();
+        Set<String> words = new HashSet(wordList);
+
+        Set<String> start = new HashSet();
+        start.add(beginWord);
+
+        // use hashMap to store all possible route ending at key
+        Map<String, List<List<String>>> map = new HashMap();
+
+        List<String> init = new ArrayList();
+        init.add(beginWord);
+
+        map.put(beginWord, new ArrayList());
+        map.get(beginWord).add(init);
+
+        boolean found = false;
+
+        while (!words.isEmpty() && !found && !start.isEmpty()) {
+            // eliminate all previous layer words from dict
+            words.removeAll(start);
+            // use another set to record next layers' words
+            Set<String> newStart = new HashSet();
+
+            // iterate through all new starts
+            for (String s : start) {
+                char[] chs = s.toCharArray();
+                List<List<String>> endPath = map.get(s);
+
+                for (int i = 0; i < chs.length; i++) {
+                    // randomly change a character
+                    for (char ch = 'a'; ch <= 'z'; ch++) {
+                        if (chs[i] == ch) continue;
+                        char tmp = chs[i];
+                        chs[i] = ch;
+                        String word = new String(chs);
+                        //check if it is in the dict, if so new start found, extending all routes
+                        if (words.contains(word)) {
+                            newStart.add(word);
+                            for (List<String> path : endPath) {
+                                List<String> nextPath = new ArrayList(path);
+                                nextPath.add(word);
+                                map.putIfAbsent(word, new ArrayList());
+                                map.get(word).add(nextPath);
+                                if (word.equals(endWord)) {
+                                    found = true;
+                                    res.add(nextPath);
+                                }
+                            }
+
+                        }
+                        chs[i] = tmp;
+                    }
+                }
+                map.remove(s);
+            }
+            // clear the previous layers words and update
+            start.clear();
+            start.addAll(newStart);
+        }
+
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/jump-game-iv/
      * Given an array of integers arr, you are initially positioned at the first index of the array.
      *

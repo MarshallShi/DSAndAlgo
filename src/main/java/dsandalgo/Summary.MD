@@ -1,5 +1,72 @@
+String Questions
+
+Longest Common Prefix
+https://leetcode.com/problems/longest-common-prefix/
+To perform better, avoid sorting, pick the first string, test every string till we get the common, then apply same to next.
+
+    public String longestCommonPrefix(String[] strs) {
+        if (strs.length == 0) {
+            return "";
+        }
+        String pre = strs[0];
+        for (int i = 1; i < strs.length; i++) {
+            while (strs[i].indexOf(pre) != 0) {
+                pre = pre.substring(0, pre.length() - 1);
+            }
+            if (pre == "") {
+                break;
+            }
+        }
+        return pre;
+    }
+
+
 Stack question
 
+Next Greater Number
+Daily Temperatures
+https://leetcode.com/problems/daily-temperatures/
+Mono stack.
+
+    public int[] dailyTemperatures(int[] T) {
+        Stack<Integer> stack = new Stack<>();
+        int[] ret = new int[T.length];
+        for (int i=0; i<T.length; i++) {
+            while (!stack.isEmpty() && T[stack.peek()] < T[i]) {
+                int popped = stack.pop();
+                ret[popped] = i - popped;
+            }
+            stack.push(i);
+        }
+        return ret;
+    }
+
+Longest Valid Parentheses
+https://leetcode.com/problems/longest-valid-parentheses/
+Trick: we only update the result (max) when we find a "pair", If we find a pair. We throw this pair away and see how big the gap 
+is between current and previous invalid. 
+EX: "( )( )"
+stack: -1, 0,
+when we get to index 1 ")", the peek is "(" so we pop it out and see what's before "(".
+In this example it's -1. So the gap is "current_index" - (-1) = 2.
+The idea only update the result (max) when we find a "pair" and push -1 to stack first covered all edge cases.
+
+    public int longestValidParentheses(String s) {
+        Stack<Integer> stack = new Stack<>();
+        int result = 0;
+        stack.push(-1);
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == ')' && stack.size() > 1 && s.charAt(stack.peek()) == '(') {
+                stack.pop();
+                result = Math.max(result, i - stack.peek());
+            } else {
+                stack.push(i);
+            }
+        }
+        return result;
+    }
+    
+    
 Basic Calculator
 https://leetcode.com/problems/basic-calculator/
 Solution 1: use stack, some technique to use sign variable 1 or -1 to apply + or -.
@@ -287,6 +354,54 @@ First sort the array, then fix one end, apply bidirectional move to approach the
         }
         return ret;
     }
+
+Diagonal Traverse
+https://leetcode.com/problems/diagonal-traverse/
+Trick: based on the direction, decide how to move to next element, position by position, not row or column based.
+notice all values in the same diagonal share the same sum value of x index + y index
+direction of going up right or going down left depends whether the index sum is even or odd
+
+    public int[] findDiagonalOrder(int[][] matrix) {
+        if (matrix == null || matrix.length == 0) return new int[0];
+        int row = 0, col = 0, pos = 0, m = matrix.length, n=matrix[0].length, output [] = new int[m * n];
+        //Get all the element one by one according to the position.
+        for (pos = 0; pos < m * n; pos++) {
+            output[pos] = matrix[row][col];
+            if ((row + col) % 2 == 0) {
+                // The direction is always up when the sum of row & col is even
+                // For last column, go down
+                if (col == n-1) { 
+                    row++; 
+                } else{
+                    // For first row & non-last columns, go right
+                    if (row == 0) { 
+                        col++; 
+                    } else {
+                        // For not first row & non-last columns, go up and to the right
+                        row--; 
+                        col++; 
+                    }
+                }
+            } else {
+                // The direction is always down when the sum of row & col is odd
+                // For last row, go right
+                if (row == m-1) { 
+                    col++; 
+                } else {
+                    if (col == 0) {
+                        //  For non-last row & first column, go down
+                        row++; 
+                    } else {
+                        // For non-last row & non-first column, go down and to the left
+                        row++; 
+                        col--; 
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
         
 Next Permutation
 https://leetcode.com/problems/next-permutation/
@@ -660,6 +775,44 @@ https://leetcode.com/problems/reverse-nodes-in-k-group/
         return dmy.next;
     }
 
+Reorder List
+https://leetcode.com/problems/reorder-list/
+Step 1: find the middle point. 
+Step 2: reverse the second half
+Step 3: insert second half to the first half.
+
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null) return;
+
+        //Find the middle of the list by using fast and slow pointers.
+        ListNode p1 = head;
+        ListNode p2 = head;
+        while (p2.next != null && p2.next.next != null) {
+            p1 = p1.next;
+            p2 = p2.next.next;
+        }
+
+        //Reverse the half after middle  1->2->3->4->5->6 to 1->2->3->6->5->4
+        ListNode preMiddle = p1;
+        ListNode preCurrent = p1.next;
+        while (preCurrent.next != null) {
+            ListNode current = preCurrent.next;
+            preCurrent.next = current.next;
+            current.next = preMiddle.next;
+            preMiddle.next = current;
+        }
+
+        //Start reorder one by one  1->2->3->6->5->4 to 1->6->2->5->3->4
+        p1 = head;
+        p2 = preMiddle.next;
+        while (p1 != preMiddle) {
+            preMiddle.next = p2.next;
+            p2.next = p1.next;
+            p1.next = p2;
+            p1 = p2.next;
+            p2 = preMiddle.next;
+        }
+    }
     
 
 Sliding Window Maximum
@@ -791,8 +944,37 @@ Typcial pattern to solve overlap problems.
         }
         return result;
     }
-    
-    
+
+Insert Interval
+https://leetcode.com/problems/insert-interval/
+
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        List<int[]> ret = new ArrayList<int[]>();
+        int i=0;
+        while (i<intervals.length && intervals[i][1]<newInterval[0]) {
+            ret.add(intervals[i]);
+            i++;
+        }
+        while (i<intervals.length && intervals[i][0]<=newInterval[1]) {
+            int[] temp = new int[2];
+            temp[0] = Math.min(intervals[i][0], newInterval[0]);
+            temp[1] = Math.max(intervals[i][1], newInterval[1]);
+            newInterval = temp;
+            i++;
+        }
+        ret.add(newInterval);
+        while (i<intervals.length) {
+            ret.add(intervals[i]);
+            i++;
+        }
+        int[][] ans = new int[ret.size()][2];
+        for (int j=0; j<ans.length; j++) {
+            ans[j] = ret.get(j);
+        }
+        return ans;
+    }    
+
+
 Tree Questions
 
 Binary Tree Maximum Path Sum
@@ -866,6 +1048,60 @@ Solution 2: iterative.
         }
         return q;
     }
+
+Diameter of binary tree
+https://leetcode.com/problems/diameter-of-binary-tree/
+Solution 1: recursive way.
+    
+    //Solution 1: recursive way.
+    public int diameterOfBinaryTree(TreeNode root) {
+        maxDepth(root);
+        return maxDiameter;
+    }
+
+    private int maxDiameter = 0;
+
+    private int maxDepth(TreeNode root) {
+        if (root == null) return 0;
+
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
+
+        maxDiameter = Math.max(maxDiameter, left + right);
+
+        return Math.max(left, right) + 1;
+    }
+    
+    //Solution 2: post order iterative solution.
+     public int diameterOfBinaryTree(TreeNode root) {
+            if (root == null) {
+                return 0;
+            }
+            if (root == null) {
+                return 0;
+            }
+            int overallNodeMax = 0;
+            Stack<TreeNode> nodeStack = new Stack<>();
+            Map<TreeNode, Integer> nodePathCountMap = new HashMap<>();
+            nodeStack.push(root);
+            while (!nodeStack.isEmpty()) {
+                TreeNode node = nodeStack.peek();
+                if (node.left != null && !nodePathCountMap.containsKey(node.left)) {
+                    nodeStack.push(node.left);
+                } else if (node.right != null && !nodePathCountMap.containsKey(node.right)) {
+                    nodeStack.push(node.right);
+                } else {
+                    TreeNode rootNodeEndofPostOrder = nodeStack.pop();
+                    int leftMax = nodePathCountMap.getOrDefault(rootNodeEndofPostOrder.left, 0);
+                    int rightMax = nodePathCountMap.getOrDefault(rootNodeEndofPostOrder.right, 0);
+                    int nodeMax = 1 + Math.max(leftMax, rightMax);
+                    nodePathCountMap.put(rootNodeEndofPostOrder, nodeMax);
+                    overallNodeMax = Math.max(overallNodeMax, leftMax + rightMax);
+                }
+    
+            }
+            return overallNodeMax;
+        }
 
 Binary Tree Right Side View    
 https://leetcode.com/problems/binary-tree-right-side-view/
@@ -979,6 +1215,35 @@ Starting from each node, do DFS for four directions, find the longest increasing
         return 1 + max;
     }
 
+Minimum Knight Moves
+https://leetcode.com/problems/minimum-knight-moves/
+Solution 1: BFS, O(n!)
+Solution 2: DFS + Memo
+
+    public int minKnightMoves(int x, int y) {
+        int MOD = Math.abs(y) + 2;
+        return dfs(Math.abs(x), Math.abs(y), new HashMap<>(), MOD);
+    }
+    
+    public int dfs(int x, int y, Map<Integer, Integer> map, int MOD) {
+        int index = x * MOD + y;
+        if (map.containsKey(index)) {
+            return map.get(index);
+        }
+        int ans = 0;
+        if (x + y == 0) {
+            ans = 0;
+        } else if (x + y == 2) {
+            ans = 2;
+        } else {
+            ans = Math.min(dfs(Math.abs(x - 1), Math.abs(y - 2), map, MOD),
+                          dfs(Math.abs(x - 2), Math.abs(y - 1), map, MOD)) + 1;
+        }
+        map.put(index, ans);
+        return ans;
+    }
+
+
 
 BFS Questions
 
@@ -1016,12 +1281,94 @@ Build the next level by iterate through the 26 different letters.
         }
         return distance;
     }
-    
+
+Word Ladder II    
+https://leetcode.com/problems/word-ladder-ii/
+Multiple tricks:
+1. BFS, but with a Map<String, List<List<String>>> to track for current visited word, all the endingPath so far.
+2. In each level of the BFS, reset the List<List<String>> to empty and push new path into it in deeper level.
+3. In the search for next word, use the 1-26 word for each position to find the next word.
+
+
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        List<List<String>> res = new ArrayList();
+        Set<String> words = new HashSet(wordList);
+
+        Set<String> start = new HashSet();
+        start.add(beginWord);
+
+        // use hashMap to store all possible route ending at key
+        Map<String, List<List<String>>> map = new HashMap();
+
+        List<String> init = new ArrayList();
+        init.add(beginWord);
+
+        map.put(beginWord, new ArrayList());
+        map.get(beginWord).add(init);
+
+        boolean found = false;
+
+        while (!words.isEmpty() && !found && !start.isEmpty()) {
+            // eliminate all previous layer words from dict
+            words.removeAll(start);
+            // use another set to record next layers' words
+            Set<String> newStart = new HashSet();
+
+            // iterate through all new starts
+            for (String s : start) {
+                char[] chs = s.toCharArray();
+                List<List<String>> endPath = map.get(s);
+
+                for (int i = 0; i < chs.length; i++) {
+                    // randomly change a character
+                    for (char ch = 'a'; ch <= 'z'; ch++) {
+                        if (chs[i] == ch) continue;
+                        char tmp = chs[i];
+                        chs[i] = ch;
+                        String word = new String(chs);
+                        //check if it is in the dict, if so new start found, extending all routes
+                        if (words.contains(word)) {
+                            newStart.add(word);
+                            for (List<String> path : endPath) {
+                                List<String> nextPath = new ArrayList(path);
+                                nextPath.add(word);
+                                map.putIfAbsent(word, new ArrayList());
+                                map.get(word).add(nextPath);
+                                if (word.equals(endWord)) {
+                                    found = true;
+                                    res.add(nextPath);
+                                }
+                            }
+
+                        }
+                        chs[i] = tmp;
+                    }
+                }
+                map.remove(s);
+            }
+            // clear the previous layers words and update
+            start.clear();
+            start.addAll(newStart);
+        }
+
+        return res;
+    }
+
+
+All Nodes Distance K in Binary Tree
+https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/
+Solution: Convert the tree to graph representation, then do BFS for k distance.
+
+
+
+
+
 
 Priority Queue Questions
 
 Task scheduler, k-distance-apart
 https://leetcode.com/problems/rearrange-string-k-distance-apart/
+https://leetcode.com/problems/reorganize-string/
 https://leetcode.com/problems/task-scheduler/
 Similar questions, keep a Max PQ, pick the top ones, reduce the freq/num, push back, till next round to repeat the same process.
 
@@ -1351,6 +1698,69 @@ Scan the board to pick the root level letter start the dfs traverse.
         visited[i][j] = false;
     }    
 
+Concatenated Words
+https://leetcode.com/problems/concatenated-words/
+Solution 1: DP, see DP.MD for the word break DP Pattern.
+Solution 2: Trie, build the tree and recursively search if next word available.
+
+    class TrieNode {
+        TrieNode[] links;
+        boolean isEnd;
+        TrieNode() {
+            links = new TrieNode[26];
+            isEnd = false;
+        }
+    }
+
+    private TrieNode tire;
+
+    public List<String> findAllConcatenatedWordsInADict(String[] words) {
+        tire = new TrieNode();
+        buildDict(words);
+        List<String> ret = new ArrayList<String>();
+        for (String str : words) {
+            if (isConcatenated(str.toCharArray(), 0, tire, 0)) {
+                ret.add(str);
+            }
+        }
+        return ret;
+    }
+
+    public boolean isConcatenated(char[] chars, int index, TrieNode root, int count) {
+        TrieNode cur = root;
+        int n = chars.length;
+        for (int i = index; i < n; i++) {
+            if (cur.links[chars[i] - 'a'] == null) {
+                return false;
+            }
+            if (cur.links[chars[i] - 'a'].isEnd) {
+                if (i == n - 1) {
+                    return count >= 1;
+                }
+                if (isConcatenated(chars, i + 1, root, count + 1)) {
+                    return true;
+                }
+            }
+            cur = cur.links[chars[i] - 'a'];
+        }
+        return false;
+    }
+
+    public void buildDict(String[] dict) {
+        for (String word : dict) {
+            char[] arr = word.toCharArray();
+            TrieNode root = tire;
+            for (int i=0; i<arr.length; i++) {
+                if (root.links[arr[i]-'a'] == null) {
+                    TrieNode node = new TrieNode();
+                    root.links[arr[i]-'a'] = node;
+                }
+                root = root.links[arr[i]-'a'];
+            }
+            root.isEnd = true;
+        }
+    }
+
 Palindrome Pairs
 https://leetcode.com/problems/palindrome-pairs/
 Trie, O(n*k2)
@@ -1432,3 +1842,31 @@ if yes all position in the list will form a result pair.
         }
         return true;
     }
+    
+    
+    
+HashMap Questions
+
+
+https://leetcode.com/problems/prison-cells-after-n-days/
+Important trick about how to prune the unnecessary loop: cache the state, if same state showing, then reduce N by N = (N - i) % (i);
+
+    public int[] prisonAfterNDays(int[] cells, int N) {
+        Map<String, Integer> seen = new HashMap<>();
+        while (N > 0) {
+            int[] cells2 = new int[8];
+            //Cache the state the pos.
+            seen.put(Arrays.toString(cells), N--);
+            for (int i = 1; i < 7; ++i) {
+                cells2[i] = cells[i - 1] == cells[i + 1] ? 1 : 0;
+            }
+            cells = cells2;
+            if (seen.containsKey(Arrays.toString(cells))) {
+                //Prune unnecessary N.
+                N %= seen.get(Arrays.toString(cells)) - N;
+            }
+        }
+        return cells;
+    }
+    
+    

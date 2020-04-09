@@ -17,7 +17,7 @@ public class StringHardExe {
         StringHardExe exe = new StringHardExe();
         String[] str = {"plain", "amber", "blade"};
         List<String> s = Arrays.asList(str);
-        System.out.println(exe.movesToStamp("abca", "aabcaca"));
+        System.out.println(exe.lastSubstring("abab"));
     }
 
 
@@ -698,7 +698,7 @@ public class StringHardExe {
     public String lastSubstring(String s) {
         char highest = '@';
         Set<Integer> indexes = null;
-        for(int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) > highest) {
                 highest = s.charAt(i);
                 indexes = new HashSet<Integer>();
@@ -708,31 +708,33 @@ public class StringHardExe {
             }
         }
         int shift = 1;
-        while(indexes.size() > 1) {
+        //Increment length one by one to check if the substring starting with each index is the highest one or not.
+        while (indexes.size() > 1) {
             char shiftHighest = '@';
             Set<Integer> nextLevel = null;
             Set<Integer> toDelete = new HashSet<>();
-            for(int ind : indexes) {
+            for (int ind : indexes) {
                 int newIndex = ind + shift;
-                if(newIndex < s.length()){
-                    if(s.charAt(newIndex) > shiftHighest) {
+                if (newIndex < s.length()) {
+                    if (s.charAt(newIndex) > shiftHighest) {
                         shiftHighest = s.charAt(newIndex);
                         nextLevel = new HashSet<>();
                     }
-                    if(s.charAt(newIndex) == shiftHighest) {
+                    if (s.charAt(newIndex) == shiftHighest) {
                         nextLevel.add(ind);
                     }
-                    if(indexes.contains(newIndex)) {
+                    if (indexes.contains(newIndex)) {
                         toDelete.add(newIndex);
                     }
                 }
             }
-            for(int del : toDelete) {
+            for (int del : toDelete) {
                 nextLevel.remove(del);
             }
             indexes = nextLevel;
             shift++;
         }
+        //Return substring from the only index left.
         return s.substring(indexes.iterator().next());
     }
 

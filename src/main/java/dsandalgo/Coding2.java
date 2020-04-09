@@ -84,35 +84,7 @@ public class Coding2 {
         return ret;
     }
 
-    private Map<Integer, Integer> inordermap = new HashMap<Integer,Integer>();
-    public TreeNode buildTree(int[] preorder, int[] inorder) {
-        for (int i=0; i<inorder.length; i++) {
-            inordermap.put(inorder[i], i);
-        }
-        return buildTreeHelper(preorder, 0, preorder.length-1, inorder, 0, inorder.length-1);
-    }
 
-    public TreeNode buildTreeHelper(int[] preorder, int s1, int e1, int[] inorder, int s2, int e2) {
-        if (s1 == e1 && s2 == e2) {
-            return new TreeNode(preorder[s1]);
-        } else {
-            int idx = inordermap.get(preorder[s1]);
-            int leftLen = idx - s2;
-            int rightLen = e2 - idx;
-            TreeNode node = new TreeNode(preorder[s1]);
-            if (leftLen == 0) {
-                node.left = null;
-            } else {
-                node.left = buildTreeHelper(preorder, s1+1, s1+leftLen, inorder, s2, idx-1);
-            }
-            if (rightLen == 0) {
-                node.right = null;
-            } else {
-                node.right = buildTreeHelper(preorder, s1+leftLen+1, e1, inorder, idx+1, e2);
-            }
-            return node;
-        }
-    }
 
     public int[][] generateMatrix(int n) {
         int[][] matrix = new int[n][n];
@@ -448,47 +420,6 @@ public class Coding2 {
         oneTicket.add("SFO");
         ret.add(new ArrayList<>(oneTicket));
 
-        return ret;
-    }
-
-
-    public int[] findOrder(int numCourses, int[][] prerequisites) {
-        int[] ret = new int[numCourses];
-        int[] indegrees = new int[numCourses];
-        Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>();
-        for (int i=0; i<prerequisites.length; i++) {
-            map.putIfAbsent(prerequisites[i][1], new ArrayList<Integer>());
-            map.get(prerequisites[i][1]).add(prerequisites[i][0]);
-            indegrees[prerequisites[i][0]]++;
-        }
-        Queue<Integer> queue = new LinkedList<Integer>();
-        for (int i=0; i<indegrees.length; i++) {
-            if (indegrees[i] == 0) {
-                queue.add(i);
-            }
-        }
-        if (queue.isEmpty()) {
-            return new int[0];
-        }
-        int counter = 0;
-        while (!queue.isEmpty()) {
-            int cur = ((LinkedList<Integer>) queue).peek();
-            indegrees[cur] = -1;
-            ret[counter] = ((LinkedList<Integer>) queue).pop();
-            counter++;
-            List<Integer> curChildren = map.get(cur);
-            if (curChildren != null) {
-                for (Integer child: curChildren) {
-                    indegrees[child]--;
-                    if (indegrees[child] == 0) {
-                        queue.add(child);
-                    }
-                }
-            }
-        }
-        if (!queue.isEmpty() || counter != numCourses - 1) {
-            return new int[0];
-        }
         return ret;
     }
 
@@ -1062,30 +993,6 @@ public class Coding2 {
         return ret;
     }
 
-    public List<String> summaryRanges(int[] nums) {
-        List<String> ret = new LinkedList<String>();
-        for (int i=0; i<nums.length; i++) {
-            StringBuilder sb = new StringBuilder();
-            int j = i;
-            int cur = nums[i];
-            while(i != nums.length - 1) {
-                if (cur == nums[i+1] - 1) {
-                    cur = nums[i+1];
-                    i++;
-                } else {
-                    break;
-                }
-            }
-            if (i>j) {
-                sb.append(nums[j]);
-                sb.append("->");
-            }
-            sb.append(nums[i]);
-            ret.add(sb.toString());
-        }
-        return ret;
-    }
-
     public int thirdMax(int[] nums) {
         if (nums == null || nums.length == 0) {
             return -1;
@@ -1456,68 +1363,6 @@ public class Coding2 {
             toOffer[j] = input[j];
         }
         return toOffer;
-    }
-
-    public String reorganizeString(String s) {
-        if (s == null) {
-            return null;
-        }
-        if (s.length() == 0) {
-            return s;
-        }
-        Map<Character, Integer> freqCountMap = new HashMap<Character, Integer>();
-        int i, maxFreq = 0;
-        for (i=0; i<s.length(); i++) {
-            if (freqCountMap.containsKey(s.charAt(i))) {
-                int incrementedFreq = freqCountMap.get(s.charAt(i)) + 1;
-                maxFreq = Math.max(maxFreq, incrementedFreq);
-                freqCountMap.put(s.charAt(i), incrementedFreq);
-            } else {
-                freqCountMap.put(s.charAt(i), 1);
-                if (maxFreq < 1) {
-                    maxFreq = 1;
-                }
-            }
-        }
-        if (s.length()%2 == 0) {
-            if (maxFreq > s.length()/2) {
-                return "";
-            }
-        } else {
-            if (maxFreq > s.length()/2 + 1) {
-                return "";
-            }
-        }
-
-        PriorityQueue<Map.Entry<Character, Integer>> pq = new PriorityQueue<Map.Entry<Character, Integer>>(new Comparator<Map.Entry<Character, Integer>>() {
-            public int compare(Map.Entry<Character, Integer> o1, Map.Entry<Character, Integer> o2) {
-                if (o2.getValue() == o1.getValue()) {
-                    return o1.getKey() - o2.getKey();
-                } else {
-                    return o2.getValue() - o1.getValue();
-                }
-            }
-        });
-
-        pq.addAll(freqCountMap.entrySet());
-        StringBuilder sb = new StringBuilder();
-        while(!pq.isEmpty()) {
-            Map.Entry<Character, Integer> entry = pq.poll();
-            sb.append(entry.getKey());
-            if (!pq.isEmpty()) {
-                Map.Entry<Character, Integer> nextEntry = pq.poll();
-                sb.append(nextEntry.getKey());
-                if (nextEntry.getValue() > 1) {
-                    nextEntry.setValue(nextEntry.getValue() - 1);
-                    pq.offer(nextEntry);
-                }
-            }
-            if (entry.getValue() > 1) {
-                entry.setValue(entry.getValue() - 1);
-                pq.offer(entry);
-            }
-        }
-        return sb.toString();
     }
 
     public String frequencySort(String s) {

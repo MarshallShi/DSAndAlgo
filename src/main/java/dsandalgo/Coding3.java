@@ -236,50 +236,6 @@ public class Coding3 {
         temp.remove(temp.size()-1);
     }
 
-    boolean[][] visited;
-    int[][] fourDirection = {{0,1},{1,0},{-1,0},{0,-1}};
-    class Position{
-        int x;
-        int y;
-        public Position(int x, int y){
-            this.x = x;
-            this.y = y;
-        }
-    }
-    public int maxAreaOfIsland(int[][] grid) {
-        int res = 0;
-        visited = new boolean[grid.length][grid[0].length];
-        for (int i=0; i<grid.length; i++) {
-            for (int j=0; j<grid[i].length; j++) {
-                if (grid[i][j] == 1 && visited[i][j] == false) {
-                    res = Math.max(res, maxAreaFromHere(i, j, grid));
-                }
-            }
-        }
-        return res;
-    }
-
-    public int maxAreaFromHere(int x, int y, int[][] grid) {
-        Position pos = new Position(x, y);
-        Stack<Position> stack = new Stack<Position>();
-        stack.push(pos);
-        visited[x][y] = true;
-        int counter = 0;
-        while (!stack.isEmpty()) {
-            Position cur = stack.pop();
-            counter++;
-            for (int i=0; i<fourDirection.length; i++) {
-                int newx = cur.x + fourDirection[i][0];
-                int newy = cur.y + fourDirection[i][1];
-                if (newx>=0 && newx<grid.length && newy>=0 && newy<grid[0].length && grid[newx][newy] == 1 && visited[newx][newy] == false) {
-                    stack.push(new Position(newx, newy));
-                    visited[newx][newy] = true;
-                }
-            }
-        }
-        return counter;
-    }
-
     /**
      * Example:
      *

@@ -32,3 +32,6 @@ Sort the string by length first, then we can use a map as DP to store for each w
     
     
 
+Word break
+https://leetcode.com/problems/word-break/
+https://leetcode.com/problems/concatenated-words/

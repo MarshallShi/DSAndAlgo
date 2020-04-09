@@ -1,7 +1,5 @@
 package dsandalgo.string;
 
-import sun.util.resources.cldr.rn.CurrencyNames_rn;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,8 +10,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PrimitiveIterator;
-import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -23,6 +19,24 @@ public class StringExe {
         StringExe exe = new StringExe();
         String[] ranks = {"WXYZ","XYZW"};
         //System.out.println(exe.longestPrefix("blablabla"));
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-common-prefix/
+     * @param strs
+     * @return
+     */
+    public String longestCommonPrefix(String[] strs) {
+        if (strs.length == 0) {
+            return "";
+        }
+        String pre = strs[0];
+        for (int i = 1; i < strs.length; i++) {
+            while (strs[i].indexOf(pre) != 0) {
+                pre = pre.substring(0, pre.length() - 1);
+            }
+        }
+        return pre;
     }
 
     /**
