@@ -19,7 +19,8 @@ public class BinaryIndexedTreeExe {
 
     /**
      * https://leetcode.com/problems/count-of-smaller-numbers-after-self/
-     * You are given an integer array nums and you have to return a new counts array. The counts array has the property where counts[i] is the number of smaller elements to the right of nums[i].
+     * You are given an integer array nums and you have to return a new counts array.
+     * The counts array has the property where counts[i] is the number of smaller elements to the right of nums[i].
      *
      * Example:
      *
@@ -35,6 +36,7 @@ public class BinaryIndexedTreeExe {
      * @return
      */
     public List<Integer> countSmaller(int[] nums) {
+        //Step 1: get the ranking of each number.
         int[] sorted = Arrays.copyOf(nums, nums.length);
         Arrays.sort(sorted);
         Map<Integer, Integer> ranks = new HashMap<>();
@@ -44,20 +46,18 @@ public class BinaryIndexedTreeExe {
                 ranks.put(sorted[i], ++rank);
             }
         }
+        //Step 2: use BIT tree to find the delta ranking
         FenwickTree tree = new FenwickTree(ranks.size());
         List<Integer> ans = new ArrayList<>();
         for (int i = nums.length - 1; i >= 0; --i) {
             int sum = tree.query(ranks.get(nums[i]) - 1);
             ans.add(sum);
+            //Update the rank freq with 1 in the sum array.
             tree.update(ranks.get(nums[i]), 1);
         }
 
         Collections.reverse(ans);
         return ans;
-    }
-
-    private int lowbit(int x) {
-        return x & (-x);
     }
 
     class FenwickTree {
@@ -70,7 +70,7 @@ public class BinaryIndexedTreeExe {
         public void update(int i, int delta) {
             while (i < sums.length) {
                 sums[i] += delta;
-                i += lowbit(i);
+                i += i & (-i);
             }
         }
 
@@ -78,9 +78,40 @@ public class BinaryIndexedTreeExe {
             int sum = 0;
             while (i > 0) {
                 sum += sums[i];
-                i -= lowbit(i);
+                i -= i & (-i);
             }
             return sum;
         }
     }
+
+    /**
+     * A sample usage of the BIT for range query.
+     */
+    //int BIT[1000], a[1000], n;
+    //void update(int x, int val)
+    //{
+    //      for(; x <= n; x += x&-x)
+    //        BIT[x] += val;
+    //}
+    //int query(int x)
+    //{
+    //     int sum = 0;
+    //     for(; x > 0; x -= x&-x)
+    //        sum += BIT[x];
+    //     return sum;
+    //}
+    //
+    //int main()
+    //{
+    //     scanf(“%d”, &n);
+    //     int i;
+    //     for(i = 1; i <= n; i++)
+    //     {
+    //           scanf(“%d”, &a[i]);
+    //           update(i, a[i]);
+    //     }
+    //     printf(“sum of first 10 elements is %d\n”, query(10));
+    //     printf(“sum of all elements in range [2, 7] is %d\n”, query(7) – query(2-1));
+    //     return 0;
+    //}
 }

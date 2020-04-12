@@ -1,5 +1,7 @@
 package dsandalgo.dfsbacktrack;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SubSetExe {
@@ -8,6 +10,76 @@ public class SubSetExe {
         SubSetExe exe = new SubSetExe();
         int[] nums = {4, 3, 2, 3, 5, 2, 1};
         exe.canPartitionKSubsets(nums, 4);
+    }
+
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> list = new ArrayList<>();
+        Arrays.sort(nums);
+        backtrack2(list, new ArrayList<>(), nums, 0);
+        return list;
+    }
+
+    private void backtrack2(List<List<Integer>> list , List<Integer> tempList, int [] nums, int start){
+        list.add(new ArrayList<>(tempList));
+        for(int i = start; i < nums.length; i++){
+            if (i>start && nums[i]==nums[i-1]) {
+                continue;
+            }
+            tempList.add(nums[i]);
+            backtrack2(list, tempList, nums, i + 1);
+            tempList.remove(tempList.size() - 1);
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/subsets/
+     * Given a set of distinct integers, nums, return all possible subsets (the power set).
+     *
+     * Note: The solution set must not contain duplicate subsets.
+     *
+     * Example:
+     *
+     * Input: nums = [1,2,3]
+     * Output:
+     * [
+     *   [3],
+     *   [1],
+     *   [2],
+     *   [1,2,3],
+     *   [1,3],
+     *   [2,3],
+     *   [1,2],
+     *   []
+     * ]
+     */
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> list = new ArrayList<>();
+        backtrack(list, new ArrayList<>(), nums, 0);
+        return list;
+    }
+
+    private void backtrack(List<List<Integer>> list, List<Integer> tempList, int[] nums, int start) {
+        list.add(new ArrayList<>(tempList));
+        for (int i = start; i < nums.length; i++) {
+            tempList.add(nums[i]);
+            backtrack(list, tempList, nums, i + 1);
+            tempList.remove(tempList.size() - 1);
+        }
+    }
+
+    //Solution 2: iterative solution, similar to BFS, or DP.
+    public List<List<Integer>> subsets_2(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        result.add(new ArrayList<>());
+        for (int n : nums) {
+            int size = result.size();
+            for (int i = 0; i < size; i++) {
+                List<Integer> subset = new ArrayList<>(result.get(i));
+                subset.add(n);
+                result.add(subset);
+            }
+        }
+        return result;
     }
 
     /**
@@ -71,78 +143,4 @@ public class SubSetExe {
         return sum;
     }
 
-    /**
-     * https://leetcode.com/problems/partition-equal-subset-sum/
-     *
-     * Given a non-empty array containing only positive integers, find if the array can be partitioned
-     * into two subsets such that the sum of elements in both subsets is equal.
-     *
-     * Note:
-     *
-     * Each of the array element will not exceed 100.
-     * The array size will not exceed 200.
-     *
-     *
-     * Example 1:
-     *
-     * Input: [1, 5, 11, 5]
-     *
-     * Output: true
-     *
-     * Explanation: The array can be partitioned as [1, 5, 5] and [11].
-     *
-     *
-     * Example 2:
-     *
-     * Input: [1, 2, 3, 5]
-     *
-     * Output: false
-     *
-     * Explanation: The array cannot be partitioned into equal sum subsets.
-     *
-     * @param nums
-     * @return
-     */
-    public boolean canPartition(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return false;
-        }
-        int sum = 0;
-        for (int i=0; i<nums.length; i++) {
-            sum = sum + nums[i];
-        }
-        if (sum % 2 != 0) {
-            return false;
-        }
-        return helper(nums, sum/2);
-    }
-
-    public boolean helper(int[] nums, int sum) {
-        int numsLen = nums.length;
-        boolean[][] dp = new boolean[numsLen + 1][sum + 1];
-        int i,j;
-        for (i=0; i<=numsLen; i++) {
-            dp[i][0] = false;
-        }
-        for (i=0; i<=sum; i++) {
-            dp[0][i] = false;
-        }
-        for (j=1;j<=sum;j++) {
-            for (i=1;i<=numsLen;i++) {
-                if (j==nums[i-1]) {
-                    dp[i][j] = true;
-                } else {
-                    if (j > nums[i-1]) {
-                        dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i-1]];
-                    } else {
-                        dp[i][j] = dp[i-1][j];
-                    }
-                }
-                if ((j==sum) && dp[i][j]) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

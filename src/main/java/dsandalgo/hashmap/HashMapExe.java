@@ -30,6 +30,59 @@ public class HashMapExe {
 
 
     /**
+     * https://leetcode.com/problems/valid-sudoku/
+     * @param board
+     * @return
+     */
+    //NOTE: HashSet.add() return false if the element already exist.
+    public boolean isValidSudoku(char[][] board) {
+        for (int i = 0; i < 9; i++) {
+            Set<Character> rows = new HashSet<Character>();
+            Set<Character> columns = new HashSet<Character>();
+            Set<Character> cube = new HashSet<Character>();
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] != '.' && !rows.add(board[i][j])) {
+                    return false;
+                }
+                if (board[j][i] != '.' && !columns.add(board[j][i])) {
+                    return false;
+                }
+                int rowIndex = 3 * (i / 3);
+                int colIndex = 3 * (i % 3);
+                if (board[rowIndex + j / 3][colIndex + j % 3] != '.' && !cube.add(board[rowIndex + j / 3][colIndex + j % 3])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/queries-on-a-permutation-with-key/
+     * @param queries
+     * @param m
+     * @return
+     */
+    public int[] processQueries(int[] queries, int m) {
+        Map<Integer,Integer> map = new HashMap<>();
+        for (int i=0; i<m; i++) {
+            map.put(i+1, i);
+        }
+        int[] res = new int[queries.length];
+        for (int i=0; i<queries.length; i++) {
+            int curIdx = map.get(queries[i]);
+            res[i] = curIdx;
+            for (Map.Entry<Integer,Integer> entry : map.entrySet()) {
+                if (entry.getValue() < curIdx) {
+                    map.put(entry.getKey(), entry.getValue() + 1);
+                }
+            }
+            map.put(queries[i], 0);
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/cinema-seat-allocation/
      * @param n
      * @param reservedSeats

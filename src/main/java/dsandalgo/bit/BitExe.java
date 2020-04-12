@@ -27,6 +27,32 @@ public class BitExe {
         System.out.println(exe.numSteps("1101"));
     }
 
+    /**
+     * https://leetcode.com/problems/add-binary/
+     * @param a
+     * @param b
+     * @return
+     */
+    public String addBinary(String a, String b) {
+        int i = a.length() - 1, j = b.length() - 1;
+        StringBuilder sb = new StringBuilder();
+        int carrier = 0;
+        while (!(i<0 && j<0 && carrier == 0)) {
+            int tempA = i < 0 ? 0 : Character.getNumericValue(a.charAt(i));
+            int tempB = j < 0 ? 0 : Character.getNumericValue(b.charAt(j));
+            if (tempA + tempB + carrier> 1) {
+                sb.append((tempA + tempB + carrier)%2);
+                carrier = 1;
+            } else {
+                sb.append(tempA + tempB + carrier);
+                carrier = 0;
+            }
+            i--;
+            j--;
+        }
+        return sb.reverse().toString();
+    }
+
 
     /**
      * https://leetcode.com/problems/number-of-steps-to-reduce-a-number-in-binary-representation-to-one/

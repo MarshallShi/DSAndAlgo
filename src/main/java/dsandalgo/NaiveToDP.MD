@@ -220,4 +220,123 @@ https://leetcode.com/problems/edit-distance/
         
         return matched[c1.length][c2.length];
     }
+
+Split Array Largest Sum    
+https://leetcode.com/problems/split-array-largest-sum/
+***Partition***
+
     
+    //Top down with memo
+    public int splitArray(int[] nums, int m) {
+        int[] sum = new int[nums.length];
+        for (int i = 0;i < nums.length; i++) {
+            sum[i] = nums[i] + (i > 0 ? sum[i-1] : 0);
+        }
+        int[][] cache = new int[1001][51];
+        return splitArrayHelper(nums, m, sum, nums.length, 0, cache);
+    }
+
+    public int splitArrayHelper(int[] A, int k, int[] sum, int len, int s, int[][] cache) {
+        if (cache[s][k] != 0) {
+            return cache[s][k];
+        }
+        if (k == 1) {
+            return (sum[len-1] - sum[s] + A[s]);
+        }
+        int num = Integer.MAX_VALUE;
+        for (int i = s; i + k <= len ; i++) {
+            num = Math.min(num, Math.max(sum[i] - sum[s] + A[s], splitArrayHelper(A, k-1, sum, len, i+1, cache)));
+        }
+        cache[s][k] = num;
+        return num;
+    }
+
+    //Bottom up
+    public int splitArray(int[] nums, int m) {
+        if (nums == null) {
+            return -1;
+        }
+
+        int[][] dp = new int[m][nums.length];
+        dp[0][0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            dp[0][i] = nums[i] + dp[0][i - 1];
+        }
+
+        for (int i = 1; i < m; i++) {
+            for (int j = i; j < nums.length; j++) {
+                int min = Integer.MAX_VALUE;
+                for (int k = 0; k < j; k++) {
+                    min = Math.min(min, Math.max(dp[i - 1][k], dp[0][j] - dp[0][k]));
+                }
+                dp[i][j] = min;
+            }
+        }
+        return dp[m - 1][nums.length - 1];
+    }
+    
+Burst Balloons
+https://leetcode.com/problems/burst-balloons/
+General trick:
+1. ***Reverse thinking***. From the last balloon to first. If bursting last one, no other balloon affect the state.
+2. ***Partition*** the array for left part and right part once we try use i's balloon as last one.
+
+    
+    //Method 1: Top down
+    public int maxCoins(int[] iNums) {
+        int[] nums = new int[iNums.length + 2];
+        int n = 1;
+        for (int x : iNums) {
+            if (x > 0) {
+                nums[n++] = x;
+            }
+        }
+        //introduce two new leftMost and rightMost, both be 1.
+        nums[0] = nums[n++] = 1;
+        int[][] memo = new int[n][n];
+        return burst(memo, nums, 0, n - 1);
+    }
+
+    private int burst(int[][] memo, int[] nums, int left, int right) {
+        //The left and right are remaining which was the faked one, return 0.
+        if (left + 1 == right) {
+            return 0;
+        }
+        if (memo[left][right] > 0) {
+            return memo[left][right];
+        }
+        int ans = 0;
+        for (int i = left + 1; i < right; ++i) {
+            //current result = burst current + burst left + burst right.
+            ans = Math.max(ans, nums[left] * nums[i] * nums[right] + burst(memo, nums, left, i) + burst(memo, nums, i, right));
+        }
+        memo[left][right] = ans;
+        return ans;
+    }
+
+    //Method 2: bottom up
+    public int maxCoins_bottomUp(int[] iNums) {
+        int[] nums = new int[iNums.length + 2];
+        int n = 1;
+        for (int x : iNums) {
+            if (x > 0) {
+                nums[n++] = x;
+            }
+        }
+        nums[0] = nums[n++] = 1;
+        int[][] dp = new int[n][n];
+        for (int k = 2; k < n; ++k) {
+            for (int left = 0; left < n - k; ++left) {
+                int right = left + k;
+                for (int i = left + 1; i < right; ++i) {
+                    dp[left][right] = Math.max(dp[left][right],
+                            nums[left] * nums[i] * nums[right] + dp[left][i] + dp[i][right]);
+                }
+            }
+        }
+        return dp[0][n - 1];
+    }    
+    
+    
+
+

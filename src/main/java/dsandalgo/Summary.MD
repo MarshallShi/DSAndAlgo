@@ -20,6 +20,32 @@ To perform better, avoid sorting, pick the first string, test every string till 
         return pre;
     }
 
+Valid Palindrome II
+https://leetcode.com/problems/valid-palindrome-ii/
+Trick is to move from both ends, if we see mismatch, try remove one by one.
+
+    public boolean validPalindrome(String s) {
+        //move i, j from both low end and high end towards middle.
+        //once mismatch, we try to remove both charAt(i) and charAt(j) in the two while loop.
+        for (int i = 0, j = s.length() - 1; i < j; i++, j--)
+            if (s.charAt(i) != s.charAt(j)) {
+                //remove charAt(j)
+                int i1 = i, j1 = j - 1;
+                while (i1 < j1 && s.charAt(i1) == s.charAt(j1)) {
+                    i1++;
+                    j1--;
+                }
+                //remove charAt(i)
+                int i2 = i + 1, j2 = j;
+                while (i2 < j2 && s.charAt(i2) == s.charAt(j2)) {
+                    i2++;
+                    j2--;
+                }
+                return i1 >= j1 || i2 >= j2;
+            }
+        return true;
+    }
+
 
 Stack question
 
@@ -148,9 +174,32 @@ Below solution is much much neat.
         return re;
     }
 
+Exclusive Time of Functions
+https://leetcode.com/problems/exclusive-time-of-functions/
+Use stack to track the start and end pair.
 
-
-
+    public int[] exclusiveTime(int n, List<String> logs) {
+        int[] res = new int[n];
+        Stack<Integer> stack = new Stack<>();//store id, not timestamp
+        int prev = 0;//store timestamp
+        for (String log : logs){
+            String[] strs = log.split(":");
+            int id = Integer.parseInt(strs[0]);
+            int curr = Integer.parseInt(strs[2]);
+            if (strs[1].equals("start")){
+                if (!stack.isEmpty()){
+                    res[stack.peek()] += curr - prev;
+                }
+                stack.push(id);
+                prev = curr;
+            }else{
+                res[stack.pop()] += curr - prev + 1;
+                prev = curr + 1;
+            }
+        }
+        return res;
+    }
+    
 Largest rectangle in histogram:
 https://leetcode.com/problems/largest-rectangle-in-histogram/
 One way to cacluate the max area is based on each bar, what's the area, array based, find left and right hand lower bar first.
@@ -256,6 +305,11 @@ Repeat it until there is only one node.
         return res;
     }
 
+Other Stack Question
+
+https://leetcode.com/problems/simplify-path/
+
+
 
 Recursive Questions
 
@@ -292,6 +346,27 @@ Trick: use a queue to represent the processing string, whenever met a [], recurs
         }
         return sb.toString();
     }
+
+Happy Number
+https://leetcode.com/problems/happy-number/
+
+    public boolean isHappy(int n) {
+        if (n == 1 || n == 7) {
+            return true;
+        } else {
+            if (n < 10) {
+                return false;
+            }
+        }
+        int m = 0;
+        while (n != 0) {
+            int tail = n % 10;
+            m += tail * tail;
+            n = n / 10;
+        }
+        return isHappy(m);
+    }
+
     
 Array Question
 
@@ -355,6 +430,83 @@ First sort the array, then fix one end, apply bidirectional move to approach the
         return ret;
     }
 
+3Sum Closest
+https://leetcode.com/problems/3sum-closest/
+Similar as 3Sum, use two pointer to achieve O(n2)
+
+    public int threeSumClosest(int[] num, int target) {
+        int result = num[0] + num[1] + num[num.length - 1];
+        Arrays.sort(num);
+        for (int i = 0; i < num.length - 2; i++) {
+            int start = i + 1, end = num.length - 1;
+            while (start < end) {
+                int sum = num[i] + num[start] + num[end];
+                if (sum > target) {
+                    end--;
+                } else {
+                    start++;
+                }
+                if (Math.abs(sum - target) < Math.abs(result - target)) {
+                    result = sum;
+                }
+            }
+        }
+        return result;
+    }
+    
+4 Sum    
+https://leetcode.com/problems/4sum/
+First sort the array, then fix one element, apply 3 sum algo to approach the target sum.
+Trick is in where each loop need to ignore duplicates.
+    
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        if (nums == null || nums.length == 0) {
+            return ret;
+        }
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; i++) {
+            //avoid duplicated
+            if (i > 0 && nums[i - 1] == nums[i]) {
+                continue;
+            }
+            for (int j = i + 1; j < nums.length; j++) {
+                //avoid duplicated
+                if (j > i + 1 && nums[j] == nums[j - 1]) {
+                    continue;
+                }
+                int twoSum = target - nums[i] - nums[j];
+                int low = j + 1, high = nums.length - 1;
+                while (low < high) {
+                    if (nums[low] + nums[high] == twoSum) {
+                        List<Integer> oneResult = new ArrayList<Integer>();
+                        oneResult.add(nums[i]);
+                        oneResult.add(nums[j]);
+                        oneResult.add(nums[low]);
+                        oneResult.add(nums[high]);
+                        ret.add(oneResult);
+                        low++;
+                        high--;
+                        //avoid duplicated
+                        while (low < high && nums[low] == nums[low - 1]) {
+                            low++;
+                        }
+                        while (low < high && nums[high] == nums[high + 1]) {
+                            high--;
+                        }
+                    } else {
+                        if (nums[low] + nums[high] > twoSum) {
+                            high--;
+                        } else {
+                            low++;
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    
 Diagonal Traverse
 https://leetcode.com/problems/diagonal-traverse/
 Trick: based on the direction, decide how to move to next element, position by position, not row or column based.
@@ -479,6 +631,22 @@ All other values just ignore, in second iteration, we can get the first invalid 
         A[j] = temp;
     }
 
+Find All Duplicates in an Array
+https://leetcode.com/problems/find-all-duplicates-in-an-array/
+O(n) and no extra space: trick is to use the relation between number and index of the array.
+Set the index corresponding number to negative to mark it is seen, it doesn't affect the usage of the number, abs will get rid of it!!!
+
+    public List<Integer> findDuplicates(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        for (int i = 0; i < nums.length; ++i) {
+            int index = Math.abs(nums[i])-1;
+            if (nums[index] < 0) {
+                res.add(Math.abs(index+1));
+            }
+            nums[index] = -nums[index];
+        }
+        return res;
+    }
 
 
 Binary search question
@@ -576,6 +744,79 @@ Apply another binary search in the range.
     }    
 
 
+Split Array Largest Sum
+https://leetcode.com/problems/split-array-largest-sum/
+Solution 1: DP, use top down + memo for easier understanding.
+Solution 2: Binary Search, the low bound is max value in the array, high bound is total sum of array.
+
+    //Solution 1
+    public int splitArray(int[] nums, int m) {
+        int[] sum = new int[nums.length];
+        for (int i = 0;i < nums.length; i++) {
+            sum[i] = nums[i] + (i > 0 ? sum[i-1] : 0);
+        }
+        int[][] cache = new int[1001][51];
+        return splitArrayHelper(nums, m, sum, nums.length, 0, cache);
+    }
+
+    public int splitArrayHelper(int[] A, int k, int[] sum, int len, int s, int[][] cache) {
+        if (cache[s][k] != 0) {
+            return cache[s][k];
+        }
+        if (k == 1) {
+            return (sum[len-1] - sum[s] + A[s]);
+        }
+        int num = Integer.MAX_VALUE;
+        for (int i = s; i + k <= len ; i++) {
+            num = Math.min(num, Math.max(sum[i] - sum[s] + A[s], splitArrayHelper(A, k-1, sum, len, i+1, cache)));
+        }
+        cache[s][k] = num;
+        return num;
+    }
+    
+    //Solution 2
+    public int splitArray(int[] nums, int m) {
+        int max = 0;
+        long sum = 0;
+        for (int num : nums) {
+            max = Math.max(num, max);
+            sum += num;
+        }
+        if (m == 1) return (int) sum;
+        long l = max;
+        long r = sum;
+        while (l <= r) {
+            long mid = (l + r) / 2;
+            if (valid(mid, nums, m)) {
+                r = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return (int) l;
+    }
+
+    //if largest of all subarray is target
+    private boolean valid(long target, int[] nums, int m) {
+        //count number of subarrays, where sum is less than target.
+        int count = 1; 
+        long total = 0;
+        for (int num : nums) {
+            total += num;
+            if (total > target) {
+                //Reset total to current num.
+                total = num;
+                //start next subarray.
+                count++;
+                if (count > m) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
 Two Pointers question
 
 Container with most water
@@ -631,7 +872,38 @@ A general way is to use a hashmap assisted with two pointers.
         return minLen == Integer.MAX_VALUE ? "" : s.substring(minStart, minStart + minLen);
     }
 
+Sort Colors
+https://leetcode.com/problems/sort-colors/
+Solution 1: two pass, use extra memory, first pass count the colors, second pass print them in order.
+Solution 2: maintain three pointers and move the middle pointer, so low, middle, high always maintain the three color
 
+    public void sortColors(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return;
+        }
+        int low = 0, mid = 0, high = nums.length - 1;
+        while (mid <= high) {
+            if (nums[mid] == 0) {
+                swap(nums, low, mid);
+                low ++;
+                mid ++;
+            } else {
+                if (nums[mid] == 1) {
+                    mid ++;
+                } else {
+                    if (nums[mid] == 2) {
+                        swap(nums, mid, high);
+                        high--;
+                    }
+                }
+            }
+        }
+    }
+    public void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
 
 Backtrack Questions
 
@@ -718,6 +990,46 @@ Classic backtracking problem.
             }
         }
     }
+
+A few classic backtracking questions: 
+https://leetcode.com/problems/subsets/
+https://leetcode.com/problems/subsets-ii/
+https://leetcode.com/problems/permutations/
+https://leetcode.com/problems/permutations-ii/
+https://leetcode.com/problems/combination-sum/
+https://leetcode.com/problems/combination-sum-ii/
+https://leetcode.com/problems/palindrome-partitioning/
+
+    private List<List<Integer>> ret;
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        ret = new ArrayList<List<Integer>>();
+        if (candidates != null && candidates.length > 0) {
+            Arrays.sort(candidates);
+            backtrack(new ArrayList<Integer>(), candidates, target, 0);   
+        }
+        return ret;
+    }
+
+    public void backtrack(List<Integer> temp, int[] candidates, int target, int start){
+        if (target < 0) {
+            return;
+        }
+        if (target == 0) {
+            List<Integer> retList = new ArrayList<Integer>();
+            for (Integer val : temp) {
+                retList.add(val);
+            }
+            ret.add(retList);
+            return;
+        }
+        for (int i=start; i<candidates.length; i++) {
+            temp.add(candidates[i]);
+            backtrack(temp, candidates, target - candidates[i], i);
+            temp.remove(Integer.valueOf(candidates[i]));
+        }
+    }
+
 
 Linked List Questions
 
@@ -813,7 +1125,78 @@ Step 3: insert second half to the first half.
             p2 = preMiddle.next;
         }
     }
-    
+
+Reverse Linked List II
+https://leetcode.com/problems/reverse-linked-list-ii/
+
+    public ListNode reverseBetween(ListNode head, int m, int n) {
+        if (head == null) {
+            return null;
+        }
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        // make a pointer pre as a marker for the node before reversing
+        ListNode pre = dummy;
+        for (int i = 0; i < m - 1; i++) {
+            pre = pre.next;
+        }
+        // a pointer to the beginning of a sub-list that will be reversed
+        ListNode start = pre.next;
+        // a pointer to a node that will be reversed
+        ListNode then = start.next;
+        // 1 - 2 -3 - 4 - 5 ; m=2; n =4 ---> pre = 1, start = 2, then = 3
+        // dummy-> 1 -> 2 -> 3 -> 4 -> 5
+        for (int i = 0; i < n - m; i++) {
+            start.next = then.next;
+            then.next = pre.next;
+            pre.next = then;
+            then = start.next;
+        }
+        // first reversing : dummy->1 - 3 - 2 - 4 - 5; pre = 1, start = 2, then = 4
+        // second reversing: dummy->1 - 4 - 3 - 2 - 5; pre = 1, start = 2, then = 5 (finish)
+        return dummy.next;
+    }
+
+Palindrome Linked List
+https://leetcode.com/problems/palindrome-linked-list/
+Solution: fast and slow pointers, once fast in the end, reverse slow, then start matching.
+O(n) time and O(1) space. It needs to in place of the input list.
+
+    public boolean isPalindrome(ListNode head) {
+        ListNode fast = head, slow = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        if (fast != null) { // odd nodes: let right half smaller
+            slow = slow.next;
+        }
+        slow = reverse(slow);
+        fast = head;
+
+        while (slow != null) {
+            if (fast.val != slow.val) {
+                return false;
+            }
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return true;
+    }
+
+    private ListNode reverse(ListNode head) {
+        ListNode prev = null;
+        while (head != null) {
+            ListNode next = head.next;
+            head.next = prev;
+            prev = head;
+            head = next;
+        }
+        return prev;
+    }
+            
+
+Sliding Window Questions
 
 Sliding Window Maximum
 https://leetcode.com/problems/sliding-window-maximum/
@@ -847,8 +1230,106 @@ Solution 2: Do mutiple traversal of array, record left max, and right max.
         return result;
     }
 
+Minimum Size Subarray Sum
+https://leetcode.com/problems/minimum-size-subarray-sum/
+Maintain a window where the sub array sum is less then s, keep sliding forward till the end, meanwhile track the length.
 
+    public int minSubArrayLen(int s, int[] nums) {
+        if(nums == null) return 0;
+        int ans = Integer.MAX_VALUE;
+        int sum = 0;
+        int localAns = 0;
+        for(int i = 0, j = 0;i< nums.length;i++){
+            sum += nums[i];
+            localAns++;
+            while(sum >= s){
+                ans = Math.min(ans,localAns);
+                localAns--;
+                sum -= nums[j];
+                j++;
+            }
+        }
+        return (ans == Integer.MAX_VALUE) ? 0 : ans;
+    }
 
+Longest Substring with At Most K Distinct Characters
+https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/
+Maintain a sliding window where we have only k distinct chars.
+    
+    public int lengthOfLongestSubstringKDistinct(String s, int k) {
+        //Using the 256 length int array to represent the distinct character!!
+        //there are 256 ASCII characters in the world
+        int[] count = new int[256];
+
+        int i = 0;  // i will be behind j
+        int num = 0;
+        int res = 0;
+
+        for (int j = 0; j < s.length(); j++) {
+            if (count[s.charAt(j)] == 0) {    // if count[s.charAt(j)] == 0, we know that it is a distinct character
+                num++;
+            }
+            count[s.charAt(j)]++;
+            //sliding window
+            //Do this until we have num back to k.
+            while (num > k && i < s.length()) {
+                count[s.charAt(i)]--;
+                //Only when we are reducing the distinct characters, then num--.
+                if (count[s.charAt(i)] == 0){
+                    num--;
+                }
+                i++;
+            }
+            //cur length between first and last k distinct character.
+            res = Math.max(res, j - i + 1);
+        }
+        return res;
+    }
+
+Find All Anagrams in a String    
+https://leetcode.com/problems/find-all-anagrams-in-a-string/
+Maintain a sliding window to match the rolling hash.
+
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> list = new ArrayList<>();
+        if (s == null || s.length() == 0 || p == null || p.length() == 0) return list;
+
+        int[] hash = new int[256]; //character hash
+
+        //record each character in p to hash
+        for (char c : p.toCharArray()) {
+            hash[c]++;
+        }
+        int left = 0, right = 0, pCount = p.length();
+
+        while (right < s.length()) {
+            //move right everytime, if the character exists in p's hash, decrease the count
+            //current hash value >= 1 means the character is existing in p
+            if (hash[s.charAt(right)] >= 1) {
+                pCount--;
+            }
+            hash[s.charAt(right)]--;
+            right++;
+
+            //when the count is down to 0, means we found the right anagram
+            //then add window's left to result list
+            if (pCount == 0) {
+                list.add(left);
+            }
+            //if we find the window's size equals to p, then we have to move left (narrow the window) to find the new match window
+            //++ to reset the hash because we kicked out the left
+            //only increase the count if the character is in p
+            //the count >= 0 indicate it was original in the hash, cuz it won't go below 0
+            if (right - left == p.length() ) {
+                if (hash[s.charAt(left)] >= 0) {
+                    pCount++;
+                }
+                hash[s.charAt(left)]++;
+                left++;
+            }
+        }
+        return list;
+    }
 
 Graph Questions
 
@@ -1002,7 +1483,7 @@ https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
 Solution 1: recursive, once we find p ro q is the current node, return the node.
 Solution 2: iterative.
 
-    //Solution 1: recursive, once we find p ro q is the current node, return the node.
+    //Solution 1: recursive, once we find p and q is the current node, return the node.
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         if(root == null || root == p || root == q) {
             //Null or root is the current lowest common ancestor
@@ -1150,6 +1631,75 @@ Solution 2: DFS, trick is when to add the element, also go right child first if 
         rightSideView(root.left, level + 1, list);
     }
 
+Serialize and Deserialize BST
+https://leetcode.com/problems/serialize-and-deserialize-bst/
+
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        queue.offer(root);
+        StringBuilder sb = new StringBuilder();
+        while (!queue.isEmpty()) {
+            int s = queue.size();
+            boolean allNull = true;
+            for (int i=0; i<s; i++) {
+                TreeNode node = queue.poll();
+                if (node != null) {
+                    allNull = false;
+                    if (i == s-1) {
+                        sb.append(node.val);
+                    } else {
+                        sb.append(node.val + ",");
+                    }
+                    queue.offer(node.left);
+                    queue.offer(node.right);
+                } else {
+                    if (i == s-1) {
+                        sb.append("null");
+                    } else {
+                        sb.append("null,");
+                    }
+                }
+            }
+            if (allNull) {
+                break;
+            } else {
+                sb.append("#");
+            }
+        }
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] allLevel = data.split("#");
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        String[] nodes = allLevel[0].split(",");
+        if ("null".equals(nodes[0])) {
+            return null;
+        }
+        TreeNode root = new TreeNode(Integer.parseInt(nodes[0]));
+        queue.offer(root);
+        for (int i=1; i<allLevel.length; i++) {
+            String[] nodesAtLevel = allLevel[i].split(",");
+            for (int j=0; j<nodesAtLevel.length;) {
+                TreeNode node = queue.poll();
+                if (!"null".equals(nodesAtLevel[j])) {
+                    node.left = new TreeNode(Integer.parseInt(nodesAtLevel[j]));
+                    queue.offer(node.left);
+                }
+                if (!"null".equals(nodesAtLevel[j+1])) {
+                    node.right = new TreeNode(Integer.parseInt(nodesAtLevel[j+1]));
+                    queue.offer(node.right);
+                }
+                j = j+2;
+            }
+        }
+        return root;
+    }
+
+
 Inorder tree traverse
 https://leetcode.com/problems/binary-tree-inorder-traversal/
 https://leetcode.com/problems/kth-smallest-element-in-a-bst/
@@ -1172,8 +1722,256 @@ All above will use the same technique to do iterative in order traverse, using a
         }
         return true;
     }
-    
 
+Recover Binary Search Tree
+https://leetcode.com/problems/recover-binary-search-tree/
+Solution 1: BST in order traversal, which is supposed to get the ordered number, if prev > cur node, then we find one node to recover.
+Solution 2: Morris traversal which will build a threaded binary search tree.
+    
+    private TreeNode firstDisorder = null;
+    private TreeNode secondDisorder = null;
+    private TreeNode prev = null;
+    public void recoverTree(TreeNode root) {
+        //inorder traverse, the pre being set to the min value to avoid first compare error.
+        inorderTraverse(root);
+        //exchange value between the two disordered tree node.
+        if (firstDisorder != null && secondDisorder != null) {
+            int temp = firstDisorder.val;
+            firstDisorder.val = secondDisorder.val;
+            secondDisorder.val = temp;
+        }
+    }
+
+    private void inorderTraverse(TreeNode node) {
+        if (node == null){
+            return;
+        }
+        inorderTraverse(node.left);
+        // Start of "do some business",
+        // If first element has not been found, assign it to prevElement (refer to 6 in the example above)
+        if (firstDisorder == null && (prev == null || prev.val >= node.val)) {
+            firstDisorder = prev;
+        }
+        // If first element is found, assign the second element to the root (refer to 2 in the example above)
+        if (firstDisorder != null && prev.val >= node.val) {
+            secondDisorder = node;
+        }
+        prev = node;
+        // End of "do some business"
+        inorderTraverse(node.right);
+    }    
+
+
+    public void recoverTree(TreeNode root) {
+        List<TreeNode> eNodes = new LinkedList<TreeNode>(); //error nodes
+        if (root == null) return;
+        TreeNode current = root;
+        TreeNode pre;
+        TreeNode previous = null;
+        while (current != null) {
+
+            if (current.left == null) {
+
+                if (previous != null && previous.val > current.val) {
+                    eNodes.add(previous);
+                    eNodes.add(current);
+                }
+                previous = current;
+                current = current.right;
+
+            } else {
+                pre = current.left;
+                while (pre.right != null && pre.right.val != current.val) {
+                    pre = pre.right;
+                }
+
+                if (pre.right == null) {
+                    pre.right = current;
+                    current = current.left;
+                } else {
+                    if (previous != null && previous.val > current.val) {
+                        eNodes.add(previous);
+                        eNodes.add(current);
+                    }
+
+                    pre.right = null;
+                    previous = current;
+                    current = current.right;
+                }
+            }
+        }
+
+        //this is redundant check
+        //if(eNodes.size() == 0) return;
+
+        if (eNodes.size() == 2) {
+            pre = eNodes.get(0);
+            current = eNodes.get(1);
+        } else { //this case where eNodes.size()==4
+            pre = eNodes.get(0);
+            current = eNodes.get(3);
+        }
+
+        int temp = pre.val;
+        pre.val = current.val;
+        current.val = temp;
+    }
+
+Count of Smaller Numbers After Self
+https://leetcode.com/problems/count-of-smaller-numbers-after-self/
+Solution 1: Merge sort.
+Solution 2: Binary Search Tree based, during the insert of each new element, we track the smaller elements,
+Note the iteration start from the ending index back to beginning.
+Solution 3: Binary Indexed Tree based, get the ranking of each element, track the rank sum.
+
+    //Solution 1: merge sort.    
+    class Pair {
+        int index;
+        int val;
+        public Pair(int index, int val) {
+            this.index = index;
+            this.val = val;
+        }
+    }
+    public List<Integer> countSmaller(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        if (nums == null || nums.length == 0) {
+            return res;
+        }
+        Pair[] arr = new Pair[nums.length];
+        Integer[] smaller = new Integer[nums.length];
+        Arrays.fill(smaller, 0);
+        for (int i = 0; i < nums.length; i++) {
+            arr[i] = new Pair(i, nums[i]);
+        }
+        mergeSort(arr, smaller);
+        res.addAll(Arrays.asList(smaller));
+        return res;
+    }
+    private Pair[] mergeSort(Pair[] arr, Integer[] smaller) {
+        if (arr.length <= 1) {
+            return arr;
+        }
+        int mid = arr.length / 2;
+        Pair[] left = mergeSort(Arrays.copyOfRange(arr, 0, mid), smaller);
+        Pair[] right = mergeSort(Arrays.copyOfRange(arr, mid, arr.length), smaller);
+        for (int i = 0, j = 0; i < left.length || j < right.length;) {
+            if (j == right.length || i < left.length && left[i].val <= right[j].val) {
+                arr[i + j] = left[i];
+                smaller[left[i].index] += j;
+                i++;
+            } else {
+                arr[i + j] = right[j];
+                j++;
+            }
+        }
+        return arr;
+    }
+        
+    //Solution 2
+    public List<Integer> countSmaller(int[] nums) {
+        List<Integer> ans = new ArrayList<>();
+        if (nums.length == 0) {
+            return ans;
+        }
+        int n = nums.length;
+        CountSmallerBSTNode root = new CountSmallerBSTNode(nums[n - 1]);
+        ans.add(0);
+        for (int i = n - 2; i >= 0; --i) {
+            ans.add(countSmallerBSTInsert(root, nums[i]));
+        }
+        Collections.reverse(ans);
+        return ans;
+    }
+
+    class CountSmallerBSTNode {
+        int val;
+        int count;
+        int left_count;
+        CountSmallerBSTNode left;
+        CountSmallerBSTNode right;
+
+        public CountSmallerBSTNode(int val) {
+            this.val = val;
+            this.count = 1;
+        }
+
+        public int less_or_equal() {
+            return count + left_count;
+        }
+    }
+
+    private int countSmallerBSTInsert(CountSmallerBSTNode root, int val) {
+        if (root.val == val) {
+            root.count = root.count + 1;
+            return root.left_count;
+        } else {
+            if (val < root.val) {
+                root.left_count = root.left_count + 1;
+                if (root.left == null) {
+                    root.left = new CountSmallerBSTNode(val);
+                    return 0;
+                }
+                return countSmallerBSTInsert(root.left, val);
+            } else {
+                if (root.right == null) {
+                    root.right = new CountSmallerBSTNode(val);
+                    return root.less_or_equal();
+                }
+                return root.less_or_equal() + countSmallerBSTInsert(root.right, val);
+            }
+        }
+    }    
+
+    //Solution 3
+    public List<Integer> countSmaller(int[] nums) {
+        //Step 1: get the ranking of each number.
+        int[] sorted = Arrays.copyOf(nums, nums.length);
+        Arrays.sort(sorted);
+        Map<Integer, Integer> ranks = new HashMap<>();
+        int rank = 0;
+        for (int i = 0; i < sorted.length; ++i) {
+            if (i == 0 || sorted[i] != sorted[i - 1]) {
+                ranks.put(sorted[i], ++rank);
+            }
+        }
+        //Step 2: use BIT tree to find the delta ranking
+        FenwickTree tree = new FenwickTree(ranks.size());
+        List<Integer> ans = new ArrayList<>();
+        for (int i = nums.length - 1; i >= 0; --i) {
+            int sum = tree.query(ranks.get(nums[i]) - 1);
+            ans.add(sum);
+            //Update the rank freq with 1 in the sum array.
+            tree.update(ranks.get(nums[i]), 1);
+        }
+
+        Collections.reverse(ans);
+        return ans;
+    }
+
+    class FenwickTree {
+        private int[] sums;
+
+        public FenwickTree(int n) {
+            sums = new int[n + 1];
+        }
+
+        public void update(int i, int delta) {
+            while (i < sums.length) {
+                sums[i] += delta;
+                i += i & (-i);
+            }
+        }
+
+        public int query(int i) {
+            int sum = 0;
+            while (i > 0) {
+                sum += sums[i];
+                i -= i & (-i);
+            }
+            return sum;
+        }
+    }
 
     
 DFS Question
@@ -1241,6 +2039,146 @@ Solution 2: DFS + Memo
         }
         map.put(index, ans);
         return ans;
+    }
+
+24 Game
+https://leetcode.com/problems/24-game/
+Trick: DFS on the available cards, each level of DFS we discard cards add the computed values to the list.
+First level 4 cards: pick any two cards, apply all the 4 calculations, push to next round of calc.
+Second level 3 cards: repeat the same.
+Till only one card left, compare to 24.
+
+    public boolean judgePoint24(int[] nums) {
+        List<Double> list = new ArrayList<>();
+        for (int i : nums) {
+            list.add((double) i);
+        }
+        return judgePoint24DFS(list);
+    }
+    private boolean judgePoint24DFS(List<Double> list) {
+        if (list.size() == 1) {
+            if (Math.abs(list.get(0)- 24.0) < 0.001) {
+                return true;
+            }
+            return false;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = i + 1; j < list.size(); j++) {
+                //for each possible combination, let's go to next level recursively
+                for (double c : compute(list.get(i), list.get(j))) {
+                    //for each c, go to next round, nextRound should coontain size-1 numbers.
+                    List<Double> nextRound = new ArrayList<>();
+                    nextRound.add(c);
+                    for (int k = 0; k < list.size(); k++) {
+                        //skip the current computed cards.
+                        if (k == j || k == i) {
+                            continue;
+                        }
+                        nextRound.add(list.get(k));
+                    }
+                    if (judgePoint24DFS(nextRound)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    private List<Double> compute(double a, double b) {
+        List<Double> res = Arrays.asList(a+b, a-b, b-a, a*b, a/b, b/a);
+        return res;
+    } 
+
+Frog Jump
+https://leetcode.com/problems/frog-jump/
+Solution 1: DFS + memo.
+Solution 2: Iterative, HashMap + HashSet. 
+
+    public boolean canCross(int[] stones) {
+        return stones[1] == 1 && canCrossDFS(1, 1, stones, new Boolean[1100][stones.length - 1]);
+    }
+
+    private boolean canCrossDFS(int index, int k, int[] stones, Boolean[][] dp) {
+        if (index == stones.length - 1) {
+            return true;
+        }
+        if (dp[k][index] != null) {
+            return dp[k][index];
+        }
+        for (int i = index + 1; i < stones.length && stones[index] + k + 1 >= stones[i]; i++) {
+            if (stones[index] + k + 1 == stones[i] && canCrossDFS(i, k + 1, stones, dp)) {
+                return dp[k][index] = true;
+            } else {
+                if (stones[index] + k == stones[i] && canCrossDFS(i, k, stones, dp)) {
+                    return dp[k][index] = true;
+                } else {
+                    if (stones[index] + k - 1 == stones[i] && canCrossDFS(i, k - 1, stones, dp)) {
+                        return dp[k][index] = true;
+                    }
+                }
+            }
+        }
+        return dp[k][index] = false;
+    }
+
+    public boolean canCross(int[] stones) {
+        if (stones.length == 0) {
+            return true;
+        }
+        HashMap<Integer, HashSet<Integer>> map = new HashMap<>(stones.length);
+        map.put(0, new HashSet<>());
+        map.get(0).add(1);
+        for (int i = 1; i < stones.length; i++) {
+            map.put(stones[i], new HashSet<>() );
+        }
+        for (int i = 0; i < stones.length - 1; i++) {
+            int stone = stones[i];
+            for (int step : map.get(stone)) {
+                int reach = step + stone;
+                if (reach == stones[stones.length - 1]) {
+                    return true;
+                }
+                HashSet<Integer> set = map.get(reach);
+                if (set != null) {
+                    set.add(step);
+                    if (step - 1 > 0) {
+                        set.add(step - 1);
+                    }
+                    set.add(step + 1);
+                }
+            }
+        }
+        return false;
+    }
+
+Minesweeper
+https://leetcode.com/problems/minesweeper/
+
+
+Clone Graph
+https://leetcode.com/problems/clone-graph/
+Trick is to use a hash map to store the cloned node.
+
+    public Node cloneGraph(Node node) {
+        return clone(node);
+    }
+
+    //Key is the node label, which is unique, value is the Node object.
+    private HashMap<Integer, Node> clonedNodesMap = new HashMap<>();
+    
+    //DFS traverse the graph node.
+    private Node clone(Node node) {
+        if (node == null) return null;
+
+        if (clonedNodesMap.containsKey(node.val)) {
+            return clonedNodesMap.get(node.val);
+        }
+        Node clone = new Node(node.val, new ArrayList<Node>());
+        clonedNodesMap.put(clone.val, clone);
+        for (Node neighbor : node.neighbors) {
+            clone.neighbors.add(clone(neighbor));
+        }
+        return clone;
     }
 
 
@@ -1359,9 +2297,55 @@ All Nodes Distance K in Binary Tree
 https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/
 Solution: Convert the tree to graph representation, then do BFS for k distance.
 
+Binary Tree Zigzag Level Order Traversal
+https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
+Solution: BFS, but reverse the order on each level.
 
+Binary Tree Level Order Traversal
+https://leetcode.com/problems/binary-tree-level-order-traversal/
 
+Binary Tree Vertical Order Traversal
+https://leetcode.com/problems/binary-tree-vertical-order-traversal/
+Solution: BFS on the tree node, but also add the column of the tree node as part of the state, when we visit the node, 
+we also add the node into the resulting map for the column.
 
+    class TreeNodeAndCol{
+        TreeNode node;
+        int col;
+        public TreeNodeAndCol(TreeNode _node, int _col){
+            this.node = _node;
+            this.col = _col;
+        }
+    }
+    public List<List<Integer>> verticalOrder(TreeNode root) {
+        List<List<Integer>> ans = new ArrayList<List<Integer>>();
+        if (root == null) {
+            return ans;
+        }
+        //Key is the col number, note it started from 0, then for left will be 0-1, right 0+1.
+        TreeMap<Integer, List<Integer>> verticalData = new TreeMap<Integer, List<Integer>>();
+        Queue<TreeNodeAndCol> queue = new LinkedList<TreeNodeAndCol>();
+        queue.offer(new TreeNodeAndCol(root, 0));
+        while (!queue.isEmpty()) {
+            int s = queue.size();
+            for (int i=0; i<s; i++) {
+                TreeNodeAndCol oneNode = queue.poll();
+                verticalData.putIfAbsent(oneNode.col, new ArrayList<Integer>());
+                verticalData.get(oneNode.col).add(oneNode.node.val);
+                if (oneNode.node.left != null) {
+                    queue.offer(new TreeNodeAndCol(oneNode.node.left, oneNode.col - 1));
+                }
+                if (oneNode.node.right != null) {
+                    queue.offer(new TreeNodeAndCol(oneNode.node.right, oneNode.col + 1));
+                }
+            }
+        }
+        
+        for (Map.Entry<Integer, List<Integer>> entry : verticalData.entrySet()) {
+            ans.add(entry.getValue());
+        }
+        return ans;
+    }
 
 
 Priority Queue Questions
@@ -1372,6 +2356,30 @@ https://leetcode.com/problems/reorganize-string/
 https://leetcode.com/problems/task-scheduler/
 Similar questions, keep a Max PQ, pick the top ones, reduce the freq/num, push back, till next round to repeat the same process.
 
+Meeting Scheduler
+https://leetcode.com/problems/meeting-scheduler/
+
+    public List<Integer> minAvailableDuration(int[][] slots1, int[][] slots2, int duration) {
+        //Priority Queue sort by start time, ascending.
+        PriorityQueue<int[]> minHeap = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        //Filter those unsuitable slot
+        for (int[] slot : slots1) {
+            if (slot[1] - slot[0] >= duration) minHeap.offer(slot);
+        }
+        for (int[] slot : slots2) {
+            if (slot[1] - slot[0] >= duration)  minHeap.offer(slot);
+        }
+        //Poll from the queue to find the first two slot where overlap is more than duration
+        int[] prev = minHeap.poll();
+        while (!minHeap.isEmpty()) {
+            int[] next = minHeap.poll();
+            if (next[0] + duration <= prev[1]) {
+                return new ArrayList<Integer>(Arrays.asList(next[0], next[0] + duration));
+            }
+            prev = next;
+        }
+        return new ArrayList<Integer>();
+    }
 
 Find Median
 https://leetcode.com/problems/find-median-from-data-stream/
@@ -1618,7 +2626,49 @@ Proprocess the input, use a map to track the starting index of the repeating rem
         //avoid the edge case 0.
         return result.toString().replace("(0)", "");
     }
-    
+
+Reaching Points
+https://leetcode.com/problems/reaching-points/
+Top down recursive solution will cause stack overflow.
+An important trick is to reverse thinking, from bottom up, use target to deduce the source, here we use Math mod.
+
+    public boolean reachingPoints(int sx, int sy, int tx, int ty) {
+        while ( tx >= sx && ty >= sy ) {
+            if( tx > ty ){
+                if( sy == ty ) {
+                    return (tx - sx) % ty == 0;
+                }
+                tx %= ty;
+            } else {
+                if( sx == tx ) {
+                    return (ty - sy) % tx == 0;
+                }
+                ty %= tx;
+            }
+        }
+        return false;
+    }
+
+Count Primes
+https://leetcode.com/problems/count-primes/
+        
+    //Trick is to reverse thinking, rule out the non prime.
+    public int countPrimes(int n) {
+        boolean[] notPrime = new boolean[n];
+        int count = 0;
+        for (int i = 2; i < n; i++) {
+            if (!notPrime[i]) {
+                count++;
+                for (int j = i; j <= (n - 1) / i; j++) {
+                    int v = i * j;
+                    notPrime[v] = true;
+                }
+            }
+        }
+        return count;
+    }
+
+
     
 Trie Questions
 
@@ -1870,3 +2920,71 @@ Important trick about how to prune the unnecessary loop: cache the state, if sam
     }
     
     
+    
+    
+Random Questions
+
+Random pick with weight
+https://leetcode.com/problems/random-pick-with-weight/    
+Solution: create the prefixsum array, randomly generated a number between 0 and max sum. Then use this number to do 
+binary search in prefixsum array for the position.
+
+    int sum = 0;
+    int[] prefix;
+    
+    public Solution(int[] w) {
+        prefix = new int[w.length];
+        prefix[0] = w[0];
+        sum = w[0];
+        for (int i=1; i<w.length; i++) {
+            sum = sum + w[i];
+            prefix[i] = prefix[i-1] + w[i];
+        }
+    }
+
+    public int pickIndex() {
+        Random rand = new Random();
+        int rnd = rand.nextInt(sum) + 1;  // generate random number in [1,max]
+        //this returns the index of the random  number,
+        //if the number does not exist in the array it returns  -(the position it should have been) - 1
+        int ret = Arrays.binarySearch(prefix, rnd);
+        if (ret < 0) {
+            ret = -ret - 1; //if not in the array 
+        }
+        return ret;
+    }
+
+
+
+Greedy Questions
+
+Gas Station
+https://leetcode.com/problems/gas-station/
+Use greedy, if one station can't be reached, it should be start point.
+It can be two passes, one pass to find if total_tank end up negative, then return -1, another pass to find the starting gas. But can be combined easily.
+
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int n = gas.length;
+        int total_tank = 0;
+        int curr_tank = 0;
+        int starting_station = 0;
+        for (int i = 0; i < n; ++i) {
+            total_tank += gas[i] - cost[i];
+            curr_tank += gas[i] - cost[i];
+            // If one couldn't get here,
+            if (curr_tank < 0) {
+                // Pick up the next station as the starting one.
+                starting_station = i + 1;
+                // Start with an empty tank.
+                curr_tank = 0;
+            }
+        }
+        return total_tank >= 0 ? starting_station : -1;
+    }
+
+
+
+
+
+
+

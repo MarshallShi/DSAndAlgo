@@ -307,7 +307,7 @@ public class PartitionExe {
      * The best way is to split it into [7,2,5] and [10,8],
      * where the largest sum among the two subarrays is only 18.
      */
-    public int splitArray(int[] nums, int m) {
+    public int splitArray_topDown(int[] nums, int m) {
         int[] sum = new int[nums.length];
         for (int i = 0;i < nums.length; i++) {
             sum[i] = nums[i] + (i > 0 ? sum[i-1] : 0);
@@ -329,6 +329,70 @@ public class PartitionExe {
         }
         cache[s][k] = num;
         return num;
+    }
+
+    public int splitArray_bottomUp(int[] nums, int m) {
+        if (nums == null) {
+            return -1;
+        }
+
+        int[][] dp = new int[m][nums.length];
+        dp[0][0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            dp[0][i] = nums[i] + dp[0][i - 1];
+        }
+
+        for (int i = 1; i < m; i++) {
+            for (int j = i; j < nums.length; j++) {
+                int min = Integer.MAX_VALUE;
+                for (int k = 0; k < j; k++) {
+                    min = Math.min(min, Math.max(dp[i - 1][k], dp[0][j] - dp[0][k]));
+                }
+                dp[i][j] = min;
+            }
+        }
+        return dp[m - 1][nums.length - 1];
+    }
+
+    public int splitArray_binarysearch(int[] nums, int m) {
+        int max = 0;
+        long sum = 0;
+        for (int num : nums) {
+            max = Math.max(num, max);
+            sum += num;
+        }
+        if (m == 1) return (int) sum;
+        long l = max;
+        long r = sum;
+        while (l <= r) {
+            long mid = (l + r) / 2;
+            if (valid(mid, nums, m)) {
+                r = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return (int) l;
+    }
+
+    //if largest of all subarray is target
+    private boolean valid(long target, int[] nums, int m) {
+        //count number of subarrays, where sum is less than target.
+        int count = 1;
+        long total = 0;
+        for (int num : nums) {
+            total += num;
+            if (total > target) {
+                //Reset total to current num.
+                total = num;
+                //start next subarray.
+                count++;
+                if (count > m) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**

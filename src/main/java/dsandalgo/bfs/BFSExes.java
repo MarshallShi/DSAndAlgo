@@ -40,6 +40,72 @@ public class BFSExes {
         System.out.println(exe.minKnightMoves(-45, -102));
     }
 
+
+    /**
+     * https://leetcode.com/problems/binary-tree-level-order-traversal/
+     * @param root
+     * @return
+     */
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        List<List<Integer>> ans = new LinkedList<List<Integer>>();
+        if (root == null) {
+            return ans;
+        }
+        queue.offer(root);
+        while (!queue.isEmpty()) {
+            int levelNum = queue.size();
+            List<Integer> subList = new LinkedList<Integer>();
+            for (int i = 0; i < levelNum; i++) {
+                TreeNode cur = queue.poll();
+                if (cur.left != null) {
+                    queue.offer(cur.left);
+                }
+                if (cur.right != null) {
+                    queue.offer(cur.right);
+                }
+                subList.add(cur.val);
+            }
+            ans.add(subList);
+        }
+        return ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
+     * @param root
+     * @return
+     */
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> res = new LinkedList<List<Integer>>();
+        if (root == null) {
+            return res;
+        }
+        LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+        queue.add(root);
+        int level = 1;
+        while (!queue.isEmpty()) {
+            int n = queue.size();
+            List<Integer> list = new LinkedList<Integer>();
+            for (int i=0; i<n; i++) {
+                TreeNode node = queue.pop();
+                if (level % 2 == 0) {
+                    ((LinkedList<Integer>) list).addFirst(node.val);
+                } else {
+                    list.add(node.val);
+                }
+                if (node.left != null) {
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    queue.add(node.right);
+                }
+            }
+            level++;
+        }
+        return res;
+    }
+
     /**
      * https://leetcode.com/problems/word-ladder/
      * Given two words (beginWord and endWord), and a dictionary's word list, find the length of shortest transformation sequence from beginWord to endWord, such that:

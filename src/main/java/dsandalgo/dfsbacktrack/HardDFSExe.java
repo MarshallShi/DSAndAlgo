@@ -28,7 +28,6 @@ public class HardDFSExe {
         System.out.println(exe.judgePoint24(ini));
     }
 
-
     /**
      * https://leetcode.com/problems/bricks-falling-when-hit/
      * We have a grid of 1s and 0s; the 1s in a cell represent bricks.  A brick will not drop if and only if it is directly connected to the top of the grid, or at least one of its (4-way) adjacent bricks will not drop.
@@ -803,33 +802,40 @@ public class HardDFSExe {
      *
      * Therefore, person #1 only need to give person #0 $4, and all debt is settled.
      */
-    //Trick: get all debts, any opposite sign, is a potential transaction to settle one person's debt
     public int minTransfers(int[][] transactions) {
-        Map<Integer, Integer> m = new HashMap<>();
+        Map<Integer, Integer> map = new HashMap<>();
         for (int[] t : transactions) {
-            m.put(t[0], m.getOrDefault(t[0], 0) - t[2]);
-            m.put(t[1], m.getOrDefault(t[1], 0) + t[2]);
+            map.put(t[0], map.getOrDefault(t[0], 0) + t[2]);
+            map.put(t[1], map.getOrDefault(t[1], 0) - t[2]);
         }
-        return settle(0, new ArrayList<>(m.values()));
-    }
-    private int settle(int start, List<Integer> debt) {
-        while (start < debt.size() && debt.get(start) == 0) {
-            start++;
-        }
-        if (start == debt.size()) {
-            return 0;
-        }
-        int ret = Integer.MAX_VALUE;
-        //backtrack
-        for (int i = start + 1; i < debt.size(); i++) {
-            //check if the two are opposite sign
-            if (debt.get(start) * debt.get(i) < 0) {
-                debt.set(i, debt.get(i) + debt.get(start));
-                ret = Math.min(ret, 1 + settle(start + 1, debt));
-                debt.set(i, debt.get(i) - debt.get(start));
+        List<Integer> list = new ArrayList();
+        for (int v : map.values()) {
+            if (v != 0) {
+                list.add(v);
             }
         }
-        return ret;
+        return settleBacktrack(0, list);
+    }
+
+    private int settleBacktrack(int pos, List<Integer> list) {
+        if (pos == list.size()) {
+            return 0;
+        }
+        int cur = list.get(pos);
+        if (cur == 0) {
+            return settleBacktrack(pos + 1, list);
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = pos + 1; i < list.size(); i++) {
+            int next = list.get(i);
+            if (cur * next < 0) {
+                list.set(i, cur + next);
+                min = Math.min(min, 1 + settleBacktrack(pos + 1, list));
+                list.set(i, next);
+                if (cur + next == 0) break;
+            }
+        }
+        return min;
     }
 
     /**

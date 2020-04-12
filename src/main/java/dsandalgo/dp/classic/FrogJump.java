@@ -49,39 +49,32 @@ public class FrogJump {
      * Return false. There is no way to jump to the last stone as
      * the gap between the 5th and 6th stone is too large.
      */
-    public boolean canCross_MLE(int[] stones) {
-        Map<Integer,Integer> stoneMap = new HashMap<>();
-        int len = stones.length;
-        int[][] cache = new int[len][(len*len + len)/2];
-        for (int i=0; i<cache.length; i++) {
-            for (int j=0; j<cache[i].length; j++) {
-                cache[i][j] = -1;
-            }
-        }
-        for (int i=0; i<stones.length; i++) {
-            stoneMap.put(stones[i], i);
-        }
-        return canCrossHelper(stones, 0, 1, stoneMap, cache);
+
+    public boolean canCross(int[] stones) {
+        return stones[1] == 1 && canCrossDFS(1, 1, stones, new Boolean[1100][stones.length - 1]);
     }
-    private boolean canCrossHelper(int[] stones, int pos, int k, Map<Integer,Integer> stoneMap, int[][] cache) {
-        if (cache[pos][k] != -1) {
-            return cache[pos][k] == 1;
-        }
-        if (pos == stones.length - 1) {
+
+    private boolean canCrossDFS(int index, int k, int[] stones, Boolean[][] dp) {
+        if (index == stones.length - 1) {
             return true;
         }
-        if (k==0 || !stoneMap.containsKey(stones[pos] + k)) {
-            return false;
+        if (dp[k][index] != null) {
+            return dp[k][index];
         }
-        int nextPos = stoneMap.get(stones[pos] + k);
-        for (int i=-1;i<=1;i++) {
-            if (canCrossHelper(stones, nextPos, k+i, stoneMap, cache)) {
-                cache[pos][k] = 1;
-                return true;
+        for (int i = index + 1; i < stones.length && stones[index] + k + 1 >= stones[i]; i++) {
+            if (stones[index] + k + 1 == stones[i] && canCrossDFS(i, k + 1, stones, dp)) {
+                return dp[k][index] = true;
+            } else {
+                if (stones[index] + k == stones[i] && canCrossDFS(i, k, stones, dp)) {
+                    return dp[k][index] = true;
+                } else {
+                    if (stones[index] + k - 1 == stones[i] && canCrossDFS(i, k - 1, stones, dp)) {
+                        return dp[k][index] = true;
+                    }
+                }
             }
         }
-        cache[pos][k] = 0;
-        return false;
+        return dp[k][index] = false;
     }
 
     public boolean canCross_iter(int[] stones) {

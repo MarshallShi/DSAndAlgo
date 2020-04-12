@@ -63,21 +63,23 @@ public class BinarySearchTreeExe {
 
     private int countSmallerBSTInsert(CountSmallerBSTNode root, int val) {
         if (root.val == val) {
-            ++root.count;
+            root.count = root.count + 1;
             return root.left_count;
-        } else if (val < root.val) {
-            ++root.left_count;
-            if (root.left == null) {
-                root.left = new CountSmallerBSTNode(val);
-                return 0;
-            }
-            return countSmallerBSTInsert(root.left, val);
         } else {
-            if (root.right == null) {
-                root.right = new CountSmallerBSTNode(val);
-                return root.less_or_equal();
+            if (val < root.val) {
+                root.left_count = root.left_count + 1;
+                if (root.left == null) {
+                    root.left = new CountSmallerBSTNode(val);
+                    return 0;
+                }
+                return countSmallerBSTInsert(root.left, val);
+            } else {
+                if (root.right == null) {
+                    root.right = new CountSmallerBSTNode(val);
+                    return root.less_or_equal();
+                }
+                return root.less_or_equal() + countSmallerBSTInsert(root.right, val);
             }
-            return root.less_or_equal() + countSmallerBSTInsert(root.right, val);
         }
     }
 

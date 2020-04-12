@@ -22,6 +22,44 @@ public class LinkedListExe {
     }
 
     /**
+     * https://leetcode.com/problems/palindrome-linked-list/
+     * @param head
+     * @return
+     */
+    public boolean isPalindrome(ListNode head) {
+        ListNode fast = head, slow = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        if (fast != null) { // odd nodes: let right half smaller
+            slow = slow.next;
+        }
+        slow = reverse(slow);
+        fast = head;
+
+        while (slow != null) {
+            if (fast.val != slow.val) {
+                return false;
+            }
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return true;
+    }
+
+    private ListNode reverse(ListNode head) {
+        ListNode prev = null;
+        while (head != null) {
+            ListNode next = head.next;
+            head.next = prev;
+            prev = head;
+            head = next;
+        }
+        return prev;
+    }
+
+    /**
      * https://leetcode.com/problems/asteroid-collision/
      * asteroids = [5, 10, -5]
      * Output: [5, 10]
@@ -585,36 +623,30 @@ public class LinkedListExe {
      * @return
      */
     public ListNode reverseBetween(ListNode head, int m, int n) {
-        int counter = 1;
+        if (head == null) {
+            return null;
+        }
         ListNode dummy = new ListNode(0);
         dummy.next = head;
-        ListNode before = null;
-        ListNode after = null;
-
-        Stack<ListNode> stack = new Stack<ListNode>();
-        ListNode prev = dummy;
-        while (head != null) {
-            if (counter == m) {
-                before = prev;
-            }
-            if (counter == n) {
-                after = head.next;
-            }
-            if (counter >= m && counter <= n) {
-                stack.push(head);
-            }
-            head = head.next;
-            prev = prev.next;
-            counter++;
-            if (counter > n) {
-                break;
-            }
+        // make a pointer pre as a marker for the node before reversing
+        ListNode pre = dummy;
+        for (int i = 0; i < m - 1; i++) {
+            pre = pre.next;
         }
-        while (!stack.isEmpty()) {
-            before.next = stack.pop();
-            before = before.next;
+        // a pointer to the beginning of a sub-list that will be reversed
+        ListNode start = pre.next;
+        // a pointer to a node that will be reversed
+        ListNode then = start.next;
+        // 1 - 2 -3 - 4 - 5 ; m=2; n =4 ---> pre = 1, start = 2, then = 3
+        // dummy-> 1 -> 2 -> 3 -> 4 -> 5
+        for (int i = 0; i < n - m; i++) {
+            start.next = then.next;
+            then.next = pre.next;
+            pre.next = then;
+            then = start.next;
         }
-        before.next = after;
+        // first reversing : dummy->1 - 3 - 2 - 4 - 5; pre = 1, start = 2, then = 4
+        // second reversing: dummy->1 - 4 - 3 - 2 - 5; pre = 1, start = 2, then = 5 (finish)
         return dummy.next;
     }
 

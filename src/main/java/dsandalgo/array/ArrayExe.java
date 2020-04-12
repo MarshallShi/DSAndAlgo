@@ -23,6 +23,24 @@ public class ArrayExe {
         //System.out.println(exe.countElements(c));
     }
 
+
+    /**
+     * https://leetcode.com/problems/find-all-duplicates-in-an-array/
+     * when find a number i, flip the number at position i-1 to negative.
+     * if the number at position i-1 is already negative, i is the number that occurs twice.
+     */
+    public List<Integer> findDuplicates(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        for (int i = 0; i < nums.length; ++i) {
+            int index = Math.abs(nums[i])-1;
+            if (nums[index] < 0) {
+                res.add(Math.abs(index+1));
+            }
+            nums[index] = -nums[index];
+        }
+        return res;
+    }
+
     /**
      * https://leetcode.com/problems/diagonal-traverse/
      * Given a matrix of M x N elements (M rows, N columns), return all elements of the matrix in diagonal order as shown in the below image.
@@ -1804,6 +1822,62 @@ public class ArrayExe {
                         high--;
                     } else {
                         if (nums[low] + nums[high] > target) {
+                            high--;
+                        } else {
+                            low++;
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+
+    /**
+     * https://leetcode.com/problems/4sum/
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        if (nums == null || nums.length == 0) {
+            return ret;
+        }
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; i++) {
+            //avoid duplicated
+            if (i > 0 && nums[i - 1] == nums[i]) {
+                continue;
+            }
+            for (int j = i + 1; j < nums.length; j++) {
+                //avoid duplicated
+                if (j > i + 1 && nums[j] == nums[j - 1]) {
+                    continue;
+                }
+                int twoSum = target - nums[i] - nums[j];
+                int low = j + 1, high = nums.length - 1;
+                while (low < high) {
+                    if (nums[low] + nums[high] == twoSum) {
+                        List<Integer> oneResult = new ArrayList<Integer>();
+                        oneResult.add(nums[i]);
+                        oneResult.add(nums[j]);
+                        oneResult.add(nums[low]);
+                        oneResult.add(nums[high]);
+                        ret.add(oneResult);
+                        low++;
+                        high--;
+                        //avoid duplicated
+                        while (low < high && nums[low] == nums[low - 1]) {
+                            low++;
+                        }
+                        while (low < high && nums[high] == nums[high + 1]) {
+                            high--;
+                        }
+                    } else {
+                        if (nums[low] + nums[high] > twoSum) {
                             high--;
                         } else {
                             low++;

@@ -435,66 +435,6 @@ public class Coding5 {
         return mem[t.length()][s.length()];
     }
 
-    /**
-     * Given s1, s2, s3, find whether s3 is formed by the interleaving of s1 and s2.
-     *
-     * Example 1:
-     *
-     * Input: s1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"
-     * Output: true
-     * @param s1
-     * @param s2
-     * @param s3
-     * @return
-     */
-    public boolean isInterleave(String s1, String s2, String s3) {
-        if (s1 == null || s2 == null || s3 == null) {
-            if (s1 == null && s2 == null && s3 == null) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        if (s1.length() + s2.length() != s3.length()) {
-            return false;
-        }
-        Map<String, Boolean> cache = new HashMap<String, Boolean>();
-        return isInterleaveHelper(s1, s2, s3, cache);
-    }
-
-    private boolean isInterleaveHelper(String s1, String s2, String s3, Map<String, Boolean> cache) {
-        if (cache.containsKey(s1+"#"+s2+"#"+s3)) {
-            return cache.get(s1+"#"+s2+"#"+s3);
-        }
-        if (s1.length() == 0 && s2.length() == 0 && s3.length() == 0) {
-            return true;
-        } else {
-            if ((s1.length()>0 && (s1.charAt(0) == s3.charAt(0) || s1.charAt(s1.length()-1) == s3.charAt(s3.length() - 1)))
-                || (s2.length() > 0 && (s2.charAt(0) == s3.charAt(0) || s2.charAt(s2.length()-1) == s3.charAt(s3.length() - 1)))) {
-                boolean ret1 = false, ret2 = false, ret3 = false, ret4 = false;
-                if (s1.length()>0 && s1.charAt(0) == s3.charAt(0)) {
-                    ret1 = isInterleaveHelper(s1.substring(1), s2, s3.substring(1), cache);
-                    cache.put(s1.substring(1) + "#" + s2 + "#" + s3.substring(1), ret1);
-                }
-                if (s1.length()>0 && s1.charAt(s1.length()-1) == s3.charAt(s3.length() - 1)) {
-                    ret2 = isInterleaveHelper(s1.substring(0, s1.length()-1), s2, s3.substring(0, s3.length()-1), cache);
-                    cache.put(s1.substring(0, s1.length()-1) + "#" + s2 + "#" + s3.substring(0, s3.length()-1), ret2);
-                }
-                if (s2.length()>0 && s2.charAt(0) == s3.charAt(0)) {
-                    ret3 = isInterleaveHelper(s1, s2.substring(1), s3.substring(1), cache);
-                    cache.put(s1 + "#" + s2.substring(1) + "#" + s3.substring(1), ret3);
-                }
-                if (s2.length()>0 && s2.charAt(s2.length()-1) == s3.charAt(s3.length() - 1)) {
-                    ret4 = isInterleaveHelper(s1, s2.substring(0, s2.length()-1), s3.substring(0, s3.length()-1), cache);
-                    cache.put(s1 + "#" + s2.substring(0, s2.length()-1) + "#" + s3.substring(0, s3.length()-1), ret4);
-                }
-                return ret1 || ret2 || ret3 || ret4;
-            } else {
-                return false;
-            }
-        }
-    }
-
     public void solve(char[][] board) {
         int m = board.length;
         int n = board[0].length;
@@ -974,33 +914,6 @@ public class Coding5 {
         return ret;
     }
 
-    public static boolean isHappy(int n) {
-        if (n == 1) {
-            return true;
-        }
-        int sum = 0;
-        Set<Integer> foundSums = new HashSet<Integer>();
-        while (n > 0){
-            while (n != 0) {
-                int oneDigit = n%10;
-                sum = sum + oneDigit*oneDigit;
-                n = n/10;
-            }
-            if (sum != 1) {
-                if (foundSums.contains(sum)) {
-                    return false;
-                } else {
-                    foundSums.add(sum);
-                }
-                n = sum;
-            } else {
-                return true;
-            }
-            sum = 0;
-        }
-        return false;
-    }
-
     public static int hammingWeight(int n) {
         int counter = 0;
         while (n!=0) {
@@ -1267,21 +1180,6 @@ public class Coding5 {
         return counter;
     }
 
-    public static int numTrees(int n) {
-        int[] dp = new int[n + 1];
-        dp[0] = 1;
-        dp[1] = 1;
-
-        for (int i=2; i<=n; i++) {
-            int tempSum = 0;
-            for (int j=1; j<=i; j++) {
-                tempSum = tempSum + dp[j-1]*dp[i-j];
-            }
-            dp[i] = tempSum;
-        }
-        return dp[n];
-    }
-
     public static int findUnsortedSubarray(int[] nums) {
         if (nums == null || nums.length == 0) {
             return 0;
@@ -1518,36 +1416,6 @@ public class Coding5 {
         ListNode next;
         ListNode(int x) { val = x; }
     }
-    public boolean isPalindrome(ListNode head) {
-        if (head == null || head.next == null) {
-            return true;
-        }
-        ListNode slow = head;
-        String valStr = head.val + "";
-        ListNode fast = head.next;
-        while (fast != null && fast.next != null) {
-            fast = fast.next.next;
-            slow = slow.next;
-            if (fast != null) {
-                valStr = valStr + slow.val;
-            }
-        }
-        while (slow != null) {
-            slow = slow.next;
-            if (slow != null) {
-                String temp = slow.val + "";
-                if (valStr.endsWith(temp)) {
-                    valStr = valStr.substring(0, valStr.length() - temp.length());
-                } else {
-                    return false;
-                }
-            }
-        }
-        if (valStr.length() != 0) {
-            return false;
-        }
-        return true;
-    }
 
     public static int singleNumber(int[] nums) {
         if (nums == null) {
@@ -1695,37 +1563,6 @@ public class Coding5 {
             }
         }
         return rets;
-    }
-
-    public boolean isSubtree(TreeNode s, TreeNode t) {
-        if (s == null && t == null) {
-            return true;
-        }
-        if (s == null || t == null) {
-            return false;
-        }
-        if (s.val == t.val) {
-            if (isTheSameTree(s, t)) {
-                return true;
-            } else {
-                return isSubtree(s.left, t) || isSubtree(s.right, t);
-            }
-        } else {
-            return isSubtree(s.left, t) || isSubtree(s.right, t);
-        }
-    }
-
-    public boolean isTheSameTree(TreeNode s, TreeNode t) {
-        if (s == null && t == null) {
-            return true;
-        }
-        if (s == null || t == null) {
-            return false;
-        }
-        if (s.val != t.val) {
-            return false;
-        }
-        return isTheSameTree(s.left, t.left) && isTheSameTree(s.right, t.right);
     }
 
     public boolean helper(TreeNode node, int sum){

@@ -10,20 +10,37 @@ Leaky bucket / Token bucket
 
 Loosy Counting
 
-Operational transformation
+Quadtree
+Quadtrees are trees used to efficiently store data of points on a two-dimensional space. In this tree, each node has at most four children.
+We can construct a quadtree from a two-dimensional area using the following steps:
 
-Quadtree / Rtree
+1.Divide the current two dimensional space into four boxes.
+2.If a box contains one or more points in it, create a child object, storing in it the two dimensional space of the box
+3.If a box does not contain any points, do not create a child for it
+4.Recurse for each of the children.
 
-Ray casting
+Quadtrees are used in image compression, where each node contains the average colour of each of its children. 
+The deeper you traverse in the tree, the more the detail of the image.
+Quadtrees are also used in searching for nodes in a two-dimensional area. 
+For instance, if you wanted to find the closest point to given coordinates, you can do it using quadtrees.
 
 Reverse index
+It is a data structure that stores mapping from words to documents or set of documents i.e. directs you from word to document.
+https://www.geeksforgeeks.org/difference-inverted-index-forward-index/?ref=rp
 
 Rsync algorithm
-
-Trie algorithm
+rsync is a tool that compares directories when copying and is a much more efficient way of backing up data on a regular basis. 
+It will compare any changes or differences with the source directory and the repository and then only transfer those differences.
+https://www.cs.tufts.edu/~nr/rsync.html
 
 Consistent Hashing
-
+Consistent Hashing is a distributed hashing scheme that operates independently of the number of servers or objects in a distributed 
+hash table by assigning them a position on an abstract circle, or hash ring. 
+This allows servers and objects to scale without affecting the overall system.
+https://www.toptal.com/big-data/consistent-hashing
+http://tom-e-white.com/2007/11/consistent-hashing.html
+https://www.toptal.com/big-data/consistent-hashing
+https://medium.com/@dgryski/consistent-hashing-algorithmic-tradeoffs-ef6b8e2fcae8
 
 Probabilistic data structures can't give you a definite answer, instead they provide you with a reasonable approximation 
 of the answer and a way to approximate this estimation. They are extremely useful for big data and streaming application 

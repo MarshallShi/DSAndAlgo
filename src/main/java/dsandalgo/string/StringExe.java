@@ -22,6 +22,76 @@ public class StringExe {
     }
 
     /**
+     * https://leetcode.com/problems/html-entity-parser/
+     * @param text
+     * @return
+     */
+    public String entityParser(String text) {
+        Map<String, String> map = new HashMap<>();
+        map.put("&quot;","\"");
+        map.put("&apos;","\'");
+        map.put("&amp;","&");
+        map.put("&gt;",">");
+        map.put("&lt;","<");
+        map.put("&frasl;","/");
+        for (Map.Entry<String,String> entry : map.entrySet()) {
+            text = text.replaceAll(entry.getKey(), entry.getValue());
+        }
+        return text;
+    }
+
+    /**
+     * https://leetcode.com/problems/string-matching-in-an-array/
+     * @param words
+     * @return
+     */
+    public List<String> stringMatching(String[] words) {
+        Arrays.sort(words, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.length() - o2.length();
+            }
+        });
+        List<String> ret = new ArrayList<>();
+        for (int i=0; i<words.length - 1; i++) {
+            for (int j=i+1; j<words.length; j++) {
+                if (words[j].indexOf(words[i]) != -1) {
+                    ret.add(words[i]);
+                    break;
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/valid-palindrome-ii/
+     * @param s
+     * @return
+     */
+    public boolean validPalindrome(String s) {
+        //move i, j from both low end and high end towards middle.
+        //once mismatch, we try to remove both charAt(i) and charAt(j) in the two while loop.
+        for (int i = 0, j = s.length() - 1; i < j; i++, j--)
+            if (s.charAt(i) != s.charAt(j)) {
+                //remove charAt(j)
+                int i1 = i, j1 = j - 1;
+                while (i1 < j1 && s.charAt(i1) == s.charAt(j1)) {
+                    i1++;
+                    j1--;
+                }
+                //remove charAt(i)
+                int i2 = i + 1, j2 = j;
+                while (i2 < j2 && s.charAt(i2) == s.charAt(j2)) {
+                    i2++;
+                    j2--;
+                }
+                return i1 >= j1 || i2 >= j2;
+            }
+        return true;
+    }
+
+    /**
      * https://leetcode.com/problems/longest-common-prefix/
      * @param strs
      * @return

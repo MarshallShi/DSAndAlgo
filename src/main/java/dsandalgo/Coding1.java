@@ -255,44 +255,6 @@ public class Coding1 {
         return ret;
     }
 
-    public List<List<Integer>> fourSum(int[] nums, int target) {
-        List<List<Integer>> ret = new ArrayList<List<Integer>>();
-        if (nums == null || nums.length == 0) {
-            return ret;
-        }
-        Arrays.sort(nums);
-        Set<String> resultset = new HashSet<String>();
-
-        for (int i=0; i<nums.length;i++) {
-            for (int j=i+1;j<nums.length;j++) {
-                int twoSum = target - nums[i] - nums[j];
-                int low = j+1, high = nums.length - 1;
-                while (low < high) {
-                    if (nums[low] + nums[high] == twoSum) {
-                        String strFormat = nums[i]+ "," + nums[j] + "," + nums[low] + "," + nums[high];
-                        if (!resultset.contains(strFormat)) {
-                            List<Integer> oneResult = new ArrayList<Integer>();
-                            oneResult.add(nums[i]);
-                            oneResult.add(nums[j]);
-                            oneResult.add(nums[low]);
-                            oneResult.add(nums[high]);
-                            ret.add(oneResult);
-                            resultset.add(strFormat);
-                        }
-                        low++;
-                    } else {
-                        if (nums[low] + nums[high] > twoSum) {
-                            high--;
-                        } else {
-                            low++;
-                        }
-                    }
-                }
-            }
-        }
-        return ret;
-    }
-
     public ListNode createNode(){
         ListNode root = new ListNode(1);
         ListNode node2 = new ListNode(2);

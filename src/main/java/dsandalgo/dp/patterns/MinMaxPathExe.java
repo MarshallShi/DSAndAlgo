@@ -297,68 +297,20 @@ public class MinMaxPathExe {
         }
         int m = grid.length;
         int n = grid[0].length;
-        int sum = 0;
-        if (m <= 1 || n<=1) {
-            for (int i=0; i<m; i++) {
-                for (int j=0; j<n; j++) {
-                    sum = sum + grid[i][j];
-                }
-            }
-            return sum;
-        }
         int[][] dp = new int[m][n];
         dp[0][0] = grid[0][0];
-        for (int i=1; i<m; i++) {
-            dp[i][0] = dp[i-1][0] + grid[i][0];
+        for (int i = 1; i < m; i++) {
+            dp[i][0] = dp[i - 1][0] + grid[i][0];
         }
-        for (int i=1; i<n; i++) {
-            dp[0][i] = dp[0][i-1] + grid[0][i];
+        for (int i = 1; i < n; i++) {
+            dp[0][i] = dp[0][i - 1] + grid[0][i];
         }
-        for (int i=1; i<m; i++) {
-            for (int j=1; j<n; j++) {
-                dp[i][j] = Math.min(dp[i-1][j], dp[i][j-1]) + grid[i][j];
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = Math.min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
             }
         }
-        return dp[m-1][n-1];
-    }
-
-    /**
-     * https://leetcode.com/problems/coin-change/
-     *
-     * You are given coins of different denominations and a total amount of money amount.
-     * Write a function to compute the fewest number of coins that you need to make up that amount.
-     * If that amount of money cannot be made up by any combination of the coins, return -1.
-     *
-     * Example 1:
-     *
-     * Input: coins = [1, 2, 5], amount = 11
-     * Output: 3
-     * Explanation: 11 = 5 + 5 + 1
-     * Example 2:
-     *
-     * Input: coins = [2], amount = 3
-     * Output: -1
-     * Note:
-     * You may assume that you have an infinite number of each kind of coin.
-     */
-    public int coinChange(int[] coins, int amount) {
-        //pre load dp with max value.
-        int max = amount + 1;
-        int[] dp = new int[amount+1];
-        Arrays.fill(dp, max);
-        dp[0] = 0;
-        for (int i=1; i<=amount; i++) {
-            for (int j=0; j<coins.length; j++) {
-                if (coins[j] <= i) {
-                    dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
-                }
-            }
-        }
-        //could not allocate right coins.
-        if (dp[amount] > amount) {
-            return -1;
-        }
-        return dp[amount];
+        return dp[m - 1][n - 1];
     }
 
     /**

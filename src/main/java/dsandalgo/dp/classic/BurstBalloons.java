@@ -34,7 +34,9 @@ public class BurstBalloons {
         int[][] memo = new int[n][n];
         return burst(memo, nums, 0, n - 1);
     }
+
     private int burst(int[][] memo, int[] nums, int left, int right) {
+        //The left and right are remaining which was the faked one, return 0.
         if (left + 1 == right) {
             return 0;
         }

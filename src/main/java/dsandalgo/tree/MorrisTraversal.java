@@ -26,25 +26,78 @@ public class MorrisTraversal {
      */
     public void morrisTraversal(TreeNode root){
         TreeNode temp = null;
-        while(root!=null){
-            if(root.left!=null){
+        while (root != null) {
+            if (root.left != null) {
                 // connect threading for root
                 temp = root.left;
-                while(temp.right!=null && temp.right != root)
+                while (temp.right != null && temp.right != root) {
                     temp = temp.right;
+                }
                 // the threading already exists
-                if(temp.right!=null){
+                if (temp.right != null) {
                     temp.right = null;
                     System.out.println(root.val);
                     root = root.right;
-                }else{
+                } else {
                     // construct the threading
                     temp.right = root;
                     root = root.left;
                 }
-            }else{
+            } else {
                 System.out.println(root.val);
                 root = root.right;
+            }
+        }
+    }
+
+    //Manipulate the leaf node's empty left right node to create the link to next, remove it while visiting the current.
+    public void inorder(TreeNode root) {
+        TreeNode current = root;
+        while (current != null) {
+            //left is null then print the node and go to right
+            if (current.left == null) {
+                System.out.print(current.val + " ");
+                current = current.right;
+            } else {
+                //find the predecessor.
+                TreeNode predecessor = current.left;
+                //To find predecessor keep going right till right node is not null or right node is not current.
+                while (predecessor.right != current && predecessor.right != null) {
+                    predecessor = predecessor.right;
+                }
+                //if right node is null then go left after establishing link from predecessor to current.
+                if (predecessor.right == null) {
+                    predecessor.right = current;
+                    current = current.left;
+                } else {
+                    //left is already visit. Go rigth after visiting current.
+                    predecessor.right = null;
+                    System.out.print(current.val + " ");
+                    current = current.right;
+                }
+            }
+        }
+    }
+
+    public void preorder(TreeNode root) {
+        TreeNode current = root;
+        while (current != null) {
+            if (current.left == null) {
+                System.out.print(current.val + " ");
+                current = current.right;
+            } else {
+                TreeNode predecessor = current.left;
+                while (predecessor.right != current && predecessor.right != null) {
+                    predecessor = predecessor.right;
+                }
+                if (predecessor.right == null) {
+                    predecessor.right = current;
+                    System.out.print(current.val + " ");
+                    current = current.left;
+                } else {
+                    predecessor.right = null;
+                    current = current.right;
+                }
             }
         }
     }
@@ -56,32 +109,32 @@ public class MorrisTraversal {
      */
     public void recoverTree_threaded_binary_tree(TreeNode root) {
         List<TreeNode> eNodes = new LinkedList<TreeNode>(); //error nodes
-        if(root == null) return;
+        if (root == null) return;
         TreeNode current = root;
         TreeNode pre;
         TreeNode previous = null;
-        while(current != null){
+        while (current != null) {
 
-            if(current.left == null){
+            if (current.left == null) {
 
-                if(previous!=null && previous.val > current.val){
+                if (previous != null && previous.val > current.val) {
                     eNodes.add(previous);
                     eNodes.add(current);
                 }
                 previous = current;
                 current = current.right;
 
-            }else{
+            } else {
                 pre = current.left;
-                while(pre.right != null && pre.right.val != current.val){
+                while (pre.right != null && pre.right.val != current.val) {
                     pre = pre.right;
                 }
 
-                if(pre.right == null){
+                if (pre.right == null) {
                     pre.right = current;
                     current = current.left;
-                }else {
-                    if(previous!=null && previous.val > current.val){
+                } else {
+                    if (previous != null && previous.val > current.val) {
                         eNodes.add(previous);
                         eNodes.add(current);
                     }
@@ -96,10 +149,10 @@ public class MorrisTraversal {
         //this is redundant check
         //if(eNodes.size() == 0) return;
 
-        if(eNodes.size() == 2){
+        if (eNodes.size() == 2) {
             pre = eNodes.get(0);
             current = eNodes.get(1);
-        }else{ //this case where eNodes.size()==4
+        } else { //this case where eNodes.size()==4
             pre = eNodes.get(0);
             current = eNodes.get(3);
         }

@@ -1,5 +1,6 @@
 package dsandalgo.dp.classic;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,8 +8,10 @@ public class CoinChange {
 
     public static void main(String[] args) {
         CoinChange cc = new CoinChange();
-        int[] cs = {10};
-        System.out.println(cc.change(10, cs));
+        int[] cs = {186,419,83,408};
+        //[186,419,83,408]
+        //6249
+        System.out.println(cc.coinChange(cs, 6249));
     }
 
     /**
@@ -53,10 +56,10 @@ public class CoinChange {
      */
     public int change(int amount, int[] coins) {
         //dp represent for an amount, how many different ways
-        int[] dp = new int[amount+1];
+        int[] dp = new int[amount + 1];
         dp[0] = 1;
-        for (int i=0; i<coins.length; i++) {
-            for (int j=0; j<dp.length; j++) {
+        for (int i = 0; i < coins.length; i++) {
+            for (int j = 0; j < dp.length; j++) {
                 if (j - coins[i] >= 0) {
                     dp[j] += dp[j - coins[i]];
                 }
@@ -83,34 +86,51 @@ public class CoinChange {
      * Output: -1
      */
     public int coinChange(int[] coins, int amount) {
-        if (coins == null || amount < 0) {
+        //pre load dp with max value.
+        int max = amount + 1;
+        int[] dp = new int[amount+1];
+        Arrays.fill(dp, max);
+        dp[0] = 0;
+        for (int i=1; i<=amount; i++) {
+            for (int j=0; j<coins.length; j++) {
+                if (coins[j] <= i) {
+                    dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+
+    //Certain input will still cause TLE, even with the cache.
+    public int coinChange_topDown(int[] coins, int amount){
+        int[] dp = new int[amount+1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        int ret = coinChangeHelper(coins, amount, dp);
+        if (ret == Integer.MAX_VALUE) {
             return -1;
         }
+        return ret;
+    }
+
+    public int coinChangeHelper(int[] coins, int amount, int[] dp){
         if (amount == 0) {
             return 0;
         }
-
-        if (coins.length == 0 && amount != 0) {
-            return -1;
+        if (dp[amount] != Integer.MAX_VALUE) {
+            return dp[amount];
         }
-        int[] dp = new int[amount+1];
-        dp[0] = 0;
-        for (int i=1; i<=amount; i++) {
-            int min = -1;
-            for (int j=0; j<coins.length; j++) {
-                if (coins[j] <= i && dp[i - coins[j]] != -1) {
-                    int temp = 1 + dp[i - coins[j]];
-                    if (min < 0) {
-                        min = temp;
-                    }
-                    if (temp < min) {
-                        min = temp;
-                    }
+        int fewestNumber = Integer.MAX_VALUE;
+        for (int i=0; i<coins.length; i++) {
+            if (amount >= coins[i]) {
+                int next = coinChangeHelper(coins, amount - coins[i], dp);
+                if (next != Integer.MAX_VALUE) {
+                    fewestNumber = Math.min(fewestNumber, 1 + next);
                 }
+            } else {
+                break;
             }
-            dp[i] = min;
         }
-        return dp[amount];
+        return dp[amount] = fewestNumber;
     }
 
     /**

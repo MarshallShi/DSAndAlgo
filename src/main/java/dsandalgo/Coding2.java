@@ -461,41 +461,6 @@ public class Coding2 {
         return ret;
     }
 
-    public List<List<Integer>> subsetsWithDup(int[] nums) {
-        List<List<Integer>> list = new ArrayList<>();
-        Arrays.sort(nums);
-        backtrack2(list, new ArrayList<>(), nums, 0);
-        return list;
-    }
-
-    private void backtrack2(List<List<Integer>> list , List<Integer> tempList, int [] nums, int start){
-        list.add(new ArrayList<>(tempList));
-        for(int i = start; i < nums.length; i++){
-            if (i>start && nums[i]==nums[i-1]) {
-                continue;
-            }
-            tempList.add(nums[i]);
-            backtrack2(list, tempList, nums, i + 1);
-            tempList.remove(tempList.size() - 1);
-        }
-    }
-
-    public List<List<Integer>> subsets(int[] nums) {
-        List<List<Integer>> list = new ArrayList<>();
-        Arrays.sort(nums);
-        backtrack(list, new ArrayList<>(), nums, 0);
-        return list;
-    }
-
-    private void backtrack(List<List<Integer>> list , List<Integer> tempList, int [] nums, int start){
-        list.add(new ArrayList<>(tempList));
-        for(int i = start; i < nums.length; i++){
-            tempList.add(nums[i]);
-            backtrack(list, tempList, nums, i + 1);
-            tempList.remove(tempList.size() - 1);
-        }
-    }
-
     public String getPermutation(int n, int k) {
         List<Integer> num = new LinkedList<Integer>();
         for (int i = 1; i <= n; i++) num.add(i);
@@ -581,56 +546,6 @@ public class Coding2 {
             }
         }
         return ret;
-    }
-
-    public String addBinary(String a, String b) {
-        int lenA = a.length();
-        int lenB = b.length();
-        int i = lenA - 1, j = lenB - 1;
-        StringBuilder sb = new StringBuilder();
-        int carrier = 0;
-        while (i>=0 && j>=0) {
-            int tempA = Character.getNumericValue(a.charAt(i));
-            int tempB = Character.getNumericValue(b.charAt(j));
-            if (tempA + tempB + carrier> 1) {
-                sb.append((tempA + tempB + carrier)%2);
-                carrier = 1;
-            } else {
-                sb.append(tempA + tempB + carrier);
-                carrier = 0;
-            }
-            i--;
-            j--;
-        }
-        if (i>=0) {
-            while (i>=0) {
-                int tempA = Character.getNumericValue(a.charAt(i));
-                if (tempA + carrier> 1) {
-                    sb.append((tempA + carrier)%2);
-                    carrier = 1;
-                } else {
-                    sb.append(tempA + carrier);
-                    carrier = 0;
-                }
-                i--;
-            }
-        } else {
-            while (j>=0) {
-                int tempB = Character.getNumericValue(b.charAt(j));
-                if (tempB + carrier> 1) {
-                    sb.append((tempB + carrier)%2);
-                    carrier = 1;
-                } else {
-                    sb.append(tempB + carrier);
-                    carrier = 0;
-                }
-                j--;
-            }
-        }
-        if (carrier == 1) {
-            sb.append("1");
-        }
-        return sb.reverse().toString();
     }
 
     public class IndexAndCharacter {
@@ -749,29 +664,6 @@ public class Coding2 {
             return min;
         }
         return 1 + min;
-    }
-
-    /**
-     * traverse the list for i= 0 to n-1 elements
-     * {
-     *   check for sign of A[abs(A[i])] ;
-     *   if positive then
-     *      make it negative by   A[abs(A[i])]=-A[abs(A[i])];
-     *   else  // i.e., A[abs(A[i])] is negative
-     *      this   element (ith element of list) is a repetition
-     * }
-     */
-    public List<Integer> findDuplicates(int[] nums) {
-        List<Integer> ret = new ArrayList<>();
-        for (int i=0; i<nums.length; i++) {
-            int idx = Math.abs(nums[i]) - 1;
-            if (nums[idx] > 0) {
-                nums[idx] = nums[idx] * (-1);
-            } else {
-                ret.add(Math.abs(nums[idx]));
-            }
-        }
-        return ret;
     }
 
     public int pivotIndex(int[] nums) {
@@ -1249,60 +1141,6 @@ public class Coding2 {
             }
         }
         return res;
-    }
-
-    public class Position{
-        public int x;
-        public int y;
-
-        public Position(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-    public int[][] floodFill(int[][] image, int sr, int sc, int newColor) {
-        int row = image.length;
-        int col = image[0].length;
-        int[][] ret = new int[row][col];
-        for(int i=0; i<row; i++) {
-            for(int j=0; j<col; j++){
-                ret[i][j]=image[i][j];
-            }
-        }
-
-        Map<String, Boolean> visitedMap = new HashMap<String, Boolean>();
-        Queue<Position> queue = new LinkedList<Position>();
-        queue.add(new Position(sr, sc));
-        while (!queue.isEmpty()) {
-            Position curPos = ((LinkedList<Position>) queue).pop();
-            if (visitedMap.containsKey(curPos.x+"."+curPos.y)) {
-                continue;
-            } else {
-                visitedMap.putIfAbsent(curPos.x+"."+curPos.y, true);
-                ret[curPos.x][curPos.y] = newColor;
-            }
-            if (curPos.x - 1 >= 0 && !visitedMap.containsKey((curPos.x-1) + "." + curPos.y)) {
-                if (image[curPos.x - 1][curPos.y] == image[curPos.x][curPos.y]) {
-                    ((LinkedList<Position>) queue).add(new Position(curPos.x - 1, curPos.y));
-                }
-            }
-            if (curPos.x + 1 < row && !visitedMap.containsKey((curPos.x+1) + "." + curPos.y)) {
-                if (image[curPos.x + 1][curPos.y] == image[curPos.x][curPos.y]) {
-                    ((LinkedList<Position>) queue).add(new Position(curPos.x + 1, curPos.y));
-                }
-            }
-            if (curPos.y - 1 >= 0 && !visitedMap.containsKey(curPos.x + "." + (curPos.y - 1))) {
-                if (image[curPos.x][curPos.y - 1] == image[curPos.x][curPos.y]) {
-                    ((LinkedList<Position>) queue).add(new Position(curPos.x, curPos.y - 1));
-                }
-            }
-            if (curPos.y + 1 < col && !visitedMap.containsKey(curPos.x + "." + (curPos.y + 1))) {
-                if (image[curPos.x][curPos.y + 1] == image[curPos.x][curPos.y]) {
-                    ((LinkedList<Position>) queue).add(new Position(curPos.x, curPos.y + 1));
-                }
-            }
-        }
-        return ret;
     }
 
     public int nthUglyNumber(int n, int[] primes) {

@@ -18,6 +18,129 @@ public class HardDPExe {
 
 
     /**
+     * https://leetcode.com/problems/number-of-ways-to-paint-n-3-grid/
+     * @param n
+     * @return
+     */
+    //We consider the state of the first row,
+    //pattern 121: 121, 131, 212, 232, 313, 323.
+    //pattern 123: 123, 132, 213, 231, 312, 321.
+    //So we initialize a121 = 6, a123 = 6.
+    //
+    //We consider the next possible for each pattern:
+    //Patter 121 can be followed by: 212, 213, 232, 312, 313
+    //Patter 123 can be followed by: 212, 231, 312, 232
+    //
+    //121 => three 121, two 123
+    //123 => two 121, two 123
+    //
+    //So we can write this dynamic programming transform equation:
+    //b121 = a121 * 3 + a123 * 2
+    //b123 = a121 * 2 + a123 * 2
+    public int numOfWays(int n) {
+        long a121 = 6, a123 = 6, b121, b123, mod = (long)1e9 + 7;
+        for (int i = 1; i < n; i++) {
+            b121 = a121 * 3 + a123 * 2;
+            b123 = a121 * 2 + a123 * 2;
+            a121 = b121 % mod;
+            a123 = b123 % mod;
+        }
+        return (int)((a121 + a123) % mod);
+    }
+
+    /**
+     * https://leetcode.com/problems/interleaving-string/
+     *
+     * Given s1, s2, s3, find whether s3 is formed by the interleaving of s1 and s2.
+     *
+     * Example 1:
+     *
+     * Input: s1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"
+     * Output: true
+     * @param s1
+     * @param s2
+     * @param s3
+     * @return
+     */
+    public boolean isInterleave(String s1, String s2, String s3) {
+        char[] c1 = s1.toCharArray(), c2 = s2.toCharArray(), c3 = s3.toCharArray();
+        int m = s1.length(), n = s2.length();
+        if (m + n != s3.length()) {
+            return false;
+        }
+        return isInterleaveDFS(c1, c2, c3, 0, 0, 0, new boolean[m + 1][n + 1]);
+    }
+
+    private boolean isInterleaveDFS(char[] c1, char[] c2, char[] c3, int i, int j, int k, boolean[][] invalid) {
+        if (invalid[i][j]) {
+            return false;
+        }
+        if (k == c3.length) {
+            return true;
+        }
+        boolean validFromC1 = false;
+        if (i < c1.length && c1[i] == c3[k]) {
+            validFromC1 = isInterleaveDFS(c1, c2, c3, i + 1, j, k + 1, invalid);
+        }
+        boolean validFromC2 = false;
+        if (j < c2.length && c2[j] == c3[k]) {
+            validFromC2 = isInterleaveDFS(c1, c2, c3, i, j + 1, k + 1, invalid);
+        }
+        boolean valid = validFromC1 || validFromC2;
+        if (!valid) {
+            invalid[i][j] = true;
+        }
+        return valid;
+    }
+
+    /**
+     * https://leetcode.com/problems/unique-binary-search-trees/
+     * Given n, how many structurally unique BST's (binary search trees) that store values 1 ... n?
+     *
+     * Example:
+     *
+     * Input: 3
+     * Output: 5
+     * Explanation:
+     * Given n = 3, there are a total of 5 unique BST's:
+     *
+     *    1         3     3      2      1
+     *     \       /     /      / \      \
+     *      3     2     1      1   3      2
+     *     /     /       \                 \
+     *    2     1         2                 3
+     */
+    //https://leetcode.com/problems/unique-binary-search-trees/discuss/31666/DP-Solution-in-6-lines-with-explanation.-F(i-n)-G(i-1)-*-G(n-i)
+    //F(i, n) = G(i-1) * G(n-i)	1 <= i <= n
+    public int numTrees(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+
+        for (int i=2; i<=n; i++) {
+            int tempSum = 0;
+            for (int j=1; j<=i; j++) {
+                tempSum = tempSum + dp[j-1]*dp[i-j];
+            }
+            dp[i] = tempSum;
+        }
+        return dp[n];
+    }
+
+    public int numTrees_recursive(int n) {
+        return numTreesHelper(1, n);
+    }
+
+    private int numTreesHelper(int lo, int hi) {
+        if (lo >= hi) return 1;
+        int total = 0;
+        for (int i = lo; i <= hi; i++) {
+            total += numTreesHelper(lo, i - 1) * numTreesHelper(i + 1, hi);
+        }
+        return total;
+    }
+
+    /**
      * https://leetcode.com/problems/stone-game-iii/
      * Alice and Bob continue their games with piles of stones. There are several stones arranged in a row, and each stone has an associated value which is an integer given in the array stoneValue.
      *

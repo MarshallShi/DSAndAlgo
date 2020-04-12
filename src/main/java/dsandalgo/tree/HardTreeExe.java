@@ -201,14 +201,12 @@ public class HardTreeExe {
      *
      * @param root
      */
-    public TreeNode firstDisorder = null;
-    public TreeNode secondDisorder = null;
-    public TreeNode prev = null;
+    private TreeNode firstDisorder = null;
+    private TreeNode secondDisorder = null;
+    private TreeNode prev = null;
     public void recoverTree(TreeNode root) {
-
-        //inorder travse, the pre being set to the min value to avoid first compare error.
+        //inorder traverse, the pre being set to the min value to avoid first compare error.
         inorderTraverse(root);
-
         //exchange value between the two disordered tree node.
         if (firstDisorder != null && secondDisorder != null) {
             int temp = firstDisorder.val;
@@ -217,27 +215,22 @@ public class HardTreeExe {
         }
     }
 
-    private void inorderTraverse(TreeNode root) {
-        if (root == null){
+    private void inorderTraverse(TreeNode node) {
+        if (node == null){
             return;
         }
-
-        inorderTraverse(root.left);
-
+        inorderTraverse(node.left);
         // Start of "do some business",
         // If first element has not been found, assign it to prevElement (refer to 6 in the example above)
-        if (firstDisorder == null && (prev == null || prev.val >= root.val)) {
+        if (firstDisorder == null && (prev == null || prev.val >= node.val)) {
             firstDisorder = prev;
         }
-
         // If first element is found, assign the second element to the root (refer to 2 in the example above)
-        if (firstDisorder != null && prev.val >= root.val) {
-            secondDisorder = root;
+        if (firstDisorder != null && prev.val >= node.val) {
+            secondDisorder = node;
         }
-
-        prev = root;
-
+        prev = node;
         // End of "do some business"
-        inorderTraverse(root.right);
+        inorderTraverse(node.right);
     }
 }

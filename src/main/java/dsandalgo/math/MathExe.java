@@ -28,6 +28,67 @@ public class MathExe {
     }
 
     /**
+     * https://leetcode.com/problems/happy-number/
+     * Write an algorithm to determine if a number n is "happy".
+     *
+     * A happy number is a number defined by the following process: Starting with any positive integer, replace the number by the sum of the squares of its digits, and repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1. Those numbers for which this process ends in 1 are happy numbers.
+     *
+     * Return True if n is a happy number, and False if not.
+     *
+     * Example:
+     *
+     * Input: 19
+     * Output: true
+     * Explanation:
+     * 12 + 92 = 82
+     * 82 + 22 = 68
+     * 62 + 82 = 100
+     * 12 + 02 + 02 = 1
+     */
+    public boolean isHappy(int n) {
+        if (n == 1 || n == 7) {
+            return true;
+        } else {
+            if (n < 10) {
+                return false;
+            }
+        }
+        int m = 0;
+        while (n != 0) {
+            int tail = n % 10;
+            m += tail * tail;
+            n = n / 10;
+        }
+        return isHappy(m);
+    }
+
+    /**
+     * https://leetcode.com/problems/count-primes/
+     * Count the number of prime numbers less than a non-negative number, n.
+     *
+     * Example:
+     *
+     * Input: 10
+     * Output: 4
+     * Explanation: There are 4 prime numbers less than 10, they are 2, 3, 5, 7.
+     */
+    //Trick is to reverse thinking, rule out the non prime.
+    public int countPrimes(int n) {
+        boolean[] notPrime = new boolean[n];
+        int count = 0;
+        for (int i = 2; i < n; i++) {
+            if (!notPrime[i]) {
+                count++;
+                for (int j = i; j <= (n - 1) / i; j++) {
+                    int v = i * j;
+                    notPrime[v] = true;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
      * https://leetcode.com/problems/palindrome-number/
      * @param x
      * @return
