@@ -104,6 +104,7 @@ public class LongestIncSeq {
         for (int num : nums) {
             int pile = Collections.binarySearch(piles, num);
             if (pile < 0) {
+                ////~(bitwise compliment)Binary Ones Complement Operator is unary and has the effect of 'flipping' bits.
                 pile = ~pile;
             }
             if (pile == piles.size()) {
@@ -113,6 +114,36 @@ public class LongestIncSeq {
             }
         }
         return piles.size();
+    }
+
+    public int lengthOfLIS_dp(int[] nums) {
+        if (nums == null) {
+            return 0;
+        }
+        if (nums.length == 0) {
+            return 0;
+        }
+        if (nums.length == 1) {
+            return 1;
+        }
+        int[] dp = new int[nums.length];
+        for (int i=0; i<nums.length; i++) {
+            dp[i] = 1;
+        }
+        int max = 0;
+        for (int i = 1; i<nums.length; i++) {
+            int cur = dp[i];
+            for (int j=0; j<i; j++) {
+                if (nums[i] > nums[j] && dp[j] + 1 > cur) {
+                    cur = dp[j] + 1;
+                }
+            }
+            dp[i] = cur;
+            if (dp[i] > max) {
+                max = dp[i];
+            }
+        }
+        return max;
     }
 
     /**

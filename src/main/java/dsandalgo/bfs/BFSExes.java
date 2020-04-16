@@ -1435,9 +1435,40 @@ public class BFSExes {
      * @param K
      * @return
      */
-    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        Map<Integer, Map<Integer, Integer>> prices = new HashMap<>();
+        for (int[] f : flights) {
+            if (!prices.containsKey(f[0])) {
+                prices.put(f[0], new HashMap<>());
+            }
+            prices.get(f[0]).put(f[1], f[2]);
+        }
+        //PQ sorted by cost, smallest comes first.
+        Queue<int[]> pq = new PriorityQueue<>((a, b) -> (Integer.compare(a[0], b[0])));
+        //array in the PQ: 0: price, 1: city, 2: stops.
+        pq.add(new int[]{0, src, k + 1});
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int price = cur[0];
+            int city = cur[1];
+            int stops = cur[2];
+            if (city == dst) {
+                //first met dst must be the cheapest price.
+                return price;
+            }
+            if (stops > 0) {
+                Map<Integer, Integer> adj = prices.getOrDefault(city, new HashMap<>());
+                for (int a : adj.keySet()) {
+                    pq.add(new int[]{price + adj.get(a), a, stops - 1});
+                }
+            }
+        }
+        return -1;
+    }
+
+    public int findCheapestPrice_naive_BFS(int n, int[][] flights, int src, int dst, int K) {
         Map<Integer, List<int[]>> flightsMap = new HashMap<Integer, List<int[]>>();
-        for (int i=0; i<flights.length; i++) {
+        for (int i = 0; i < flights.length; i++) {
             if (!flightsMap.containsKey(flights[i][0])) {
                 flightsMap.put(flights[i][0], new ArrayList<int[]>());
             }
@@ -1456,15 +1487,15 @@ public class BFSExes {
         int ret = Integer.MAX_VALUE;
         while (!queue.isEmpty()) {
             int s = queue.size();
-            for (int i=0; i<s; i++) {
+            for (int i = 0; i < s; i++) {
                 int[] node = queue.poll();
-                if (level <= K+1 && node[0] == dst) {
+                if (level <= K + 1 && node[0] == dst) {
                     ret = Math.min(ret, node[1]);
                     continue;
                 }
                 if (flightsMap.containsKey(node[0])) {
                     List<int[]> dests = flightsMap.get(node[0]);
-                    for (int j = 0; j<dests.size(); j++) {
+                    for (int j = 0; j < dests.size(); j++) {
                         int[] nextdestPlusCost = new int[2];
                         nextdestPlusCost[0] = dests.get(j)[0];
                         nextdestPlusCost[1] = node[1] + dests.get(j)[1];
@@ -1476,7 +1507,7 @@ public class BFSExes {
                 }
             }
             level++;
-            if (level>K+1) {
+            if (level > K + 1) {
                 break;
             }
         }

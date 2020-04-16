@@ -8,10 +8,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 
 public class HashMapExe {
+
+    public HashMapExe(){
+
+    }
+
 
     public static void main(String[] args) {
         HashMapExe exe = new HashMapExe();
@@ -23,11 +27,6 @@ public class HashMapExe {
 
         exe.maxEqualFreq(groupSizes);
     }
-
-    public HashMapExe(){
-
-    }
-
 
     /**
      * https://leetcode.com/problems/valid-sudoku/

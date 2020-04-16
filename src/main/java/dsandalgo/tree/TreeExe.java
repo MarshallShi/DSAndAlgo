@@ -27,6 +27,249 @@ public class TreeExe {
         System.out.println(n);
     }
 
+    /**
+     * https://leetcode.com/problems/symmetric-tree/
+     * Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
+     *
+     * For example, this binary tree [1,2,2,3,4,4,3] is symmetric:
+     *
+     *     1
+     *    / \
+     *   2   2
+     *  / \ / \
+     * 3  4 4  3
+     *
+     *
+     * But the following [1,2,2,null,3,null,3] is not:
+     *
+     *     1
+     *    / \
+     *   2   2
+     *    \   \
+     *    3    3
+     */
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        return isSymmetricHelper(root.left, root.right);
+    }
+
+    private boolean isSymmetricHelper(TreeNode node1, TreeNode node2) {
+        if (node1 == null && node2 == null) {
+            return true;
+        }
+        if (node1 == null || node2 == null) {
+            return false;
+        }
+        return isSymmetricHelper(node1.left, node2.right) && isSymmetricHelper(node1.right, node2.left) && (node1.val == node2.val);
+    }
+
+    public boolean isSymmetric_iter(TreeNode root) {
+        if (root == null) return true;
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        stack.push(root.left);
+        stack.push(root.right);
+        while (!stack.empty()) {
+            TreeNode right = stack.pop();
+            TreeNode left = stack.pop();
+            if (left == null && right == null) {
+                continue;
+            } else {
+                if (left == null || right == null || right.val != left.val) {
+                    return false;
+                }
+            }
+            stack.push(left.left);
+            stack.push(right.right);
+            stack.push(left.right);
+            stack.push(right.left);
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/path-sum/
+     * Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.
+     * Note: A leaf is a node with no children.
+     */
+    public boolean hasPathSum(TreeNode root, int sum) {
+        if (root == null) {
+            return false;
+        }
+        if (root.left == null && root.right == null && sum - root.val == 0) {
+            return true;
+        }
+        return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
+    }
+
+    /**
+     * https://leetcode.com/problems/path-sum-ii/
+     * Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
+     *
+     * Note: A leaf is a node with no children.
+     *
+     * Example:
+     *
+     * Given the below binary tree and sum = 22,
+     *
+     *       5
+     *      / \
+     *     4   8
+     *    /   / \
+     *   11  13  4
+     *  /  \    / \
+     * 7    2  5   1
+     * Return:
+     *
+     * [
+     *    [5,4,11,2],
+     *    [5,8,4,5]
+     * ]
+     */
+    public List<List<Integer>> pathSum_ii(TreeNode root, int sum) {
+        List<List<Integer>> pathSumPathList = new ArrayList<List<Integer>>();
+        pathSumDFS(pathSumPathList, new ArrayList<Integer>(), root, sum);
+        return pathSumPathList;
+    }
+
+    private void pathSumDFS(List<List<Integer>> pathSumPathList, List<Integer> temp, TreeNode node, int sum ){
+        if (sum == node.val && node.left == null && node.right == null) {
+            temp.add(node.val);
+            pathSumPathList.add(new ArrayList<>(temp));
+            temp.remove(temp.size()-1);
+            return;
+        }
+        temp.add(node.val);
+        if (node.left != null) {
+            pathSumDFS(pathSumPathList, temp, node.left, sum - node.val);
+        }
+        if (node.right != null) {
+            pathSumDFS(pathSumPathList, temp, node.right, sum - node.val);
+        }
+        temp.remove(temp.size()-1);
+    }
+
+    /**
+     * https://leetcode.com/problems/path-sum-iii/
+     * You are given a binary tree in which each node contains an integer value.
+     *
+     * Find the number of paths that sum to a given value.
+     *
+     * The path does not need to start or end at the root or a leaf, but it must go downwards (traveling only from parent nodes to child nodes).
+     *
+     * The tree has no more than 1,000 nodes and the values are in the range -1,000,000 to 1,000,000.
+     *
+     * Example:
+     *
+     * root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+     *
+     *       10
+     *      /  \
+     *     5   -3
+     *    / \    \
+     *   3   2   11
+     *  / \   \
+     * 3  -2   1
+     *
+     * Return 3. The paths that sum to 8 are:
+     *
+     * 1.  5 -> 3
+     * 2.  5 -> 2 -> 1
+     * 3. -3 -> 11
+     */
+    public int pathSum_iii(TreeNode root, int sum) {
+        Map<Integer, Integer> preSumCount = new HashMap<>();
+        preSumCount.put(0,1);
+        return pathSumIIIHelper(root, 0, sum, preSumCount);
+    }
+
+    private int pathSumIIIHelper(TreeNode root, int currSum, int target, Map<Integer, Integer> preSumCount) {
+        if (root == null) {
+            return 0;
+        }
+        currSum += root.val;
+        //Check if there is pre existing needed sum to get to target.
+        int res = preSumCount.getOrDefault(currSum - target, 0);
+        //Put curSum into the map for next nodes to check.
+        preSumCount.put(currSum, preSumCount.getOrDefault(currSum, 0) + 1);
+        //Recursively get the children nodes result.
+        res += pathSumIIIHelper(root.left, currSum, target, preSumCount) + pathSumIIIHelper(root.right, currSum, target, preSumCount);
+        //Trick: restore the map, as now it goes to upper layer.
+        preSumCount.put(currSum, preSumCount.get(currSum) - 1);
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/path-sum-iv/
+     * If the depth of a tree is smaller than 5, then this tree can be represented by a list of three-digits integers.
+     *
+     * For each integer in this list:
+     *
+     * The hundreds digit represents the depth D of this node, 1 <= D <= 4.
+     * The tens digit represents the position P of this node in the level it belongs to, 1 <= P <= 8. The position is the same as that in a full binary tree.
+     * The units digit represents the value V of this node, 0 <= V <= 9.
+     *
+     *
+     * Given a list of ascending three-digits integers representing a binary tree with the depth smaller than 5, you need to return the sum of all paths from the root towards the leaves.
+     *
+     * Example 1:
+     *
+     * Input: [113, 215, 221]
+     * Output: 12
+     * Explanation:
+     * The tree that the list represents is:
+     *     3
+     *    / \
+     *   5   1
+     *
+     * The path sum is (3 + 5) + (3 + 1) = 12.
+     *
+     *
+     * Example 2:
+     *
+     * Input: [113, 221]
+     * Output: 4
+     * Explanation:
+     * The tree that the list represents is:
+     *     3
+     *      \
+     *       1
+     *
+     * The path sum is (3 + 1) = 4.
+     */
+
+    public int pathSum(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        Map<Integer, Integer> tree = new HashMap<>();
+        for (int num : nums) {
+            int key = num / 10;
+            int value = num % 10;
+            tree.put(key, value);
+        }
+        return traverse(nums[0] / 10, 0, tree);
+    }
+
+    private int traverse(int nodeId, int preSum, Map<Integer, Integer> tree) {
+        int level = nodeId / 10;
+        int pos = nodeId % 10;
+        int left = (level + 1) * 10 + pos * 2 - 1;
+        int right = (level + 1) * 10 + pos * 2;
+        int curSum = preSum + tree.get(nodeId);
+        int tempSum = 0;
+        if (!tree.containsKey(left) && !tree.containsKey(right)) {
+            tempSum += curSum;
+        }
+        if (tree.containsKey(left)) {
+            tempSum += traverse(left, curSum, tree);
+        }
+        if (tree.containsKey(right)) {
+            tempSum += traverse(right, curSum, tree);
+        }
+        return tempSum;
+    }
 
     /**
      * https://leetcode.com/problems/boundary-of-binary-tree/
@@ -857,76 +1100,6 @@ public class TreeExe {
             preorder[++i] = p;
         }
         return true;
-    }
-
-    /**
-     * https://leetcode.com/problems/path-sum-iv/
-     * If the depth of a tree is smaller than 5, then this tree can be represented by a list of three-digits integers.
-     *
-     * For each integer in this list:
-     *
-     * The hundreds digit represents the depth D of this node, 1 <= D <= 4.
-     * The tens digit represents the position P of this node in the level it belongs to, 1 <= P <= 8. The position is the same as that in a full binary tree.
-     * The units digit represents the value V of this node, 0 <= V <= 9.
-     *
-     *
-     * Given a list of ascending three-digits integers representing a binary tree with the depth smaller than 5, you need to return the sum of all paths from the root towards the leaves.
-     *
-     * Example 1:
-     *
-     * Input: [113, 215, 221]
-     * Output: 12
-     * Explanation:
-     * The tree that the list represents is:
-     *     3
-     *    / \
-     *   5   1
-     *
-     * The path sum is (3 + 5) + (3 + 1) = 12.
-     *
-     *
-     * Example 2:
-     *
-     * Input: [113, 221]
-     * Output: 4
-     * Explanation:
-     * The tree that the list represents is:
-     *     3
-     *      \
-     *       1
-     *
-     * The path sum is (3 + 1) = 4.
-     */
-    int pathSumAns = 0;
-    Map<Integer, Integer> tree = new HashMap<>();
-    public int pathSum(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return 0;
-        }
-        for (int num : nums) {
-            int key = num / 10;
-            int value = num % 10;
-            tree.put(key, value);
-        }
-        traverse(nums[0] / 10, 0);
-        return pathSumAns;
-    }
-    private void traverse(int root, int preSum) {
-        int level = root / 10;
-        int pos = root % 10;
-        int left = (level + 1) * 10 + pos * 2 - 1;
-        int right = (level + 1) * 10 + pos * 2;
-        int curSum = preSum + tree.get(root);
-        if (!tree.containsKey(left) && !tree.containsKey(right)) {
-            pathSumAns += curSum;
-            return;
-        }
-        if (tree.containsKey(left)) {
-            traverse(left, curSum);
-        }
-        if (tree.containsKey(right)) {
-            traverse(right, curSum);
-        }
     }
 
     /**

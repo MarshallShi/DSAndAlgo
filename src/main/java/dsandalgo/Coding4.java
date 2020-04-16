@@ -760,28 +760,6 @@ public class Coding4 {
         return false;
     }
 
-    public int maxProduct(int[] nums) {
-        int max = 0;
-        int curMax = Integer.MIN_VALUE;
-        int curMin = Integer.MAX_VALUE;
-        for (int i=0; i<nums.length; i++) {
-            if (i==0) {
-                curMax = Math.max(nums[i], curMax);
-                curMin = Math.min(nums[i], curMin);
-            } else {
-                if (nums[i] < 0) {
-                    int temp = curMax;
-                    curMax = curMin;
-                    curMin = temp;
-                }
-                curMax = Math.max(nums[i], curMax * nums[i]);
-                curMin = Math.min(nums[i], curMin * nums[i]);
-            }
-            max = Math.max(max, curMax);
-        }
-        return max;
-    }
-
     public class TreeNode {
       int val;
       TreeNode left;
@@ -900,38 +878,6 @@ public class Coding4 {
         }
         return res;
     }
-
-    /*
-    Input: [3,30,34,5,9]
-    Output: "9534330"
-     */
-    public String largestNumber(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return "";
-        }
-        PriorityQueue<String> pq = new PriorityQueue<String>(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                String str1 = o1 + o2;
-                String str2 = o2 + o1;
-                return str2.compareTo(str1);
-            }
-        });
-
-        for (int i=0; i<nums.length; i++) {
-            pq.offer(nums[i] + "");
-        }
-        StringBuilder sb = new StringBuilder();
-        if (pq.peek().equals("0")) {
-            return "0";
-        }
-        while (!pq.isEmpty()) {
-            sb.append(pq.poll());
-        }
-        return sb.toString();
-    }
-
-
 
     public ListNode createNode1(){
         ListNode node1 = new ListNode(2);

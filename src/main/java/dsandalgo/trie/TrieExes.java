@@ -9,7 +9,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class TrieExes {
 
@@ -389,8 +391,8 @@ public class TrieExes {
      * @param searchWord
      * @return
      */
-
-    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+    //Solution 1: Trie
+    public List<List<String>> suggestedProducts_trie(String[] products, String searchWord) {
         ProductTrieNode root = new ProductTrieNode();
         for (String word : products) {
             char[] arr = word.toCharArray();
@@ -416,6 +418,54 @@ public class TrieExes {
             ans.add(root == null ? Arrays.asList() : root.suggestion); // add it if there exist products with current prefix.
         }
         return ans;
+    }
+
+    //Solution 2: Priority Queue to always keep the top three matching
+    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        PriorityQueue<String> pq = new PriorityQueue<>(3, (s1, s2) -> s1.compareTo(s2));
+        List<List<String>> list = new ArrayList<>();
+        for (int i = 1; i <= searchWord.length(); i++) {
+            String temp = searchWord.substring(0, i);
+            for (String s : products) {
+                if (s.startsWith(temp)) {
+                    pq.offer(s);
+                }
+            }
+            List<String> tempList = new ArrayList<>();
+            for (int j = 0; j < 3; j++) {
+                if (pq.peek() != null) {
+                    tempList.add(pq.poll());
+                }
+            }
+            pq.clear();
+            list.add(tempList);
+        }
+        return list;
+    }
+
+    //Solution 3: sorting and apply binary search.
+    public List<List<String>> suggestedProducts_sort(String[] products, String searchWord) {
+        List<List<String>> res = new ArrayList<>();
+        TreeMap<String, Integer> map = new TreeMap<>();
+        Arrays.sort(products);
+        List<String> productsList = Arrays.asList(products);
+        for (int i = 0; i < products.length; i++) {
+            map.put(products[i], i);
+        }
+        String key = "";
+        for (char c : searchWord.toCharArray()) {
+            key += c;
+            String ceiling = map.ceilingKey(key);
+            String floor = map.floorKey(key + "~");
+            if (ceiling == null || floor == null) {
+                break;
+            }
+            res.add(productsList.subList(map.get(ceiling), Math.min(map.get(ceiling) + 3, map.get(floor) + 1)));
+        }
+        while (res.size() < searchWord.length()) {
+            res.add(new ArrayList<>());
+        }
+        return res;
     }
 
     /**

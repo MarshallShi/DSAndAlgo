@@ -435,23 +435,31 @@ public class BitExe {
 
     /**
      * https://leetcode.com/problems/divide-two-integers/
+     *
+     * Given two integers dividend and divisor, divide two integers without using multiplication, division and mod operator.
+     *
+     * Return the quotient after dividing dividend by divisor.
+     *
+     * The integer division should truncate toward zero, which means losing its fractional part. For example, truncate(8.345) = 8 and truncate(-2.7335) = -2.
      */
     public int divide(int dividend, int divisor) {
-        if(dividend == Integer.MIN_VALUE && divisor == -1){
+        if (dividend == Integer.MIN_VALUE && divisor == -1) {
             return Integer.MAX_VALUE;
         }
         int a = Math.abs(dividend);
         int b = Math.abs(divisor);
         int res = 0;
-        while (a - b >= 0){
+        while (a - b >= 0) {
             int x = 0;
-            while( a - (b << 1 << x) >= 0){
+            //increase the x, to multiply b till it is bigger than a.
+            while (a - (b << 1 << x) >= 0) {
                 x++;
             }
             res += 1 << x;
+            //subtract the b << x in a, start over again.
             a -= b << x;
         }
-        return (dividend >= 0) == (divisor >= 0) ? res :-res;
+        return (dividend >= 0) == (divisor >= 0) ? res : -res;
     }
 
     /**

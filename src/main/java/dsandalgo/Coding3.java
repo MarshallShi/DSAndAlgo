@@ -213,29 +213,6 @@ public class Coding3 {
         return node1;
     }
 
-    public List<List<Integer>> pathSum(TreeNode root, int sum) {
-        List<List<Integer>> pathSumPathList = new ArrayList<List<Integer>>();
-        pathSumDFS(pathSumPathList, new ArrayList<Integer>(), root, sum);
-        return pathSumPathList;
-    }
-
-    public void pathSumDFS(List<List<Integer>> pathSumPathList, List<Integer> temp, TreeNode node, int sum ){
-        if (sum == node.val && node.left == null && node.right == null) {
-            temp.add(node.val);
-            pathSumPathList.add(new ArrayList<>(temp));
-            temp.remove(temp.size()-1);
-            return;
-        }
-        temp.add(node.val);
-        if (node.left != null) {
-            pathSumDFS(pathSumPathList, temp, node.left, sum - node.val);
-        }
-        if (node.right != null) {
-            pathSumDFS(pathSumPathList, temp, node.right, sum - node.val);
-        }
-        temp.remove(temp.size()-1);
-    }
-
     /**
      * Example:
      *

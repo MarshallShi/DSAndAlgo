@@ -1526,10 +1526,6 @@ public class Coding5 {
       TreeNode(int x) { val = x; }
     }
 
-    public boolean hasPathSum(TreeNode root, int sum) {
-        return helper(root, sum);
-    }
-
     public List<Integer> preorderTraversal(TreeNode root) {
         List<Integer> ret = new ArrayList<Integer>();
         if (root == null) {
@@ -1563,26 +1559,6 @@ public class Coding5 {
             }
         }
         return rets;
-    }
-
-    public boolean helper(TreeNode node, int sum){
-        if (node.left == null && node.right == null && node.val == sum) {
-            return true;
-        } else {
-            if (node.left != null && node.right !=null) {
-                return helper(node.left, sum - node.val) || helper(node.right, sum - node.val);
-            } else {
-                if (node.left != null && node.right ==null) {
-                    return helper(node.left, sum - node.val);
-                } else {
-                    if (node.left == null && node.right !=null) {
-                        return helper(node.right, sum - node.val);
-                    } else {
-                        return false;
-                    }
-                }
-            }
-        }
     }
 
     public static int minSumInGrid(int[][] grid) {
@@ -1668,80 +1644,6 @@ public class Coding5 {
             }
         }
         return dp[m-1][n-1];
-    }
-
-    public static int lengthOfLISOLOGN(int[] nums) {
-        if (nums == null) {
-            return 0;
-        }
-        if (nums.length == 0) {
-            return 0;
-        }
-        if (nums.length == 1) {
-            return 1;
-        }
-        int[] dp = new int[nums.length];
-        for (int i=0; i<nums.length; i++) {
-            dp[i] = 1;
-        }
-        int max = 0;
-        for (int i = 1; i<nums.length; i++) {
-            int cur = dp[i];
-            for (int j=0; j<i; j++) {
-                if (nums[i] > nums[j] && dp[j] + 1 > cur) {
-                    cur = dp[j] + 1;
-                }
-            }
-            dp[i] = cur;
-            if (dp[i] > max) {
-                max = dp[i];
-            }
-        }
-        return max;
-    }
-
-    public static boolean isSubsequence(String s, String t) {
-        int sidx = 0, tidx = 0;
-        while (sidx < s.length()) {
-            boolean foundCur = false;
-            while (tidx < t.length()) {
-                if (t.charAt(tidx) == s.charAt(sidx)) {
-                    sidx++;
-                    foundCur = true;
-                }
-                tidx++;
-                if (foundCur) {
-                    break;
-                }
-            }
-            if (!foundCur) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static int lengthOfLIS(int[] nums) {
-        int[] dp = new int[nums.length];
-        for (int i=0; i<nums.length; i++) {
-            dp[i] = 1;
-        }
-        for (int i = 1; i<nums.length; i++) {
-            int cur = dp[i];
-            for (int j=0; j<i; j++) {
-                if (nums[i] > nums[j] && dp[j] + 1 > cur) {
-                    cur = dp[j] + 1;
-                }
-            }
-            dp[i] = cur;
-        }
-        int max = 0;
-        for (int i=0; i<nums.length; i++) {
-            if (dp[i] > max) {
-                max = dp[i];
-            }
-        }
-        return max;
     }
 
     public static int minCostClimbingStairs(int[] cost) {

@@ -1841,35 +1841,77 @@ public class HardDPExe {
      * 1 <= startTime[i] < endTime[i] <= 10^9
      * 1 <= profit[i] <= 10^4
      */
+//    public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {
+//        int[][] items = new int[startTime.length][3];
+//        for (int i = 0; i < startTime.length; i++) {
+//            items[i] = new int[] {startTime[i], endTime[i], profit[i]};
+//        }
+//        // sort by endTime
+//        Arrays.sort(items, (a1, a2)->a1[1] - a2[1]);
+//        List<Integer> dpEndTime = new ArrayList<>();
+//        List<Integer> dpProfit = new ArrayList<>();
+//        // dynamic build up these two in the loop to track current max.
+//        dpEndTime.add(0);
+//        dpProfit.add(0);
+//        for (int[] item : items) {
+//            int start = item[0], end = item[1], seProfit = item[2];
+//            // find previous endTime index
+//            int prevIdx = Collections.binarySearch(dpEndTime, start + 1);
+//            if (prevIdx < 0) {
+//                prevIdx = -prevIdx - 1;
+//            }
+//            prevIdx--;
+//            //current max profit : max(use current, not use current).
+//            int currProfit = dpProfit.get(prevIdx) + seProfit, maxProfit = dpProfit.get(dpProfit.size() - 1);
+//            if (currProfit > maxProfit) {
+//                dpProfit.add(currProfit);
+//                dpEndTime.add(end);
+//            }
+//        }
+//        return dpProfit.get(dpProfit.size() - 1);
+//    }
+
     public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {
-        int[][] items = new int[startTime.length][3];
+        int[][] jobs = new int[startTime.length][3];
         for (int i = 0; i < startTime.length; i++) {
-            items[i] = new int[] {startTime[i], endTime[i], profit[i]};
+            jobs[i] = new int[]{startTime[i], endTime[i], profit[i]};
         }
         // sort by endTime
-        Arrays.sort(items, (a1, a2)->a1[1] - a2[1]);
-        List<Integer> dpEndTime = new ArrayList<>();
-        List<Integer> dpProfit = new ArrayList<>();
-        // dynamic build up these two in the loop to track current max.
-        dpEndTime.add(0);
-        dpProfit.add(0);
-        for (int[] item : items) {
-            int start = item[0], end = item[1], seProfit = item[2];
+        Arrays.sort(jobs, (a1, a2) -> a1[1] - a2[1]);
+        // dp array to track till i's job, the max profit.
+        int[] dp = new int[jobs.length];
+        dp[0] = jobs[0][2];
+        for (int i = 1; i < jobs.length; i++) {
+            int start = jobs[i][0], end = jobs[i][1], curProfit = jobs[i][2];
             // find previous endTime index
-            int prevIdx = Collections.binarySearch(dpEndTime, start + 1);
-            if (prevIdx < 0) {
-                prevIdx = -prevIdx - 1;
-            }
-            prevIdx--;
-            //current max profit : max(use current, not use current).
-            int currProfit = dpProfit.get(prevIdx) + seProfit, maxProfit = dpProfit.get(dpProfit.size() - 1);
-            if (currProfit > maxProfit) {
-                dpProfit.add(currProfit);
-                dpEndTime.add(end);
+            int prevIdx = binarySearchJobs(jobs, i);
+            // current max profit : max(use current, not use current).
+            if (prevIdx != -1) {
+                dp[i] = Math.max(dp[prevIdx] + curProfit, dp[i - 1]);
+            } else {
+                dp[i] = Math.max(curProfit, dp[i - 1]);
             }
         }
-        return dpProfit.get(dpProfit.size() - 1);
+        return dp[dp.length - 1];
     }
+
+    private int binarySearchJobs(int[][] jobs, int index) {
+        int start = 0, end = index - 1;
+        while (start <= end) {
+            int mid = start + (end - start) / 2;
+            if (jobs[mid][1] <= jobs[index][0]) {
+                if (jobs[mid + 1][1] <= jobs[index][0]) {
+                    start = mid + 1;
+                } else {
+                    return mid;
+                }
+            } else {
+                end = mid - 1;
+            }
+        }
+        return -1;
+    }
+
 
     /**
      * https://leetcode.com/problems/minimum-difficulty-of-a-job-schedule/

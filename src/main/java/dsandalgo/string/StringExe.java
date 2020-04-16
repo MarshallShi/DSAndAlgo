@@ -18,7 +18,8 @@ public class StringExe {
     public static void main(String[] args) {
         StringExe exe = new StringExe();
         String[] ranks = {"WXYZ","XYZW"};
-        //System.out.println(exe.longestPrefix("blablabla"));
+        int[][] shift = {{1, 1},{1, 1}};
+        //System.out.println(exe.stringShift("abcdefg", shift));
     }
 
     /**

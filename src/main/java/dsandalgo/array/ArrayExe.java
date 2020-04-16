@@ -23,9 +23,42 @@ public class ArrayExe {
         //System.out.println(exe.countElements(c));
     }
 
+    /**
+     * https://leetcode.com/problems/maximize-distance-to-closest-person/
+     * @param seats
+     * @return
+     */
+    public int maxDistToClosest(int[] seats) {
+        int res = 0, n = seats.length, last = -1;
+        for (int i = 0; i < n; i++) {
+            if (seats[i] == 1) {
+                res = last < 0 ? i : Math.max(res, (i - last) / 2);
+                last = i;
+            }
+        }
+        res = Math.max(res, n - last - 1);
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-product-subarray/
+     */
+    //Because of the negative and positive, we need to track both max and min up to here,
+    //it is a DP problem, but simplified to O(1) space.
+    public int maxProduct(int[] nums) {
+        int max = nums[0], maxToHere = nums[0], minToHere = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int temp = maxToHere;
+            maxToHere = Math.max(Math.max(minToHere * nums[i], maxToHere * nums[i]), nums[i]);
+            minToHere = Math.min(Math.min(minToHere * nums[i], temp * nums[i]), nums[i]);
+            max = Math.max(max, maxToHere);
+        }
+        return max;
+    }
 
     /**
      * https://leetcode.com/problems/find-all-duplicates-in-an-array/
+     *
      * when find a number i, flip the number at position i-1 to negative.
      * if the number at position i-1 is already negative, i is the number that occurs twice.
      */

@@ -111,21 +111,21 @@ public class SubSetExe {
         if (sum % k != 0 || maxNum > sum / k) {
             return false;
         }
-        return canPartitionKSubsetsFrom(nums, k, new boolean[nums.length], sum / k, 0, 0);
+        return canPartitionDFS(nums, k, new boolean[nums.length], sum / k, 0, 0);
     }
 
-    private boolean canPartitionKSubsetsFrom(int[] nums, int k, boolean[] visited, int targetSubsetSum, int curSubsetSum, int nextIndexToCheck) {
+    private boolean canPartitionDFS(int[] nums, int k, boolean[] visited, int target, int temp, int pos) {
         if (k == 0) {
             return true;
         }
-        if (curSubsetSum == targetSubsetSum) {
-            return canPartitionKSubsetsFrom(nums, k - 1, visited, targetSubsetSum, 0, 0);
+        if (temp == target) {
+            return canPartitionDFS(nums, k - 1, visited, target, 0, 0);
         }
-        for (int i = nextIndexToCheck; i < nums.length; i++) {
-            if (!visited[i] && curSubsetSum + nums[i] <= targetSubsetSum) {
+        for (int i = pos; i < nums.length; i++) {
+            if (!visited[i] && temp + nums[i] <= target) {
                 visited[i] = true;
                 //If next recursion worked, then no need to set the visited flag back.
-                if (canPartitionKSubsetsFrom(nums, k, visited, targetSubsetSum, curSubsetSum + nums[i], i + 1)) {
+                if (canPartitionDFS(nums, k, visited, target, temp + nums[i], i + 1)) {
                     return true;
                 }
                 visited[i] = false;

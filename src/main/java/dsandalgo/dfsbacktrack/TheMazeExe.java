@@ -76,109 +76,65 @@ public class TheMazeExe {
      */
 
     class Point implements Comparable<Point> {
-        int x,y,l;
+        int x, y, l;
         String s;
-        public Point(int _x, int _y) {x=_x;y=_y;l=Integer.MAX_VALUE;s="";}
-        public Point(int _x, int _y, int _l,String _s) {x=_x;y=_y;l=_l;s=_s;}
-        public int compareTo(Point p) {return l==p.l?s.compareTo(p.s):l-p.l;}
+
+        public Point(int _x, int _y) {
+            x = _x;
+            y = _y;
+            l = Integer.MAX_VALUE;
+            s = "";
+        }
+
+        public Point(int _x, int _y, int _l, String _s) {
+            x = _x;
+            y = _y;
+            l = _l;
+            s = _s;
+        }
+
+        public int compareTo(Point p) {
+            //based on question, pick shorted length first
+            //then the direction in lexicographical order.
+            return l == p.l ? s.compareTo(p.s) : l - p.l;
+        }
     }
+
     public String findShortestWay(int[][] maze, int[] ball, int[] hole) {
-        int m=maze.length, n=maze[0].length;
-        Point[][] points=new Point[m][n];
-        for (int i=0;i<m*n;i++) points[i/n][i%n]=new Point(i/n, i%n);
-        int[][] dir=new int[][] {{-1,0},{0,1},{1,0},{0,-1}};
-        String[] ds=new String[] {"u","r","d","l"};
-        PriorityQueue<Point> list=new PriorityQueue<>(); // using priority queue
-        list.offer(new Point(ball[0], ball[1], 0, ""));
-        while (!list.isEmpty()) {
-            Point p=list.poll();
-            if (points[p.x][p.y].compareTo(p)<=0) continue; // if we have already found a route shorter
-            points[p.x][p.y]=p;
-            for (int i=0;i<4;i++) {
-                int xx=p.x, yy=p.y, l=p.l;
-                while (xx>=0 && xx<m && yy>=0 && yy<n && maze[xx][yy]==0 && (xx!=hole[0] || yy!=hole[1])) {
-                    xx+=dir[i][0];
-                    yy+=dir[i][1];
+        int m = maze.length, n = maze[0].length;
+        Point[][] points = new Point[m][n];
+        for (int i = 0; i < m * n; i++) {
+            points[i / n][i % n] = new Point(i / n, i % n);
+        }
+        int[][] dir = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+        String[] ds = new String[]{"u", "r", "d", "l"};
+        PriorityQueue<Point> pq = new PriorityQueue<>(); // using priority queue
+        pq.offer(new Point(ball[0], ball[1], 0, ""));
+        while (!pq.isEmpty()) {
+            Point p = pq.poll();
+            //On this point, check if we need to go through it again.
+            if (points[p.x][p.y].compareTo(p) <= 0) {
+                continue;
+            }
+            points[p.x][p.y] = p;
+            for (int i = 0; i < 4; i++) {
+                int xx = p.x, yy = p.y, l = p.l;
+                while (xx >= 0 && xx < m && yy >= 0 && yy < n && maze[xx][yy] == 0 && (xx != hole[0] || yy != hole[1])) {
+                    xx += dir[i][0];
+                    yy += dir[i][1];
                     l++;
                 }
-                if (xx!=hole[0] || yy!=hole[1]) { // check the hole
-                    xx-=dir[i][0];
-                    yy-=dir[i][1];
+                // check the hole
+                if (xx != hole[0] || yy != hole[1]) {
+                    xx -= dir[i][0];
+                    yy -= dir[i][1];
                     l--;
                 }
-                list.offer(new Point(xx, yy, l, p.s+ds[i]));
+                pq.offer(new Point(xx, yy, l, p.s + ds[i]));
             }
         }
-        return points[hole[0]][hole[1]].l==Integer.MAX_VALUE?"impossible":points[hole[0]][hole[1]].s;
+        return points[hole[0]][hole[1]].l == Integer.MAX_VALUE ? "impossible" : points[hole[0]][hole[1]].s;
     }
-    //DFS, TLE.
-//    class PosState{
-//        int x; int y; int dis; String path;
-//        public PosState(int _x, int _y, int _dis, String _path){
-//            this.x = _x;
-//            this.y = _y;
-//            this.dis = _dis;
-//            this.path = _path;
-//        }
-//    }
-//
-//    int[][] dirs_III = new int[][]{ {-1, 0}, {1, 0}, {0, 1}, {0, -1} };
-//
-//    String[] directions = {"u","d","r","l"};
-//
-//    public String findShortestWay(int[][] maze, int[] ball, int[] hole) {
-//        boolean[][] visited = new boolean[maze.length][maze[0].length];
-//        PriorityQueue<PosState> pq = new PriorityQueue<>(new Comparator<PosState>() {
-//            @Override
-//            public int compare(PosState o1, PosState o2) {
-//                if (o1.dis == o2.dis) {
-//                    return o1.path.compareTo(o2.path);
-//                }
-//                return o1.dis - o2.dis;
-//            }
-//        });
-//        PosState start = new PosState(ball[0], ball[1], 0, "");
-//        findShortestWayDFS(maze, start, hole, visited, pq);
-//        if (pq.isEmpty()) {
-//            return "impossible";
-//        }
-//        return pq.poll().path;
-//    }
-//
-//    private void findShortestWayDFS(int[][] maze, PosState p, int[] destination, boolean[][] visited, PriorityQueue pq) {
-//        if (visited[p.x][p.y]) {
-//            return;
-//        }
-//        visited[p.x][p.y] = true;
-//        for (int i = 0; i < dirs_III.length; i++) {
-//            int[] d = dirs_III[i];
-//            int row = p.x;
-//            int col = p.y;
-//            int tempDis = 0;
-//            boolean found = false;
-//            while (isValid_III(maze, row + d[0], col + d[1])) {
-//                row += d[0];
-//                col += d[1];
-//                tempDis++;
-//                if (row == destination[0] && col == destination[1]) {
-//                    pq.offer(new PosState(row, col, p.dis + tempDis, p.path + directions[i]));
-//                    found = true;
-//                    break;
-//                }
-//            }
-//            if (found) {
-//                break;
-//            }
-//            if (row != p.x || col != p.y) {
-//                findShortestWayDFS(maze, new PosState(row, col, p.dis + tempDis, p.path + directions[i]), destination, visited, pq);
-//            }
-//        }
-//        visited[p.x][p.y] = false;
-//    }
-//
-//    private boolean isValid_III(int[][] maze, int row, int col) {
-//        return row >= 0 && row < maze.length && col >= 0 && col < maze[0].length && maze[row][col] != 1;
-//    }
 
     /**
      * https://leetcode.com/problems/the-maze/
@@ -250,10 +206,10 @@ public class TheMazeExe {
 
     public boolean hasPath(int[][] maze, int[] start, int[] destination) {
         boolean[][] visited = new boolean[maze.length][maze[0].length];
-        return dfs(maze, start, destination, visited);
+        return hasPathDFS(maze, start, destination, visited);
     }
 
-    private boolean dfs(int[][] maze, int[] p, int[] destination, boolean[][] visited) {
+    private boolean hasPathDFS(int[][] maze, int[] p, int[] destination, boolean[][] visited) {
         if (visited[p[0]][p[1]]) {
             return false;
         }
@@ -269,7 +225,7 @@ public class TheMazeExe {
                 row += d[0];
                 col += d[1];
             }
-            if (dfs(maze, new int[]{ row, col }, destination, visited)) {
+            if (hasPathDFS(maze, new int[]{ row, col }, destination, visited)) {
                 return true;
             }
         }
@@ -280,7 +236,40 @@ public class TheMazeExe {
         return row >= 0 && row < maze.length && col >= 0 && col < maze[0].length && maze[row][col] != 1;
     }
 
+    public boolean hasPath_BFS(int[][] maze, int[] start, int[] destination) {
+        int[][] dirs = new int[][]{ {-1, 0}, {1, 0}, {0, 1}, {0, -1} };
+        boolean[][] visited = new boolean[maze.length][maze[0].length];
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(start);
+        visited[start[0]][start[1]] = true;
+        while (!q.isEmpty()) {
+            int s = q.size();
+            for (int i=0; i<s; i++) {
+                int[] pos = q.poll();
+                for (int[] dir : dirs) {
+                    int row = pos[0];
+                    int col = pos[1];
+                    while (isValid(maze, row + dir[0], col + dir[1])) {
+                        row += dir[0];
+                        col += dir[1];
+                    }
+                    if (row == destination[0] && col == destination[1]) {
+                        return true;
+                    }
+                    if (!visited[row][col]) {
+                        q.offer(new int[]{row, col});
+                        visited[row][col] = true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
     /**
+     * https://leetcode.com/problems/the-maze-ii/
+     *
      * There is a ball in a maze with empty spaces and walls. The ball can go through empty spaces by rolling up, down, left or right,
      * but it won't stop rolling until hitting a wall. When the ball stops, it could choose the next direction.
      *
@@ -334,30 +323,37 @@ public class TheMazeExe {
      * The maze contains at least 2 empty spaces, and both the width and height of the maze won't exceed 100.
      */
     class Point1 {
-        int x,y,l;
-        public Point1(int _x, int _y, int _l) {x=_x;y=_y;l=_l;}
+        int x, y, l;
+
+        public Point1(int _x, int _y, int _l) {
+            x = _x;
+            y = _y;
+            l = _l;
+        }
     }
+
     public int shortestDistance(int[][] maze, int[] start, int[] destination) {
         int m = maze.length, n = maze[0].length;
-        int[][] length=new int[m][n]; // record length
-        for (int i=0; i<m*n; i++) {
+        int[][] length = new int[m][n]; // record length
+        for (int i = 0; i < m * n; i++) {
             //Prefill with max value
-            length[i/n][i%n] = Integer.MAX_VALUE;
+            length[i / n][i % n] = Integer.MAX_VALUE;
         }
-        int[][] dir=new int[][] {{-1,0},{0,1},{1,0},{0,-1}};
-        PriorityQueue<Point1> q = new PriorityQueue<Point1>((o1, o2)->o1.l-o2.l); // using priority queue
+        int[][] dir = new int[][]{{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+        PriorityQueue<Point1> q = new PriorityQueue<Point1>((o1, o2) -> o1.l - o2.l); // using priority queue
         q.offer(new Point1(start[0], start[1], 0));
         while (!q.isEmpty()) {
             Point1 p = q.poll();
+            // if we have already found a route shorter, skip this one.
             if (length[p.x][p.y] <= p.l) {
-                continue; // if we have already found a route shorter, skip this one.
+                continue;
             }
-            length[p.x][p.y]=p.l;
+            length[p.x][p.y] = p.l;
 
             //Find the next valid point.
-            for (int i=0; i<4; i++) {
+            for (int i = 0; i < 4; i++) {
                 int xx = p.x, yy = p.y, l = p.l;
-                while (xx>=0 && xx<m && yy>=0 && yy<n && maze[xx][yy]==0) {
+                while (xx >= 0 && xx < m && yy >= 0 && yy < n && maze[xx][yy] == 0) {
                     xx = xx + dir[i][0];
                     yy = yy + dir[i][1];
                     l++;

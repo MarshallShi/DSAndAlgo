@@ -61,17 +61,22 @@ public class RobotCleanRoom {
 
     interface Robot {
         public boolean move();
+
         public void turnLeft();
+
         public void turnRight();
+
         public void clean();
     }
 
     public void cleanRoom(Robot robot) {
         Set<String> visited = new HashSet<>();
-        backtracking(robot, visited, 0, 0, 0);
+        cleanRoomDFS(robot, visited, 0, 0, 0);
     }
-    int[][] dir = {{1,0}, {0,1}, {-1,0}, {0, -1}};
-    private void backtracking(Robot robot, Set<String> visited, int x, int y, int arrow) {
+
+    int[][] dir = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+
+    private void cleanRoomDFS(Robot robot, Set<String> visited, int x, int y, int arrow) {
         String path = x + "-" + y;
         if (visited.contains(path)) {
             return;
@@ -84,7 +89,7 @@ public class RobotCleanRoom {
                 int nx = x + dir[arrow][0];
                 int ny = y + dir[arrow][1];
 
-                backtracking(robot, visited, nx, ny, arrow);
+                cleanRoomDFS(robot, visited, nx, ny, arrow);
                 //Trick: this is how we go back based on the provided API.
                 robot.turnLeft();
                 robot.turnLeft();

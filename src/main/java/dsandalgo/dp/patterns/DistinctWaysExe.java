@@ -619,46 +619,29 @@ public class DistinctWaysExe {
      *
      */
     public boolean canPartition(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return false;
-        }
         int sum = 0;
-        for (int i=0; i<nums.length; i++) {
-            sum = sum + nums[i];
-        }
-        if (sum % 2 != 0) {
-            return false;
-        }
-        return helper(nums, sum/2);
-    }
+        for (int num : nums) sum += num;
+        if (sum % 2 == 1) return false;
 
-    public boolean helper(int[] nums, int sum) {
-        int numsLen = nums.length;
-        boolean[][] dp = new boolean[numsLen + 1][sum + 1];
-        int i,j;
-        for (i=0; i<=numsLen; i++) {
-            dp[i][0] = false;
-        }
-        for (i=0; i<=sum; i++) {
-            dp[0][i] = false;
-        }
-        for (j=1;j<=sum;j++) {
-            for (i=1;i<=numsLen;i++) {
-                if (j==nums[i-1]) {
-                    dp[i][j] = true;
+        int target = sum / 2;
+        boolean[][] dp = new boolean[nums.length][target + 1];
+        // deal with the first row
+        if (nums[0] <= target) dp[0][nums[0]] = true;
+
+        // deal with the first col
+        for (int i = 0; i < nums.length; i++) dp[i][0] = true;
+
+        // deal with the rest
+        for (int i = 1; i < nums.length; i++) {
+            for (int j = 1; j < target + 1; j++) {
+                if (j < nums[i]) {
+                    dp[i][j] = dp[i - 1][j];
                 } else {
-                    if (j > nums[i-1]) {
-                        dp[i][j] = dp[i-1][j] || dp[i-1][j-nums[i-1]];
-                    } else {
-                        dp[i][j] = dp[i-1][j];
-                    }
-                }
-                if ((j==sum) && dp[i][j]) {
-                    return true;
+                    dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums[i]];
                 }
             }
         }
-        return false;
+        return dp[dp.length - 1][dp[0].length - 1];
     }
 
     /**
@@ -840,12 +823,4 @@ public class DistinctWaysExe {
         return 0;
     }
 
-    /**
-     * https://leetcode.com/problems/count-vowels-permutation/
-     * @param n
-     * @return
-     */
-    public int countVowelPermutation(int n) {
-        return 0;
-    }
 }

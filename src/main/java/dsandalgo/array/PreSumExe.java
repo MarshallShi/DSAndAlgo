@@ -143,34 +143,16 @@ public class PreSumExe {
     public int maxSumTwoNoOverlap(int[] A, int L, int M) {
         int[] presum = new int[A.length];
         presum[0] = A[0];
-        for (int i=1; i<A.length; i++) {
-            presum[i] = presum[i-1] + A[i];
+        for (int i = 1; i < A.length; i++) {
+            presum[i] = presum[i - 1] + A[i];
         }
-        int j = L-1;
-        int sumL = presum[j];
-        int sumM = 0;
-        int maxSumTwo = Integer.MIN_VALUE;
-        for (j=L-1; j<A.length; j++) {
-            if (j != L-1) {
-                sumL = presum[j] - presum[j-L];
-            }
-            sumM = 0;
-            //only look for the right hand of j for M subarry
-            for (int k=j; k<A.length-M; k++) {
-                sumM = Math.max(sumM, presum[k+M] - presum[k]);
-            }
-            maxSumTwo = Math.max(sumM + sumL, maxSumTwo);
-            //look for both left hand and right hand for max M subarray
-            if (j - L - M >= 0) {
-                for (int k=0; k<=j-L-M; k++) {
-                    if (k == 0) {
-                        sumM = Math.max(sumM, presum[M-1]);
-                    } else {
-                        sumM = Math.max(sumM, presum[k+M-1] - presum[k-1]);
-                    }
-                }
-                maxSumTwo = Math.max(sumM + sumL, maxSumTwo);
-            }
+        int sumL = presum[L - 1];
+        int sumM = presum[M - 1];
+        int maxSumTwo = presum[L + M - 1];
+        for (int j = L + M; j < A.length; j++) {
+            sumL = Math.max(sumL, presum[j - M] - presum[j - M - L]);
+            sumM = Math.max(sumM, presum[j - L] - presum[j - L - M]);
+            maxSumTwo = Math.max(maxSumTwo, Math.max(sumL + presum[j] - presum[j - M], sumM + presum[j] - presum[j - L]));
         }
         return maxSumTwo;
     }

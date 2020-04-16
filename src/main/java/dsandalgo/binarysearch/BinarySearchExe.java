@@ -16,6 +16,33 @@ public class BinarySearchExe {
     }
 
     /**
+     * https://leetcode.com/problems/search-a-2d-matrix/
+     * @param matrix
+     * @param target
+     * @return
+     */
+    //Consider the 2D matrix to 1D, just use simple calculation to access the original position.
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if (matrix == null || matrix.length == 0) {
+            return false;
+        }
+        int low = 0, rows = matrix.length, cols = matrix[0].length;
+        int high = rows * cols - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (matrix[mid / cols][mid % cols] == target) {
+                return true;
+            }
+            if (matrix[mid / cols][mid % cols] < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return false;
+    }
+
+    /**
      * https://leetcode.com/problems/find-in-mountain-array/
      * (This problem is an interactive problem.)
      *

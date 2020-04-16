@@ -30,6 +30,71 @@ public class TopologicalSortingExe {
     }
 
     /**
+     * https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
+     * @param matrix
+     * @return
+     */
+    public int longestIncreasingPath(int[][] matrix) {
+        // Corner cases
+        if (matrix.length == 0) {
+            return 0;
+        }
+
+        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int rows = matrix.length, cols = matrix[0].length;
+
+        // indegree[i][j] indicates thee number of adjacent cells bigger than matrix[i][j]
+        int[][] indegree = new int[rows][cols];
+        for (int x = 0; x < rows; x++) {
+            for (int y = 0; y < cols; y++) {
+                for (int[] dir: dirs) {
+                    int nx = x + dir[0];
+                    int ny = y + dir[1];
+                    if (nx >= 0 && nx < rows && ny >= 0 && ny < cols) {
+                        if (matrix[nx][ny] > matrix[x][y]) {
+                            indegree[x][y]++;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Add each cell with indegree zero to the queue
+        Queue<int[]> queue = new LinkedList<>();
+        for (int x = 0; x < rows; x++) {
+            for (int y = 0; y < cols; y++) {
+                if (indegree[x][y] == 0) {
+                    queue.offer(new int[]{x, y});
+                }
+            }
+        }
+
+        // The longest path so far
+        int length = 0;
+        // BFS implements the Topological Sort
+        while(!queue.isEmpty()) {
+            int sz = queue.size();
+            for (int i = 0; i < sz; i++) {
+                int[] cur = queue.poll();
+                int x = cur[0];
+                int y = cur[1];
+                for (int[] dir: dirs) {
+                    int nx = x + dir[0];
+                    int ny = y + dir[1];
+                    if (nx >= 0 && nx < rows && ny >= 0 && ny < cols) {
+                        if (matrix[nx][ny] < matrix[x][y] && --indegree[nx][ny] == 0) {
+                            queue.offer(new int[]{nx, ny});
+                        }
+                    }
+                }
+            }
+            length++;
+        }
+
+        return length;
+    }
+
+    /**
      * https://leetcode.com/problems/sort-items-by-groups-respecting-dependencies/
      * There are n items each belonging to zero or one of m groups where group[i] is the group that the i-th item belongs to
      * and it's equal to -1 if the i-th item belongs to no group. The items and the groups are zero indexed. A group can have no item belonging to it.

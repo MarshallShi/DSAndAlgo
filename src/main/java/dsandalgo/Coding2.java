@@ -609,35 +609,6 @@ public class Coding2 {
         return idx;
     }
 
-    public int maxDistToClosest(int[] seats) {
-        int curZeroLen = 0;
-        int max = 0, j = 0;
-        for (int i=0; i<seats.length; i++) {
-            if (seats[i]==0) {
-                curZeroLen++;
-                if (i == seats.length - 1) {
-                    //if last num is 0.
-                    max = Math.max(curZeroLen, max);
-                }
-            } else {
-                if (curZeroLen != 0) {
-                    if (seats[j] == 0) {
-                        max = Math.max(curZeroLen, max);
-                    } else {
-                        if (curZeroLen%2 == 0) {
-                            max = Math.max(curZeroLen/2, max);
-                        } else {
-                            max = Math.max((curZeroLen+1)/2, max);
-                        }
-                    }
-                    curZeroLen = 0;
-                }
-                j = i;
-            }
-        }
-        return  max;
-    }
-
     public int jump(int[] nums) {
         Map<Integer, Integer> cachedResult = new HashMap<Integer, Integer>();
         return helper(0, nums, cachedResult);

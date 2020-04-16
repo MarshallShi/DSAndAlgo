@@ -145,3 +145,63 @@ Two pass solution: 1. go through each person to find the candidate; 2. based on 
         return candidate;
     }
     
+Remove Duplicate Letters
+https://leetcode.com/problems/remove-duplicate-letters/
+Tricky problem. These two questions are the same in essence. Both need the tricky to apply the monotone stack, also need a visited or inuse array
+to track if a char is already seen before.
+
+    public String removeDuplicateLetters(String sr) {
+        int[] res = new int[26]; //will contain number of occurences of character (i+'a')
+        boolean[] visited = new boolean[26]; //will contain if character (i+'a') is present in current result Stack
+        char[] ch = sr.toCharArray();
+        for(char c : ch){  //count number of occurences of character
+            res[c - 'a']++;
+        }
+        Stack<Character> stack = new Stack<>(); // answer stack
+        for(char s : ch){
+            int index = s - 'a';
+            //decrement number of characters remaining in the string to be analysed, will use this info later.
+            res[index]--;
+            //if character is already present in stack, dont bother
+            if (visited[index]) {
+                continue;
+            }
+            //we do the swap of char position in the stack.
+            //if current character is smaller than last character in stack which occurs later in the string again
+            //it can be removed and  added later e.g stack = bc remaining string abc then a can pop b and then c
+            while(!stack.isEmpty() && s < stack.peek() && res[stack.peek() - 'a']!=0){
+                char popped = stack.pop();
+                visited[popped - 'a']=false;
+            }
+            //add current character and mark it as visited
+            stack.push(s);
+            visited[index]=true;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        //pop character from stack and build answer string from back
+        while(!stack.isEmpty()){
+            sb.insert(0,stack.pop());
+        }
+        return sb.toString();
+    }
+
+Shortest Palindrome
+https://leetcode.com/problems/shortest-palindrome/
+By analysing the problem, it can be converted to "find the longest palindrome from index 0".
+Hence the solution will be using two pointer, to gradually move from both side. O(n2)
+Related question: https://leetcode.com/problems/longest-palindromic-substring/
+
+    public String shortestPalindrome(String s) {
+        int i = 0, end = s.length() - 1, j = end; char chs[] = s.toCharArray();
+        while (i < j) {
+            if (chs[i] == chs[j]) {
+                i++; j--;
+            } else {
+                //Reset the first index back to 0!!
+                i = 0; end--; j = end;
+            }
+        }
+        return new StringBuilder(s.substring(end+1)).reverse().toString() + s;
+    }
+    

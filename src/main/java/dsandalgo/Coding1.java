@@ -158,43 +158,6 @@ public class Coding1 {
         return sb.toString().trim();
     }
 
-    public boolean searchMatrix(int[][] matrix, int target) {
-        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
-            return false;
-        }
-        int row = matrix.length;
-        int col = matrix[0].length;
-        int lowRow = 0, highRow = row - 1;
-        while (lowRow <= highRow) {
-            int midRow = lowRow + (highRow - lowRow)/2;
-            int lowCol = 0, highCol = col - 1;
-            while (lowCol <= highCol) {
-                int midCol = lowCol + (highCol - lowCol)/2;
-                if (matrix[midRow][midCol] == target) {
-                    return true;
-                } else {
-                    if (matrix[midRow][midCol] > target) {
-                        highCol = midCol - 1;
-                    } else {
-                        lowCol = midCol + 1;
-                    }
-                }
-            }
-            if (matrix[midRow][0] > target) {
-                highRow = midRow - 1;
-            } else {
-                if (target > matrix[midRow][col - 1]) {
-                    lowRow = midRow + 1;
-                } else {
-                    if (matrix[midRow][0] < target && matrix[midRow][col - 1] > target) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
     public int hIndex(int[] citations) {
         if (citations == null || citations.length == 0){
             return 0;

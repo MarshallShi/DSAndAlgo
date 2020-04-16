@@ -25,6 +25,69 @@ public class DFSExe {
         System.out.println(dfs.numOfMinutes(7, 6, mang, info));
     }
 
+    class Node {
+        public int val;
+        public Node left;
+        public Node right;
+        public Node next;
+
+        public Node() {}
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val, Node _left, Node _right, Node _next) {
+            val = _val;
+            left = _left;
+            right = _right;
+            next = _next;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/populating-next-right-pointers-in-each-node/
+     * @param root
+     * @return
+     */
+    public Node connect_iter(Node root) {
+        if (root == null) {
+            return root;
+        }
+        Node dummy = new Node(0);
+        dummy.next = root;
+        Node pre = root;
+        while (root.left != null) {
+            Node preRight = null;
+            while (root != null) {
+                if (preRight != null) {
+                    preRight.next = root.left;
+                }
+                root.left.next = root.right;
+                preRight = root.right;
+                root = root.next;
+            }
+            root = pre.left;
+            pre = root;
+        }
+        return dummy.next;
+    }
+
+    public Node connect(Node root) {
+        if (root == null) {
+            return root;
+        }
+        if (root.left != null) {
+            root.left.next = root.right;
+        }
+        if (root.right != null && root.next != null) {
+            root.right.next = root.next.left;
+        }
+        connect(root.left);
+        connect(root.right);
+        return root;
+    }
+
     /**
      * https://leetcode.com/problems/flood-fill/
      * An image is represented by a 2-D array of integers, each integer representing the pixel value of the image (from 0 to 65535).

@@ -424,4 +424,163 @@ Nested data structure to support File definition, similiar to the Tree structure
         }
         return cur;
     }
+
+Implement Queue using Stacks    
+https://leetcode.com/problems/implement-queue-using-stacks/
+Use of two stack to store the data, one for in, one for out.
+
+
+https://leetcode.com/problems/exam-room/
+
+    private PriorityQueue<int[]> pq;
+    private int N;
+
+    public ExamRoom(int N) {
+        this.N = N;
+        pq = new PriorityQueue<>((a, b) -> {
+            if ((b[1] - b[0]) / 2 == (a[1] - a[0]) / 2) {
+                return a[0] - b[0];
+            }
+            return (b[1] - b[0]) / 2 - (a[1] - a[0]) / 2;
+        });
+    }
+
+    public int seat() {
+        if (pq.size() == 0) {
+            pq.offer(new int[]{0, 2 * (N - 1)});
+            return 0;
+        } else {
+            int[] longest = pq.poll();
+            int result = longest[0] + (longest[1] - longest[0]) / 2;
+            if (result != 0) { // result = 0, we don't need to add the left side
+                pq.offer(new int[]{longest[0], result});
+            }
+            if (result != N - 1) { // result = N - 1, we don't need to add the right side
+                pq.offer(new int[]{result, longest[1]});
+            }
+            return result;
+        }
+    }
+
+    public void leave(int p) {
+        if (pq.size() == 1 && (pq.peek()[1] >= N || pq.peek()[0] < 0)) { // Edge cases: Only [0, 2N] or [-N , N] in pq
+            pq.clear();
+            return;
+        }
+        int[] p1 = null, p2 = null; // p1: left side, p2: right side
+        for (int[] pair : pq) {
+            if (pair[1] == p) {
+                p1 = pair;
+            }
+            if (pair[0] == p) {
+                p2 = pair;
+            }
+        }
+        if (p1 != null) {
+            pq.remove(p1);
+        }
+        if (p2 != null) {
+            pq.remove(p2);
+        }
+        if (p1 == null || p1[0] < 0) { // No left side found or p is the left most position in current seats.
+            p1 = new int[]{-p2[1], p};
+        }
+        if (p2 == null || p2[1] >= N) { // No right side found or p is the right most position in current seats.
+            p2 = new int[]{p, p1[0] + 2 * (N - p1[0] - 1)};
+        }
+        pq.offer(new int[]{p1[0], p2[1]});
+    }
+
+Search Suggestions System    
+https://leetcode.com/problems/search-suggestions-system/
+
+    //Solution 1: Trie
+    public List<List<String>> suggestedProducts_trie(String[] products, String searchWord) {
+        ProductTrieNode root = new ProductTrieNode();
+        for (String word : products) {
+            char[] arr = word.toCharArray();
+            ProductTrieNode node = root;
+            for (int i=0; i<arr.length; i++) {
+                if (node.children[arr[i]-'a'] == null) {
+                    ProductTrieNode nnode = new ProductTrieNode();
+                    node.children[arr[i]-'a'] = nnode;
+                }
+                node = node.children[arr[i]-'a'];
+                node.suggestion.offer(word); // put products with same prefix into suggestion list.
+                Collections.sort(node.suggestion); // sort products.
+                if (node.suggestion.size() > 3) {
+                    node.suggestion.pollLast(); // maintain 3 lexicographically minimum strings.
+                }
+            }
+        }
+        List<List<String>> ans = new ArrayList<>();
+        for (char c : searchWord.toCharArray()) { // search product.
+            if (root != null) {
+                root = root.children[c - 'a'];
+            }
+            ans.add(root == null ? Arrays.asList() : root.suggestion); // add it if there exist products with current prefix.
+        }
+        return ans;
+    }
+
+    class ProductTrieNode {
+        ProductTrieNode[] children;
+        LinkedList<String> suggestion = new LinkedList<>(); //Each level will store all the suggestions, but keep top 3.
+        ProductTrieNode() {
+            children = new ProductTrieNode[26];
+        }
+    }    
+
+    //Solution 2: Priority Queue to always keep the top three matching
+    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        PriorityQueue<String> pq = new PriorityQueue<>(3, (s1, s2) -> s1.compareTo(s2));
+        List<List<String>> list = new ArrayList<>();
+        for (int i = 1; i <= searchWord.length(); i++) {
+            String temp = searchWord.substring(0, i);
+            for (String s : products) {
+                if (s.startsWith(temp)) {
+                    pq.offer(s);
+                }
+            }
+            List<String> tempList = new ArrayList<>();
+            for (int j = 0; j < 3; j++) {
+                if (pq.peek() != null) {
+                    tempList.add(pq.poll());
+                }
+            }
+            pq.clear();
+            list.add(tempList);
+        }
+        return list;
+    }
+
+    //Solution 3: sorting and apply binary search.
+    public List<List<String>> suggestedProducts_sort(String[] products, String searchWord) {
+        List<List<String>> res = new ArrayList<>();
+        TreeMap<String, Integer> map = new TreeMap<>();
+        Arrays.sort(products);
+        List<String> productsList = Arrays.asList(products);
+        for (int i = 0; i < products.length; i++) {
+            map.put(products[i], i);
+        }
+        String key = "";
+        for (char c : searchWord.toCharArray()) {
+            key += c;
+            String ceiling = map.ceilingKey(key);
+            String floor = map.floorKey(key + "~");
+            if (ceiling == null || floor == null) {
+                break;
+            }
+            res.add(productsList.subList(map.get(ceiling), Math.min(map.get(ceiling) + 3, map.get(floor) + 1)));
+        }
+        while (res.size() < searchWord.length()) {
+            res.add(new ArrayList<>());
+        }
+        return res;
+    }
     
+Design Snake Game    
+https://leetcode.com/problems/design-snake-game/
+The key is how to represent snake body. Here we can use LinkedList, a Queue.
+On the event of move: we remove last element, add to the first element in the new position.
+In case the new position is food, we return the last element back.

@@ -67,6 +67,34 @@ Mono stack.
         return ret;
     }
 
+Largest Rectangle in Histogram
+https://leetcode.com/problems/largest-rectangle-in-histogram/
+Use mono stack to store the increasing height, once height start decreasing, we calculate the temp area, and push new height.
+
+    public int largestRectangleArea(int[] height) {
+        int len = height.length;
+        Stack<Integer> stack = new Stack<>();
+        int max = 0;
+        for (int i = 0; i <= len; i++) {
+            //To cover the last column's height comparison with an non existing next column.
+            int curH = (i == len ? 0 : height[i]);
+            if (stack.isEmpty() || curH >= height[stack.peek()]) {
+                stack.push(i);
+            } else {
+                while (!stack.isEmpty() && curH < height[stack.peek()]) {
+                    int prevHeightIdx = stack.pop();
+                    int lengthToMultiply = i;
+                    if (!stack.isEmpty()) {
+                        lengthToMultiply = i - 1 - stack.peek();
+                    }
+                    max = Math.max(max, height[prevHeightIdx] * lengthToMultiply);
+                }
+                stack.push(i);
+            }
+        }
+        return max;
+    }
+
 Longest Valid Parentheses
 https://leetcode.com/problems/longest-valid-parentheses/
 Trick: we only update the result (max) when we find a "pair", If we find a pair. We throw this pair away and see how big the gap 
@@ -305,10 +333,40 @@ Repeat it until there is only one node.
         return res;
     }
 
+Smallest Subsequence of Distinct Characters
+https://leetcode.com/problems/smallest-subsequence-of-distinct-characters
+    
+    public String smallestSubsequence(String text) {
+        int[] count = new int[26];
+        int[] inUse = new int[26];
+        for (int i = 0; i < text.length(); i++) {
+            count[text.charAt(i) - 'a']++;
+        }
+        Stack<Character> stack = new Stack<Character>();
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            count[ch - 'a']--;
+            if (inUse[ch - 'a'] == 1) {
+                continue;
+            }
+            while (!stack.isEmpty() && count[stack.peek() - 'a']!=0 && stack.peek() > ch) {
+                inUse[stack.pop() - 'a']--;
+            }
+            stack.push(ch);
+            inUse[ch -'a']++;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        return sb.reverse().toString();
+    }
+
+ 
 Other Stack Question
 
 https://leetcode.com/problems/simplify-path/
-
+https://leetcode.com/problems/evaluate-reverse-polish-notation/
 
 
 Recursive Questions
@@ -390,7 +448,23 @@ We can then easily track how many occurance of till now in the map we have (pres
 
         return result;
     }
-    
+
+Maximum Product Subarray
+https://leetcode.com/problems/maximum-product-subarray/
+Because of the negative and positive, we need to track both max and min up to here, 
+it is a DP problem, but simplified to O(1) space.
+
+    public int maxProduct(int[] nums) {
+        int max = nums[0], maxToHere = nums[0], minToHere = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int temp = maxToHere;
+            maxToHere = Math.max(Math.max(minToHere * nums[i], maxToHere * nums[i]), nums[i]);
+            minToHere = Math.min(Math.min(minToHere * nums[i], temp * nums[i]), nums[i]);
+            max = Math.max(max, maxToHere);
+        }
+        return max;
+    }
+        
 3 Sum
 https://leetcode.com/problems/3sum/
 First sort the array, then fix one end, apply bidirectional move to approach the target sum.
@@ -506,7 +580,33 @@ Trick is in where each loop need to ignore duplicates.
         }
         return ret;
     }
-    
+
+Maximum Sum of Two Non-Overlapping Subarrays
+https://leetcode.com/problems/maximum-sum-of-two-non-overlapping-subarrays/
+O(n) solution with two pass: you could either have-
+L array appearing first and then M array or M array appearing first and then L array
+Therefore for a given index i in the loop:
+find maximum sum for L length before index i and add it with every M length sum right to it --------(equation 1)
+find maximum sum for M length before index i and add it with every L length sum right to it---------(equation 2)
+now in every loop do res = max(res , max( equation 1, equation 2))
+
+    public int maxSumTwoNoOverlap(int[] A, int L, int M) {
+        int[] presum = new int[A.length];
+        presum[0] = A[0];
+        for (int i = 1; i < A.length; i++) {
+            presum[i] = presum[i - 1] + A[i];
+        }
+        int sumL = presum[L - 1];
+        int sumM = presum[M - 1];
+        int maxSumTwo = presum[L + M - 1];
+        for (int j = L + M; j < A.length; j++) {
+            sumL = Math.max(sumL, presum[j - M] - presum[j - M - L]);
+            sumM = Math.max(sumM, presum[j - L] - presum[j - L - M]);
+            maxSumTwo = Math.max(maxSumTwo, Math.max(sumL + presum[j] - presum[j - M], sumM + presum[j] - presum[j - L]));
+        }
+        return maxSumTwo;
+    }
+        
 Diagonal Traverse
 https://leetcode.com/problems/diagonal-traverse/
 Trick: based on the direction, decide how to move to next element, position by position, not row or column based.
@@ -554,6 +654,20 @@ direction of going up right or going down left depends whether the index sum is 
         return output;
     }
 
+https://leetcode.com/problems/maximize-distance-to-closest-person/
+
+    public int maxDistToClosest(int[] seats) {
+        int res = 0, n = seats.length, last = -1;
+        for (int i = 0; i < n; i++) {
+            if (seats[i] == 1) {
+                res = last < 0 ? i : Math.max(res, (i - last) / 2);
+                last = i;
+            }
+        }
+        res = Math.max(res, n - last - 1);
+        return res;
+    }
+    
         
 Next Permutation
 https://leetcode.com/problems/next-permutation/
@@ -650,6 +764,33 @@ Set the index corresponding number to negative to mark it is seen, it doesn't af
 
 
 Binary search question
+
+Find Minimum in Rotated Sorted Array
+https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
+
+Search a 2D Matrix
+https://leetcode.com/problems/search-a-2d-matrix/
+
+    //Consider the 2D matrix to 1D, just use simple calculation to access the original position.
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if (matrix == null || matrix.length == 0) {
+            return false;
+        }
+        int low = 0, rows = matrix.length, cols = matrix[0].length;
+        int high = rows * cols - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (matrix[mid / cols][mid % cols] == target) {
+                return true;
+            }
+            if (matrix[mid / cols][mid % cols] < target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return false;
+    }
 
 Median of two sorted arrays.
 https://leetcode.com/problems/median-of-two-sorted-arrays/
@@ -1030,6 +1171,44 @@ https://leetcode.com/problems/palindrome-partitioning/
         }
     }
 
+Partition to K Equal Sum Subsets
+https://leetcode.com/problems/partition-to-k-equal-sum-subsets/
+Backtrack solution: keep the visited state of each number, if using a number can get a positive result then return, otherwise,
+revert the state try next number.
+Similiar problem: https://leetcode.com/problems/partition-equal-subset-sum/ (DP)
+
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        int sum = 0, maxNum = 0;
+        for (int num : nums) {
+            sum += num;
+            maxNum = Math.max(maxNum, num);
+        }
+        if (sum % k != 0 || maxNum > sum / k) {
+            return false;
+        }
+        return canPartitionDFS(nums, k, new boolean[nums.length], sum / k, 0, 0);
+    }
+
+    private boolean canPartitionDFS(int[] nums, int k, boolean[] visited, int target, int temp, int pos) {
+        if (k == 0) {
+            return true;
+        }
+        if (temp == target) {
+            return canPartitionDFS(nums, k - 1, visited, target, 0, 0);
+        }
+        for (int i = pos; i < nums.length; i++) {
+            if (!visited[i] && temp + nums[i] <= target) {
+                visited[i] = true;
+                //If next recursion worked, then no need to set the visited flag back.
+                if (canPartitionDFS(nums, k, visited, target, temp + nums[i], i + 1)) {
+                    return true;
+                }
+                visited[i] = false;
+            }
+        }
+        //If all the above 'return true' not going out of the recursion, return false.
+        return false;
+    }
 
 Linked List Questions
 
@@ -1194,6 +1373,8 @@ O(n) time and O(1) space. It needs to in place of the input list.
         }
         return prev;
     }
+ 
+Circle  
             
 
 Sliding Window Questions
@@ -1286,6 +1467,9 @@ Maintain a sliding window where we have only k distinct chars.
         return res;
     }
 
+Similar question, can still use sliding window, but more tricky:
+https://leetcode.com/problems/longest-substring-with-at-least-k-repeating-characters/
+
 Find All Anagrams in a String    
 https://leetcode.com/problems/find-all-anagrams-in-a-string/
 Maintain a sliding window to match the rolling hash.
@@ -1330,6 +1514,29 @@ Maintain a sliding window to match the rolling hash.
         }
         return list;
     }
+
+
+Two Pointers Questions
+
+https://leetcode.com/problems/squares-of-a-sorted-array/
+Solution: use two pointer from both end, leverage the property the array is sorted.
+
+    public int[] sortedSquares(int[] A) {
+        int[] res = new int[A.length];
+        int i = 0, j = A.length - 1;
+        for (int p = A.length - 1; p >= 0; p--) {
+            if (A[i]*A[i] > A[j]*A[j]) {
+                res[p] = A[i]*A[i];
+                i++;
+            } else {
+                res[p] = A[j]*A[j];
+                j--;
+            }
+        }
+        return res;
+    }
+
+
 
 Graph Questions
 
@@ -1458,6 +1665,118 @@ https://leetcode.com/problems/insert-interval/
 
 Tree Questions
 
+Symmetric tree
+https://leetcode.com/problems/symmetric-tree/
+Solution 1: recursively check if left and right are symmetric.
+
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        return isSymmetricHelper(root.left, root.right);
+    }
+
+    private boolean isSymmetricHelper(TreeNode node1, TreeNode node2) {
+        if (node1 == null && node2 == null) {
+            return true;
+        }
+        if (node1 == null || node2 == null) {
+            return false;
+        }
+        return isSymmetricHelper(node1.left, node2.right) && isSymmetricHelper(node1.right, node2.left) && (node1.val == node2.val);
+    }
+    
+Path Sum Questions
+
+https://leetcode.com/problems/path-sum/
+Recursively test all possible branches and once find a path match, return.
+
+https://leetcode.com/problems/path-sum-ii/
+One solution could be DFS backtrack, to explore all the possibilities and track the path in the list.
+
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> pathSumPathList = new ArrayList<List<Integer>>();
+        pathSumDFS(pathSumPathList, new ArrayList<Integer>(), root, sum);
+        return pathSumPathList;
+    }
+
+    private void pathSumDFS(List<List<Integer>> pathSumPathList, List<Integer> temp, TreeNode node, int sum ){
+        if (sum == node.val && node.left == null && node.right == null) {
+            temp.add(node.val);
+            pathSumPathList.add(new ArrayList<>(temp));
+            temp.remove(temp.size()-1);
+            return;
+        }
+        temp.add(node.val);
+        if (node.left != null) {
+            pathSumDFS(pathSumPathList, temp, node.left, sum - node.val);
+        }
+        if (node.right != null) {
+            pathSumDFS(pathSumPathList, temp, node.right, sum - node.val);
+        }
+        temp.remove(temp.size()-1);
+    }
+
+https://leetcode.com/problems/path-sum-iii/
+Best way is to use presum to track all the already existing sum. 
+One tricky step is when traverse back, we need to remove the sum from the presum.
+
+    public int pathSum(TreeNode root, int sum) {
+        Map<Integer, Integer> preSumCount = new HashMap<>();
+        preSumCount.put(0,1);
+        return pathSumIIIHelper(root, 0, sum, preSumCount);
+    }
+
+    private int pathSumIIIHelper(TreeNode root, int currSum, int target, Map<Integer, Integer> preSumCount) {
+        if (root == null) {
+            return 0;
+        }
+        currSum += root.val;
+        //Check if there is pre existing needed sum to get to target.
+        int res = preSumCount.getOrDefault(currSum - target, 0);
+        //Put curSum into the map for next nodes to check.
+        preSumCount.put(currSum, preSumCount.getOrDefault(currSum, 0) + 1);
+        //Recursively get the children nodes result.
+        res += pathSumIIIHelper(root.left, currSum, target, preSumCount) + pathSumIIIHelper(root.right, currSum, target, preSumCount);
+        //Trick: restore the map, as now it goes to upper layer.
+        preSumCount.put(currSum, preSumCount.get(currSum) - 1);
+        return res;
+    }
+
+https://leetcode.com/problems/path-sum-iv/
+
+    public int pathSum(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        Map<Integer, Integer> tree = new HashMap<>();
+        for (int num : nums) {
+            int key = num / 10;
+            int value = num % 10;
+            tree.put(key, value);
+        }
+        return traverse(nums[0] / 10, 0, tree);
+    }
+
+    private int traverse(int nodeId, int preSum, Map<Integer, Integer> tree) {
+        int level = nodeId / 10;
+        int pos = nodeId % 10;
+        int left = (level + 1) * 10 + pos * 2 - 1;
+        int right = (level + 1) * 10 + pos * 2;
+        int curSum = preSum + tree.get(nodeId);
+        int tempSum = 0;
+        if (!tree.containsKey(left) && !tree.containsKey(right)) {
+            tempSum += curSum;
+        }
+        if (tree.containsKey(left)) {
+            tempSum += traverse(left, curSum, tree);
+        }
+        if (tree.containsKey(right)) {
+            tempSum += traverse(right, curSum, tree);
+        }
+        return tempSum;
+    }
+    
 Binary Tree Maximum Path Sum
 https://leetcode.com/problems/binary-tree-maximum-path-sum/
 Recursively find the left max and right max, update current max based on cur node.
@@ -1702,6 +2021,87 @@ https://leetcode.com/problems/serialize-and-deserialize-bst/
 
 Inorder tree traverse
 https://leetcode.com/problems/binary-tree-inorder-traversal/
+Three different solutions: 1. recursive based, left child, self then right child; 2. iterative vis stack; 3. morris traversal
+
+    public List<Integer> inorderTraversal_recursive(TreeNode root) {
+        List<Integer> ret = new ArrayList<Integer>(); 
+        helper(root, ret);
+        return ret;
+    }
+    
+    public void helper(TreeNode node, List<Integer> ret) {
+        if (node == null) {
+            return;
+        }
+        helper(node.left, ret);
+        ret.add(node.val);
+        helper(node.right, ret);
+    }
+    
+    public List<Integer> inorderTraversal_iter(TreeNode root) {
+        List<Integer> list = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode cur = root;
+        while (cur != null || !stack.empty()) {
+            while (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            cur = stack.pop();
+            list.add(cur.val);
+            cur = cur.right;
+        }
+        return list;
+    }
+    
+    //morris traversal
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List <Integer> res = new ArrayList<> ();
+        TreeNode curr = root;
+        TreeNode pre;
+        while (curr != null) {
+            if (curr.left == null) {
+                res.add(curr.val);
+                curr = curr.right; // move to next right node
+            } else { // has a left subtree
+                pre = curr.left;
+                while (pre.right != null) { // find rightmost
+                    pre = pre.right;
+                }
+                pre.right = curr; // put cur after the pre node
+                TreeNode temp = curr; // store cur node
+                curr = curr.left; // move cur to the top of the new tree
+                temp.left = null; // original cur left be null, avoid infinite loops
+            }
+        }
+        return res;
+    }
+
+https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
+
+    public Node treeToDoublyList(Node root) {
+        if (root == null) {
+            return null;
+        }
+        Node dummy = new Node(0, null, null);
+        Node prev = dummy;
+        prev = inorderTraverseHelper(root, prev);
+        prev.right = dummy.right;
+        dummy.right.left = prev;
+        return dummy.right;
+    }
+
+    private Node inorderTraverseHelper(Node node, Node prev) {
+        if (node == null) {
+            return prev;
+        }
+        prev = inorderTraverseHelper(node.left, prev);
+        prev.right = node;
+        node.left = prev;
+        prev = inorderTraverseHelper(node.right, node);
+        return prev;
+    }
+    
 https://leetcode.com/problems/kth-smallest-element-in-a-bst/
 https://leetcode.com/problems/validate-binary-search-tree/
 All above will use the same technique to do iterative in order traverse, using a stack.
@@ -1976,9 +2376,44 @@ Solution 3: Binary Indexed Tree based, get the ranking of each element, track th
     
 DFS Question
 
+Number of Islands
+https://leetcode.com/problems/number-of-islands/
+Classic DFS solution: find a cell, dfs all the connected cells, one trick here is in place modification in the grid.
+
+    public int numIslands(char[][] grid) {
+        int count = 0;
+        int m = grid.length;
+        if (m == 0) {
+            return 0;
+        }
+        int n = grid[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++)
+                if (grid[i][j] == '1') {
+                    numIslandsDFSMarking(grid, i, j, m, n);
+                    ++count;
+                }
+        }
+        return count;
+    }
+
+    private void numIslandsDFSMarking(char[][] grid, int i, int j, int m, int n) {
+        if (i < 0 || j < 0 || i >= m || j >= n || grid[i][j] != '1') {
+            return;
+        }
+        grid[i][j] = '0';
+        numIslandsDFSMarking(grid, i + 1, j, m, n);
+        numIslandsDFSMarking(grid, i - 1, j, m, n);
+        numIslandsDFSMarking(grid, i, j + 1, m, n);
+        numIslandsDFSMarking(grid, i, j - 1, m, n);
+    }
+    
 Longest Increasing Path in a Matrix
 https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
-Starting from each node, do DFS for four directions, find the longest increasing path.
+Solution 1: Starting from each node, do DFS for four directions, find the longest increasing path, DFS + memo.
+Solution 2: Reverse thinking, from big to small number, accumulate the count of the path in smaller number via the PQ.
+Solution 3: Each cell is a node in a directed graph, connection exist when two cells are adjacent and one greater than other,
+so the problem can be converted to Topological Sorting.
 
     public int[][] directions = {{0,1},{1,0},{-1,0},{0,-1}};
     public int longestIncreasingPath(int[][] matrix) {
@@ -2154,7 +2589,53 @@ Solution 2: Iterative, HashMap + HashSet.
 Minesweeper
 https://leetcode.com/problems/minesweeper/
 
+Pacific Atlantic Water Flow
+https://leetcode.com/problems/pacific-atlantic-water-flow/
+Both DFS and BFS can be used. Trick is need to do two search from both end, track the farthest/highest cell in separate array, 
+and then merge the duplicate. 
 
+Populating Next Right Pointers in Each Node
+https://leetcode.com/problems/populating-next-right-pointers-in-each-node/
+Solution can be just a BFS, but there is constant space requirement, so need to just in place modification.
+
+    public Node connect(Node root) {
+        if (root == null) {
+            return root;
+        }
+        Node dummy = new Node(0);
+        dummy.next = root;
+        Node pre = root;
+        while (root.left != null) {
+            Node preRight = null;
+            while (root != null) {
+                if (preRight != null) {
+                    preRight.next = root.left;
+                }
+                root.left.next = root.right;
+                preRight = root.right;
+                root = root.next;
+            }
+            root = pre.left;
+            pre = root;
+        }
+        return dummy.next;
+    }
+
+    public Node connect(Node root) {
+        if (root == null) {
+            return root;
+        }
+        if (root.left != null) {
+            root.left.next = root.right;
+        }
+        if (root.right != null && root.next != null) {
+            root.right.next = root.next.left;
+        }
+        connect(root.left);
+        connect(root.right);
+        return root;
+    }
+    
 Clone Graph
 https://leetcode.com/problems/clone-graph/
 Trick is to use a hash map to store the cloned node.
@@ -2181,7 +2662,56 @@ Trick is to use a hash map to store the cloned node.
         return clone;
     }
 
+Robot Room Cleaner
+https://leetcode.com/problems/robot-room-cleaner/
+DFS for each of direction until can't move. Standard DFS approach with visited state array.
+Without knowing the boundary, rely on the move() method instead for going down one more level or not.
+Another trick is how to move the robot back to previous state for next direction.
 
+    interface Robot {
+        public boolean move();
+
+        public void turnLeft();
+
+        public void turnRight();
+
+        public void clean();
+    }
+
+    public void cleanRoom(Robot robot) {
+        Set<String> visited = new HashSet<>();
+        cleanRoomDFS(robot, visited, 0, 0, 0);
+    }
+
+    int[][] dir = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+
+    private void cleanRoomDFS(Robot robot, Set<String> visited, int x, int y, int arrow) {
+        String path = x + "-" + y;
+        if (visited.contains(path)) {
+            return;
+        }
+        visited.add(path);
+        robot.clean();
+        for (int i = 0; i < 4; i++) {
+            if (robot.move()) {
+                //go all the way till cannot move, then back one step
+                int nx = x + dir[arrow][0];
+                int ny = y + dir[arrow][1];
+
+                cleanRoomDFS(robot, visited, nx, ny, arrow);
+                //Trick: this is how we go back based on the provided API.
+                robot.turnLeft();
+                robot.turnLeft();
+                robot.move();
+                robot.turnLeft();
+                robot.turnLeft();
+            }
+            //Move to next direction using API.
+            robot.turnRight();
+            //Also track the move in the internal state
+            arrow = (arrow + 1) % 4;
+        }
+    }
 
 BFS Questions
 
@@ -2292,7 +2822,6 @@ Multiple tricks:
         return res;
     }
 
-
 All Nodes Distance K in Binary Tree
 https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/
 Solution: Convert the tree to graph representation, then do BFS for k distance.
@@ -2303,6 +2832,11 @@ Solution: BFS, but reverse the order on each level.
 
 Binary Tree Level Order Traversal
 https://leetcode.com/problems/binary-tree-level-order-traversal/
+
+Nested List Weight Sum
+https://leetcode.com/problems/nested-list-weight-sum/
+Solution 1: recursive.
+Solution 2: BFS based, use a queue to store next level of the NestedList.
 
 Binary Tree Vertical Order Traversal
 https://leetcode.com/problems/binary-tree-vertical-order-traversal/
@@ -2426,6 +2960,40 @@ So we can use two heap, one minHeap, one maxHeap.
         }
     }
 
+Cheapest Flights Within K Stops
+https://leetcode.com/problems/cheapest-flights-within-k-stops/
+Naively we can use BFS to iterative through all k stops for all. But we can use PQ to greedily pick lowest price everytime.
+
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int K) {
+        Map<Integer, Map<Integer, Integer>> prices = new HashMap<>();
+        for (int[] f : flights) {
+            if (!prices.containsKey(f[0])) {
+                prices.put(f[0], new HashMap<>());
+            }
+            prices.get(f[0]).put(f[1], f[2]);
+        }
+        //PQ sorted by cost, smallest comes first.
+        Queue<int[]> pq = new PriorityQueue<>((a, b) -> (Integer.compare(a[0], b[0])));
+        //array in the PQ: 0: price, 1: city, 2: stops.
+        pq.add(new int[]{0, src, K + 1});
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int price = cur[0];
+            int city = cur[1];
+            int stops = cur[2];
+            if (city == dst) {
+                //first met dst must be the cheapest price.
+                return price;
+            }
+            if (stops > 0) {
+                Map<Integer, Integer> adj = prices.getOrDefault(city, new HashMap<>());
+                for (int a : adj.keySet()) {
+                    pq.add(new int[]{price + adj.get(a), a, stops - 1});
+                }
+            }
+        }
+        return -1;
+    }
 
 Sorting Questions
 
@@ -2445,7 +3013,32 @@ https://leetcode.com/problems/kth-largest-element-in-an-array/discuss/60294/Solu
         return pq.peek();
     }
     
-    
+Largest number
+https://leetcode.com/problems/largest-number/
+Based on the sorting, we can form the largest number. Trick of the sort is compare the combined string to decide which goes first.
+
+    public String largestNumber(int[] nums) {
+        if (nums == null || nums.length == 0) return "";
+        String[] strs = new String[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            strs[i] = nums[i] + "";
+        }
+        Arrays.sort(strs, new Comparator<String>() {
+            @Override
+            public int compare(String i, String j) {
+                String s1 = i + j;
+                String s2 = j + i;
+                return s1.compareTo(s2);
+            }
+        });
+        if (strs[strs.length - 1].charAt(0) == '0') return "0";
+        String res = new String();
+        for (int i = 0; i < strs.length; i++) {
+            res = strs[i] + res;
+        }
+        return res;
+    }
+        
     
 Union Found Questions
 
@@ -2590,6 +3183,71 @@ Solution 2: Map, memorize all the number's longest consecutive sequence, update 
         }
     }
     
+Number of Islands II
+https://leetcode.com/problems/number-of-islands-ii/
+Apply Union Find data structure, once adding one more cell, we connect to existing neighbour by union. 
+The Union Find data structure will tell directly how many connected islands.
+
+    public List<Integer> numIslands2(int m, int n, int[][] positions) {
+        int s = m*n;
+        UFNumIslands2 uf = new UFNumIslands2(s);
+        int[][] directions = {{0,1},{1,0},{-1,0},{0,-1}};
+        List<Integer> ans = new ArrayList<Integer>();
+        for (int i=0; i<positions.length; i++) {
+            if (uf.parent[positions[i][0] * n + positions[i][1]] != -1) {
+                ans.add(uf.size);
+                continue;
+            }
+            uf.updateParent(positions[i][0] * n + positions[i][1]);
+            for (int[] dir : directions) {
+                int nx = positions[i][0] + dir[0];
+                int ny = positions[i][1] + dir[1];
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
+                    if (uf.find(nx*n + ny) != -1) {
+                        uf.union(nx*n + ny, positions[i][0] * n + positions[i][1]);
+                    }
+                }
+            }
+            ans.add(uf.size);
+        }
+        return ans;
+    }
+
+    class UFNumIslands2 {
+        public int size;
+        public int[] parent;
+        public UFNumIslands2(int size) {
+            this.size = 0;
+            this.parent = new int[size];
+            for (int i = 0; i < size; i++) {
+                parent[i] = -1;
+            }
+        }
+
+        public void updateParent(int a) {
+            parent[a] = a;
+            size++;
+        }
+
+        public void union(int a, int b) {
+            int parB = find(b);
+            int parA = find(a);
+            if (parB != parA) {
+                parent[parB] = parent[parA];
+                size--;
+            }
+        }
+
+        public int find(int x) {
+            if (parent[x] == -1) {
+                return -1;
+            }
+            if (x != parent[x]) {
+                parent[x] = find(parent[x]);
+            }
+            return parent[x];
+        }
+    }
 
 Math Questions
 

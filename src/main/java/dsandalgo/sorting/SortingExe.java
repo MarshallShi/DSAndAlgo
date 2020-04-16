@@ -26,6 +26,63 @@ public class SortingExe {
         System.out.println(exe.maxSlidingWindow(worker, 3));
     }
 
+
+    /**
+     * https://leetcode.com/problems/squares-of-a-sorted-array/
+     * @param A
+     * @return
+     */
+    public int[] sortedSquares(int[] A) {
+        int[] res = new int[A.length];
+        int i = 0, j = A.length - 1;
+        for (int p = A.length - 1; p >= 0; p--) {
+            if (A[i]*A[i] > A[j]*A[j]) {
+                res[p] = A[i]*A[i];
+                i++;
+            } else {
+                res[p] = A[j]*A[j];
+                j--;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/largest-number/
+     * Given a list of non negative integers, arrange them such that they form the largest number.
+     *
+     * Example 1:
+     *
+     * Input: [10,2]
+     * Output: "210"
+     * Example 2:
+     *
+     * Input: [3,30,34,5,9]
+     * Output: "9534330"
+     * Note: The result may be very large, so you need to return a string instead of an integer.
+     */
+    public String largestNumber(int[] nums) {
+        if (nums == null || nums.length == 0) return "";
+        String[] strs = new String[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            strs[i] = nums[i] + "";
+        }
+        Arrays.sort(strs, new Comparator<String>() {
+            @Override
+            public int compare(String i, String j) {
+                String s1 = i + j;
+                String s2 = j + i;
+                return s1.compareTo(s2);
+            }
+        });
+        if (strs[strs.length - 1].charAt(0) == '0') return "0";
+        String res = new String();
+        for (int i = 0; i < strs.length; i++) {
+            res = strs[i] + res;
+        }
+        return res;
+    }
+
     /**
      * https://leetcode.com/problems/sliding-window-maximum/
      * Given an array nums, there is a sliding window of size k which is moving from the very left of the array to the very right.

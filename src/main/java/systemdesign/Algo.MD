@@ -101,3 +101,13 @@ Alon Matias Szegedy
 
 
 Hierarchical Timing Wheels
+
+
+Map Reduce Framework for big data process
+https://www.youtube.com/watch?v=3zCK_5U69A8
+Word Count:
+1. Split the data during save into multiple nodes.
+2. Map the date to basic values.
+3. Shuffle them, move the same kind to the same node for reducing processing.
+4. Reduce, which is the logic to aggregate, in case of word count, the count being merged here.
+5. Merge the result.
