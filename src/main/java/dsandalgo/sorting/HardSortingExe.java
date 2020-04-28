@@ -56,56 +56,6 @@ public class HardSortingExe {
     }
 
     /**
-     * https://leetcode.com/problems/best-meeting-point/
-     * A group of two or more people wants to meet and minimize the total travel distance.
-     * You are given a 2D grid of values 0 or 1, where each 1 marks the home of someone in the group.
-     * The distance is calculated using Manhattan Distance, where distance(p1, p2) = |p2.x - p1.x| + |p2.y - p1.y|.
-     *
-     * Example:
-     *
-     * Input:
-     *
-     * 1 - 0 - 0 - 0 - 1
-     * |   |   |   |   |
-     * 0 - 0 - 0 - 0 - 0
-     * |   |   |   |   |
-     * 0 - 0 - 1 - 0 - 0
-     *
-     * Output: 6
-     *
-     * Explanation: Given three people living at (0,0), (0,4), and (2,2):
-     *              The point (0,2) is an ideal meeting point, as the total travel distance
-     *              of 2+2+2=6 is minimal. So return 6.
-     */
-    public int minTotalDistance(int[][] grid) {
-        int m = grid.length;
-        int n = grid[0].length;
-        List<Integer> xPosList = new ArrayList<>(m);
-        List<Integer> yPosList = new ArrayList<>(n);
-        for (int i = 0; i < m; i++){
-            for (int j = 0; j < n; j++){
-                if (grid[i][j] == 1) {
-                    xPosList.add(i);
-                    yPosList.add(j);
-                }
-            }
-        }
-        return getMinTotalDisInALine(xPosList) + getMinTotalDisInALine(yPosList);
-    }
-    private int getMinTotalDisInALine(List<Integer> list){
-        int ret = 0;
-        Collections.sort(list);
-        int low = 0;
-        int high = list.size() - 1;
-        while (low < high) {
-            ret += list.get(high) - list.get(low);
-            high--;
-            low++;
-        }
-        return ret;
-    }
-
-    /**
      * https://leetcode.com/problems/maximum-number-of-ones/
      * Consider a matrix M with dimensions width * height, such that every cell has value 0 or 1,
      * and any square sub-matrix of M of size sideLength * sideLength has at most maxOnes ones.

@@ -46,6 +46,158 @@ public class DFSExe {
     }
 
     /**
+     * https://leetcode.com/problems/number-of-enclaves/
+     *
+     * Given a 2D array A, each cell is 0 (representing sea) or 1 (representing land)
+     *
+     * A move consists of walking from one land square 4-directionally to another land square, or off the boundary of the grid.
+     *
+     * Return the number of land squares in the grid for which we cannot walk off the boundary of the grid in any number of moves.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [
+     * [0,0,0,0],
+     * [1,0,1,0],
+     * [0,1,1,0],
+     * [0,0,0,0]]
+     * Output: 3
+     * Explanation:
+     * There are three 1s that are enclosed by 0s, and one 1 that isn't enclosed because its on the boundary.
+     * Example 2:
+     *
+     * Input: [
+     * [0,1,1,0],
+     * [0,0,1,0],
+     * [0,0,1,0],
+     * [0,0,0,0]]
+     * Output: 0
+     * Explanation:
+     * All 1s are either on the boundary or can reach the boundary.
+     *
+     *
+     * Note:
+     *
+     * 1 <= A.length <= 500
+     * 1 <= A[i].length <= 500
+     * 0 <= A[i][j] <= 1
+     * All rows have the same size.
+     */
+    public int numEnclaves(int[][] A) {
+        int m = A.length;
+        int n = A[0].length;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || j == 0 || i == m - 1 || j == n - 1) {
+                    fill(A, i, j);
+                }
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (A[i][j] == 1) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+
+    private void fill(int[][] g, int x, int y) {
+        if (x < 0 || y < 0 || x >= g.length || y >= g[0].length || g[x][y] == 0) {
+            return;
+        }
+        g[x][y] = 0;
+        int[][] dirs = {{0,1},{0,-1},{1,0},{-1,0}};
+        for (int[] dir : dirs) {
+            fill(g, x + dir[0], y + dir[1]);
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-closed-islands/
+     *
+     * Given a 2D grid consists of 0s (land) and 1s (water).  An island is a maximal 4-directionally connected group of 0s and a closed
+     * island is an island totally (all left, top, right, bottom) surrounded by 1s.
+     *
+     * Return the number of closed islands.
+     */
+    public int closedIsland(int[][] g) {
+        int m = g.length;
+        int n = g[0].length;
+        for (int i = 0; i < m; i++) {
+            if (g[i][0] == 0) {
+                closedIslandFill(g, i, 0);
+            }
+            if (g[i][n-1] == 0) {
+                closedIslandFill(g, i, n - 1);
+            }
+        }
+        for (int j = 0; j < n; j++) {
+            if (g[0][j] == 0) {
+                closedIslandFill(g, 0, j);
+            }
+            if (g[m - 1][j] == 0) {
+                closedIslandFill(g, m-1, j);
+            }
+        }
+        int res = 0;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (g[i][j] == 0) {
+                    res++;
+                    closedIslandFill(g, i, j);
+                }
+            }
+        }
+        return res;
+    }
+
+    private void closedIslandFill(int[][] g, int x, int y) {
+        if (x < 0 || y < 0 || x >= g.length || y >= g[0].length || g[x][y] == 1) {
+            return;
+        }
+        g[x][y] = 1;
+        int[][] dirs = {{0,1},{0,-1},{1,0},{-1,0}};
+        for (int[] dir : dirs) {
+            closedIslandFill(g, x + dir[0], y + dir[1]);
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/the-k-th-lexicographical-string-of-all-happy-strings-of-length-n/
+     * @param n
+     * @param k
+     * @return
+     */
+    public String getHappyString(int n, int k) {
+        char[] arr = {'a', 'b', 'c'};
+        String res = "";
+        List<String> l = new ArrayList<>();
+        generatePerm(arr, n, res, l);
+        if (l.size() >= k) {
+            return l.get(k - 1);
+        }
+        return "";
+    }
+
+    private void generatePerm(char[] arr, int n, String res, List<String> l) {
+        if (n == 0) {
+            l.add(res);
+            return;
+        }
+        for (int i = 0; i < arr.length; i++) {
+            if (res == "" || res.charAt(res.length() - 1) != arr[i]) {
+                String pre = res + arr[i];
+                generatePerm(arr, n - 1, pre, l);
+            }
+        }
+    }
+
+    /**
      * https://leetcode.com/problems/populating-next-right-pointers-in-each-node/
      * @param root
      * @return
@@ -1825,31 +1977,31 @@ public class DFSExe {
      * @param input
      * @return
      */
-    Map<String, List<Integer>> cachedResult = new HashMap<>();
+    private Map<String, List<Integer>> cachedResult = new HashMap<>();
 
     public List<Integer> diffWaysToCompute(String input) {
         if (cachedResult.containsKey(input)) {
             return cachedResult.get(input);
         }
         List<Integer> ret = new ArrayList<>();
-
-        for (int i=0; i<input.length(); i++) {
-            if (input.charAt(i) == '-' ||
-                    input.charAt(i) == '*' ||
-                    input.charAt(i) == '+' ) {
-                String part1 = input.substring(0, i);
-                String part2 = input.substring(i+1);
-                List<Integer> part1Ret = diffWaysToCompute(part1);
-                List<Integer> part2Ret = diffWaysToCompute(part2);
-                for (Integer p1 :   part1Ret) {
-                    for (Integer p2 :   part2Ret) {
+        for (int i = 0; i < input.length(); i++) {
+            if (input.charAt(i) == '-' || input.charAt(i) == '*' || input.charAt(i) == '+') {
+                String left = input.substring(0, i);
+                String right = input.substring(i + 1);
+                List<Integer> leftRes = diffWaysToCompute(left);
+                List<Integer> rightRes = diffWaysToCompute(right);
+                for (Integer p1 : leftRes) {
+                    for (Integer p2 : rightRes) {
                         int c = 0;
                         switch (input.charAt(i)) {
-                            case '+': c = p1+p2;
+                            case '+':
+                                c = p1 + p2;
                                 break;
-                            case '-': c = p1-p2;
+                            case '-':
+                                c = p1 - p2;
                                 break;
-                            case '*': c = p1*p2;
+                            case '*':
+                                c = p1 * p2;
                                 break;
                         }
                         ret.add(c);
@@ -1948,7 +2100,6 @@ public class DFSExe {
             }
         }
     }
-
 
     /**
      * Example 1:
@@ -2087,82 +2238,5 @@ public class DFSExe {
             return prevSum;
         }
         return rootToLeafHelper(node.left, prevSum) + rootToLeafHelper(node.right, prevSum);
-    }
-
-
-    /**
-     * https://leetcode.com/problems/number-of-enclaves/
-     *
-     * Given a 2D array A, each cell is 0 (representing sea) or 1 (representing land)
-     *
-     * A move consists of walking from one land square 4-directionally to another land square, or off the boundary of the grid.
-     *
-     * Return the number of land squares in the grid for which we cannot walk off the boundary of the grid in any number of moves.
-     *
-     *
-     *
-     * Example 1:
-     *
-     * Input: [
-     * [0,0,0,0],
-     * [1,0,1,0],
-     * [0,1,1,0],
-     * [0,0,0,0]]
-     * Output: 3
-     * Explanation:
-     * There are three 1s that are enclosed by 0s, and one 1 that isn't enclosed because its on the boundary.
-     * Example 2:
-     *
-     * Input: [
-     * [0,1,1,0],
-     * [0,0,1,0],
-     * [0,0,1,0],
-     * [0,0,0,0]]
-     * Output: 0
-     * Explanation:
-     * All 1s are either on the boundary or can reach the boundary.
-     *
-     *
-     * Note:
-     *
-     * 1 <= A.length <= 500
-     * 1 <= A[i].length <= 500
-     * 0 <= A[i][j] <= 1
-     * All rows have the same size.
-     *
-     * @param A
-     * @return
-     */
-    int[] numEnclavesDIRs = new int[] {0, 1, 0, -1, 0};
-
-    public int numEnclaves(int[][] A) {
-        int m = A.length;
-        int n = A[0].length;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i == 0 || j == 0 || i == m - 1 || j == n - 1) {
-                    fill(A, i, j);
-                }
-            }
-        }
-        int res = 0;
-        for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (A[i][j] == 1) {
-                    res++;
-                }
-            }
-        }
-        return res;
-    }
-
-    private void fill(int[][] g, int x, int y) {
-        if (x < 0 || y < 0 || x >= g.length || y >= g[0].length || g[x][y] == 0) {
-            return;
-        }
-        g[x][y] = 0;
-        for (int i = 0; i < numEnclavesDIRs.length - 1; i++) {
-            fill(g, x + numEnclavesDIRs[i], y + numEnclavesDIRs[i + 1]);
-        }
     }
 }

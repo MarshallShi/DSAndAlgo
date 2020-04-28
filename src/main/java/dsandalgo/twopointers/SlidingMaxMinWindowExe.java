@@ -20,13 +20,99 @@ package dsandalgo.twopointers;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.PriorityQueue;
 
 public class SlidingMaxMinWindowExe {
 
     public static void main(String[] args) {
         SlidingMaxMinWindowExe exe = new SlidingMaxMinWindowExe();
-        int[] aa = {2,-1,2};
-        exe.shortestSubarray(aa, 3);
+        int[] aa = {-1, -2, -3};
+        exe.constrainedSubsetSum(aa, 1);
+    }
+
+    /**
+     * https://leetcode.com/problems/constrained-subset-sum/
+     * Given an integer array nums and an integer k, return the maximum sum of a non-empty subset of that array such that for every two consecutive integers in the subset, nums[i] and nums[j], where i < j, the condition j - i <= k is satisfied.
+     *
+     * A subset of an array is obtained by deleting some number of elements (can be zero) from the array, leaving the remaining elements in their original order.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: nums = [10,2,-10,5,20], k = 2
+     * Output: 37
+     * Explanation: The subset is [10, 2, 5, 20].
+     * Example 2:
+     *
+     * Input: nums = [-1,-2,-3], k = 1
+     * Output: -1
+     * Explanation: The subset must be non-empty, so we choose the largest number.
+     * Example 3:
+     *
+     * Input: nums = [10,-2,-10,-5,20], k = 2
+     * Output: 23
+     * Explanation: The subset is [10, -2, -5, 20].
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= k <= nums.length <= 10^5
+     * -10^4 <= nums[i] <= 10^4
+     */
+    public int constrainedSubsetSum(int[] nums, int k) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        int max = dp[0];
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> (dp[b] - dp[a]));
+        maxHeap.add(0);
+        for (int i = 1; i < nums.length; i++) {
+            while (maxHeap.peek() + k < i) {
+                maxHeap.poll();
+            }
+            dp[i] = Math.max(0, dp[maxHeap.peek()]) + nums[i];
+            max = Math.max(max, dp[i]);
+            maxHeap.add(i);
+        }
+        return max;
+    }
+
+    public int constrainedSubsetSum_2(int[] A, int k) {
+        int res = A[0];
+        Deque<Integer> q = new ArrayDeque<>();
+        for (int i = 0; i < A.length; ++i) {
+            A[i] += !q.isEmpty() ? q.peek() : 0;
+            res = Math.max(res, A[i]);
+            while (!q.isEmpty() && A[i] > q.peekLast()) {
+                q.pollLast();
+            }
+            if (A[i] > 0) {
+                q.offer(A[i]);
+            }
+            if (i >= k && !q.isEmpty() && q.peek() == A[i - k]) {
+                q.poll();
+            }
+        }
+        return res;
+    }
+
+    public int constrainedSubsetSum_TLE(int[] nums, int k) {
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        int max = nums[0];
+        for (int i=1; i<nums.length; i++) {
+            int temp = 0;
+            int idx = k;
+            for (int j=i-1; idx>0 && j>=0; j--,idx--) {
+                temp = Math.max(temp, dp[j]);
+            }
+            dp[i] = nums[i] + temp;
+            max = Math.max(max, dp[i]);
+        }
+        return max;
     }
 
     /**

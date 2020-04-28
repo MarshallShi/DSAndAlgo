@@ -28,6 +28,120 @@ public class MathExe {
     }
 
     /**
+     * https://leetcode.com/problems/minimum-moves-to-equal-array-elements-ii/
+     *
+     *
+     * here is the straightforward proof for this problem
+     * lets start with two points:
+     * a--------------------------------b
+     * the smallest moves is any point between a and b, and the number of moves is b-a
+     * if we addd another two points
+     * a--------c----------d------------b
+     * what's the minimum moves to make sure c and d make the smallest number of moves?
+     * it the same logic as a and b, which is ANY point between c and d.
+     * if eventually their value is between a and c or b and d, we can only make sure a c move the least, but not for c d
+     * so, just define two pointers and calculate the distance for each pair, add to result.
+     *
+     * @param nums
+     * @return
+     */
+    //215
+    public int minMoves2(int[] nums) {
+        int sum = 0;
+        int median = quickselect(nums, nums.length / 2 + 1, 0, nums.length - 1);
+        for (int i = 0; i < nums.length; i++) {
+            sum += Math.abs(nums[i] - median);
+        }
+        return sum;
+    }
+
+    public int quickselect(int[] A, int k, int start, int end) {
+        int l = start, r = end, pivot = A[(l + r) / 2];
+        while (l <= r) {
+            while (A[l] < pivot) l++;
+            while (A[r] > pivot) r--;
+            if (l >= r) {
+                break;
+            }
+            swap(A, l++, r--);
+        }
+        if (l - start + 1 > k) {
+            return quickselect(A, k, start, l - 1);
+        }
+        if (l - start + 1 == k && l == r) {
+            return A[l];
+        }
+        return quickselect(A, k - r + start - 1, r + 1, end);
+    }
+
+    public void swap(int[] A, int i, int j) {
+        int temp = A[i];
+        A[i] = A[j];
+        A[j] = temp;
+    }
+
+    public int minMoves2_sorting(int[] nums) {
+        Arrays.sort(nums);
+        int i = 0, j = nums.length - 1;
+        int count = 0;
+        while (i < j) {
+            count += nums[j] - nums[i];
+            i++;
+            j--;
+        }
+        return count;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-area-rectangle/
+     *
+     * Given a set of points in the xy-plane, determine the minimum area of a rectangle formed from these points, with sides parallel to the x and y axes.
+     *
+     * If there isn't any rectangle, return 0.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [[1,1],[1,3],[3,1],[3,3],[2,2]]
+     * Output: 4
+     * Example 2:
+     *
+     * Input: [[1,1],[1,3],[3,1],[3,3],[4,1],[4,3]]
+     * Output: 2
+     *
+     *
+     * Note:
+     *
+     * 1 <= points.length <= 500
+     * 0 <= points[i][0] <= 40000
+     * 0 <= points[i][1] <= 40000
+     * All points are distinct.
+     *
+     */
+    public int minAreaRect(int[][] points) {
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        for (int[] p : points) {
+            map.putIfAbsent(p[0], new HashSet<Integer>());
+            map.get(p[0]).add(p[1]);
+        }
+        int min = Integer.MAX_VALUE;
+        for (int[] p1 : points) {
+            for (int[] p2 : points) {
+                // if have the same x or y, skip
+                if (p1[0] == p2[0] || p1[1] == p2[1]) {
+                    continue;
+                }
+                // find other two points in the rectangle
+                if (map.get(p1[0]).contains(p2[1]) && map.get(p2[0]).contains(p1[1])) {
+                    min = Math.min(min, Math.abs(p1[0] - p2[0]) * Math.abs(p1[1] - p2[1]));
+                }
+            }
+        }
+        return min == Integer.MAX_VALUE ? 0 : min;
+    }
+
+    /**
      * https://leetcode.com/problems/happy-number/
      * Write an algorithm to determine if a number n is "happy".
      *

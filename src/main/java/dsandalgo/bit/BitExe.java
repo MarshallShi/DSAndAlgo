@@ -24,7 +24,27 @@ public class BitExe {
         int[][] queries = {{2,3},{1,3},{0,0},{0,3}};
         String[] words = {"apple","pleas","please"};
         String[] puzzles = {"aelwxyz","aelpxyz","aelpsxy","saelpxy","xaelpsy"};
-        System.out.println(exe.numSteps("1101"));
+        System.out.println(exe.convertToTitle(28));
+    }
+
+    /**
+     * https://leetcode.com/problems/excel-sheet-column-title/
+     * @param n
+     * @return
+     */
+    public String convertToTitle(int n) {
+        StringBuilder sb = new StringBuilder();
+        while (n > 26) {
+            if (n % 26 == 0) {
+                sb.append('Z');
+                n = n / 26;
+                n--;
+            } else {
+                sb.append((char) ('A' + n % 26 - 1));
+                n = n / 26;
+            }
+        }
+        return sb.append((char)('A' + n - 1)).reverse().toString();
     }
 
     /**

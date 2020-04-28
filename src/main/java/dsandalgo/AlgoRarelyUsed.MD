@@ -53,6 +53,66 @@ https://www.geeksforgeeks.org/ukkonens-suffix-tree-construction-part-1/
 String pattern search Algo:
 
 KMP Algorithm
+Improve String search from O(mn) to O(m+n)
+https://www.youtube.com/watch?v=GTJr8OvyEVQ&t=215s
+http://jakeboxer.com/blog/2009/12/13/the-knuth-morris-pratt-algorithm-in-my-own-words/
+https://leetcode.com/problems/implement-strstr/
+
+    public int strStr(String haystack, String needle) {
+        if (haystack == null || needle == null) {
+            return -1;
+        }
+        if (needle.equalsIgnoreCase("")) {
+            return 0;
+        }
+        char[] text = haystack.toCharArray();
+        char[] pattern = needle.toCharArray();
+
+        int lps[] = buildLPS(pattern);
+        int i = 0;
+        int j = 0;
+        while (i < text.length && j < pattern.length) {
+            if (text[i] == pattern[j]) {
+                i++;
+                j++;
+            } else {
+                if (j != 0) {
+                    j = lps[j - 1];
+                } else {
+                    i++;
+                }
+            }
+            if (j == pattern.length) {
+                return i - j;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Compute temporary array to maintain size of suffix which is same as prefix
+     * Time/space complexity is O(size of pattern)
+     */
+    private int[] buildLPS(char[] pattern) {
+        int[] lps = new int[pattern.length];
+        int index = 0;
+        for (int i = 1; i < pattern.length; ) {
+            if (pattern[i] == pattern[index]) {
+                lps[i] = index + 1;
+                index++;
+                i++;
+            } else {
+                if (index != 0) {
+                    index = lps[index - 1];
+                } else {
+                    lps[i] = 0;
+                    i++;
+                }
+            }
+        }
+        return lps;
+    }
+    
 Rabin Karp Algorithm
 Finite Automata based Algorithm
 Boyer Moore Algorithm
@@ -91,5 +151,30 @@ An algo designed for traverse a tree without using Stack or Recursion.  (https:/
     }
     
 
+Boyer-Moore Majority Vote Algorithm
+https://leetcode.com/problems/majority-element/
+https://www.geeksforgeeks.org/majority-element/
+The algo run O(n) time and O(1) space, compare to the HashMap based solution which is O(n) Auxiliary Space.
+NOTE: it only works when the majority element exist, otherwise, need another step to verify if this is the majority.
 
+    public int majorityElement(int[] nums) {
+        int maj_index = 0, count = 1;
+        int i;
+        for (i = 1; i < nums.length; i++) {
+            if (nums[maj_index] == nums[i]) {
+                count++;
+            } else {
+                count--;
+            }
+            if (count == 0) {
+                maj_index = i;
+                count = 1;
+            }
+        }
+        return nums[maj_index];
+    }
+    
 
+Quick Select
+
+    

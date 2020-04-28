@@ -584,6 +584,82 @@ public class DistinctWaysExe {
     }
 
     /**
+     * https://leetcode.com/problems/restore-the-array/
+     * @param s
+     * @param k
+     * @return
+     */
+    public int numberOfArrays(String s, int k) {
+        Integer[] dp = new Integer[s.length()]; // dp[i] is number of ways to print valid arrays from string s start at i
+        return numberOfArraysDFS(s, k, 0, dp);
+    }
+
+    private int numberOfArraysDFS(String s, long k, int i, Integer[] dp) {
+        if (i == s.length()) {
+            // base case -> Found a valid way
+            return 1;
+        }
+        if (s.charAt(i) == '0') {
+            return 0;
+        }
+        if (dp[i] != null) {
+            return dp[i];
+        }
+        int ans = 0;
+        long num = 0;
+        for (int j = i; j < s.length(); j++) {
+            // num is the value of the substring s[i..j]
+            num = num * 10 + s.charAt(j) - '0';
+            if (num > k) {
+                break; // num must be in range [1, k]
+            }
+            ans += numberOfArraysDFS(s, k, j + 1, dp);
+            ans %= 1_000_000_007;
+        }
+        return dp[i] = ans;
+    }
+
+    /**
+     * https://leetcode.com/problems/build-array-where-you-can-find-the-maximum-exactly-k-comparisons/
+     * @param n
+     * @param m
+     * @param k
+     * @return
+     */
+    public int numOfArrays(int n, int m, int k) {
+        Integer[][][] dp = new Integer[n + 1][m + 1][k + 1];
+        return numOfArraysDFS(n, m, k, 0, 0, 0, dp);
+    }
+
+    // numOfArraysDFS(... i, curMax, curCost) the number of ways to build the valid array `arr[i:]`
+    // keeping in mind that current maximum element is `curMax` and current search cost is `curCost`
+    private int numOfArraysDFS(int n, int m, int k, int i, int curMax, int curCost, Integer[][][] dp) {
+        if (i == n) {
+            if (k == curCost) {
+                // valid if the value search cost is equal to k
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+        if (dp[i][curMax][curCost] != null) {
+            return dp[i][curMax][curCost];
+        }
+        int ans = 0;
+        // Case 1: num in range [1, currMax], newMax = currMax, newCost = currCost
+        ans += (long) curMax * numOfArraysDFS(n, m, k, i + 1, curMax, curCost, dp) % 1_000_000_007;
+
+        // Case 2: num in range [currMax+1, m], newMax = num, newCost = currCost + 1
+        if (curCost + 1 <= k) {
+            for (int num = curMax + 1; num <= m; num++) {
+                ans += numOfArraysDFS(n, m, k, i + 1, num, curCost + 1, dp);
+                ans %= 1_000_000_007;
+            }
+        }
+        return dp[i][curMax][curCost] = ans;
+    }
+
+    /**
      * https://leetcode.com/problems/knight-dialer/
      *
      */

@@ -1,5 +1,6 @@
 package dsandalgo.bfs;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -1192,8 +1193,117 @@ public class HardBFSExe {
      * Note:
      * There will be at least one building. If it is not possible to build such house according to the above rules, return -1.
      */
-    private int shortestDistToAllBuilding = Integer.MAX_VALUE;
     public int shortestDistance(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        int[][] dist = new int[m][n];
+        // Initialize building list and accessibility matrix `grid`
+        List<Tuple> buildings = new ArrayList<>();
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 1) {
+                    buildings.add(new Tuple(i, j, 0));
+                }
+                grid[i][j] = -grid[i][j];
+            }
+        }
+        // BFS from every building
+        for (int k = 0; k < buildings.size(); ++k) {
+            bfsFromEachBuilding(buildings.get(k), k, dist, grid, m, n);
+        }
+        // Find the minimum distance
+        int ans = -1;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == buildings.size() && (ans < 0 || dist[i][j] < ans)) {
+                    ans = dist[i][j];
+                }
+            }
+        }
+        return ans;
+    }
+
+    public void bfsFromEachBuilding(Tuple root, int k, int[][] dist, int[][] grid, int m, int n) {
+        final int[][] DIRS = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        Queue<Tuple> q = new ArrayDeque<>();
+        q.add(root);
+        while (!q.isEmpty()) {
+            Tuple b = q.poll();
+            dist[b.y][b.x] += b.dist;
+            for (int[] dir : DIRS) {
+                int x = b.x + dir[0], y = b.y + dir[1];
+                if (y >= 0 && x >= 0 && y < m && x < n && grid[y][x] == k) {
+                    grid[y][x] = k + 1;
+                    q.add(new Tuple(y, x, b.dist + 1));
+                }
+            }
+        }
+    }
+
+    class Tuple {
+        public int y;
+        public int x;
+        public int dist;
+
+        public Tuple(int y, int x, int dist) {
+            this.y = y;
+            this.x = x;
+            this.dist = dist;
+        }
+    }
+
+    public int shortestDistance_BFS(int[][] grid) {
+        if (grid == null || grid[0].length == 0) return 0;
+        final int[][] DIRS = {{0,1},{1,0},{0,-1},{-1,0}};
+        int row  = grid.length, col = grid[0].length;
+        //On each empty land, the total distance to all building it can reach.
+        int[][] distance = new int[row][col];
+        //On each empty land, how many building can be reached.
+        int[][] reach = new int[row][col];
+        int buildingNum = 0;
+        for (int i = 0; i < row; i++) {
+            for (int j =0; j < col; j++) {
+                //Do BFS on the building, to get the shortest distance between the build and all empty land
+                if (grid[i][j] == 1) {
+                    buildingNum++;
+                    Queue<int[]> q = new LinkedList<int[]>();
+                    q.offer(new int[] {i,j});
+                    boolean[][] isVisited = new boolean[row][col];
+                    int level = 1;
+                    while (!q.isEmpty()) {
+                        int s = q.size();
+                        for (int idx = 0; idx < s; idx++) {
+                            int[] curr = q.poll();
+                            for (int[] dir : DIRS) {
+                                int nextRow = curr[0] + dir[0];
+                                int nextCol = curr[1] + dir[1];
+                                if (nextRow >= 0 && nextRow < row && nextCol >= 0 && nextCol < col
+                                        && grid[nextRow][nextCol] == 0 && !isVisited[nextRow][nextCol]) {
+                                    //The shortest distance from [nextRow][nextCol] to the building is 'level'.
+                                    distance[nextRow][nextCol] += level;
+                                    reach[nextRow][nextCol]++;
+                                    isVisited[nextRow][nextCol] = true;
+                                    q.offer(new int[] {nextRow, nextCol});
+                                }
+                            }
+                        }
+                        level++;
+                    }
+                }
+            }
+        }
+        int shortest = Integer.MAX_VALUE;
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (grid[i][j] == 0 && reach[i][j] == buildingNum) {
+                    shortest = Math.min(shortest, distance[i][j]);
+                }
+            }
+        }
+        return shortest == Integer.MAX_VALUE ? -1 : shortest;
+    }
+
+    private int shortestDistToAllBuilding = Integer.MAX_VALUE;
+    public int shortestDistance_startFromEmptyLand(int[][] grid) {
         for (int i=0; i<grid.length; i++) {
             for (int j=0; j<grid[i].length; j++) {
                 if (grid[i][j] == 0) {

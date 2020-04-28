@@ -101,26 +101,6 @@ public class Coding1 {
         }
     }
 
-
-    public int longestOnes(int[] A, int K) {
-        int max = 0;
-        int l = 0, r = 0;
-        int zeroCounter = K;
-        for (r=0; r<A.length; r++) {
-            if (A[r] == 0) {
-                zeroCounter--;
-            }
-            while (zeroCounter < 0) {
-                if (A[l] == 0) {
-                    zeroCounter++;
-                }
-                l++;
-            }
-            max = Math.max(r-l+1, max);
-        }
-        return max;
-    }
-
     public boolean find132pattern(int[] nums) {
         Stack<Integer> stack = null;
         for (int i=0; i<nums.length - 2; i++) {

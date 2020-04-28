@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 public class ArrayExe {
 
@@ -20,7 +19,395 @@ public class ArrayExe {
     public static void main(String[] args) {
         ArrayExe exe = new ArrayExe();
         int[] c = {1,3,2,3,5,0};
-        //System.out.println(exe.countElements(c));
+        System.out.println(exe.findMinFibonacciNumbers(7));
+    }
+
+    public List<Integer> findDisappearedNumbers(int[] nums) {
+        List<Integer> ret = new ArrayList<Integer>();
+        for (int j=0; j<nums.length; j++) {
+            if (nums[Math.abs(nums[j]) - 1] > 0) {
+                nums[Math.abs(nums[j]) - 1] = -1 * nums[Math.abs(nums[j]) - 1];
+            }
+        }
+        for (int j=0; j<nums.length; j++) {
+            if (nums[j] > 0) {
+                ret.add(Integer.valueOf(j + 1));
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/sort-array-by-parity/
+     * @param A
+     * @return
+     */
+    public int[] sortArrayByParity(int[] A) {
+        if (A == null) {
+            return null;
+        }
+        int low = 0, high = A.length - 1;
+        while (low < high) {
+            if (A[low] % 2 != 0) {
+                swap(A, low, high);
+                high--;
+            } else {
+                low++;
+            }
+            if (A[high] % 2 == 0) {
+                swap(A, low, high);
+                low++;
+            } else {
+                high--;
+            }
+        }
+        return A;
+    }
+
+    /**
+     * https://leetcode.com/problems/move-zeroes/
+     * @param nums
+     */
+    public void moveZeroes(int[] nums) {
+        int lastNonZeroFoundAt = 0;
+        // If the current element is not 0, then we need to
+        // append it just in front of last non 0 element we found.
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != 0) {
+                nums[lastNonZeroFoundAt++] = nums[i];
+            }
+        }
+        // After we have finished processing new elements,
+        // all the non-zero elements are already at beginning of array.
+        // We just need to fill remaining array with 0's.
+        for (int i = lastNonZeroFoundAt; i < nums.length; i++) {
+            nums[i] = 0;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/valid-mountain-array/
+     * @param A
+     * @return
+     */
+    public boolean validMountainArray(int[] A) {
+        int len = A.length;
+        int i = 0;
+        // walk up
+        while (i+1 < len && A[i] < A[i+1]) i++;
+        // peak can't be first or last
+        if (i == 0 || i == len-1) return false;
+        // walk down
+        while (i+1 < len && A[i] > A[i+1]) i++;
+        return i == len-1;
+    }
+
+    /**
+     * https://leetcode.com/problems/duplicate-zeros/
+     * @param arr
+     */
+    //To achieve O(1) space, the first we pass forward and count the zeros.
+    //The second we pass backward and assign the value from original input to the new array.
+    //so that the original value won't be overridden too early.
+    public void duplicateZeros(int[] arr) {
+        int countZero = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 0) countZero++;
+        }
+        int totalLen = arr.length + countZero;
+        //i point to the original array, j point to the new location, only start copy when j is within array len.
+        for (int i = arr.length - 1, j = totalLen - 1; i < j; i--, j--) {
+            if (arr[i] != 0) {
+                //copy non 0
+                if (j < arr.length) arr[j] = arr[i];
+            } else {
+                //copy twice when hit '0'
+                if (j < arr.length) arr[j] = arr[i];
+                j--;
+                if (j < arr.length) arr[j] = arr[i];
+            }
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/continuous-subarray-sum/
+     * @param nums
+     * @param k
+     * @return
+     */
+    public boolean checkSubarraySum(int[] nums, int k) {
+        int sum = 0;
+        //key: previous sum%k, value: index
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (k != 0) {
+                sum = sum % k;
+            }
+            if (map.containsKey(sum)) {
+                //At least 2 continuous elements
+                if (i - map.get(sum) > 1) return true;
+            } else {
+                map.put(sum, i);
+            }
+        }
+        return false;
+    }
+
+    public boolean checkSubarraySum_1(int[] nums, int k) {
+        int runningSum = 0;
+        Map<Integer,Integer> map = new HashMap<Integer,Integer>();
+        for (int i=0; i<nums.length; i++) {
+            runningSum = runningSum + nums[i];
+            if (k!=0) {
+                int mod = runningSum % k;
+                if (mod == 0 && i != 0) {
+                    return true;
+                } else {
+                    if (map.containsKey(mod)){
+                        if (Math.abs(map.get(mod) - i) > 1) {
+                            return true;
+                        }
+                    } else {
+                        map.put(mod, i);
+                    }
+                }
+            } else {
+                if (i-1>0 &&  nums[i] == 0 && nums[i-1] == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-score-after-splitting-a-string/
+     * @param s
+     * @return
+     */
+    public int maxScore(String s) {
+        int oneCount = getOnes(s);
+        int zeroCount = 0;
+        int max = 0;
+        for (int i = 0; i <= s.length() - 2; i++) {
+            zeroCount += '1' - s.charAt(i);
+            oneCount -= s.charAt(i) - '0';
+            max = Math.max(max, zeroCount + oneCount);
+        }
+        return max;
+    }
+
+    private int getOnes(String s) {
+        int count = 0;
+        for (char ch : s.toCharArray()) {
+            count += ch - '0';
+        }
+        return count;
+    }
+
+    /**
+     * https://leetcode.com/problems/find-the-minimum-number-of-fibonacci-numbers-whose-sum-is-k/
+     * @param k
+     * @return
+     */
+    public int findMinFibonacciNumbers(int k) {
+        if (k < 2) return k;
+        int a = 1, b = 1, c = 2;
+        while (b <= k) {
+            c = a + b;
+            a = b;
+            b = c;
+        }
+        return 1 + findMinFibonacciNumbers(k - a);
+    }
+
+    public int findMinFibonacciNumbers_1(int k) {
+        List<Integer> fibList = new ArrayList<Integer>();
+        fibList.add(1);
+        int a = 1, b = 1;
+        int c = a + b;
+        while (c <= k) {
+            fibList.add(c);
+            a = b;
+            b = c;
+            c = a + b;
+        }
+        int res = 0;
+        int idx = fibList.size() - 1;
+        while (k != 0) {
+            while (fibList.get(idx) > k) {
+                idx--;
+            }
+            res++;
+            k = k - fibList.get(idx);
+        }
+        return res;
+    }
+
+
+
+    /**
+     * https://leetcode.com/problems/minimum-number-of-frogs-croaking/
+     * @param croakOfFrogs
+     * @return
+     */
+    public int minNumberOfFrogs(String croakOfFrogs) {
+        int cnt[] = new int[5];
+        int frogs = 0, max_frogs = 0;
+        for (int i = 0; i < croakOfFrogs.length(); ++i) {
+            char ch = croakOfFrogs.charAt(i);
+            int n = "croak".indexOf(ch);
+            cnt[n]++;
+            if (n == 0) {
+                max_frogs = Math.max(max_frogs, frogs++);
+            } else {
+                if (--cnt[n - 1] < 0) {
+                    return -1;
+                } else if (n == 4) {
+                    --frogs;
+                }
+            }
+        }
+        return frogs == 0 ? max_frogs : -1;
+    }
+
+    /**
+     * https://leetcode.com/problems/set-matrix-zeroes/
+     * Given a m x n matrix, if an element is 0, set its entire row and column to 0. Do it in-place.
+     *
+     * Example 1:
+     *
+     * Input:
+     * [
+     *   [1,1,1],
+     *   [1,0,1],
+     *   [1,1,1]
+     * ]
+     * Output:
+     * [
+     *   [1,0,1],
+     *   [0,0,0],
+     *   [1,0,1]
+     * ]
+     * Example 2:
+     *
+     * Input:
+     * [
+     *   [0,1,2,0],
+     *   [3,4,5,2],
+     *   [1,3,1,5]
+     * ]
+     * Output:
+     * [
+     *   [0,0,0,0],
+     *   [0,4,5,0],
+     *   [0,3,1,0]
+     * ]
+     * Follow up:
+     *
+     * A straight forward solution using O(mn) space is probably a bad idea.
+     * A simple improvement uses O(m + n) space, but still not the best solution.
+     * Could you devise a constant space solution?
+     */
+    public void setZeroes(int[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return;
+        }
+        int col0 = 1, rows = matrix.length, cols = matrix[0].length;
+        for (int i = 0; i < rows; ++i) {
+            if (matrix[i][0] == 0) {
+                col0 = 0;
+            }
+            for (int j = 1; j < cols; ++j) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+        for (int i = rows - 1; i >= 0; --i) {
+            for (int j = cols - 1; j >= 1; --j) {
+                if (matrix[i][0] == 0 || matrix[0][j] == 0) {
+                    matrix[i][j] = 0;
+                }
+            }
+            if (col0 == 0) {
+                matrix[i][0] = 0;
+            }
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/majority-element/
+     * Given an array of size n, find the majority element. The majority element is the element that appears more than ⌊ n/2 ⌋ times.
+     *
+     * You may assume that the array is non-empty and the majority element always exist in the array.
+     *
+     * Example 1:
+     *
+     * Input: [3,2,3]
+     * Output: 3
+     * Example 2:
+     *
+     * Input: [2,2,1,1,1,2,2]
+     * Output: 2
+     */
+    public int majorityElement(int[] nums) {
+        int maj_index = 0, count = 1;
+        int i;
+        for (i = 1; i < nums.length; i++) {
+            if (nums[maj_index] == nums[i]) {
+                count++;
+            } else {
+                count--;
+            }
+            if (count == 0) {
+                maj_index = i;
+                count = 1;
+            }
+        }
+        return nums[maj_index];
+    }
+
+    /**
+     * https://leetcode.com/problems/pascals-triangle/
+     * @param numRows
+     * @return
+     */
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> allrows = new ArrayList<List<Integer>>();
+        List<Integer> row = new ArrayList<Integer>();
+        for (int i = 0; i < numRows; i++) {
+            row.add(0, 1);
+            for (int j = 1; j < row.size() - 1; j++) {
+                row.set(j, row.get(j) + row.get(j + 1));
+            }
+            allrows.add(new ArrayList<Integer>(row));
+        }
+        return allrows;
+    }
+
+    /**
+     * https://leetcode.com/problems/battleships-in-a-board/
+     * @param board
+     * @return
+     */
+    public int countBattleships(char[][] board) {
+        if (board.length == 0) {
+            return 0;
+        }
+        int count = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == '.' || (i > 0 && board[i - 1][j] == 'X') || (j > 0 && board[i][j - 1] == 'X')) {
+                    continue;
+                }
+                count++;
+            }
+        }
+        return count;
     }
 
     /**
@@ -361,7 +748,7 @@ public class ArrayExe {
      * Explanation: You can allocate to the first, second and third child with 1, 2, 1 candies respectively.
      *              The third child gets 1 candy because it satisfies the above two conditions.
      */
-    public int candy(int[] ratings) {
+    public int candy_1(int[] ratings) {
         int pre = 1, countDown = 0, total = 1;
         for (int i = 1; i < ratings.length; i++) {
             if (ratings[i] >= ratings[i - 1]) {
@@ -386,6 +773,28 @@ public class ArrayExe {
             }
         }
         return total;
+    }
+
+    public int candy(int[] ratings) {
+        int candies[] = new int[ratings.length];
+        // Give each child 1 candy
+        Arrays.fill(candies, 1);
+        // Scan from left to right, to make sure right higher rated child gets 1 more candy than left lower rated child
+        for (int i = 1; i < candies.length; i++){
+            if (ratings[i] > ratings[i - 1]) {
+                candies[i] = (candies[i - 1] + 1);
+            }
+        }
+        // Scan from right to left, to make sure left higher rated child gets 1 more candy than right lower rated child
+        // Meantime, get the final result.
+        int sum = candies[candies.length - 1];
+        for (int i = candies.length - 2; i >= 0; i--) {
+            if (ratings[i] > ratings[i + 1]) {
+                candies[i] = Math.max(candies[i], (candies[i + 1] + 1));
+            }
+            sum += candies[i];
+        }
+        return sum;
     }
 
     /**
@@ -1923,6 +2332,8 @@ public class ArrayExe {
     }
 
     /**
+     * https://leetcode.com/problems/pairs-of-songs-with-total-durations-divisible-by-60/
+     *
      * Example 1:
      *
      * Input: [30,20,150,100,40]
@@ -1936,11 +2347,31 @@ public class ArrayExe {
      * @param time
      * @return
      */
+    //Classic applicatio of two sum question or technique.
+    //Once we get all number mod 60, value could only range from 0 to 59, hence a c[] array with 60 length is enough to hold it.
     public int numPairsDivisibleBy60(int[] time) {
-        int c[]  = new int[60], res = 0;
+        int c[] = new int[60], res = 0;
         for (int t : time) {
+            //add to the res, default is 0, from c[]
             res += c[(600 - t) % 60];
             c[t % 60] += 1;
+        }
+        return res;
+    }
+
+    public int numPairsDivisibleBy60_2(int[] time) {
+        if(time == null || time.length == 0) return 0;
+        int n = time.length;
+        int[] map = new int[60];
+        int res = 0;
+        for(int i = 0; i < n; i++){
+            int remainder = time[i] % 60;
+            map[remainder]++;
+        }
+        res += map[0] * (map[0] - 1)/2;
+        res += map[30] * (map[30] - 1)/2;
+        for(int i = 1; i < 30; i++){
+            res += map[i] * map[60 - i];
         }
         return res;
     }

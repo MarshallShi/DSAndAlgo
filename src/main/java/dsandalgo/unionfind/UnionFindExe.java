@@ -14,51 +14,144 @@ public class UnionFindExe {
 
     public static void main(String[] args) {
         UnionFindExe exe = new UnionFindExe();
-
         int[][] grid = {{0,0},{0,1},{1,2},{2,1}};
-//[["x1","x2"],["x2","x3"],["x3","x4"],["x4","x5"]]
-//[3.0,4.0,5.0,6.0]
-//[["x1","x5"],["x5","x2"],["x2","x4"],["x2","x2"],["x2","x9"],["x9","x9"]]
-        List<String> one = new ArrayList<String>();
-        one.add("x1");
-        one.add("x2");
-        List<List<String>> lst = new ArrayList<>();
-        lst.add(one);
-        one = new ArrayList<String>();
-        one.add("x2");
-        one.add("x3");
-        lst.add(one);
-        one = new ArrayList<String>();
-        one.add("x3");
-        one.add("x4");
-        lst.add(one);
-        one = new ArrayList<String>();
-        one.add("x4");
-        one.add("x5");
-        lst.add(one);
-        double[] arr = new double[4];
-        arr[0] = 3.0;
-        arr[1] = 4.0;
-        arr[3] = 5.0;
-        arr[2] = 6.0;
-        List<List<String>> quries = new ArrayList<>();
-        one = new ArrayList<String>();
-        one.add("x1");
-        one.add("x5");
-        quries.add(one);
-        one = new ArrayList<String>();
-        one.add("x5");
-        one.add("x2");
-        quries.add(one);
-        one = new ArrayList<String>();
-        one.add("x2");
-        one.add("x4");
-        quries.add(one);
-        one = new ArrayList<String>();
-        one.add("x2");
-        one.add("x2");
-        quries.add(one);
-        System.out.println(exe.calcEquation(lst,arr,quries));
+        System.out.println(exe.maximumMinimumPath(grid));
+    }
+
+    /**
+     * https://leetcode.com/problems/is-graph-bipartite/
+     * @param graph
+     * @return
+     */
+    public boolean isBipartite(int[][] graph) {
+        BipartiteUnionFind uf = new BipartiteUnionFind(graph.length);
+        // traverse all vertex
+        for (int i = 0; i < graph.length; i++) {
+            int[] adjs = graph[i];
+            // for a given vertex graph[i], if it's connected with its any adj vertex, it's not bipartite
+            for (int j = 0; j < adjs.length; j++) {
+                if (uf.find(i) == uf.find(adjs[j])) {
+                    return false;
+                }
+                uf.union(adjs[0], adjs[j]);
+            }
+        }
+        return true;
+    }
+
+    class BipartiteUnionFind {
+        int[] parent;
+
+        public BipartiteUnionFind(int n) {
+            parent = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+            }
+        }
+
+        public int find(int i) {
+            if (parent[i] == i) {
+                return parent[i];
+            }
+            parent[i] = find(parent[i]);
+            return parent[i];
+        }
+
+        public void union(int i, int j) {
+            int parentI = find(i);
+            int parentJ = find(j);
+            if (parentI != parentJ) {
+                parent[parentI] = parentJ;
+            }
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/path-with-maximum-minimum-value/
+     * Given a matrix of integers A with R rows and C columns, find the maximum score of a path starting at [0,0] and ending at [R-1,C-1].
+     *
+     * The score of a path is the minimum value in that path.  For example, the value of the path 8 →  4 →  5 →  9 is 4.
+     *
+     * A path moves some number of times from one visited cell to any neighbouring unvisited cell in one of the 4 cardinal directions (north, east, west, south).
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: [[5,4,5],[1,2,6],[7,4,6]]
+     * Output: 4
+     * Explanation:
+     * The path with the maximum score is highlighted in yellow.
+     * Example 2:
+     *
+     *
+     *
+     * Input: [[2,2,1,2,2,2],[1,2,2,2,1,2]]
+     * Output: 2
+     * Example 3:
+     *
+     *
+     *
+     * Input: [[3,4,6,3,4],[0,2,1,1,7],[8,8,3,2,7],[3,2,4,9,8],[4,1,2,0,0],[4,6,5,4,3]]
+     * Output: 3
+     *
+     *
+     * Note:
+     *
+     * 1 <= R, C <= 100
+     * 0 <= A[i][j] <= 10^9
+     */
+    public int maximumMinimumPath(int[][] A) {
+        int m = A.length;
+        int n = A[0].length;
+        MaxMinPathUF uf = new MaxMinPathUF(m*n);
+        List<int[]> data = new ArrayList<>();
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                data.add(new int[]{i, j, A[i][j]});
+            }
+        }
+        Collections.sort(data, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o2[2] - o1[2];
+            }
+        });
+        boolean[][] visited = new boolean[m][n];
+        final int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        for (int i=0; i<data.size(); i++) {
+            int[] max = data.get(i);
+            visited[max[0]][max[1]] = true;
+            for (int[] dir : dirs) {
+                int nextX = max[0] + dir[0];
+                int nextY = max[1] + dir[1];
+                if (nextX >= 0 && nextX < m && nextY >= 0 && nextY < n && visited[nextX][nextY]) {
+                    uf.union(max[0]*n + max[1], nextX*n + nextY);
+                    if (uf.find(0) == uf.find(m*n-1)) {
+                        return max[2];
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+    class MaxMinPathUF {
+        int[] parent;
+        public MaxMinPathUF(int size) {
+            parent = new int[size];
+            for (int i = 0; i < size; i++) parent[i] = i;
+        }
+        public int find(int x) {
+            if (parent[x] != x) parent[x] = find(parent[x]);
+            return parent[x];
+        }
+        public void union(int x, int y) {
+            int rx = find(x);
+            int ry = find(y);
+            if (rx != ry) parent[ry] = rx;
+        }
     }
 
     /**
@@ -1291,129 +1384,6 @@ public class UnionFindExe {
             return parent[x];
         }
     }
-
-    /**
-     * https://leetcode.com/problems/number-of-closed-islands/
-     *
-     * Given a 2D grid consists of 0s (land) and 1s (water).  An island is a maximal 4-directionally connected group of 0s and a closed
-     * island is an island totally (all left, top, right, bottom) surrounded by 1s.
-     *
-     * Return the number of closed islands.
-     *
-     * @param grid
-     * @return
-     */
-
-    int[] directions = new int[] {0, 1, 0, -1, 0};
-
-    public int closedIsland(int[][] g) {
-        int m = g.length;
-        int n = g[0].length;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i == 0 || j == 0 || i == m - 1 || j == n - 1) {
-                    fill(g, i, j);
-                }
-            }
-        }
-        int res = 0;
-        for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < n; ++j) {
-                if (g[i][j] == 0) {
-                    res++;
-                    fill(g, i, j);
-                }
-            }
-        }
-        return res;
-    }
-
-    private void fill(int[][] g, int x, int y) {
-        if (x < 0 || y < 0 || x >= g.length || y >= g[0].length || g[x][y] == 1) {
-            return;
-        }
-        g[x][y] = 1;
-        for (int i = 0; i < directions.length - 1; i++) {
-            fill(g, x + directions[i], y + directions[i + 1]);
-        }
-    }
-
-    //Start of the inefficient version...
-//    private int[] father;
-//    private int count = 0;
-//
-//    public int closedIsland_InEfficient(int[][] grid) {
-//        int[][] directions = {{0,1},{0,-1},{1,0},{-1,0}};
-//        int m = grid.length;
-//        int n = grid[0].length;
-//        father = new int[m*n];
-//        Queue<int[]> queue = new LinkedList<int[]>();
-//        boolean[][] visited = new boolean[m][n];
-//        for (int i=0; i<m; i++) {
-//            for (int j=0; j<n; j++) {
-//                if ((i == 0 || j == 0 || i == m - 1 || j == n - 1) && grid[i][j] == 0){
-//                    int[] zeroPos = {i, j};
-//                    visited[i][j] = true;
-//                    queue.offer(zeroPos);
-//                }
-//            }
-//        }
-//
-//        while (!queue.isEmpty()) {
-//            int[] pos = queue.poll();
-//            grid[pos[0]][pos[1]] = 1;
-//            for (int k = 0; k<directions.length; k++) {
-//                int nx = pos[0] + directions[k][0];
-//                int ny = pos[1] + directions[k][1];
-//                if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 0 && !visited[nx][ny]) {
-//                    int[] npos = {nx,ny};
-//                    visited[nx][ny] = true;
-//                    queue.offer(npos);
-//                }
-//            }
-//        }
-//        //Init the union
-//        for (int i = 0; i < m; i++) {
-//            for (int j = 0; j < n; j++) {
-//                if (grid[i][j] == 0) {
-//                    int id = i * n + j;
-//                    father[id] = id;
-//                    count++;
-//                }
-//            }
-//        }
-//        for (int i = 0; i < m; i++) {
-//            for (int j = 0; j < n; j++) {
-//                if (grid[i][j] == 0) {
-//                    for (int k = 0; k<directions.length; k++) {
-//                        int nx = i + directions[k][0];
-//                        int ny = j + directions[k][1];
-//                        if (nx >= 0 && nx < m && ny >= 0 && ny < n && grid[nx][ny] == 0) {
-//                            unionForClosedIsland(i*n + j, nx*n + ny);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return count;
-//    }
-//
-//    public void unionForClosedIsland(int node1, int node2) {
-//        int find1 = findForClosedIsland(node1);
-//        int find2 = findForClosedIsland(node2);
-//        if(find1 != find2) {
-//            father[find1] = find2;
-//            count--;
-//        }
-//    }
-//    public int findForClosedIsland (int node) {
-//        if (father[node] == node) {
-//            return node;
-//        }
-//        father[node] = findForClosedIsland(father[node]);
-//        return father[node];
-//    }
-//    //End
 
     /**
      * https://leetcode.com/problems/longest-consecutive-sequence/

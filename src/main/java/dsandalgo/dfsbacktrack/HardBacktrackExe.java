@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,6 +15,134 @@ public class HardBacktrackExe {
         HardBacktrackExe exe = new HardBacktrackExe();
         String[] strs = {"SIX","SEVEN","SEVEN"};
         System.out.println(exe.isSolvable(strs, "TWENTY"));
+    }
+
+    /**
+     * https://leetcode.com/problems/n-queens/
+     * The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.
+     *
+     * Given an integer n, return all distinct solutions to the n-queens puzzle.
+     *
+     * Each solution contains a distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an empty space respectively.
+     *
+     * Example:
+     *
+     * Input: 4
+     * Output: [
+     *  [".Q..",  // Solution 1
+     *   "...Q",
+     *   "Q...",
+     *   "..Q."],
+     *
+     *  ["..Q.",  // Solution 2
+     *   "Q...",
+     *   "...Q",
+     *   ".Q.."]
+     * ]
+     * Explanation: There exist two distinct solutions to the 4-queens puzzle as shown above.
+     */
+    public List<List<String>> solveNQueens(int n) {
+        char[][] chess = new char[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                chess[i][j] = '.';
+            }
+        }
+        List<List<String>> res = new ArrayList<List<String>>();
+
+        solve(res, chess, 0);
+        return res;
+    }
+
+    private void solve(List<List<String>> res, char[][] chess, int row) {
+        if (row == chess.length) {
+            res.add(construct(chess));
+            return;
+        }
+        for (int col = 0; col < chess.length; col++) {
+            if (valid(chess, row, col)) {
+                chess[row][col] = 'Q';
+                solve(res, chess, row + 1);
+                chess[row][col] = '.';
+            }
+        }
+    }
+
+    private boolean valid(char[][] chess, int row, int col) {
+        // check all cols
+        for (int i = 0; i < row; i++) {
+            if (chess[i][col] == 'Q') {
+                return false;
+            }
+        }
+        //check 45 degree
+        for (int i = row - 1, j = col + 1; i >= 0 && j < chess.length; i--, j++) {
+            if (chess[i][j] == 'Q') {
+                return false;
+            }
+        }
+        //check 135
+        for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+            if (chess[i][j] == 'Q') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private List<String> construct(char[][] chess) {
+        List<String> path = new ArrayList<>();
+        for (int i = 0; i < chess.length; i++) {
+            path.add(new String(chess[i]));
+        }
+        return path;
+    }
+
+    public List<List<String>> solveNQueens_2(int n) {
+        List<List<String>> res = new LinkedList<List<String>>();
+        List<Integer> temp = new LinkedList<Integer>();
+        backtrackNQueens(res, temp, n);
+        return res;
+    }
+
+    public void backtrackNQueens(List<List<String>> res, List<Integer> temp, int n){
+        if (temp.size() == n) {
+            res.add(convertResult(temp));
+            return;
+        }
+        for(int i=0; i<n; i++) {
+            if (!temp.contains(i)) {
+                if (!isDiagonalAttack(temp, i)) {
+                    temp.add(i);
+                    backtrackNQueens(res, temp, n);
+                    temp.remove(temp.size()-1);
+                }
+            }
+        }
+    }
+
+    private List<String> convertResult(List<Integer> currentQueen) {
+        List<String> temp = new ArrayList<String>();
+        for (int i = 0; i < currentQueen.size(); i++) {
+            char[] t = new char[currentQueen.size()];
+            Arrays.fill(t, '.');
+            t[currentQueen.get(i)] = 'Q';
+            temp.add(new String(t));
+        }
+        return temp;
+    }
+
+    private boolean isDiagonalAttack(List<Integer> currentQueen, int i) {
+        int current_row = currentQueen.size();
+        int current_col = i;
+        //判断每一行的皇后的情况
+        for (int row = 0; row < currentQueen.size(); row++) {
+            //左上角的对角线和右上角的对角线，差要么相等，要么互为相反数，直接写成了绝对值
+            if (Math.abs(current_row - row) == Math.abs(current_col - currentQueen.get(row))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

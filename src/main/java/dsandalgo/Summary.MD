@@ -428,6 +428,55 @@ https://leetcode.com/problems/happy-number/
     
 Array Question
 
+Pairs of Songs With Total Durations Divisible by 60
+https://leetcode.com/problems/pairs-of-songs-with-total-durations-divisible-by-60/
+Application of two sum, just need to mod 60 so it becomes obvious.
+
+Range Sum Query 2D - Immutable
+https://leetcode.com/problems/range-sum-query-2d-immutable/
+Solution: apply the presum concept, cacluate the sum till (i,j), and cache it. Then the result of any query will just be
+a caculation of the four (i,j) sum subtract.
+
+https://leetcode.com/problems/range-sum-query-2d-mutable/
+Similar approach, but need to maintain the cache, and update the cache when (i,j) is updated.
+
+https://leetcode.com/problems/spiral-matrix-ii/
+
+
+https://leetcode.com/problems/continuous-subarray-sum/
+Presum, HashMap to store the previous.
+
+Candy
+https://leetcode.com/problems/candy/
+Trick is how we process the increase and decrease respectively. This solution apply two round of scan from left to right and right to left.
+Logically it is very clean and easy to implement. 
+
+    public int candy(int[] ratings) {
+        int candies[] = new int[ratings.length];
+        // Give each child 1 candy 
+        Arrays.fill(candies, 1);
+        // Scan from left to right, to make sure right higher rated child gets 1 more candy than left lower rated child
+        for (int i = 1; i < candies.length; i++){
+            if (ratings[i] > ratings[i - 1]) {
+                candies[i] = (candies[i - 1] + 1);
+            }
+        }
+        // Scan from right to left, to make sure left higher rated child gets 1 more candy than right lower rated child
+        // Meantime, get the final result.
+        int sum = candies[candies.length - 1];
+        for (int i = candies.length - 2; i >= 0; i--) {
+            if (ratings[i] > ratings[i + 1]) {
+                candies[i] = Math.max(candies[i], (candies[i + 1] + 1));
+            }
+            sum += candies[i];
+        }
+        return sum;
+    }
+
+Best Time to Buy and Sell Stock II
+https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/
+Focus on find the temp lowest, then accumulate the result.
+
 Subarray sum equals k.
 https://leetcode.com/problems/subarray-sum-equals-k/description/
 Calculate the presum, meantime we keep a hash map to store all the seen presum.
@@ -581,6 +630,11 @@ Trick is in where each loop need to ignore duplicates.
         return ret;
     }
 
+Set Matrix Zeroes
+https://leetcode.com/problems/set-matrix-zeroes/
+Solution is to leverage the cell itself to mark as 0. col0, row0.
+So we only need to do a second round of traverse of matrix
+
 Maximum Sum of Two Non-Overlapping Subarrays
 https://leetcode.com/problems/maximum-sum-of-two-non-overlapping-subarrays/
 O(n) solution with two pass: you could either have-
@@ -667,6 +721,8 @@ https://leetcode.com/problems/maximize-distance-to-closest-person/
         res = Math.max(res, n - last - 1);
         return res;
     }
+
+https://leetcode.com/problems/battleships-in-a-board/
     
         
 Next Permutation
@@ -765,8 +821,21 @@ Set the index corresponding number to negative to mark it is seen, it doesn't af
 
 Binary search question
 
+Single Element in a Sorted Array
+https://leetcode.com/problems/single-element-in-a-sorted-array/
+Observation: if mid == mid+1 or mid != mid+1, implication is the target is in left or right. 
+
+Find Peak Element
+https://leetcode.com/problems/find-peak-element/
+
 Find Minimum in Rotated Sorted Array
 https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
+vs 
+https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii/
+
+Missing Element in Sorted Array
+https://leetcode.com/problems/missing-element-in-sorted-array/
+Trick is the missing number between lo,mid,high can be derived from number and index, so we can apply binary search.
 
 Search a 2D Matrix
 https://leetcode.com/problems/search-a-2d-matrix/
@@ -957,6 +1026,36 @@ Solution 2: Binary Search, the low bound is max value in the array, high bound i
         return true;
     }
 
+Find K Closest Elements
+https://leetcode.com/problems/find-k-closest-elements/
+Assume we are taking A[i] ~ A[i + k -1], we can binary research i, we compare the distance between x - A[mid] and A[mid + k] - x
+
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        int left = 0, right = arr.length - k;
+        while (left < right) {
+            int mid = (left + right) / 2;
+            if (x - arr[mid] > arr[mid + k] - x) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return Arrays.stream(arr, left, left + k).boxed().collect(Collectors.toList());
+    }
+
+Binary Search Try and Error Questions
+
+https://leetcode.com/problems/divide-chocolate/
+Find the min sweetness, and max sweetness(total), do binary search on the sweet, and see if it can be split to k+1.
+
+https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/
+
+https://leetcode.com/problems/koko-eating-bananas/
+
+https://leetcode.com/problems/minimize-max-distance-to-gas-station/
+
+https://leetcode.com/problems/split-array-largest-sum/
+
 
 Two Pointers question
 
@@ -1076,6 +1175,59 @@ Backtrack, key trick is when do we apply the open and close parenthes
         }
     }
 
+Palindrome Permutation II
+https://leetcode.com/problems/palindrome-permutation-ii/
+Before using the backtrack, which is O(n!) time complexity, we can optimize it to O((n/2)!) by observe the property of palindrome.
+Count the characters and store the count in a array. (256 length) If the odd number of count is more than 1, then no palinedrome possible.
+
+    public List<String> generatePalindromes(String s) {
+        // How many characters that have odd number of count
+        int numOdds = 0;
+        // Map from character to its frequency
+        int[] map = new int[256];
+        for (char c : s.toCharArray()) {
+            map[c]++;
+            numOdds = (map[c] & 1) == 1 ? numOdds + 1 : numOdds - 1;
+        }
+        List<String> res = new ArrayList<>();
+        if (numOdds > 1) {
+            return res;
+        }
+        //Main trick to improve the runtime is just do the permutation on the first half.
+        String mid = "";
+        int length = 0;
+        for (int i = 0; i < 256; i++) {
+            if (map[i] > 0) {
+                if ((map[i] & 1) == 1) {
+                    // Char with odd count will be in the middle
+                    mid = "" + (char) i;
+                    map[i]--;
+                }
+                // Cut in half since we only generate half string
+                map[i] /= 2;
+                // The length of half string
+                length += map[i];
+            }
+        }
+        generatePalindromesHelper(res, map, length, "", mid);
+        return res;
+    }
+
+    private void generatePalindromesHelper(List<String> res, int[] map, int length, String s, String mid) {
+        if (s.length() == length) {
+            StringBuilder reverse = new StringBuilder(s).reverse(); // Second half
+            res.add(s + mid + reverse);
+            return;
+        }
+        for (int i = 0; i < 256; i++) { // backtracking just like permutation
+            if (map[i] > 0) {
+                map[i]--;
+                generatePalindromesHelper(res, map, length, s + (char) i, mid);
+                map[i]++;
+            }
+        }
+    }
+
 Letter Combinations of a Phone Number
 https://leetcode.com/problems/letter-combinations-of-a-phone-number/
 This question can use backtrack, or BFS based.
@@ -1104,6 +1256,47 @@ This question can use backtrack, or BFS based.
             backtrackLetterComb(ret, digits, sb, pos+1);
             sb.setLength(curLen);
         }
+    }
+
+Palindrome Partitioning
+https://leetcode.com/problems/palindrome-partitioning/
+Apply backtrack to choose each substring. Recursively apply to rest of the substring.
+
+    public List<List<String>> partition(String s) {
+        if (s == null || s.length() == 0) {
+            return new ArrayList<>();
+        }
+        List<List<String>> result = new ArrayList<>();
+        partitionBacktrack(s, new ArrayList<>(), result);
+        return result;
+    }
+
+    private void partitionBacktrack(String s, List<String> step, List<List<String>> result) {
+        if (s == null || s.length() == 0) {
+            result.add(new ArrayList<>(step));
+            return;
+        }
+        for (int i = 1; i <= s.length(); i++) {
+            String temp = s.substring(0, i);
+            if (!isPalindrome(temp)) {
+                continue; // only do backtracking when current string is palindrome
+            }
+            step.add(temp);  // choose
+            partitionBacktrack(s.substring(i, s.length()), step, result); // explore
+            step.remove(step.size() - 1); // unchoose
+        }
+        return;
+    }
+
+    private boolean isPalindrome(String s) {
+        int left = 0, right = s.length() - 1;
+        while (left <= right) {
+            if (s.charAt(left) != s.charAt(right))
+                return false;
+            left++;
+            right--;
+        }
+        return true;
     }
 
 Permutations
@@ -1140,6 +1333,7 @@ https://leetcode.com/problems/permutations-ii/
 https://leetcode.com/problems/combination-sum/
 https://leetcode.com/problems/combination-sum-ii/
 https://leetcode.com/problems/palindrome-partitioning/
+https://leetcode.com/problems/beautiful-arrangement/
 
     private List<List<Integer>> ret;
 
@@ -1210,6 +1404,10 @@ Similiar problem: https://leetcode.com/problems/partition-equal-subset-sum/ (DP)
         return false;
     }
 
+Factor Combinations    
+https://leetcode.com/problems/factor-combinations/
+start from 2, increase one by one, then try the target/i as next target (dfs), remove the attempt.
+
 Linked List Questions
 
 Reverse singly linked list.
@@ -1241,6 +1439,10 @@ Define three pointers: head, prevHead, recordNext.
         head.next = newHead;
         return reverseListHelper(next, head);
     }
+
+Insert into a Sorted Circular Linked List
+https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list/
+
 
 Reverse Nodes in k-Group
 https://leetcode.com/problems/reverse-nodes-in-k-group/
@@ -1373,12 +1575,146 @@ O(n) time and O(1) space. It needs to in place of the input list.
         }
         return prev;
     }
- 
-Circle  
             
 
 Sliding Window Questions
 
+https://leetcode.com/problems/count-number-of-nice-subarrays/
+https://leetcode.com/problems/replace-the-substring-for-balanced-string/
+https://leetcode.com/problems/binary-subarrays-with-sum/
+https://leetcode.com/problems/subarrays-with-k-different-integers/
+https://leetcode.com/problems/fruit-into-baskets/
+
+
+https://leetcode.com/problems/longest-repeating-character-replacement/
+Need to observe the fact we need to always use the most frequent character plus k as the sliding window size.
+
+    public int characterReplacement(String s, int k) {
+        int[] freq = new int[26];
+        int mostFreqLetter = 0;
+        int left = 0;
+        int max = 0;
+        
+        for(int right = 0; right < s.length(); right++){
+            freq[s.charAt(right) - 'A']++;
+            mostFreqLetter = Math.max(mostFreqLetter, freq[s.charAt(right) - 'A']);
+            
+            int lettersToChange = (right - left + 1) - mostFreqLetter;
+            if(lettersToChange > k){
+                freq[s.charAt(left) - 'A']--;
+                left++;
+            }
+            
+            max = Math.max(max, right - left + 1);
+        }
+        
+        return max;
+    }
+
+Minimum Size Subarray Sum
+https://leetcode.com/problems/minimum-size-subarray-sum/
+Classic sliding window, we keep i, j as two pointer, the start can increase only when we find the sum >= s, increase start 
+till the sum < s, and move the end again.
+    
+    public int minSubArrayLen(int s, int[] nums) {
+        if(nums == null) return 0;
+        int ans = Integer.MAX_VALUE;
+        int sum = 0;
+        int localAns = 0;
+        for(int i = 0, j = 0;i< nums.length;i++){
+            sum += nums[i];
+            localAns++;
+            while(sum >= s){
+                ans = Math.min(ans,localAns);
+                localAns--;
+                sum -= nums[j];
+                j++;
+            }
+        }
+        return (ans == Integer.MAX_VALUE)?0: ans;
+    }
+    
+https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/
+https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/discuss/189039/Detailed-intuition-behind-Deque-solution
+https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/discuss/143726/C%2B%2BJavaPython-O(N)-Using-Deque
+NOTE: usage of deque, poll from first, add from last. Compare the presum of last and first. But what's pushed is index.
+    
+    public int shortestSubarray(int[] A, int K) {
+        int n = A.length, res = n + 1;
+        int[] presum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            presum[i + 1] = presum[i] + A[i];
+        }
+        Deque<Integer> queue = new ArrayDeque<>();
+        for (int i = 0; i < n + 1; i++) {
+            //Skip those starts where it is not a good 'start'
+            while (queue.size() > 0 && presum[i] - presum[queue.getFirst()] >=  K) {
+                res = Math.min(res, i - queue.pollFirst());
+            }
+            //Keep corresponding elem for index in queue increasing... 
+            while (queue.size() > 0 && presum[i] <= presum[queue.getLast()]) {
+                queue.pollLast();
+            }
+            queue.addLast(i);
+        }
+        return res <= n ? res : -1;
+    }
+
+Max Consecutive Ones III
+https://leetcode.com/problems/max-consecutive-ones-iii/
+Question can be converted to if we always have K 0s, what is the longest window? (Reverse thinking)
+Similar questions: 
+https://leetcode.com/problems/max-consecutive-ones-ii/
+https://leetcode.com/problems/max-consecutive-ones/
+
+    public int longestOnes(int[] A, int K) {
+        int max = 0;
+        int l = 0, r = 0;
+        int zeroCounter = K;
+        for (r=0; r<A.length; r++) {
+            if (A[r] == 0) {
+                zeroCounter--;
+            }
+            while (zeroCounter < 0) {
+                if (A[l] == 0) {
+                    zeroCounter++;
+                }
+                l++;
+            }
+            max = Math.max(r-l+1, max);
+        }
+        return max;
+    }
+
+Minimum Window Subsequence
+https://leetcode.com/problems/minimum-window-subsequence/
+
+    public String minWindow(String S, String T) {
+        char[] s = S.toCharArray(), t = T.toCharArray();
+        int sindex = 0, tindex = 0, slen = s.length, tlen = t.length, start = -1, len = slen;
+        while (sindex < slen) {
+            if (s[sindex] == t[tindex]) {
+                if (++tindex == tlen) {
+                    //check feasibility from left to right of T
+                    int end = sindex+1;
+                    //check optimization from right to left of T
+                    while (--tindex >= 0) {
+                        while (s[sindex--] != t[tindex]);
+                    }
+                    ++sindex;
+                    ++tindex;
+                    //record the current smallest candidate
+                    if(end - sindex < len) {
+                        len = end - sindex;
+                        start = sindex;
+                    }
+                }
+            }
+            ++sindex;
+        }
+        return start == -1 ? "" : S.substring(start, start + len);
+    }
+    
 Sliding Window Maximum
 https://leetcode.com/problems/sliding-window-maximum/
 Solution 1: To achieve linear time, we use double ended queue, LinkedList as data structure to simulate the move.
@@ -1608,6 +1944,62 @@ Better approach is the Tarjan Algorithm.
     
 Overlapping Questions
 
+Similar questions, both can apply greedy approach:
+https://leetcode.com/problems/minimum-number-of-taps-to-open-to-water-a-garden/
+NOTE: another way is to use brute force DP, O(n2)
+
+    public int minTaps(int n, int[] ranges) {
+        int[][] intervals = new int[n + 1][2];
+        for (int i = 0; i <= n; i++) {
+            intervals[i] = new int[]{i - ranges[i], i + ranges[i]};
+        }
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[0] == o2[0]) {
+                    return o1[1] - o2[1];
+                }
+                return o1[0] - o2[0];
+            }
+        });
+        int ans = 0, start = 0, end = 0, i = 0;
+        while (i <= n && start < n) {
+            while (i <= n && intervals[i][0] <= start) {
+                end = Math.max(end, intervals[i][1]);
+                i++;
+            }
+            if (end <= start) {
+                return -1;
+            }
+            start = end;
+            ans++;
+        }
+        return ans;
+    }
+    
+https://leetcode.com/problems/video-stitching/
+
+    public int videoStitching(int[][] clips, int T) {
+        int res = 0;
+        Arrays.sort(clips, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) { 
+                return a[0] - b[0]; 
+            }
+        });
+        int st = 0, end = 0;
+        for (int i = 0; st < T; ++res) {
+            for (; i < clips.length && clips[i][0] <= st; ++i) {
+                end = Math.max(end, clips[i][1]);
+            }
+            if (st == end) {
+                return -1;
+            }
+            st = end;
+        }
+        return res;
+    }
+    
+
 Employee free time
 https://leetcode.com/problems/employee-free-time/
 Sort all the interval according to start time, go through the sorted interval one by one.
@@ -1665,6 +2057,260 @@ https://leetcode.com/problems/insert-interval/
 
 Tree Questions
 
+A tree is an undirected graph in which any two vertices are connected by exactly one path. 
+In other words, any connected graph without simple cycles is a tree.
+
+**Preorder, inorder, postorder traverse**
+
+NOTE for Question 145 
+For iterative post order traverse, use the reversed postoder recursion, use stack the get the reversed result, then reverse it to return.
+   traverse(node.left);
+   traverse(node.right);
+   visit(node);
+Instead we use below:
+   visit(node);
+   traverse(node.right);
+   traverse(node.left);
+Use stack the mimic this reversed traverse flow, then get the result, and resverse it.
+
+Range Sum of BST
+https://leetcode.com/problems/range-sum-of-bst/
+When traversing the tree, use L and R to prune the path.
+
+    public int rangeSumBST(TreeNode root, int L, int R) {
+        if (root == null) return 0;
+        if (root.val > R) return rangeSumBST(root.left, L, R);
+        if (root.val < L) return rangeSumBST(root.right, L, R);
+        return root.val + rangeSumBST(root.left, L, R) + rangeSumBST(root.right, L, R);      
+    }
+    
+Maximum Depth of Binary Tree
+https://leetcode.com/problems/maximum-depth-of-binary-tree/
+Recursive and Iterative solution.
+
+BST question:
+https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
+https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/
+Recursively create the tree from left and right hand.
+
+https://leetcode.com/problems/unique-binary-search-trees/
+First intuition come from the recursive way to contrust the left and right sub tree, number of total will be numOfLeft*numOfRight for each root.
+Which then can be evolved to DP.     
+    
+    public int numTrees(int n) {
+        return numTreesHelper(1, n);
+    }
+
+    private int numTreesHelper(int lo, int hi) {
+        if (lo >= hi) return 1;
+        int total = 0;
+        for (int i = lo; i <= hi; i++) {
+            total += numTreesHelper(lo, i - 1) * numTreesHelper(i + 1, hi);
+        }
+        return total;
+    }
+    
+    public int numTrees(int n) {
+        //G(n) = i from 1 to n; F(i, n)
+        //F(i, n) = G(i-1) * G(n-i);
+        if (n==0 || n==1) {
+            return 1;
+        }
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+
+        for (int i=2; i<=n; i++) {
+            int tempSum = 0;
+            for (int j=1; j<=i; j++) {
+                tempSum = tempSum + dp[j-1]*dp[i-j];
+            }
+            dp[i] = tempSum;
+        }
+        return dp[n];
+    }
+
+Follow up question from above:
+https://leetcode.com/problems/unique-binary-search-trees-ii/
+Can use the same approach, recursively get each of the unique tree.
+
+    public List<TreeNode> generateTrees(int n) {
+        return generateSubtrees(1, n);
+    }
+    
+    private List<TreeNode> generateSubtrees(int s, int e) {
+        List<TreeNode> res = new LinkedList<TreeNode>();
+        if (s > e) {
+            res.add(null); // empty tree
+            return res;
+        }
+    
+        for (int i = s; i <= e; ++i) {
+            List<TreeNode> leftSubtrees = generateSubtrees(s, i - 1);
+            List<TreeNode> rightSubtrees = generateSubtrees(i + 1, e);
+    
+            for (TreeNode left : leftSubtrees) {
+                for (TreeNode right : rightSubtrees) {
+                    TreeNode root = new TreeNode(i);
+                    root.left = left;
+                    root.right = right;
+                    res.add(root);
+                }
+            }
+        }
+        return res;
+    }
+
+Delete Nodes And Return Forest
+https://leetcode.com/problems/delete-nodes-and-return-forest/
+Use post order traverse, if a node is deleted, then push its children to the result.
+
+    public List<TreeNode> delNodes(TreeNode root, int[] to_delete) {
+        List<TreeNode> forest = new ArrayList<>();
+        if (root == null) return forest;
+        Set<Integer> toDeleteSet = new HashSet<>();
+        for (int i : to_delete) {
+            toDeleteSet.add(i);
+        }
+        deleteNodes(root, toDeleteSet, forest);
+        if (!toDeleteSet.contains(root.val)) {
+            forest.add(root);
+        }
+        return forest;
+    }
+
+    private TreeNode deleteNodes(TreeNode node, Set<Integer> toDeleteSet, List<TreeNode> forest) {
+        if (node == null) {
+            return null;
+        }
+        node.left = deleteNodes(node.left, toDeleteSet, forest);
+        node.right = deleteNodes(node.right, toDeleteSet, forest);
+        if (toDeleteSet.contains(node.val)) {
+            if (node.left != null) {
+                forest.add(node.left);
+            }
+            if (node.right != null) {
+                forest.add(node.right);
+            }
+            return null;
+        }
+        return node;
+    }
+
+Closest Binary Search Tree Value II
+https://leetcode.com/problems/closest-binary-search-tree-value-ii/
+How to achieve less then O(n)? Only store the smaller and larger, if it is balanced tree, 2*log(n).
+
+    public List<Integer> closestKValues(TreeNode root, double target, int k) {
+        Stack<TreeNode> smaller = new Stack<>();
+        Stack<TreeNode> larger = new Stack<>();
+        pushSmaller(root, target, smaller);
+        pushLarger(root, target, larger);
+
+        List<Integer> res = new ArrayList<>();
+        TreeNode cur = null;
+        while (res.size() < k) {
+            if (smaller.isEmpty() || (!larger.isEmpty() && larger.peek().val - target < target - smaller.peek().val)) {
+                cur = larger.pop();
+                res.add(cur.val);
+                pushLarger(cur.right, target, larger);
+            } else {
+                cur = smaller.pop();
+                res.add(cur.val);
+                pushSmaller(cur.left, target, smaller);
+            }
+        }
+        return res;
+    }
+
+    private void pushSmaller(TreeNode node, double target, Stack<TreeNode> stack) {
+        while (node != null) {
+            if (node.val < target) {
+                stack.push(node);
+                node = node.right;
+            } else {
+                node = node.left;
+            }
+        }
+    }
+
+    private void pushLarger(TreeNode node, double target, Stack<TreeNode> stack) {
+        while (node != null) {
+            if (node.val >= target) {
+                stack.push(node);
+                node = node.left;
+            } else {
+                node = node.right;
+            }
+        }
+    }
+
+Flatten Binary Tree to Linked List
+https://leetcode.com/problems/flatten-binary-tree-to-linked-list/
+Solution 1: iterative, each step get the one level of left child to right, move cursor to it, and repeat the same process.
+Solution 2: recursive, right first, then left, use a global variable to track the previous node. (post order traverse)
+Solution 3: stack based iterative solution.
+
+    public void flatten(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        if (root.left == null && root.right == null) {
+            return;
+        }
+        while (root != null) {
+            if (root.left == null) {
+                root = root.right;
+                continue;
+            }
+            TreeNode left = root.left;
+            while (left.right != null) {
+                left = left.right;
+            }
+            left.right = root.right;
+            root.right = root.left;
+            root.left = null;
+            root = root.right;
+        }
+    }
+    
+    private TreeNode prev = null;
+
+    public void flatten(TreeNode root) {
+        if (root == null) return;
+        flatten(root.right);
+        flatten(root.left);
+        root.right = prev;
+        root.left = null;
+        prev = root;
+    }
+    
+    public void flatten(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        stack.push(root);
+        TreeNode prev = null;
+        while (!stack.isEmpty()) {
+            TreeNode node = stack.pop();
+            if (prev == null) {
+                prev = node;
+            } else {
+                prev.right = node;
+                prev.left = null;
+                prev = node;
+            }
+            if (node.right != null) {
+                stack.push(node.right);
+            }
+            if (node.left != null) {
+                stack.push(node.left);
+            }
+            
+        }
+    }
+
 Symmetric tree
 https://leetcode.com/problems/symmetric-tree/
 Solution 1: recursively check if left and right are symmetric.
@@ -1690,6 +2336,12 @@ Path Sum Questions
 
 https://leetcode.com/problems/path-sum/
 Recursively test all possible branches and once find a path match, return.
+
+Serialize and Deserialize N-ary Tree
+https://leetcode.com/problems/serialize-and-deserialize-n-ary-tree/
+One approach is using format: [1[2[3,4,7],9[11,20,45,44]],5]
+
+https://leetcode.com/problems/count-complete-tree-nodes/
 
 https://leetcode.com/problems/path-sum-ii/
 One solution could be DFS backtrack, to explore all the possibilities and track the path in the list.
@@ -2376,6 +3028,51 @@ Solution 3: Binary Indexed Tree based, get the ranking of each element, track th
     
 DFS Question
 
+Different Ways to Add Parentheses
+https://leetcode.com/problems/different-ways-to-add-parentheses/
+Split the input string to left part and right part, recursively calculate the result from left and right.
+And use the current operator to get the list of possible results. Use cache to avoid duplicated parts.
+
+    private Map<String, List<Integer>> cachedResult = new HashMap<>();
+
+    public List<Integer> diffWaysToCompute(String input) {
+        if (cachedResult.containsKey(input)) {
+            return cachedResult.get(input);
+        }
+        List<Integer> ret = new ArrayList<>();
+        for (int i = 0; i < input.length(); i++) {
+            if (input.charAt(i) == '-' || input.charAt(i) == '*' || input.charAt(i) == '+') {
+                String left = input.substring(0, i);
+                String right = input.substring(i + 1);
+                List<Integer> leftRes = diffWaysToCompute(left);
+                List<Integer> rightRes = diffWaysToCompute(right);
+                for (Integer p1 : leftRes) {
+                    for (Integer p2 : rightRes) {
+                        int c = 0;
+                        switch (input.charAt(i)) {
+                            case '+':
+                                c = p1 + p2;
+                                break;
+                            case '-':
+                                c = p1 - p2;
+                                break;
+                            case '*':
+                                c = p1 * p2;
+                                break;
+                        }
+                        ret.add(c);
+                    }
+                }
+            }
+        }
+        if (ret.size() == 0) {
+            ret.add(Integer.valueOf(input));
+        }
+        cachedResult.put(input, ret);
+        return ret;
+    }
+    
+
 Number of Islands
 https://leetcode.com/problems/number-of-islands/
 Classic DFS solution: find a cell, dfs all the connected cells, one trick here is in place modification in the grid.
@@ -2406,6 +3103,50 @@ Classic DFS solution: find a cell, dfs all the connected cells, one trick here i
         numIslandsDFSMarking(grid, i - 1, j, m, n);
         numIslandsDFSMarking(grid, i, j + 1, m, n);
         numIslandsDFSMarking(grid, i, j - 1, m, n);
+    }
+
+
+https://leetcode.com/problems/number-of-closed-islands/
+Classic DFS question, DFS the border cells, fill them all with 1, then start DFS any 0, each DFS will change all connected to 0, and 
+increase the res by 1.
+
+Similar question:
+https://leetcode.com/problems/number-of-enclaves/
+
+Number of Distinct Islands
+https://leetcode.com/problems/number-of-distinct-islands/
+Trick is how we store the path during DFS...
+
+    //Interpretation of:
+    //one island can be translated (and not rotated or reflected) to equal the other.
+    //if we use the same way of traverse, direction wise, we get the same traverse history!!!!!
+    //so if we start with any of the cell, we will get all the distinct
+    public int numDistinctIslands(int[][] grid) {
+        Set<String> set = new HashSet<>();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] != 0) {
+                    StringBuilder sb = new StringBuilder();
+                    numDistinctIslandsDFS(grid, i, j, sb, "o"); // origin
+                    grid[i][j] = 0;
+                    set.add(sb.toString());
+                }
+            }
+        }
+        return set.size();
+    }
+
+    private void numDistinctIslandsDFS(int[][] grid, int i, int j, StringBuilder sb, String dir) {
+        if (i < 0 || i == grid.length || j < 0 || j == grid[i].length || grid[i][j] == 0) {
+            return;
+        }
+        sb.append(dir);
+        grid[i][j] = 0;
+        numDistinctIslandsDFS(grid, i - 1, j, sb, "u");
+        numDistinctIslandsDFS(grid, i + 1, j, sb, "d");
+        numDistinctIslandsDFS(grid, i, j - 1, sb, "l");
+        numDistinctIslandsDFS(grid, i, j + 1, sb, "r");
+        sb.append("b"); // back
     }
     
 Longest Increasing Path in a Matrix
@@ -2715,6 +3456,14 @@ Another trick is how to move the robot back to previous state for next direction
 
 BFS Questions
 
+Shortest Distance from All Buildings
+https://leetcode.com/problems/shortest-distance-from-all-buildings/
+Two approaches: do BFS from building or empty land.
+From building is far more efficient from the OJ. As it avoids duplicate computation.
+
+Walls and Gates
+https://leetcode.com/problems/walls-and-gates/
+
 Word Ladder
 https://leetcode.com/problems/word-ladder/
 Build the next level by iterate through the 26 different letters.
@@ -2890,6 +3639,20 @@ https://leetcode.com/problems/reorganize-string/
 https://leetcode.com/problems/task-scheduler/
 Similar questions, keep a Max PQ, pick the top ones, reduce the freq/num, push back, till next round to repeat the same process.
 
+Minimum Cost to Connect Sticks
+https://leetcode.com/problems/minimum-cost-to-connect-sticks/
+Use a min heap, which is the default contructed PriorityQueue in Java, always poll the two smallest number for a connect.
+
+Kth Largest Element in a Stream
+https://leetcode.com/problems/kth-largest-element-in-a-stream/
+Mulitple solutions: 
+1. Sort and get the kth by index. NlogN. 
+2. Use a Min Heap to keep the top K elements. NlogK
+
+DP + Priority Queue
+https://leetcode.com/problems/constrained-subset-sum/
+Bruce force DP will TLE. Use a sliding window to keep track the k window's max value of previous DP array.
+
 Meeting Scheduler
 https://leetcode.com/problems/meeting-scheduler/
 
@@ -2915,8 +3678,13 @@ https://leetcode.com/problems/meeting-scheduler/
         return new ArrayList<Integer>();
     }
 
+High Five
+https://leetcode.com/problems/high-five/
+Use Priority Queue to get the top five for each.
+
 Find Median
 https://leetcode.com/problems/find-median-from-data-stream/
+Similar question which same solution can apply: https://leetcode.com/problems/sliding-window-median/
 To find median, intuition is we need the max of lower end array, and min of higher end array.
 So we can use two heap, one minHeap, one maxHeap.
 
@@ -2997,6 +3765,25 @@ Naively we can use BFS to iterative through all k stops for all. But we can use 
 
 Sorting Questions
 
+Increasing Triplet Subsequence
+https://leetcode.com/problems/increasing-triplet-subsequence/
+
+    public boolean increasingTriplet(int[] nums) {
+        int small = Integer.MAX_VALUE, medium = Integer.MAX_VALUE;
+        for (int n : nums) {
+            if (n <= small) { 
+                small = n; // update small if n is smaller than both
+            } else {
+                if (n <= medium) {
+                    medium = n;  // update big only if greater than small but smaller than big
+                } else {
+                    return true; // return if you find a number bigger than both
+                }
+            }
+        }
+        return false;
+    }
+
 kth largest element
 https://leetcode.com/problems/kth-largest-element-in-an-array/
 https://leetcode.com/problems/kth-largest-element-in-an-array/discuss/60294/Solution-explained
@@ -3038,7 +3825,53 @@ Based on the sorting, we can form the largest number. Trick of the sort is compa
         }
         return res;
     }
-        
+
+H Index
+https://leetcode.com/problems/h-index/
+Bucket sorting.
+     
+Campus Bikes     
+https://leetcode.com/problems/campus-bikes/
+Solution could be use Priority Queue, O(M*N*log(M*N)) time complexity.
+A faster approach is use Bucket Sorting. O(M*N). Idea is to generate all the distance and each distance have a range.
+Each distance will have a list of pairs, based on requirement, we pick the lowest index to assign, use a status array to track if is it already assigned.
+     
+    public int[] assignBikes(int[][] workers, int[][] bikes) {
+        List<int[]>[] buckets = new ArrayList[2001];
+        for (int i = 0; i < workers.length; i++) {
+            for (int j = 0; j < bikes.length; j++) {
+                int dist = manDist(workers[i], bikes[j]);
+                if (buckets[dist] == null) {
+                    buckets[dist] = new ArrayList<int[]>();
+                }
+                buckets[dist].add(new int[]{i, j});
+            }
+        }
+        boolean[] bikeVisited = new boolean[bikes.length];
+        int[] result = new int[workers.length];
+        Arrays.fill(result, -1);
+        // Buckets[dist] is consumed completely first, and then move on
+        // to next dist. Check if buckets[dist] is null every time.
+        for (int dist = 0; dist < buckets.length; dist++) {
+            if (buckets[dist] == null) {
+                continue;
+            }
+            for (int i = 0; i < buckets[dist].size(); i++) {
+                int w = buckets[dist].get(i)[0];
+                int b = buckets[dist].get(i)[1];
+                if (bikeVisited[b] == true || result[w] != -1) {
+                    continue;
+                }
+                result[w] = b;
+                bikeVisited[b] = true;
+            }
+        }
+        return result;
+    }
+
+    public int manDist(int[] pt1, int[] pt2) {
+        return Math.abs(pt1[0] - pt2[0]) + Math.abs(pt1[1] - pt2[1]);
+    }   
     
 Union Found Questions
 
@@ -3250,6 +4083,12 @@ The Union Find data structure will tell directly how many connected islands.
     }
 
 Math Questions
+
+
+Minimum Area Rectangle
+https://leetcode.com/problems/minimum-area-rectangle/
+An O(n2) solution: idea is to use hash map to store each x, for all possible y1, y2, y3... in a set.
+Trick is in the two for loop, checking if the two points could form diagonal points.
 
 Fraction to Recurring Decimal
 https://leetcode.com/problems/fraction-to-recurring-decimal/
@@ -3612,7 +4451,9 @@ binary search in prefixsum array for the position.
         return ret;
     }
 
-
+Shuffle an Array
+https://leetcode.com/problems/shuffle-an-array/
+Randomly pick another index to swap with current index. Need to do it in the cloned array.
 
 Greedy Questions
 

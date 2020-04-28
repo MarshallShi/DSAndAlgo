@@ -20,6 +20,57 @@ public class BacktrackExe {
         System.out.println(backtrack.generateAbbreviations("word"));
     }
 
+    /**
+     * https://leetcode.com/problems/palindrome-partitioning/
+     * Given a string s, partition s such that every substring of the partition is a palindrome.
+     *
+     * Return all possible palindrome partitioning of s.
+     *
+     * Example:
+     *
+     * Input: "aab"
+     * Output:
+     * [
+     *   ["aa","b"],
+     *   ["a","a","b"]
+     * ]
+     */
+    public List<List<String>> partition(String s) {
+        if (s == null || s.length() == 0) {
+            return new ArrayList<>();
+        }
+        List<List<String>> result = new ArrayList<>();
+        partitionBacktrack(s, new ArrayList<>(), result);
+        return result;
+    }
+
+    private void partitionBacktrack(String s, List<String> step, List<List<String>> result) {
+        if (s == null || s.length() == 0) {
+            result.add(new ArrayList<>(step));
+            return;
+        }
+        for (int i = 1; i <= s.length(); i++) {
+            String temp = s.substring(0, i);
+            if (!isPalindrome(temp)) {
+                continue; // only do backtracking when current string is palindrome
+            }
+            step.add(temp);  // choose
+            partitionBacktrack(s.substring(i, s.length()), step, result); // explore
+            step.remove(step.size() - 1); // unchoose
+        }
+        return;
+    }
+
+    private boolean isPalindrome(String s) {
+        int left = 0, right = s.length() - 1;
+        while (left <= right) {
+            if (s.charAt(left) != s.charAt(right))
+                return false;
+            left++;
+            right--;
+        }
+        return true;
+    }
 
     /**
      * https://leetcode.com/problems/letter-combinations-of-a-phone-number/
@@ -192,43 +243,49 @@ public class BacktrackExe {
      * Input: "abc"
      * Output: []
      */
-    private List<String> list = new ArrayList<>();
     public List<String> generatePalindromes(String s) {
-        int numOdds = 0; // How many characters that have odd number of count
-        int[] map = new int[256]; // Map from character to its frequency
-        for (char c: s.toCharArray()) {
+        // How many characters that have odd number of count
+        int numOdds = 0;
+        // Map from character to its frequency
+        int[] map = new int[256];
+        for (char c : s.toCharArray()) {
             map[c]++;
-            numOdds = (map[c] & 1) == 1 ? numOdds+1 : numOdds-1;
+            numOdds = (map[c] & 1) == 1 ? numOdds + 1 : numOdds - 1;
         }
+        List<String> res = new ArrayList<>();
         if (numOdds > 1) {
-            return list;
+            return res;
         }
         //Main trick to improve the runtime is just do the permutation on the first half.
         String mid = "";
         int length = 0;
         for (int i = 0; i < 256; i++) {
             if (map[i] > 0) {
-                if ((map[i] & 1) == 1) { // Char with odd count will be in the middle
-                    mid = "" + (char)i;
+                if ((map[i] & 1) == 1) {
+                    // Char with odd count will be in the middle
+                    mid = "" + (char) i;
                     map[i]--;
                 }
-                map[i] /= 2; // Cut in half since we only generate half string
-                length += map[i]; // The length of half string
+                // Cut in half since we only generate half string
+                map[i] /= 2;
+                // The length of half string
+                length += map[i];
             }
         }
-        generatePalindromesHelper(map, length, "", mid);
-        return list;
+        generatePalindromesHelper(res, map, length, "", mid);
+        return res;
     }
-    private void generatePalindromesHelper(int[] map, int length, String s, String mid) {
+
+    private void generatePalindromesHelper(List<String> res, int[] map, int length, String s, String mid) {
         if (s.length() == length) {
             StringBuilder reverse = new StringBuilder(s).reverse(); // Second half
-            list.add(s + mid + reverse);
+            res.add(s + mid + reverse);
             return;
         }
         for (int i = 0; i < 256; i++) { // backtracking just like permutation
             if (map[i] > 0) {
                 map[i]--;
-                generatePalindromesHelper(map, length, s + (char)i, mid);
+                generatePalindromesHelper(res, map, length, s + (char) i, mid);
                 map[i]++;
             }
         }

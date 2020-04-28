@@ -768,26 +768,17 @@ public class BFSExes {
                 }
             }
         }
-        boolean[][] seen = new boolean[m][n];
-        int level = 0;
         while (!q.isEmpty()) {
-            int s = q.size();
-            for (int k=0; k<s; k++) {
-                int[] cur = q.poll();
-                if (rooms[cur[0]][cur[1]] > level) {
-                    rooms[cur[0]][cur[1]] = level;
-                }
-                for (int d=0; d<dirPA.length; d++) {
-                    int nextx = cur[0] + dirPA[d][0];
-                    int nexty = cur[1] + dirPA[d][1];
-                    if (nextx >= 0 && nextx < m && nexty >= 0 && nexty < n && rooms[nextx][nexty] > level + 1 && !seen[nextx][nexty]) {
-                        int[] nx = {nextx, nexty};
-                        seen[nextx][nexty] = true;
-                        q.offer(nx);
-                    }
+            int[] cur = q.poll();
+            for (int d=0; d<dirPA.length; d++) {
+                int nextx = cur[0] + dirPA[d][0];
+                int nexty = cur[1] + dirPA[d][1];
+                if (nextx >= 0 && nextx < m && nexty >= 0 && nexty < n && rooms[nextx][nexty] == Integer.MAX_VALUE) {
+                    rooms[nextx][nexty] = rooms[cur[0]][cur[1]] + 1;
+                    int[] nx = {nextx, nexty};
+                    q.offer(nx);
                 }
             }
-            level++;
         }
     }
 
@@ -813,38 +804,55 @@ public class BFSExes {
      * @param edges
      * @return
      */
+    //Similar to the minimal spanning tree algo.
     public boolean validTree(int n, int[][] edges) {
+        int[] nums = new int[n];
+        Arrays.fill(nums, -1);
+        for (int i = 0; i < edges.length; i++) {
+            int x = find(nums, edges[i][0]);
+            int y = find(nums, edges[i][1]);
+            // if two vertices happen to be in the same set
+            // then there's a cycle
+            if (x == y) {
+                return false;
+            }
+            // union
+            nums[x] = y;
+        }
+        return edges.length == n - 1;
+    }
+
+    private int find(int nums[], int i) {
+        if (nums[i] == -1) return i;
+        return find(nums, nums[i]);
+    }
+
+    public boolean validTree_BFS(int n, int[][] edges) {
         // n must be at least 1
         if (n < 1) return false;
-
-        // create hashmap to store info of edges
-        Map<Integer, Set<Integer>> map = new HashMap<>();
-        for (int i = 0; i < n; i++) map.put(i, new HashSet<>());
+        // create map to store edges
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        for (int i = 0; i < n; i++) graph.put(i, new HashSet<>());
         for (int[] edge : edges) {
-            map.get(edge[0]).add(edge[1]);
-            map.get(edge[1]).add(edge[0]);
+            graph.get(edge[0]).add(edge[1]);
+            graph.get(edge[1]).add(edge[0]);
         }
-
-        // bfs starts with node in label "0"
-        Set<Integer> set = new HashSet<>();
+        // bfs starts with any node, say "0"
+        Set<Integer> visited = new HashSet<>();
         Queue<Integer> queue = new LinkedList<>();
         queue.add(0);
         while (!queue.isEmpty()) {
             int top = queue.remove();
-            // if set already contains top, then the graph has cycle
-            // hence return false
-            if (set.contains(top)) return false;
-
-            for (int node : map.get(top)) {
-                queue.add(node);
-                // we should remove the edge: node -> top
-                // after adding a node into set to avoid duplicate
-                // since we already consider top -> node
-                map.get(node).remove(top);
+            if (visited.contains(top)) {
+                return false;
             }
-            set.add(top);
+            for (int node : graph.get(top)) {
+                queue.add(node);
+                graph.get(node).remove(top);
+            }
+            visited.add(top);
         }
-        return set.size() == n;
+        return visited.size() == n;
     }
 
     //    BFS, put node, col into queue at the same time
@@ -1426,14 +1434,38 @@ public class BFSExes {
 
     /**
      * https://leetcode.com/problems/cheapest-flights-within-k-stops/
+     * There are n cities connected by m flights. Each flight starts from city u and arrives at v with a price w.
+     *
+     * Now given all the cities and flights, together with starting city src and the destination dst, your task is to find the cheapest price from src to dst with up to k stops. If there is no such route, output -1.
+     *
+     * Example 1:
+     * Input:
      * n = 3, edges = [[0,1,100],[1,2,100],[0,2,500]]
      * src = 0, dst = 2, k = 1
-     * @param n
-     * @param flights
-     * @param src
-     * @param dst
-     * @param K
-     * @return
+     * Output: 200
+     * Explanation:
+     * The graph looks like this:
+     *
+     *
+     * The cheapest price from city 0 to city 2 with at most 1 stop costs 200, as marked red in the picture.
+     * Example 2:
+     * Input:
+     * n = 3, edges = [[0,1,100],[1,2,100],[0,2,500]]
+     * src = 0, dst = 2, k = 0
+     * Output: 500
+     * Explanation:
+     * The graph looks like this:
+     *
+     *
+     * The cheapest price from city 0 to city 2 with at most 0 stop costs 500, as marked blue in the picture.
+     * Note:
+     *
+     * The number of nodes n will be in range [1, 100], with nodes labeled from 0 to n - 1.
+     * The size of flights will be in range [0, n * (n - 1) / 2].
+     * The format of each flight will be (src, dst, price).
+     * The price of each flight will be in the range [1, 10000].
+     * k is in the range of [0, n - 1].
+     * There will not be any duplicated flights or self cycles.
      */
     public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
         Map<Integer, Map<Integer, Integer>> prices = new HashMap<>();

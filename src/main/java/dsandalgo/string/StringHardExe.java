@@ -460,78 +460,48 @@ public class StringHardExe {
      * If there is a tie, return the smaller one as answer.
      */
     public String nearestPalindromic(String n) {
-        long nl = Long.parseLong(n);
         int len = n.length();
-        //
-        // Corner cases
-        //
-        // <= 10 or equal to 100, 1000, 10000, ...
-        if (nl <= 10 || (nl % 10 == 0
-                && nl != 0
-                && Long.parseLong(n.substring(1)) == 0)) {
-            return "" + (nl - 1);
+        if (len == 1) return Long.toString(Long.valueOf(n) - 1);
+        List<String> candidates = new ArrayList<>();
+        candidates.add(allNine(len - 1));
+        candidates.add(allNine(len));
+        candidates.add(oneZeroOne(len + 1));
+        candidates.add(oneZeroOne(len));
+        long half = Long.valueOf(n.substring(0, (len + 1) / 2));
+        long[] prefixes = {half - 1, half, half + 1};
+        for (long i : prefixes) {
+            String str = Long.toString(i);
+            if (len % 2 == 0) {
+                candidates.add(str + new StringBuilder(str).reverse().toString());
+            } else
+                candidates.add(str + new StringBuilder(str.substring(0, str.length() - 1)).reverse().toString());
         }
-        // 11 or 101, 1001, 10001, 100001, ...
-        if (nl == 11 || (nl % 10 == 1
-                && n.charAt(0) == '1'
-                && Long.parseLong(n.substring(1, len - 1)) == 0)) {
-            return "" + (nl - 2);
-        }
-        // 99, 999, 9999, 99999, ...
-        if (isAllDigitNine(n)) {
-            return "" + (nl + 2);
-        }
-        //
-        // Construct the closest palindrome and calculate absolute difference with n
-        //
-        boolean isEvenDigits = len % 2 == 0;
-
-        String palindromeRootStr
-                = (isEvenDigits) ? n.substring(0, len / 2) : n.substring(0, len / 2 + 1);
-
-        int palindromeRoot = Integer.valueOf(palindromeRootStr);
-        long equal = toPalindromeDigits("" + palindromeRoot, isEvenDigits);
-        long diffEqual = Math.abs(nl - equal);
-
-        long bigger = toPalindromeDigits("" + (palindromeRoot + 1), isEvenDigits);
-        long diffBigger = Math.abs(nl - bigger);
-
-        long smaller = toPalindromeDigits("" + (palindromeRoot - 1), isEvenDigits);
-        long diffSmaller = Math.abs(nl - smaller);
-
-        //
-        // Find the palindrome with minimum absolute differences
-        // If tie, return the smaller one
-        //
-        long closest = (diffBigger < diffSmaller) ? bigger : smaller;
-        long minDiff = Math.min(diffBigger, diffSmaller);
-
-        if (diffEqual != 0) { // n is not a palindrome, diffEqual should be considered
-            if (diffEqual == minDiff) { // if tie
-                closest = Math.min(equal, closest);
-            } else if (diffEqual < minDiff){
-                closest = equal;
+        long diff = Long.MAX_VALUE;
+        long result = 0;
+        long num = Long.valueOf(n);
+        for (String candidate : candidates) {
+            if (candidate.equals(n)) continue;
+            long can = Long.valueOf(candidate);
+            if (Math.abs(can - num) < diff || (Math.abs(can - num) == diff && can < result)) {
+                diff = Math.abs(can - num);
+                result = can;
             }
         }
-
-        return "" + closest;
+        return Long.toString(result);
     }
 
-    private long toPalindromeDigits(String num, boolean isEvenDigits) {
-        StringBuilder reversedNum = new StringBuilder(num).reverse();
-        String palindromeDigits = isEvenDigits
-                ? num + reversedNum.toString()
-                : num + (reversedNum.deleteCharAt(0)).toString();
-        return Long.parseLong(palindromeDigits);
+    public String allNine(int len) {
+        char[] charArray = new char[len];
+        Arrays.fill(charArray, '9');
+        return new String(charArray);
     }
 
-    private boolean isAllDigitNine(String n) {
-        for (char ch : n.toCharArray()) {
-            if (ch != '9') {
-                return false;
-            }
-        }
-        return true;
+    public String oneZeroOne(int len) {
+        char[] charArray = new char[len];
+        Arrays.fill(charArray, '0');
+        charArray[0] = '1';
+        charArray[len - 1] = '1';
+        return new String(charArray);
     }
 
     /**

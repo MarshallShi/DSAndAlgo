@@ -550,13 +550,9 @@ public class MinMaxPathExe {
     public int minimumTotal(List<List<Integer>> triangle) {
         int size = triangle.size();
         int[] minlen = new int[size];
-        List<Integer> lastRow = triangle.get(triangle.size() - 1);
-        for (int k=0; k<lastRow.size(); k++) {
-            minlen[k] = lastRow.get(k);
-        }
-        for (int layer = size - 2; layer>=0; layer--) {
+        for (int layer = size - 1; layer>=0; layer--) {
             for (int i=0; i<=layer; i++) {
-                minlen[i] = Math.min(minlen[i], minlen[i+1]) + triangle.get(layer).get(i);
+                minlen[i] = layer == size - 1 ? triangle.get(layer).get(i) : Math.min(minlen[i], minlen[i+1]) + triangle.get(layer).get(i);
             }
         }
         return minlen[0];

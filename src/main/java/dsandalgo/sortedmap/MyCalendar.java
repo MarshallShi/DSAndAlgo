@@ -1,5 +1,7 @@
 package dsandalgo.sortedmap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 /**
@@ -36,40 +38,31 @@ import java.util.TreeMap;
  */
 public class MyCalendar {
 
+    /**
+     * map will store start as key, end as value.
+     */
     private TreeMap<Integer, Integer> map;
 
     public MyCalendar() {
-        map = new TreeMap<Integer, Integer>();
+        map = new TreeMap<>();
     }
 
     public boolean book(int start, int end) {
-        //For any start, add 1, so the count increase when run pass this point.
-        map.putIfAbsent(start, 0);
-        map.put(start, map.get(start) + 1);
-        //For any end, minus 1, so the count decrease when run pass this point.
-        map.putIfAbsent(end, 0);
-        map.put(end, map.get(end) - 1);
-        int ongoing = 0;
-        boolean ret = true;
-        for (int v : map.values()) {
-            ongoing = ongoing + v;
-            //Anytime find double booking, it is a failure, return.
-            if (ongoing > 1) {
-                ret = false;
-                break;
+        if (map.isEmpty()) {
+            map.put(start, end);
+            return true;
+        } else {
+            Integer floor = map.floorKey(start);
+            if (floor != null && start < map.get(floor)) {
+                return false;
             }
+            Integer ceiling = map.ceilingKey(start);
+            if (ceiling != null && end > ceiling) {
+                return false;
+            }
+            map.put(start, end);
+            return true;
         }
-        if (!ret) {
-            //Remove it
-            map.put(start, map.get(start) - 1);
-            if (map.get(start) == 0) {
-                map.remove(start);
-            }
-            map.put(end, map.get(end) + 1);
-            if (map.get(end) == 0) {
-                map.remove(end);
-            }
-        }
-        return ret;
     }
+
 }

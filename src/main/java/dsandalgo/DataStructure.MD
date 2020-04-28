@@ -584,3 +584,8 @@ https://leetcode.com/problems/design-snake-game/
 The key is how to represent snake body. Here we can use LinkedList, a Queue.
 On the event of move: we remove last element, add to the first element in the new position.
 In case the new position is food, we return the last element back.
+
+Design Circular Queue
+https://leetcode.com/problems/design-circular-queue/
+Use basic data structure to design advanced data structure. For circular, we can build it based on array.
+Keep tracking the front and rear index of the 'queue' in the array, also the size / capacity.

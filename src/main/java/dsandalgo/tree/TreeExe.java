@@ -1,5 +1,6 @@
 package dsandalgo.tree;
 
+import dsandalgo.Coding4;
 import javafx.util.Pair;
 
 import java.util.ArrayDeque;
@@ -25,6 +26,228 @@ public class TreeExe {
         int[] preorder = {8,5,1,7,10,12};
         TreeNode n = exe.str2tree("4(2(3)(1))(6(5))");
         System.out.println(n);
+    }
+
+
+    /**
+     * https://leetcode.com/problems/unique-binary-search-trees-ii/
+     *
+     * Given an integer n, generate all structurally unique BST's (binary search trees) that store values 1 ... n.
+     *
+     * Example:
+     *
+     * Input: 3
+     * Output:
+     * [
+     *   [1,null,3,2],
+     *   [3,2,null,1],
+     *   [3,1,null,null,2],
+     *   [2,1,3],
+     *   [1,null,2,null,3]
+     * ]
+     * Explanation:
+     * The above output corresponds to the 5 unique BST's shown below:
+     *
+     *    1         3     3      2      1
+     *     \       /     /      / \      \
+     *      3     2     1      1   3      2
+     *     /     /       \                 \
+     *    2     1         2                 3
+     */
+    public List<TreeNode> generateTrees(int n) {
+        return generateSubtrees(1, n);
+    }
+
+    private List<TreeNode> generateSubtrees(int s, int e) {
+        List<TreeNode> res = new LinkedList<TreeNode>();
+        if (s > e) {
+            res.add(null); // empty tree
+            return res;
+        }
+        for (int i = s; i <= e; ++i) {
+            List<TreeNode> leftSubtrees = generateSubtrees(s, i - 1);
+            List<TreeNode> rightSubtrees = generateSubtrees(i + 1, e);
+            for (TreeNode left : leftSubtrees) {
+                for (TreeNode right : rightSubtrees) {
+                    TreeNode root = new TreeNode(i);
+                    root.left = left;
+                    root.right = right;
+                    res.add(root);
+                }
+            }
+        }
+        return res;
+    }
+
+    public List<TreeNode> generateTrees_2(int n) {
+        return genTrees(1,n);
+    }
+    public List<TreeNode> genTrees (int start, int end) {
+        List<TreeNode> list = new LinkedList<TreeNode>();
+        if (start > end) {
+            list.add(null);
+            return list;
+        }
+        if(start == end){
+            list.add(new TreeNode(start));
+            return list;
+        }
+        List<TreeNode> left,right;
+        for(int i=start; i<=end; i++) {
+            left = genTrees(start, i-1);
+            right = genTrees(i+1, end);
+            for (TreeNode lnode: left) {
+                for(TreeNode rnode: right) {
+                    TreeNode root = new TreeNode(i);
+                    root.left = lnode;
+                    root.right = rnode;
+                    list.add(root);
+                }
+            }
+        }
+        return list;
+    }
+    /**
+     * https://leetcode.com/problems/range-sum-of-bst/
+     * @param root
+     * @param L
+     * @param R
+     * @return
+     */
+    public int rangeSumBST(TreeNode root, int L, int R) {
+        if (root == null) return 0;
+        if (root.val > R) return rangeSumBST(root.left, L, R);
+        if (root.val < L) return rangeSumBST(root.right, L, R);
+        return root.val + rangeSumBST(root.left, L, R) + rangeSumBST(root.right, L, R);
+    }
+
+    /**
+     * https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
+     */
+    //Recursive solution
+    public TreeNode sortedArrayToBST(int[] nums) {
+        if (nums == null || nums.length ==0) {
+            return null;
+        }
+        return sortedArrayToBSTHelper(nums, 0, nums.length - 1);
+    }
+
+    public TreeNode sortedArrayToBSTHelper(int[] nums, int low, int high) {
+        if (low > high) {
+            return null;
+        }
+        if (low == high) {
+            return new TreeNode(nums[low]);
+        }
+        int mid = low + (high - low)/2;
+        TreeNode right = sortedArrayToBSTHelper(nums, mid + 1, high);
+        TreeNode left = sortedArrayToBSTHelper(nums, low, mid - 1);
+        TreeNode root = new TreeNode(nums[mid]);
+        root.left = left;
+        root.right = right;
+        return root;
+    }
+
+    public TreeNode sortedArrayToBST_iter(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return null;
+        }
+        TreeNode root = new TreeNode(0);
+        Stack<Object> stack = new Stack<>();
+        stack.push(nums.length - 1);
+        stack.push(0);
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            TreeNode node = (TreeNode) stack.pop();
+            int begin = (int) stack.pop();
+            int end = (int) stack.pop();
+            int mid = begin + ((end - begin) >> 1);
+            node.val = nums[mid];
+            if (end >= mid + 1) {
+                node.right = new TreeNode(0);
+                stack.push(end);
+                stack.push(mid + 1);
+                stack.push(node.right);
+            }
+            if (begin <= mid - 1) {
+                node.left = new TreeNode(0);
+                stack.push(mid - 1);
+                stack.push(begin);
+                stack.push(node.left);
+            }
+        }
+        return root;
+    }
+
+    /**
+     * https://leetcode.com/problems/delete-nodes-and-return-forest/
+     * @param root
+     * @param to_delete
+     * @return
+     */
+    public List<TreeNode> delNodes(TreeNode root, int[] to_delete) {
+        List<TreeNode> forest = new ArrayList<>();
+        if (root == null) return forest;
+        Set<Integer> toDeleteSet = new HashSet<>();
+        for (int i : to_delete) {
+            toDeleteSet.add(i);
+        }
+        deleteNodes(root, toDeleteSet, forest);
+        if (!toDeleteSet.contains(root.val)) {
+            forest.add(root);
+        }
+        return forest;
+    }
+
+    private TreeNode deleteNodes(TreeNode node, Set<Integer> toDeleteSet, List<TreeNode> forest) {
+        if (node == null) {
+            return null;
+        }
+        node.left = deleteNodes(node.left, toDeleteSet, forest);
+        node.right = deleteNodes(node.right, toDeleteSet, forest);
+        if (toDeleteSet.contains(node.val)) {
+            if (node.left != null) {
+                forest.add(node.left);
+            }
+            if (node.right != null) {
+                forest.add(node.right);
+            }
+            return null;
+        }
+        return node;
+    }
+
+    /**
+     * https://leetcode.com/problems/count-complete-tree-nodes/
+     * @param root
+     * @return
+     */
+    public int countNodes(TreeNode root) {
+        int leftDepth = leftDepth(root);
+        int rightDepth = rightDepth(root);
+        if (leftDepth == rightDepth) {
+            return (1 << leftDepth) - 1;
+        } else {
+            return 1 + countNodes(root.left) + countNodes(root.right);
+        }
+    }
+
+    private int rightDepth(TreeNode root) {
+        int dep = 0;
+        while (root != null) {
+            root = root.right;
+            dep++;
+        }
+        return dep;
+    }
+
+    private int leftDepth(TreeNode root) {
+        int dep = 0;
+        while (root != null) {
+            root = root.left;
+            dep++;
+        }
+        return dep;
     }
 
     /**
@@ -1902,17 +2125,17 @@ public class TreeExe {
     public boolean twoSumBSTs(TreeNode root1, TreeNode root2, int target) {
         Set<Integer> seen = new HashSet<Integer>();
         inOrderTraverseWithTarget(root1, seen, target);
-        return inOrderTraverse(root2, seen);
+        return inOrderTraverse1(root2, seen);
     }
 
-    private boolean inOrderTraverse(TreeNode root, Set<Integer> seen) {
+    private boolean inOrderTraverse1(TreeNode root, Set<Integer> seen) {
         if (root == null) {
             return false;
         }
         if (seen.contains(root.val)) {
             return true;
         } else {
-            return inOrderTraverse(root.left, seen) || inOrderTraverse(root.right, seen);
+            return inOrderTraverse1(root.left, seen) || inOrderTraverse1(root.right, seen);
         }
     }
 
@@ -1950,6 +2173,26 @@ public class TreeExe {
      * @return
      */
     public TreeNode sortedListToBST(ListNode head) {
+        if (head == null) return null;
+        return toBST(head, null);
+    }
+
+    private TreeNode toBST(ListNode head, ListNode tail) {
+        ListNode slow = head;
+        ListNode fast = head;
+        if (head == tail) return null;
+
+        while (fast != tail && fast.next != tail) {
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        TreeNode thead = new TreeNode(slow.val);
+        thead.left = toBST(head, slow);
+        thead.right = toBST(slow.next, tail);
+        return thead;
+    }
+
+    public TreeNode sortedListToBST_1(ListNode head) {
         ListNode root = head;
         while (head.next != null) {
             head = head.next;
@@ -2041,6 +2284,50 @@ public class TreeExe {
      * @return
      */
     public List<Integer> closestKValues(TreeNode root, double target, int k) {
+        Stack<TreeNode> smaller = new Stack<>();
+        Stack<TreeNode> larger = new Stack<>();
+        pushSmaller(root, target, smaller);
+        pushLarger(root, target, larger);
+
+        List<Integer> res = new ArrayList<>();
+        TreeNode cur = null;
+        while (res.size() < k) {
+            if (smaller.isEmpty() || (!larger.isEmpty() && larger.peek().val - target < target - smaller.peek().val)) {
+                cur = larger.pop();
+                res.add(cur.val);
+                pushLarger(cur.right, target, larger);
+            } else {
+                cur = smaller.pop();
+                res.add(cur.val);
+                pushSmaller(cur.left, target, smaller);
+            }
+        }
+        return res;
+    }
+
+    private void pushSmaller(TreeNode node, double target, Stack<TreeNode> stack) {
+        while (node != null) {
+            if (node.val < target) {
+                stack.push(node);
+                node = node.right;
+            } else {
+                node = node.left;
+            }
+        }
+    }
+
+    private void pushLarger(TreeNode node, double target, Stack<TreeNode> stack) {
+        while (node != null) {
+            if (node.val >= target) {
+                stack.push(node);
+                node = node.left;
+            } else {
+                node = node.right;
+            }
+        }
+    }
+
+    public List<Integer> closestKValues_2(TreeNode root, double target, int k) {
         List<Integer> res = new ArrayList<>();
 
         Stack<Integer> stackLower = new Stack<>();

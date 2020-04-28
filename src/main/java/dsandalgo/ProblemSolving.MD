@@ -204,4 +204,69 @@ Related question: https://leetcode.com/problems/longest-palindromic-substring/
         }
         return new StringBuilder(s.substring(end+1)).reverse().toString() + s;
     }
-    
+
+Candy Crush  
+https://leetcode.com/problems/candy-crush/
+Carefully perform the "crush" and "gravity" steps. In the crush step, flag each candy that should be removed, 
+then go through and crush each flagged candy. In the gravity step, collect the candy in each column and then 
+rewrite the column appropriately. Do these steps repeatedly until there's no work left to do.
+
+Path With Maximum Minimum Value
+https://leetcode.com/problems/path-with-maximum-minimum-value/
+Solution 1: DFS + Binary Search.
+Solution 2: Priority Queue, use greedy approach, each time add higher value to the queue, track the visited position.
+Solution 3: Union Find, sort the values, iterate from highest value to lowest, during the traverse, we union the new 
+max value to its neighours if the neighours are already visited. Once we union it and the start and end cell become
+connected, that's the value we can return.
+
+    public int maximumMinimumPath(int[][] A) {
+        int m = A.length;
+        int n = A[0].length;
+        MaxMinPathUF uf = new MaxMinPathUF(m*n);
+        List<int[]> data = new ArrayList<>();
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                data.add(new int[]{i, j, A[i][j]});
+            }
+        }
+        Collections.sort(data, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o2[2] - o1[2];
+            }
+        });
+        boolean[][] visited = new boolean[m][n];
+        final int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        for (int i=0; i<data.size(); i++) {
+            int[] max = data.get(i);
+            visited[max[0]][max[1]] = true;
+            for (int[] dir : dirs) {
+                int nextX = max[0] + dir[0];
+                int nextY = max[1] + dir[1];
+                if (nextX >= 0 && nextX < m && nextY >= 0 && nextY < n && visited[nextX][nextY]) {
+                    uf.union(max[0]*n + max[1], nextX*n + nextY);
+                    if (uf.find(0) == uf.find(m*n-1)) {
+                        return max[2];
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+    class MaxMinPathUF {
+        int[] parent;
+        public MaxMinPathUF(int size) {
+            parent = new int[size];
+            for (int i = 0; i < size; i++) parent[i] = i;
+        }
+        public int find(int x) {
+            if (parent[x] != x) parent[x] = find(parent[x]);
+            return parent[x];
+        }
+        public void union(int x, int y) {
+            int rx = find(x);
+            int ry = find(y);
+            if (rx != ry) parent[ry] = rx;
+        }
+    }
+

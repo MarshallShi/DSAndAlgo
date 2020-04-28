@@ -26,6 +26,83 @@ public class SortingExe {
         System.out.println(exe.maxSlidingWindow(worker, 3));
     }
 
+    /**
+     * https://leetcode.com/problems/diagonal-traverse-ii/
+     * @param nums
+     * @return
+     */
+    public int[] findDiagonalOrder(List<List<Integer>> nums) {
+        int n = 0, i = 0, maxKey = 0;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int r = nums.size() - 1; r >= 0; r--) {
+            for (int c = 0; c < nums.get(r).size(); c++) {
+                map.putIfAbsent(r + c, new ArrayList<>());
+                map.get(r + c).add(nums.get(r).get(c));
+                maxKey = Math.max(maxKey, r + c);
+                n++;
+            }
+        }
+        int[] ans = new int[n];
+        for (int key = 0; key <= maxKey; key++) {
+            List<Integer> value = map.get(key);
+            if (value != null) {
+                for (int v : value) {
+                    ans[i++] = v;
+                }
+            }
+        }
+        return ans;
+    }
+
+    public int[] findDiagonalOrder_2(List<List<Integer>> nums) {
+        List<int[]> data = new ArrayList<>();
+        for (int i=0; i<nums.size(); i++) {
+            for (int j=0; j<nums.get(i).size(); j++) {
+                data.add(new int[]{i, j, nums.get(i).get(j)});
+            }
+        }
+        Collections.sort(data, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[2] == o2[2]) {
+                    return o1[1] - o2[1];
+                }
+                return o1[2] - o2[2];
+            }
+        });
+
+        int[] ret = new int[data.size()];
+        for (int i=0; i<ret.length; i++) {
+            ret[i] = data.get(i)[2];
+        }
+        return ret;
+    }
+
+    public int[] findDiagonalOrder_TLE(List<List<Integer>> nums) {
+        List<Integer> res = new ArrayList<>();
+        int row = nums.size();
+        int maxLen = 0;
+        for (int i=0; i<nums.size(); i++) {
+            for (int j=0; j<=i; j++) {
+                if (nums.get(i-j).size() > j) {
+                    res.add(nums.get(i-j).get(j));
+                }
+            }
+            maxLen = Math.max(maxLen, nums.get(i).size());
+        }
+        for (int j=1; j<maxLen; j++) {
+            for (int i=nums.size()-1; i>=0; i--) {
+                if (nums.get(i).size() > j + row - 1 - i) {
+                    res.add(nums.get(i).get(j + row - 1 - i));
+                }
+            }
+        }
+        int[] ret = new int[res.size()];
+        for (int i=0; i<ret.length; i++) {
+            ret[i] = res.get(i);
+        }
+        return ret;
+    }
 
     /**
      * https://leetcode.com/problems/squares-of-a-sorted-array/
@@ -36,11 +113,11 @@ public class SortingExe {
         int[] res = new int[A.length];
         int i = 0, j = A.length - 1;
         for (int p = A.length - 1; p >= 0; p--) {
-            if (A[i]*A[i] > A[j]*A[j]) {
-                res[p] = A[i]*A[i];
+            if (A[i] * A[i] > A[j] * A[j]) {
+                res[p] = A[i] * A[i];
                 i++;
             } else {
-                res[p] = A[j]*A[j];
+                res[p] = A[j] * A[j];
                 j--;
             }
         }
@@ -971,36 +1048,6 @@ public class SortingExe {
             }
         }
         return ret;
-    }
-
-    /**
-     * https://leetcode.com/problems/minimum-moves-to-equal-array-elements-ii/
-     *
-     *
-     * here is the straightforward proof for this problem
-     * lets start with two points:
-     * a--------------------------------b
-     * the smallest moves is any point between a and b, and the number of moves is b-a
-     * if we addd another two points
-     * a--------c----------d------------b
-     * what's the minimum moves to make sure c and d make the smallest number of moves?
-     * it the same logic as a and b, which is ANY point between c and d.
-     * if eventually their value is between a and c or b and d, we can only make sure a c move the least, but not for c d
-     * so, just define two pointers and calculate the distance for each pair, add to result.
-     *
-     * @param nums
-     * @return
-     */
-    public int minMoves2(int[] nums) {
-        Arrays.sort(nums);
-        int i = 0, j = nums.length-1;
-        int count = 0;
-        while(i < j){
-            count += nums[j]-nums[i];
-            i++;
-            j--;
-        }
-        return count;
     }
 
     /**

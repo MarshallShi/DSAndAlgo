@@ -491,6 +491,7 @@ public class DPOnStringsExe {
      * 2
      * One possible longest palindromic subsequence is "bb".
      */
+    //https://leetcode.com/problems/longest-palindromic-subsequence/discuss/99111/Evolve-from-brute-force-to-dp
     public int longestPalindromeSubseq(String s) {
         int[][] dp = new int[s.length()][s.length()];
         for (int i = s.length() - 1; i >= 0; i--) {
@@ -504,6 +505,30 @@ public class DPOnStringsExe {
             }
         }
         return dp[0][s.length()-1];
+    }
+
+    public int longestPalindromeSubseq_topdown(String s) {
+        int[][] dp = new int[s.length()][s.length()];
+        return longestPalindromeSubseqHelper(s, 0, s.length() - 1, dp);
+    }
+
+    private int longestPalindromeSubseqHelper(String s, int l, int r, int[][] dp) {
+        if (l == r) {
+            return 1;
+        }
+        if (l > r) {
+            return 0;
+        }
+        if (dp[l][r] != 0) {
+            return dp[l][r];
+        }
+        int cur = 0;
+        if (s.charAt(l) == s.charAt(r)) {
+            cur = 2 + longestPalindromeSubseqHelper(s, l+1, r-1, dp);
+        } else {
+            cur = Math.max(longestPalindromeSubseqHelper(s, l, r-1, dp), longestPalindromeSubseqHelper(s, l+1, r, dp));
+        }
+        return dp[l][r] = cur;
     }
 
     /**
@@ -683,20 +708,20 @@ public class DPOnStringsExe {
      */
     public int numDistinct(String s, String t) {
         // array creation
-        int[][] dp = new int[t.length()+1][s.length()+1];
+        int[][] dp = new int[t.length() + 1][s.length() + 1];
 
         // filling the first row: with 1s
-        for(int j=0; j<=s.length(); j++) {
+        for (int j = 0; j <= s.length(); j++) {
             dp[0][j] = 1;
         }
 
         // the first column is 0 by default in every other rows but the first, which we need.
-        for(int i=0; i<t.length(); i++) {
-            for(int j=0; j<s.length(); j++) {
-                if(t.charAt(i) == s.charAt(j)) {
-                    dp[i+1][j+1] = dp[i][j] + dp[i+1][j];
+        for (int i = 0; i < t.length(); i++) {
+            for (int j = 0; j < s.length(); j++) {
+                if (t.charAt(i) == s.charAt(j)) {
+                    dp[i + 1][j + 1] = dp[i][j] + dp[i + 1][j];
                 } else {
-                    dp[i+1][j+1] = dp[i+1][j];
+                    dp[i + 1][j + 1] = dp[i + 1][j];
                 }
             }
         }

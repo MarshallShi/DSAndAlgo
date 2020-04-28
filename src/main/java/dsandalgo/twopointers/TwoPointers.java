@@ -1,13 +1,54 @@
 package dsandalgo.twopointers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TwoPointers {
 
     public static void main(String[] args) {
 
+    }
+
+
+    /**
+     * https://leetcode.com/problems/find-k-closest-elements/
+     * @param arr
+     * @param k
+     * @param x
+     * @return
+     */
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        int lo = 0;
+        int hi = arr.length - 1;
+        while (hi - lo >= k) {
+            if (Math.abs(arr[lo] - x) > Math.abs(arr[hi] - x)) {
+                lo++;
+            } else {
+                hi--;
+            }
+        }
+        List<Integer> result = new ArrayList<>(k);
+        for (int i = lo; i <= hi; i++) {
+            result.add(arr[i]);
+        }
+        return result;
+    }
+
+    public List<Integer> findClosestElements_BS(int[] arr, int k, int x) {
+        int left = 0, right = arr.length - k;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (x - arr[mid] > arr[mid + k] - x) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return Arrays.stream(arr, left, left + k).boxed().collect(Collectors.toList());
     }
 
     /**

@@ -16,6 +16,77 @@ public class BinarySearchExe {
     }
 
     /**
+     * https://leetcode.com/problems/sqrtx/
+     * @param x
+     * @return
+     */
+    public int mySqrt(int x) {
+        long ans = 0;
+        long bit = 1l << 16;
+        while (bit > 0) {
+            ans |= bit;
+            if (ans * ans > x) {
+                ans ^= bit;
+            }
+            bit >>= 1;
+        }
+        return (int) ans;
+    }
+
+    public int mySqrt_BinarySearch(int x) {
+        int left = 1, right = x;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (mid == x / mid) {
+                return mid;
+            } else {
+                if (mid < x / mid) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+        }
+        return right;
+    }
+
+
+
+    /**
+     * https://leetcode.com/problems/find-peak-element/
+     */
+    //Trick: although not straightforward, we can still apply BS in unsorted array in this case.
+    public int findPeakElement(int[] nums) {
+        int low = 0, high = nums.length - 1;
+        while(low < high) {
+            int mid1 = low + (high - low)/2;
+            int mid2 = mid1 + 1;
+            if(nums[mid1] < nums[mid2]) {
+                low = mid2;
+            } else {
+                high = mid1;
+            }
+        }
+        return low;
+    }
+
+    /**
+     * https://leetcode.com/problems/peak-index-in-a-mountain-array/
+     */
+    public int peakIndexInMountainArray(int[] A) {
+        int l = 0, r = A.length - 1, m;
+        while (l < r) {
+            m = l + (r - l) / 2;
+            if (A[m] < A[m + 1]) {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        return l;
+    }
+
+    /**
      * https://leetcode.com/problems/search-a-2d-matrix/
      * @param matrix
      * @param target
@@ -130,24 +201,6 @@ public class BinarySearchExe {
             }
         }
         return -1;
-    }
-
-    /**
-     * https://leetcode.com/problems/peak-index-in-a-mountain-array/
-     * @param A
-     * @return
-     */
-    public int peakIndexInMountainArray(int[] A) {
-        int l = 0, r = A.length - 1, m;
-        while (l < r) {
-            m = l + (r - l) / 2;
-            if (A[m] < A[m + 1]) {
-                l = m + 1;
-            } else {
-                r = m;
-            }
-        }
-        return l;
     }
 
     /**
@@ -791,37 +844,26 @@ public class BinarySearchExe {
      * 1 <= A[i] <= 1e7
      * 1 <= K <= 1e8
      *
-     * Let countMissing be amount of missing number in the array. Two cases that need to be handled:
-     *
-     * countMissing < k, then return nums[n - 1] + k - countMissing
-     * countMissing >= k, then use binary search(during the search k will be updated) to find the index in the array, where
-     * the kth missing number will be located in (nums[index], nums[index + 1]), return nums[index] + k
-     *
      * @param nums
      * @param k
      * @return
      */
     public int missingElement(int[] nums, int k) {
-        int len = nums.length;
-        int lo = 0, hi = len - 1;
-        //How many are missing in the range.
-        int countMissing = nums[len - 1] - nums[0] + 1 - len;
-
-        if (countMissing < k) {
-            return nums[len - 1] + k - countMissing;
+        int lo = 0, hi = nums.length - 1;
+        int totalMissing = nums[hi] - nums[lo] + 1 - nums.length;
+        if (totalMissing < k) {
+            return nums[hi] + k - totalMissing;
         }
-
         while (lo < hi - 1) {
-            int mid = lo + (hi - lo) / 2;
-            int newCountMissing = nums[mid] - nums[lo] - (mid - lo);
-            if (newCountMissing >= k) {
+            int mid = lo + (hi - lo)/2;
+            int newMissing = nums[mid] - nums[lo] - (mid - lo);
+            if (newMissing >= k) {
                 hi = mid;
             } else {
-                k = k - newCountMissing;
+                k = k - newMissing;
                 lo = mid;
             }
         }
-
         return nums[lo] + k;
     }
 

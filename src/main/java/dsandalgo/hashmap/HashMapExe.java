@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class HashMapExe {
 
@@ -26,6 +28,39 @@ public class HashMapExe {
         int[] quiet = {3,2,5,4,6,1,7,0};
 
         exe.maxEqualFreq(groupSizes);
+    }
+
+    /**
+     * https://leetcode.com/problems/display-table-of-food-orders-in-a-restaurant/
+     * @param orders
+     * @return
+     */
+    public List<List<String>> displayTable(List<List<String>> orders) {
+        TreeMap<Integer, Map<String, Integer>> data = new TreeMap<>();
+        TreeSet<String> foods = new TreeSet<>();
+        for (List<String> lst : orders) {
+            Integer tableId = Integer.parseInt(lst.get(1));
+            data.putIfAbsent(tableId, new HashMap<>());
+            data.get(tableId).put(lst.get(2), data.get(tableId).getOrDefault(lst.get(2), 0) + 1);
+            foods.add(lst.get(2));
+        }
+        List<List<String>> ret = new ArrayList<>();
+        List<String> header = new ArrayList<>();
+        header.add("Table");
+        for (String str : foods) {
+            header.add(str);
+        }
+        ret.add(header);
+        for (Map.Entry<Integer, Map<String,Integer>> entry : data.entrySet()) {
+            List<String> toAdd = new ArrayList<>();
+            toAdd.add(entry.getKey() + "");
+            Map<String,Integer> tableFoodItems = entry.getValue();
+            for (String str: foods) {
+                toAdd.add(tableFoodItems.getOrDefault(str, 0) + "");
+            }
+            ret.add(toAdd);
+        }
+        return ret;
     }
 
     /**
@@ -432,31 +467,6 @@ public class HashMapExe {
     /**
      * https://leetcode.com/problems/minimum-area-rectangle/
      */
-    public int minAreaRect(int[][] points) {
-        Map<Integer, Set<Integer>> map = new HashMap<>();
-        for (int[] p : points) {
-            map.putIfAbsent(p[0], new HashSet<Integer>());
-            map.get(p[0]).add(p[1]);
-        }
-        int min = Integer.MAX_VALUE;
-        for (int[] p1 : points) {
-            for (int[] p2 : points) {
-                // if have the same x or y, skip
-                if (p1[0] == p2[0] || p1[1] == p2[1]) {
-                    continue;
-                }
-                // find other two points in the rectangle
-                if (map.get(p1[0]).contains(p2[1]) && map.get(p2[0]).contains(p1[1])) {
-                    min = Math.min(min, Math.abs(p1[0] - p2[0]) * Math.abs(p1[1] - p2[1]));
-                }
-            }
-        }
-        return min == Integer.MAX_VALUE ? 0 : min;
-    }
-
-    /**
-     * https://leetcode.com/problems/minimum-area-rectangle/
-     */
     //Trick is to identify the intersect of each pair of points.
     public double minAreaFreeRect(int[][] points) {
         Map<String, List<int[][]>> processed = new HashMap<String, List<int[][]>>();
@@ -784,6 +794,7 @@ public class HashMapExe {
      * @param t
      * @return
      */
+    //NOTE: map.containsKey() is a O(n) operation, so below solution is o(n2)
     public boolean isIsomorphic(String s, String t) {
         if (s == null && t == null) {
             return true;
@@ -808,6 +819,42 @@ public class HashMapExe {
             } else {
                 reverseMap.put(t.charAt(i), s.charAt(i));
             }
+        }
+        return true;
+    }
+
+    public boolean isIsomorphic_2(String s, String t) {
+        if (s == null && t == null) {
+            return true;
+        }
+        int[] schars = new int[256];
+        int[] tchars = new int[256];
+        Arrays.fill(schars, -1);
+        Arrays.fill(tchars, -1);
+        for (int i=0; i<s.length(); i++) {
+            if (schars[s.charAt(i)] != -1 && tchars[t.charAt(i)] != -1) {
+                if (schars[s.charAt(i)] != t.charAt(i) || tchars[t.charAt(i)] != s.charAt(i)) {
+                    return false;
+                }
+            } else {
+                if (schars[s.charAt(i)] == -1 && tchars[t.charAt(i)] == -1) {
+                    schars[s.charAt(i)] = t.charAt(i);
+                    tchars[t.charAt(i)] = s.charAt(i);
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean isIsomorphic_3(String s1, String s2) {
+        int[] m = new int[512];
+        for (int i = 0; i < s1.length(); i++) {
+            if (m[s1.charAt(i)] != m[s2.charAt(i) + 256]) {
+                return false;
+            }
+            m[s1.charAt(i)] = m[s2.charAt(i) + 256] = i + 1;
         }
         return true;
     }

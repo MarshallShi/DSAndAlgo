@@ -18,6 +18,56 @@ public class SlidingWindowExe {
     }
 
     /**
+     * https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/
+     * @param cardPoints
+     * @param k
+     * @return
+     */
+    //Reverse thinking, it is actually a sliding window, not a DFS + memo.
+    public int maxScore(int[] cardPoints, int k) {
+        int totalSum = 0, len = cardPoints.length;
+        for (int i = 0; i < len; i++) {
+            totalSum += cardPoints[i];
+        }
+        int slidingSum = 0;
+        int j = 0, counter = 0;
+        for (int i = 0; i < len - k; i++) {
+            slidingSum += cardPoints[i];
+        }
+        int res = totalSum - slidingSum;
+        for (int i = len - k; i < len; i++) {
+            slidingSum = slidingSum - cardPoints[j++] + cardPoints[i];
+            res = Math.max(res, totalSum - slidingSum);
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/max-consecutive-ones-iii/
+     * @param A
+     * @param K
+     * @return
+     */
+    public int longestOnes(int[] A, int K) {
+        int max = 0;
+        int l = 0, r = 0;
+        int zeroCounter = K;
+        for (r=0; r<A.length; r++) {
+            if (A[r] == 0) {
+                zeroCounter--;
+            }
+            while (zeroCounter < 0) {
+                if (A[l] == 0) {
+                    zeroCounter++;
+                }
+                l++;
+            }
+            max = Math.max(r-l+1, max);
+        }
+        return max;
+    }
+
+    /**
      * https://leetcode.com/problems/find-all-anagrams-in-a-string/
      * Given a string s and a non-empty string p, find all the start indices of p's anagrams in s.
      *
@@ -728,7 +778,7 @@ public class SlidingWindowExe {
     //Trick: maxCount may be invalid at some points, but this doesn't matter, because it was valid earlier in the string, and all that matters
     // is finding the max window that occurred anywhere in the string. Additionally, it will expand if and only if enough repeating characters
     // appear in the window to make it expand. So whenever it expands, it's a valid expansion.
-    public int characterReplacement(String s, int k) {
+    public int characterReplacement_1(String s, int k) {
         int[] chcount = new int[26];
         int i = 0, maxLen = 0, maxCount = 0;
         for (int j=0; j<s.length(); j++) {
@@ -742,6 +792,24 @@ public class SlidingWindowExe {
             maxLen = Math.max(maxLen, j - i + 1);
         }
         return maxLen;
+    }
+
+    public int characterReplacement(String s, int k) {
+        int[] freq = new int[26];
+        int mostFreqLetter = 0;
+        int left = 0;
+        int max = 0;
+        for (int right = 0; right < s.length(); right++) {
+            freq[s.charAt(right) - 'A']++;
+            mostFreqLetter = Math.max(mostFreqLetter, freq[s.charAt(right) - 'A']);
+            int lettersToChange = (right - left + 1) - mostFreqLetter;
+            if (lettersToChange > k) {
+                freq[s.charAt(left) - 'A']--;
+                left++;
+            }
+            max = Math.max(max, right - left + 1);
+        }
+        return max;
     }
 
 

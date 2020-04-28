@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
+
 import org.apache.commons.lang.StringUtils;
 
 public class SubArraySumExe {
@@ -266,6 +268,79 @@ public class SubArraySumExe {
     }
 
     /**
+     * https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k/
+     * Given a non-empty 2D matrix matrix and an integer k, find the max sum of a rectangle in the matrix such that its sum is no larger than k.
+     *
+     * Example:
+     *
+     * Input: matrix = [[1,0,1],[0,-2,3]], k = 2
+     * Output: 2
+     * Explanation: Because the sum of rectangle [[0, 1], [-2, 3]] is 2,
+     *              and 2 is the max number no larger than k (k = 2).
+     * Note:
+     *
+     * The rectangle inside the matrix must have an area > 0.
+     * What if the number of rows is much larger than the number of columns?
+     */
+    //https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k/discuss/83599/Accepted-C%2B%2B-codes-with-explanation-and-references
+    //Apply 2D Kadane's Algorithm (O(n3*log(n)))
+    public int maxSumSubmatrix(int[][] matrix, int target) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int res = Integer.MIN_VALUE;
+        for (int l = 0; l < n; l++) {
+            int[] tempSums = new int[m];
+            for (int r = l; r < n; r++) {
+                int curSum = 0;
+                TreeSet<Integer> treeSet = new TreeSet<>();
+                treeSet.add(0);
+                for (int i = 0; i < m; i++) {
+                    tempSums[i] += matrix[i][r];
+                    curSum += tempSums[i];
+                    Integer lessThanK = treeSet.ceiling(curSum - target); //Log(n)
+                    if (lessThanK != null) {
+                        res = Math.max(res, curSum - lessThanK);
+                    }
+                    treeSet.add(curSum);
+                }
+            }
+        }
+        return res;
+    }
+
+    public int maxSumSubmatrix_1(int[][] matrix, int target) {
+        int row = matrix.length;
+        if (row == 0) return 0;
+        int col = matrix[0].length;
+        int m = Math.min(row, col);
+        int n = Math.max(row, col);
+        //indicating sum up in every row or every column
+        boolean colIsBig = col > row;
+        int res = Integer.MIN_VALUE;
+        for (int i = 0; i < m; i++) {
+            int[] array = new int[n];
+            // sum from row j to row i
+            for (int j = i; j >= 0; j--) {
+                int val = 0;
+                TreeSet<Integer> set = new TreeSet<Integer>();
+                set.add(0);
+                //traverse every column/row and sum up
+                for (int k = 0; k < n; k++) {
+                    array[k] = array[k] + (colIsBig ? matrix[j][k] : matrix[k][j]);
+                    val = val + array[k];
+                    //use  TreeMap to binary search previous sum to get possible result
+                    Integer subres = set.ceiling(val - target);
+                    if (subres != null) {
+                        res = Math.max(res, val - subres);
+                    }
+                    set.add(val);
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/maximum-subarray-sum-with-one-deletion/
      *
      * Given an array of integers, return the maximum sum for a non-empty subarray (contiguous elements)
@@ -490,41 +565,5 @@ public class SubArraySumExe {
             }
         }
         return j - i;
-    }
-
-    /**
-     * https://leetcode.com/problems/sum-of-subarray-minimums/
-     * Given an array of integers A, find the sum of min(B), where B ranges over every (contiguous) subarray of A.
-     *
-     * Since the answer may be large, return the answer modulo 10^9 + 7.
-     *
-     * Example 1:
-     *
-     * Input: [3,1,2,4]
-     * Output: 17
-     * Explanation: Subarrays are [3], [1], [2], [4], [3,1], [1,2], [2,4], [3,1,2], [1,2,4], [3,1,2,4].
-     * Minimums are 3, 1, 2, 4, 1, 1, 2, 1, 1, 1.  Sum is 17.
-     *
-     * Note:
-     * 1 <= A.length <= 30000
-     * 1 <= A[i] <= 30000
-     *
-     */
-    //TLE: see monotone stack approach.
-    public int sumSubarrayMins_TLE(int[] A) {
-        int MOD = 10^9 + 7;
-        int ans = 0;
-        for (int i=0; i<A.length; i++) {
-            int tempMin = A[i];
-            for (int j=i; j<A.length; j++) {
-                if (i != j) {
-                    if (A[j] < tempMin) {
-                        tempMin = A[j];
-                    }
-                }
-                ans = (ans + tempMin) % MOD;
-            }
-        }
-        return ans;
     }
 }

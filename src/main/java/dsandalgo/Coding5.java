@@ -398,43 +398,6 @@ public class Coding5 {
         return false;
     }
 
-    /**
-     * Given a string S and a string T, count the number of distinct subsequences of S which equals T.
-     *
-     * A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, "ACE" is a subsequence of "ABCDE" while "AEC" is not).
-     *
-     * Example 1:
-     *
-     * Input: S = "rabbbit", T = "rabbit"
-     * Output: 3
-     * Explanation:
-     * @param s
-     * @param t
-     * @return
-     */
-    public int numDistinct(String s, String t) {
-        // array creation
-        int[][] mem = new int[t.length()+1][s.length()+1];
-
-        // filling the first row: with 1s
-        for(int j=0; j<=s.length(); j++) {
-            mem[0][j] = 1;
-        }
-
-        // the first column is 0 by default in every other rows but the first, which we need.
-        for(int i=0; i<t.length(); i++) {
-            for(int j=0; j<s.length(); j++) {
-                if(t.charAt(i) == s.charAt(j)) {
-                    mem[i+1][j+1] = mem[i][j] + mem[i+1][j];
-                } else {
-                    mem[i+1][j+1] = mem[i+1][j];
-                }
-            }
-        }
-
-        return mem[t.length()][s.length()];
-    }
-
     public void solve(char[][] board) {
         int m = board.length;
         int n = board[0].length;
@@ -540,54 +503,6 @@ public class Coding5 {
         return nums.length - counter;
     }
 
-    public static int heightChecker(int[] heights) {
-        int ret = 0;
-        for (int i=0; i<heights.length;i++) {
-            boolean movedI = false;
-            for (int j=i+1; j<heights.length;j++) {
-                if (heights[i] > heights[j]) {
-                    int temp = heights[i];
-                    heights[i] = heights[j];
-                    heights[j] = temp;
-                    movedI = true;
-                } else {
-                    break;
-                }
-            }
-            if (movedI) {
-                ret++;
-            }
-        }
-        return ret;
-    }
-
-    public static int[] addDigits(int[] A) {
-        if (A == null) {
-            return null;
-        }
-        int low = 0, high = A.length-1;
-        int temp;
-        while (low<high) {
-            if (A[low]%2 != 0) {
-                temp = A[low];
-                A[low] = A[high];
-                A[high] = temp;
-                high--;
-            } else {
-                low++;
-            }
-            if (A[high]%2 ==0) {
-                temp = A[high];
-                A[high] = A[low];
-                A[low] = temp;
-                low++;
-            } else {
-                high--;
-            }
-        }
-        return A;
-    }
-
     public static int search(int[] nums, int target) {
         if (nums == null || nums.length == 0) {
             return -1;
@@ -670,30 +585,6 @@ public class Coding5 {
             }
         }
         return new ArrayList<Integer>(result);
-    }
-
-    public void setZeroes(int[][] matrix) {
-        int row = matrix.length;
-        int col = matrix[0].length;
-        Set<Integer> rowIdxs = new HashSet<Integer>();
-        Set<Integer> colIdxs = new HashSet<Integer>();
-        int i, j;
-        for (i=0;i<row;i++) {
-            for (j=0;j<col;j++) {
-                if (matrix[i][j] == 0) {
-                    rowIdxs.add(i);
-                    colIdxs.add(j);
-                }
-            }
-        }
-        for (i=0;i<row;i++) {
-            for (j=0;j<col;j++) {
-                if (rowIdxs.contains(i) || colIdxs.contains(j)) {
-                    matrix[i][j] = 0;
-                }
-            }
-        }
-
     }
 
     public ListNode oddEvenList(ListNode head) {
@@ -1059,33 +950,6 @@ public class Coding5 {
         }
     }
 
-    public static boolean checkSubarraySum(int[] nums, int k) {
-        int runningSum = 0;
-        Map<Integer,Integer> map = new HashMap<Integer,Integer>();
-        for (int i=0; i<nums.length; i++) {
-            runningSum = runningSum + nums[i];
-            if (k!=0) {
-                int mod = runningSum % k;
-                if (mod == 0 && i != 0) {
-                    return true;
-                } else {
-                    if (map.containsKey(mod)){
-                        if (Math.abs(map.get(mod) - i) > 1) {
-                            return true;
-                        }
-                    } else {
-                        map.put(mod, i);
-                    }
-                }
-            } else {
-                if (i-1>0 &&  nums[i] == 0 && nums[i-1] == 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public static int uniqueMorseRepresentations(String[] words) {
         if (words == null || words.length == 0) {
             return 0;
@@ -1258,23 +1122,6 @@ public class Coding5 {
         return 0;
     }
 
-    public static List<Integer> findDisappearedNumbers(int[] nums) {
-        List<Integer> ret = new ArrayList<Integer>();
-        int[] rets = new int[nums.length];
-        for (int i=0; i<rets.length; i++) {
-            rets[i] = 1;
-        }
-        for (int j=0; j<nums.length; j++) {
-            rets[nums[j] - 1] = 0;
-        }
-        for (int i=0; i<rets.length; i++) {
-            if (rets[i] == 1) {
-                ret.add(Integer.valueOf(i + 1));
-            }
-        }
-        return ret;
-    }
-
     public static int maxProfit(int[] prices) {
         int minPos = 0, i = 0;
         int delta = Integer.MIN_VALUE;
@@ -1295,27 +1142,6 @@ public class Coding5 {
             return 0;
         }
         return delta;
-    }
-
-    public static String convertToTitle(int n) {
-        if (n <= 26) {
-            return Character.toString((char)('A' + n - 1));
-        }
-        String ret = "";
-        while (n > 26) {
-            if (n%26 == 0) {
-                String s = Character.toString((char)('Z'));
-                ret = s + ret;
-                n = n/26;
-                n--;
-            } else {
-                String s = Character.toString((char)('A' + n%26 - 1));
-                ret = s + ret;
-                n = n / 26;
-            }
-
-        }
-        return Character.toString((char)('A' + n - 1)) + ret;
     }
 
     public List<String> fizzBuzz(int n) {
@@ -1691,48 +1517,6 @@ public class Coding5 {
                 }
             }
         }
-    }
-
-    public static int strStr(String haystack, String needle) {
-        if (haystack == null || needle == null) {
-            return -1;
-        }
-        if (needle.equalsIgnoreCase("")) {
-            return 0;
-        }
-        for (int i=0; i<haystack.length(); i++) {
-            for (int j=0; j<needle.length(); j++) {
-                if (i+j > haystack.length() - 1) {
-                    break;
-                }
-                if (needle.charAt(j) != haystack.charAt(i+j)) {
-                    break;
-                }
-                if (j == needle.length() - 1) {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
-
-    public static int mySqrt(int x) {
-        int low = 1, high = x;
-        int candidate = 1;
-        while (low < high) {
-            int mid = low + (high - low) / 2;
-            long mul = (long)mid*(long)mid;
-            if (mul > (long)x) {
-                high = mid;
-            } else {
-                candidate = mid;
-                low = mid;
-            }
-            if (high - low <= 1) {
-                break;
-            }
-        }
-        return candidate;
     }
 
     public static String findLCS(String[] strs){

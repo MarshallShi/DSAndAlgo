@@ -73,10 +73,9 @@ public class OverlappingIntervalExe {
      * 0 <= ranges[i] <= 100
      */
     public int minTaps(int n, int[] ranges) {
-        int[][] intervals = new int[n+1][2];
-        for (int i=0; i<=n; i++) {
-            int[] one = {i-ranges[i], i+ranges[i]};
-            intervals[i] = one;
+        int[][] intervals = new int[n + 1][2];
+        for (int i = 0; i <= n; i++) {
+            intervals[i] = new int[]{i - ranges[i], i + ranges[i]};
         }
         Arrays.sort(intervals, new Comparator<int[]>() {
             @Override
@@ -87,14 +86,17 @@ public class OverlappingIntervalExe {
                 return o1[0] - o2[0];
             }
         });
-        int ans = 0;
-        for (int i = 0, start = 0, end = 0; start < n && i <= n; start = end, ++ans) {
+        int ans = 0, start = 0, end = 0, i = 0;
+        while (i <= n && start < n) {
             while (i <= n && intervals[i][0] <= start) {
-                end = Math.max(end, intervals[i++][1]);
+                end = Math.max(end, intervals[i][1]);
+                i++;
             }
             if (end <= start) {
                 return -1;
             }
+            start = end;
+            ans++;
         }
         return ans;
     }

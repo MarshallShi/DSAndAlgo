@@ -272,60 +272,6 @@ public class Coding2 {
         }
     }
 
-
-    /**
-     * Given an integer n, return all distinct solutions to the n-queens puzzle.
-     * @param n
-     * @return
-     */
-    public List<List<String>> solveNQueens(int n) {
-        List<List<String>> res = new LinkedList<List<String>>();
-        List<Integer> temp = new LinkedList<Integer>();
-        backtrackNQueens(res, temp, n);
-        return res;
-    }
-
-    public void backtrackNQueens(List<List<String>> res, List<Integer> temp, int n){
-        if (temp.size() == n) {
-            res.add(convertResult(temp));
-            return;
-        }
-        for(int i=0; i<n; i++) {
-            if (!temp.contains(i)) {
-                if (!isDiagonalAttack(temp, i)) {
-                    temp.add(i);
-                    backtrackNQueens(res, temp, n);
-                    temp.remove(temp.size()-1);
-                }
-            }
-        }
-    }
-
-    private List<String> convertResult(List<Integer> currentQueen) {
-        List<String> temp = new ArrayList<String>();
-        for (int i = 0; i < currentQueen.size(); i++) {
-            char[] t = new char[currentQueen.size()];
-            Arrays.fill(t, '.');
-            t[currentQueen.get(i)] = 'Q';
-            temp.add(new String(t));
-        }
-        return temp;
-    }
-
-    private boolean isDiagonalAttack(List<Integer> currentQueen, int i) {
-        int current_row = currentQueen.size();
-        int current_col = i;
-        //判断每一行的皇后的情况
-        for (int row = 0; row < currentQueen.size(); row++) {
-            //左上角的对角线和右上角的对角线，差要么相等，要么互为相反数，直接写成了绝对值
-            if (Math.abs(current_row - row) == Math.abs(current_col - currentQueen.get(row))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     public int maxLevelSum(TreeNode root) {
         Queue<TreeNode> queue = new LinkedList<TreeNode>();
         int maxSum = Integer.MIN_VALUE;
@@ -1135,30 +1081,32 @@ public class Coding2 {
     }
 
     public int networkDelayTime(int[][] times, int N, int K) {
-        Map<Integer, Map<Integer,Integer>> map = new HashMap<Integer, Map<Integer,Integer>>();
-        for(int[] time : times){
-            map.putIfAbsent(time[0], new HashMap<Integer,Integer>());
+        Map<Integer, Map<Integer, Integer>> map = new HashMap<>();
+        for (int[] time : times) {
+            map.putIfAbsent(time[0], new HashMap<>());
             map.get(time[0]).put(time[1], time[2]);
         }
 
         //distance, node into pq
-        Queue<int[]> pq = new PriorityQueue<>((a,b) -> (a[0] - b[0]));
+        Queue<int[]> pq = new PriorityQueue<>((a, b) -> (a[0] - b[0]));
 
         pq.add(new int[]{0, K});
 
-        boolean[] visited = new boolean[N+1];
+        boolean[] visited = new boolean[N + 1];
         int res = 0;
 
-        while(!pq.isEmpty()){
+        while (!pq.isEmpty()) {
             int[] cur = pq.remove();
-            int curNode = cur[1];
             int curDist = cur[0];
-            if(visited[curNode]) continue;
+            int curNode = cur[1];
+            if (visited[curNode]) {
+                continue;
+            }
             visited[curNode] = true;
             res = curDist;
             N--;
-            if(map.containsKey(curNode)){
-                for(int next : map.get(curNode).keySet()){
+            if (map.containsKey(curNode)) {
+                for (int next : map.get(curNode).keySet()) {
                     pq.add(new int[]{curDist + map.get(curNode).get(next), next});
                 }
             }
@@ -1215,29 +1163,6 @@ public class Coding2 {
             }
         }
         return rets.toString();
-    }
-
-    public void duplicateZeros(int[] arr) {
-        int[] copy = new int[arr.length];
-        int i=0, j=0;
-        for (i=0; i<arr.length; i++) {
-            copy[i] = arr[i];
-        }
-        i=0;
-        while (j<arr.length) {
-            arr[j] = copy[i];
-            if (arr[j] != 0) {
-                j++;
-            } else {
-                if (j+1<arr.length) {
-                    arr[j+1] = 0;
-                    j=j+2;
-                } else {
-                    break;
-                }
-            }
-            i++;
-        }
     }
 
     public String removeOuterParentheses(String S) {

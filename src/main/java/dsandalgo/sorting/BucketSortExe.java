@@ -180,7 +180,7 @@ public class BucketSortExe {
      * Regardless, we have compared this person's height, hence decrement the value by 1.
      *
      */
-    public int heightChecker(int[] heights) {
+    public int heightChecker_1(int[] heights) {
         int[] heightToFreq = new int[101];
 
         for (int height : heights) {
@@ -201,6 +201,23 @@ public class BucketSortExe {
             heightToFreq[curHeight]--;
         }
 
+        return result;
+    }
+
+    public int heightChecker(int[] heights) {
+        int[] count = new int[101];
+        for (int i = 0; i < heights.length; i++) {
+            count[heights[i]]++;
+        }
+        for (int i = 1; i < count.length; i++) {
+            count[i] += count[i-1];
+        }
+        int result = 0;
+        for (int i = heights.length-1; i >= 0; i--) {
+            count[heights[i]]--; // this is the correct location for heights[i] based on counting sort
+            if (heights[count[heights[i]]] != heights[i])
+                result++;
+        }
         return result;
     }
 

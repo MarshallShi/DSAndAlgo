@@ -45,10 +45,10 @@ public class DinnerPlates {
         System.out.println(dp.pop());
     }
 
-    PriorityQueue<Integer> exceptionStackIdxPQ;
-    List<Stack<Integer>> list;
-    int maxStackCapacity;
-    int upToIdx;
+    private PriorityQueue<Integer> exceptionStackIdxPQ;
+    private List<Stack<Integer>> list;
+    private int maxStackCapacity;
+    private int upToIdx;
 
     public DinnerPlates(int capacity) {
         exceptionStackIdxPQ = new PriorityQueue<Integer>();

@@ -7,6 +7,33 @@ https://leetcode.com/problems/climbing-stairs/
 https://leetcode.com/problems/unique-paths/
 Solution: define the state, clearly these state only depending on previous state, so the O(n) space and reduce to O(1).
 
+Distinct Subsequences
+https://leetcode.com/problems/distinct-subsequences/
+Define dp[i][j] as for the number of distinct subsequence in s(0..j) with t(0..i). Then we have below state transition. 
+
+    public int numDistinct(String s, String t) {
+        // array creation
+        int[][] dp = new int[t.length() + 1][s.length() + 1];
+
+        // filling the first row: with 1s
+        for (int j = 0; j <= s.length(); j++) {
+            dp[0][j] = 1;
+        }
+
+        // the first column is 0 by default in every other rows but the first, which we need.
+        for (int i = 0; i < t.length(); i++) {
+            for (int j = 0; j < s.length(); j++) {
+                if (t.charAt(i) == s.charAt(j)) {
+                    dp[i + 1][j + 1] = dp[i][j] + dp[i + 1][j];
+                } else {
+                    dp[i + 1][j + 1] = dp[i + 1][j];
+                }
+            }
+        }
+
+        return dp[t.length()][s.length()];
+    }
+    
 https://leetcode.com/problems/count-vowels-permutation/
 
     public int countVowelPermutation(int n) {
@@ -28,9 +55,51 @@ https://leetcode.com/problems/count-vowels-permutation/
     }
 
 Min Max in path
+https://leetcode.com/problems/triangle/
 https://leetcode.com/problems/minimum-path-sum/
 https://leetcode.com/problems/paint-house/
 
+
+https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/
+Multiple dp array needed to track different state transition: sell, buy, rest on day i.
+It can further be reduced to O(1) space complexity.
+
+    public int maxProfit(int[] prices) {
+        if (prices == null || prices.length < 1) {
+            return 0;
+        }
+        int length = prices.length;
+        // buy[i]: max profit if the first "i" days end with a "buy" day
+        int[] buy = new int[length + 1];
+        // sell[i]: max profit if the first "i" days end with a "sell" day
+        int[] sell = new int[length + 1];
+        buy[1] = -prices[0];
+        for (int i = 2; i <= length; i++) {
+            int price = prices[i - 1];
+            buy[i] = Math.max(buy[i - 1], sell[i - 2] - price);
+            sell[i] = Math.max(sell[i - 1], buy[i - 1] + price);
+        }
+        // sell[length] >= buy[length]
+        return sell[length];
+    }
+
+
+https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/
+
+    public int maxProfit(int[] prices) {
+        int oneBuy = Integer.MIN_VALUE;
+        int oneBuyOneSell = 0;
+        int twoBuy = Integer.MIN_VALUE;
+        int twoBuyTwoSell = 0;
+        for(int i = 0; i < prices.length; i++){
+            oneBuy = Math.max(oneBuy, -prices[i]);//we set prices to negative, so the calculation of profit will be convenient
+            oneBuyOneSell = Math.max(oneBuyOneSell, prices[i] + oneBuy);
+            twoBuy = Math.max(twoBuy, oneBuyOneSell - prices[i]);//we can buy the second only after first is sold
+            twoBuyTwoSell = Math.max(twoBuyTwoSell, twoBuy + prices[i]);
+        }
+        return Math.max(oneBuyOneSell, twoBuyTwoSell);
+    }
+    
 Sum
 https://leetcode.com/problems/unique-paths/
 
@@ -86,6 +155,90 @@ Solution 2: binary search, O(n2)
             }
         }
         return piles.size();
+    }
+
+Variation of LIS:
+https://leetcode.com/problems/longest-arithmetic-sequence/
+Solution: cache all the potential diff values, track the longest. 
+Normally we use a Map, below is optimized for performance to replace map with static array.
+
+    public int longestArithSeqLength(int[] A) {
+        int[][] dp = new int[A.length][20001];
+        int res = 1;
+        for (int i = 1; i < A.length; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                int diff = A[i] - A[j] + 10000;
+                dp[i][diff] = Math.max(dp[i][diff], dp[j][diff] + 1);
+                res = Math.max(res, dp[i][diff]);
+            }
+        }
+        return res + 1;
+    }
+    
+    public int longestArithSeqLength(int[] A) {
+        if (A.length <= 1) return A.length;
+       
+        int longest = 0;
+        
+        // Declare a dp array that is an array of hashmaps.
+        // The map for each index maintains an element of the form-
+        //   (difference, length of max chain ending at that index with that difference).        
+        Map<Integer, Integer>[] dp = new HashMap[A.length];
+        
+        for (int i = 0; i < A.length; ++i) {
+            // Initialize the map.
+            dp[i] = new HashMap<Integer, Integer>();
+        }
+        
+        for (int i = 1; i < A.length; ++i) {
+            int x = A[i];
+            // Iterate over values to the left of i.
+            for (int j = 0; j < i; ++j) {
+                int y = A[j];
+                int d = x - y;
+                
+                // We at least have a minimum chain length of 2 now,
+                // given that (A[j], A[i]) with the difference d, 
+                // by default forms a chain of length 2.
+                int len = 2;  
+                
+                if (dp[j].containsKey(d)) {
+                    // At index j, if we had already seen a difference d,
+                    // then potentially, we can add A[i] to the same chain
+                    // and extend it by length 1.
+                    len = dp[j].get(d) + 1;
+                }
+                
+                // Obtain the maximum chain length already seen so far at index i 
+                // for the given differene d;
+                int curr = dp[i].getOrDefault(d, 0);
+                
+                // Update the max chain length for difference d at index i.
+                dp[i].put(d, Math.max(curr, len));
+                
+                // Update the global max.
+                longest = Math.max(longest, dp[i].get(d));
+            }
+        }
+        
+        return longest;
+    }
+    
+Delete and Earn
+https://leetcode.com/problems/delete-and-earn/
+Trick: all the duplicated number contribute to a total sum. Once we get the total sum, we apply DP.
+
+    public int deleteAndEarn(int[] nums) {
+        int[] sum = new int[10002]; 
+        //Trick...
+        for(int i = 0; i < nums.length; i++){
+            sum[nums[i]] += nums[i]; 
+        }
+        
+        for(int i = 2; i < sum.length; i++){
+            sum[i] = Math.max(sum[i-1], sum[i-2] + sum[i]);
+        }
+        return sum[10001];
     }
 
 Knapsack problem
@@ -157,8 +310,6 @@ Word break
 https://leetcode.com/problems/word-break/
 https://leetcode.com/problems/concatenated-words/
 
-
-
 Unique Binary Search Trees
 https://leetcode.com/problems/unique-binary-search-trees/
 Math solution: F(i, n) = G(i-1) * G(n-i)  (1 <= i <= n), assume any i, number of unique tree is G(i-1) * G(n-i). 
@@ -195,6 +346,9 @@ ie: left hand numbers for G(i-1) different sub trees, right hand numbers for G(n
     
     
 String based DP
+
+https://leetcode.com/problems/longest-palindromic-subsequence/
+Both top down and bottom up, can also optimize the space from O(n2) to O(n).
 
 Interleaving String
 https://leetcode.com/problems/interleaving-string/

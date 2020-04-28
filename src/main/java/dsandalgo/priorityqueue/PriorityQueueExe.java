@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -26,13 +27,150 @@ public class PriorityQueueExe {
 
     public static void main(String[] args) {
         PriorityQueueExe pqexe = new PriorityQueueExe();
-        System.out.println(pqexe.getKth(12, 15, 2));
+        //[[5,4,5],[1,2,6],[7,4,6]]
+        int[][] s = {{5,4,5},{1,2,6},{7,4,6}};
+        System.out.println(pqexe.maximumMinimumPath(s));
     }
 
     public class ListNode {
         int val;
         ListNode next;
         ListNode(int x) { val = x; }
+    }
+
+    /**
+     * https://leetcode.com/problems/path-with-maximum-minimum-value/
+     * Given a matrix of integers A with R rows and C columns, find the maximum score of a path starting at [0,0] and ending at [R-1,C-1].
+     *
+     * The score of a path is the minimum value in that path.  For example, the value of the path 8 →  4 →  5 →  9 is 4.
+     *
+     * A path moves some number of times from one visited cell to any neighbouring unvisited cell in one of the 4 cardinal directions (north, east, west, south).
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: [[5,4,5],[1,2,6],[7,4,6]]
+     * Output: 4
+     * Explanation:
+     * The path with the maximum score is highlighted in yellow.
+     * Example 2:
+     *
+     *
+     *
+     * Input: [[2,2,1,2,2,2],[1,2,2,2,1,2]]
+     * Output: 2
+     * Example 3:
+     *
+     *
+     *
+     * Input: [[3,4,6,3,4],[0,2,1,1,7],[8,8,3,2,7],[3,2,4,9,8],[4,1,2,0,0],[4,6,5,4,3]]
+     * Output: 3
+     *
+     *
+     * Note:
+     *
+     * 1 <= R, C <= 100
+     * 0 <= A[i][j] <= 10^9
+     * @param A
+     * @return
+     */
+    public int maximumMinimumPath(int[][] A) {
+        final int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int m = A.length, n = A[0].length;
+        //max heap, so we always pick up the largest next element, to make sure the min value is also the maximum
+        PriorityQueue<int[]> pq = new PriorityQueue<int[]>((a, b) -> Integer.compare(b[0], a[0]));
+        //int[] 0: value, 1: x, 2: y
+        pq.add(new int[]{A[0][0], 0, 0});
+        int maxscore = A[0][0];
+        boolean[][] visited = new boolean[A.length][A[0].length];
+        visited[0][0] = true;
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int curX = cur[1];
+            int curY = cur[2];
+            maxscore = Math.min(maxscore, cur[0]);
+            if (curX == m - 1 && curY == m - 1) {
+                //exit when reach to the end.
+                break;
+            }
+            for (int[] d : dirs) {
+                int nextX = d[0] + curX, nextY = d[1] + curY;
+                if (nextX >= 0 && nextX < m && nextY >= 0 && nextY < n && !visited[nextX][nextY]) {
+                    pq.add(new int[]{A[nextX][nextY], nextX, nextY});
+                    visited[nextX][nextY] = true;
+                }
+            }
+        }
+        return maxscore;
+    }
+
+    /**
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public double[] medianSlidingWindow(int[] nums, int k) {
+        int n = nums.length - k + 1;
+        if (n <= 0) {
+            return new double[0];
+        }
+        double[] result = new double[n];
+        for (int i = 0; i <= nums.length; i++) {
+            if (i >= k) {
+                result[i - k] = getMedian();
+                remove(nums[i - k]);
+            }
+            if (i < nums.length) {
+                add(nums[i]);
+            }
+        }
+        return result;
+    }
+
+    PriorityQueue<Integer> minHeap = new PriorityQueue<Integer>();
+    PriorityQueue<Integer> maxHeap = new PriorityQueue<Integer>(10, Comparator.reverseOrder());
+
+    private void add(int num) {
+        if (num < getMedian()) {
+            maxHeap.add(num);
+        } else {
+            minHeap.add(num);
+        }
+        if (maxHeap.size() > minHeap.size()) {
+            minHeap.add(maxHeap.poll());
+        }
+        if (minHeap.size() - maxHeap.size() > 1) {
+            maxHeap.add(minHeap.poll());
+        }
+    }
+
+    private void remove(int num) {
+        if (num < getMedian()) {
+            maxHeap.remove(num);
+        } else {
+            minHeap.remove(num);
+        }
+        if (maxHeap.size() > minHeap.size()) {
+            minHeap.add(maxHeap.poll());
+        }
+        if (minHeap.size() - maxHeap.size() > 1) {
+            maxHeap.add(minHeap.poll());
+        }
+    }
+
+    private double getMedian() {
+        if (maxHeap.isEmpty() && minHeap.isEmpty()) {
+            return 0;
+        }
+        if (maxHeap.size() == minHeap.size()) {
+            return ((double)maxHeap.peek() + (double)minHeap.peek()) / 2.0;
+        } else {
+            return (double)minHeap.peek();
+        }
     }
 
     /**
@@ -1134,32 +1272,31 @@ public class PriorityQueueExe {
      * Bucket sorting based solution, O(M*N).
      */
     public int[] assignBikes(int[][] workers, int[][] bikes) {
-        List<int[]>[ ] buckets = new ArrayList[2001];
-
-        for (int i=0; i<workers.length; i++) {
-            for (int j=0; j<bikes.length; j++) {
+        List<int[]>[] buckets = new ArrayList[2001];
+        for (int i = 0; i < workers.length; i++) {
+            for (int j = 0; j < bikes.length; j++) {
                 int dist = manDist(workers[i], bikes[j]);
                 if (buckets[dist] == null) {
                     buckets[dist] = new ArrayList<int[]>();
                 }
-                buckets[dist].add(new int[] {i, j});
+                buckets[dist].add(new int[]{i, j});
             }
         }
-
         boolean[] bikeVisited = new boolean[bikes.length];
         int[] result = new int[workers.length];
         Arrays.fill(result, -1);
         // Buckets[dist] is consumed completely first, and then move on
         // to next dist. Check if buckets[dist] is null every time.
-        for (int dist=0; dist<buckets.length; dist++) {
-            if (buckets[dist] == null)
+        for (int dist = 0; dist < buckets.length; dist++) {
+            if (buckets[dist] == null) {
                 continue;
-            for (int i=0; i<buckets[dist].size(); i++) {
+            }
+            for (int i = 0; i < buckets[dist].size(); i++) {
                 int w = buckets[dist].get(i)[0];
                 int b = buckets[dist].get(i)[1];
-
-                if (bikeVisited[b] == true  || result[w] != -1)
+                if (bikeVisited[b] == true || result[w] != -1) {
                     continue;
+                }
                 result[w] = b;
                 bikeVisited[b] = true;
             }
@@ -1199,47 +1336,33 @@ public class PriorityQueueExe {
      * @return
      */
     public int[][] highFive(int[][] items) {
-        PriorityQueue<int[]> pq = new PriorityQueue<int[]>(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                if (o1[0] == o2[0]) {
-                    return o2[1] - o1[1];
-                }
-                return o1[0] - o2[0];
-            }
-        });
-        for (int i=0; i< items.length; i++) {
-            pq.offer(items[i]);
-        }
-        List<int[]> list = new ArrayList<int[]>();
-        int scoreCounter = 0;
-        int curStudentId = pq.peek()[0];
-        int totalForCurStudent = 0;
-        while (!pq.isEmpty()) {
-            int[] item = pq.poll();
-            if (scoreCounter < 5) {
-                totalForCurStudent = totalForCurStudent + item[1];
-            }
-            if (item[0] == curStudentId) {
-                scoreCounter++;
+        Map<Integer, PriorityQueue<Integer>> map = new TreeMap<>();
+        for (int[] item : items) {
+            int id = item[0];
+            int score = item[1];
+            PriorityQueue<Integer> pq = null;
+            if (map.containsKey(id)) {
+                pq = map.get(id);
+                pq.offer(score);
             } else {
-                int[] toAdd = new int[2];
-                toAdd[0] = curStudentId;
-                toAdd[1] = totalForCurStudent / 5;
-                list.add(toAdd);
-                totalForCurStudent = item[1];
-                curStudentId = item[0];
-                scoreCounter = 1;
+                pq = new PriorityQueue<>(Comparator.reverseOrder());
+                pq.offer(score);
+                map.put(id, pq);
             }
         }
-        int[] toAdd = new int[2];
-        toAdd[0] = curStudentId;
-        toAdd[1] = totalForCurStudent / 5;
-        list.add(toAdd);
 
-        int[][] ret = new int[list.size()][2];
-        for (int i = 0; i<ret.length; i++) {
-            ret[i] = list.get(i);
+        int index = 0;
+        int[][] ret = new int[map.size()][2];
+        for (int id : map.keySet()) {
+            PriorityQueue<Integer> pq = map.get(id);
+            int sum = 0;
+            int len = Math.min(5, pq.size());
+            for (int i=0; i<len; i++) {
+                sum += pq.poll();
+            }
+            ret[index][0] = id;
+            ret[index][1] = sum / len;
+            index++;
         }
         return ret;
     }
