@@ -92,6 +92,67 @@ public class TrieExes {
         //System.out.println(exe.lastSubstring("abab"));
     }
 
+    /**
+     * https://leetcode.com/problems/replace-words/
+     */
+    public String replaceWords(List<String> dict, String sentence) {
+        String[] words = sentence.split(" ");
+        TrieNode2 root = new TrieNode2();
+        for (String str : dict) {
+            addWord(root, str);
+        }
+        for(int i=0; i<words.length; i++) {
+            String rootWord = findRoot(root, words[i]);
+            if (rootWord != null) {
+                words[i] = rootWord;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < words.length; i++) {
+            sb.append(words[i] + " ");
+        }
+        return sb.toString().trim();
+    }
+
+    public String findRoot(TrieNode2 root, String word) {
+        TrieNode2 node = root;
+        for (int i=0; i<word.length();i++) {
+            char c = word.charAt(i);
+            if (node.links[c - 'a'] != null) {
+                node = node.links[c - 'a'];
+                if (node.text != null) {
+                    return node.text;
+                }
+            } else {
+                return null;
+            }
+        }
+        return node.text;
+    }
+
+    public void addWord(TrieNode2 root, String word) {
+        if (word == null || word.length() == 0) {
+            return;
+        }
+        TrieNode2 node = root;
+        for (int i = 0; i < word.length(); i++) {
+            char cur = word.charAt(i);
+            if (node.links[cur - 'a'] == null) {
+                node.links[cur - 'a'] = new TrieNode2();
+            }
+            node = node.links[cur - 'a'];
+        }
+        node.text = word;
+    }
+
+    class TrieNode2 {
+        TrieNode2[] links;
+        String text;
+        TrieNode2() {
+            links = new TrieNode2[26];
+            text = null;
+        }
+    }
 
     /**
      * https://leetcode.com/problems/palindrome-pairs/

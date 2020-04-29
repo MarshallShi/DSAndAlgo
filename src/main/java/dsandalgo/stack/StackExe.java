@@ -33,6 +33,57 @@ public class StackExe {
     }
 
     /**
+     * https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/
+     * @param S
+     * @return
+     */
+    public String removeDuplicates(String S) {
+        Stack<Character> stack = new Stack<Character>();
+        for (int i=0; i< S.length(); i++){
+            if(!stack.isEmpty() && stack.peek() == S.charAt(i)) {
+                while(!stack.isEmpty() && stack.peek() == S.charAt(i)) {
+                    stack.pop();
+                }
+            } else {
+                stack.push(S.charAt(i));
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        return sb.reverse().toString();
+    }
+
+    /**
+     * https://leetcode.com/problems/remove-outermost-parentheses/
+     * @param S
+     * @return
+     */
+    public String removeOuterParentheses(String S) {
+        String ret = "";
+        int skipIdx = 0;
+        int numberOfLeft = 0;
+        for (int i = 0; i < S.length(); i++) {
+            if (i != skipIdx) {
+                if (S.charAt(i) == '(') {
+                    ret = ret + S.charAt(i);
+                    numberOfLeft++;
+                } else {
+                    //char is the ), reset.
+                    if (numberOfLeft == 0) {
+                        skipIdx = i + 1;
+                    } else {
+                        ret = ret + S.charAt(i);
+                        numberOfLeft--;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
      * https://leetcode.com/problems/exclusive-time-of-functions/
      *
      * On a single threaded CPU, we execute some functions.  Each function has a unique id between 0 and N-1.

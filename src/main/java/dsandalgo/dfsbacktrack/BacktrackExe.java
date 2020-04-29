@@ -1,7 +1,6 @@
 package dsandalgo.dfsbacktrack;
 
 import dsandalgo.tree.TreeNode;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +17,207 @@ public class BacktrackExe {
         BacktrackExe backtrack = new BacktrackExe();
         int[] A = {1,1,2,2,2,2};
         System.out.println(backtrack.generateAbbreviations("word"));
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-squareful-arrays/
+     * Given an array A of non-negative integers, the array is squareful if for every pair of adjacent elements, their sum is a perfect square.
+     *
+     * Return the number of permutations of A that are squareful.  Two permutations A1 and A2 differ if and only if there is some index i such that A1[i] != A2[i].
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [1,17,8]
+     * Output: 2
+     * Explanation:
+     * [1,8,17] and [17,8,1] are the valid permutations.
+     * Example 2:
+     *
+     * Input: [2,2,2]
+     * Output: 1
+     *
+     *
+     * Note:
+     *
+     * 1 <= A.length <= 12
+     * 0 <= A[i] <= 1e9
+     */
+    public int numSquarefulPerms(int[] A) {
+        boolean[] used = new boolean[A.length];
+        Arrays.sort(A);
+        int[] ret = new int[1];
+        numSquarefulPermsBacktrack(ret, A, new ArrayList<Integer>(), used);
+        return ret[0];
+    }
+
+    private void numSquarefulPermsBacktrack(int[] ret, int[] nums, List<Integer> temp, boolean[] used) {
+        if (temp.size() == nums.length) {
+            ret[0]++;
+            return;
+        }
+        for (int i=0; i<nums.length;i++){
+            if (used[i] || (i>0 && nums[i] == nums[i-1] && used[i-1])) {
+                continue;
+            }
+            if (temp.size() == 0 || (!used[i] && isSquareful(nums[i], temp.get(temp.size()-1)))){
+                used[i] = true;
+                temp.add(nums[i]);
+                numSquarefulPermsBacktrack(ret, nums, temp, used);
+                used[i] = false;
+                temp.remove(temp.size() - 1);
+            }
+        }
+    }
+
+    private boolean isSquareful(int one, int two) {
+        int temp = (int)Math.sqrt(one + two);
+        return temp*temp == one + two;
+    }
+
+    /**
+     * https://leetcode.com/problems/combination-sum-iii/
+     * Find all possible combinations of k numbers that add up to a number n, given that only numbers from 1 to 9
+     * can be used and each combination should be a unique set of numbers.
+     *
+     * Note:
+     *
+     * All numbers will be positive integers.
+     * The solution set must not contain duplicate combinations.
+     * Example 1:
+     *
+     * Input: k = 3, n = 7
+     * Output: [[1,2,4]]
+     * Example 2:
+     *
+     * Input: k = 3, n = 9
+     * Output: [[1,2,6], [1,3,5], [2,3,4]]
+     */
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        if (n > 0) {
+            combinationSum3Backtrack(ret, new ArrayList<Integer>(), k, n, n, 1);
+        }
+        return ret;
+    }
+
+    public void combinationSum3Backtrack(List<List<Integer>> ret, List<Integer> temp, int k, int n, int target, int start) {
+        if (target < 0 || temp.size() > k) {
+            return;
+        }
+        if (target == 0 && temp.size() == k) {
+            ret.add(new ArrayList<Integer>(temp));
+            return;
+        }
+        for (int i = start; i <= 9; i++) {
+            if (temp.contains(Integer.valueOf(i))) {
+                continue;
+            }
+            temp.add(i);
+            combinationSum3Backtrack(ret, temp, k, n, target - i, i);
+            temp.remove(temp.size() - 1);
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/combination-sum-ii/
+     * Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sums to target.
+     *
+     * Each number in candidates may only be used once in the combination.
+     *
+     * Note:
+     *
+     * All numbers (including target) will be positive integers.
+     * The solution set must not contain duplicate combinations.
+     * Example 1:
+     *
+     * Input: candidates = [10,1,2,7,6,1,5], target = 8,
+     * A solution set is:
+     * [
+     *   [1, 7],
+     *   [1, 2, 5],
+     *   [2, 6],
+     *   [1, 1, 6]
+     * ]
+     * Example 2:
+     *
+     * Input: candidates = [2,5,2,1,2], target = 5,
+     * A solution set is:
+     * [
+     *   [1,2,2],
+     *   [5]
+     * ]
+     */
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        if (candidates != null && candidates.length > 0) {
+            Arrays.sort(candidates);
+            comSum2Backtrack(ret, new ArrayList<Integer>(), candidates, target, 0);
+        }
+        return ret;
+    }
+
+    public void comSum2Backtrack(List<List<Integer>> ret, List<Integer> temp, int[] candidates, int target, int start) {
+        if (target < 0) {
+            return;
+        }
+        if (target == 0) {
+            ret.add(new ArrayList<>(temp));
+            return;
+        }
+        for (int i = start; i < candidates.length; i++) {
+            if (i > start && candidates[i] == candidates[i - 1]) continue;
+            temp.add(candidates[i]);
+            comSum2Backtrack(ret, temp, candidates, target - candidates[i], i + 1);
+            temp.remove(Integer.valueOf(candidates[i]));
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/letter-case-permutation/
+     * Given a string S, we can transform every letter individually to be lowercase or uppercase to create another string.
+     * Return a list of all possible strings we could create.
+     *
+     * Examples:
+     * Input: S = "a1b2"
+     * Output: ["a1b2", "a1B2", "A1b2", "A1B2"]
+     *
+     * Input: S = "3z4"
+     * Output: ["3z4", "3Z4"]
+     *
+     * Input: S = "12345"
+     * Output: ["12345"]
+     * Note:
+     *
+     * S will be a string with length between 1 and 12.
+     * S will consist only of letters or digits.
+     */
+    public List<String> letterCasePermutation(String S) {
+        if (S == null) {
+            return new LinkedList<>();
+        }
+
+        List<String> res = new LinkedList<>();
+        helper(S.toCharArray(), res, 0);
+        return res;
+    }
+
+    public void helper(char[] chs, List<String> res, int pos) {
+        if (pos == chs.length) {
+            res.add(new String(chs));
+            return;
+        }
+        if (chs[pos] >= '0' && chs[pos] <= '9') {
+            helper(chs, res, pos + 1);
+            return;
+        }
+
+        chs[pos] = Character.toLowerCase(chs[pos]);
+        helper(chs, res, pos + 1);
+
+        chs[pos] = Character.toUpperCase(chs[pos]);
+        helper(chs, res, pos + 1);
     }
 
     /**

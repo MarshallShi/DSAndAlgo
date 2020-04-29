@@ -1,11 +1,11 @@
 package dsandalgo.tree;
 
-import dsandalgo.Coding4;
 import javafx.util.Pair;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
@@ -28,6 +28,485 @@ public class TreeExe {
         System.out.println(n);
     }
 
+    /**
+     * https://leetcode.com/problems/minimum-absolute-difference-in-bst/
+     * Given a binary search tree with non-negative values, find the minimum absolute difference between values of any two nodes.
+     *
+     * Example:
+     *
+     * Input:
+     *
+     *    1
+     *     \
+     *      3
+     *     /
+     *    2
+     *
+     * Output:
+     * 1
+     *
+     * Explanation:
+     * The minimum absolute difference is 1, which is the difference between 2 and 1 (or between 2 and 3).
+     *
+     *
+     * Note:
+     *
+     * There are at least two nodes in this BST.
+     * This question is the same as 783: https://leetcode.com/problems/minimum-distance-between-bst-nodes/
+     */
+    private int minDifference = Integer.MAX_VALUE;
+    private Integer prevVal = null;
+
+    public int getMinimumDifference(TreeNode root) {
+        if (root == null) {
+            return minDifference;
+        }
+        getMinimumDifference(root.left);
+        if (prevVal != null) {
+            minDifference = Math.min(minDifference, root.val - prevVal);
+        }
+        prevVal = root.val;
+        getMinimumDifference(root.right);
+        return minDifference;
+    }
+
+    /**
+     * https://leetcode.com/problems/binary-tree-postorder-traversal/
+     * Given a binary tree, return the postorder traversal of its nodes' values.
+     *
+     * Example:
+     *
+     * Input: [1,null,2,3]
+     *    1
+     *     \
+     *      2
+     *     /
+     *    3
+     *
+     * Output: [3,2,1]
+     * Follow up: Recursive solution is trivial, could you do it iteratively?
+     */
+    public List<Integer> postorderTraversal(TreeNode root) {
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        Map<TreeNode, Boolean> visited = new HashMap<TreeNode, Boolean>();
+        List<Integer> res = new ArrayList<Integer>();
+        if (root == null) {
+            return res;
+        }
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            TreeNode node = stack.peek();
+            if (node.left == null && node.right == null) {
+                res.add(stack.pop().val);
+            } else {
+                if (!visited.containsKey(node)) {
+                    visited.put(node, true);
+                    if (node.right != null) {
+                        stack.push(node.right);
+                    }
+                    if (node.left != null) {
+                        stack.push(node.left);
+                    }
+                } else {
+                    res.add(stack.pop().val);
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/find-duplicate-subtrees/
+     * Given a binary tree, return all duplicate subtrees. For each kind of duplicate subtrees, you only need to return the root node of any one of them.
+     *
+     * Two trees are duplicate if they have the same structure with same node values.
+     *
+     * Example 1:
+     *
+     *         1
+     *        / \
+     *       2   3
+     *      /   / \
+     *     4   2   4
+     *        /
+     *       4
+     * The following are two duplicate subtrees:
+     *
+     *       2
+     *      /
+     *     4
+     * and
+     *
+     *     4
+     * Therefore, you need to return above trees' root in the form of a list.
+     */
+    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+        List<TreeNode> res = new LinkedList<>();
+        Map<String, Integer> nodeAsStringCount = new HashMap<>();
+        if (root == null) {
+            return res;
+        }
+        dupFinder(root, res, nodeAsStringCount);
+        return res;
+    }
+
+    private String dupFinder(TreeNode node, List<TreeNode> res, Map<String, Integer> map) {
+        if (node == null) {
+            return "&";
+        }
+        String cur = node.val + "&" + dupFinder(node.left, res, map) + "&" + dupFinder(node.right, res, map);
+        map.put(cur, map.getOrDefault(cur, 0) + 1);
+        if (map.get(cur) > 1 && !res.contains(node)) {
+            res.add(node);
+        }
+        return cur;
+    }
+
+    /**
+     * https://leetcode.com/problems/delete-node-in-a-bst/
+     * Given a root node reference of a BST and a key, delete the node with the given key in the BST. Return the root node reference (possibly updated) of the BST.
+     *
+     * Basically, the deletion can be divided into two stages:
+     *
+     * Search for a node to remove.
+     * If the node is found, delete the node.
+     * Note: Time complexity should be O(height of tree).
+     *
+     * Example:
+     *
+     * root = [5,3,6,2,4,null,7]
+     * key = 3
+     *
+     *     5
+     *    / \
+     *   3   6
+     *  / \   \
+     * 2   4   7
+     *
+     * Given key to delete is 3. So we find the node with value 3 and delete it.
+     *
+     * One valid answer is [5,4,6,2,null,null,7], shown in the following BST.
+     *
+     *     5
+     *    / \
+     *   4   6
+     *  /     \
+     * 2       7
+     *
+     * Another valid answer is [5,2,6,null,4,null,7].
+     *
+     *     5
+     *    / \
+     *   2   6
+     *    \   \
+     *     4   7
+     */
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null) {
+            return root;
+        }
+        if (root.val > key) {
+            root.left = deleteNode(root.left, key);
+        } else {
+            if (root.val < key) {
+                root.right = deleteNode(root.right, key);
+            } else {
+                //Once find the node to delete.
+                if (root.left == null) {
+                    return root.right;
+                } else {
+                    if (root.right == null) {
+                        return root.left;
+                    }
+                    // node with two children, replace with the inOrder successor(minVal) in the right subtree
+                    root.val = getMinForDeleteNode(root.right);
+                    root.right = deleteNode(root.right, root.val);
+                }
+            }
+        }
+        return root;
+    }
+
+    private int getMinForDeleteNode(TreeNode root) {
+        while (root.left != null) {
+            root = root.left;
+        }
+        return root.val;
+    }
+
+    /**
+     * https://leetcode.com/problems/find-largest-value-in-each-tree-row/
+     * You need to find the largest value in each row of a binary tree.
+     *
+     * Example:
+     * Input:
+     *
+     *           1
+     *          / \
+     *         3   2
+     *        / \   \
+     *       5   3   9
+     *
+     * Output: [1, 3, 9]
+     */
+    public List<Integer> largestValues(TreeNode root) {
+        List<Integer> res = new LinkedList<Integer>();
+        if (root == null) {
+            return res;
+        }
+        LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            int n = queue.size();
+            int max = Integer.MIN_VALUE;
+            for (int i = 0; i < n; i++) {
+                TreeNode node = queue.pop();
+                max = Math.max(node.val, max);
+                if (node.left != null) {
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    queue.add(node.right);
+                }
+            }
+            res.add(max);
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/construct-string-from-binary-tree/
+     * You need to construct a string consists of parenthesis and integers from a binary tree with the preorder traversing way.
+     *
+     * The null node needs to be represented by empty parenthesis pair "()". And you need to omit all the empty parenthesis pairs that don't affect the one-to-one mapping relationship between the string and the original binary tree.
+     *
+     * Example 1:
+     * Input: Binary tree: [1,2,3,4]
+     *        1
+     *      /   \
+     *     2     3
+     *    /
+     *   4
+     *
+     * Output: "1(2(4))(3)"
+     *
+     * Explanation: Originallay it needs to be "1(2(4)())(3()())",
+     * but you need to omit all the unnecessary empty parenthesis pairs.
+     * And it will be "1(2(4))(3)".
+     * Example 2:
+     * Input: Binary tree: [1,2,3,null,4]
+     *        1
+     *      /   \
+     *     2     3
+     *      \
+     *       4
+     *
+     * Output: "1(2()(4))(3)"
+     *
+     * Explanation: Almost the same as the first example,
+     * except we can't omit the first parenthesis pair to break the one-to-one mapping relationship between the input and the output
+     */
+    public String tree2str(TreeNode t) {
+        StringBuilder sb = new StringBuilder();
+        tree2strHelper(t, sb);
+        return sb.toString();
+    }
+
+    private void tree2strHelper(TreeNode t, StringBuilder sb) {
+        sb.append(t.val);
+        if (t.left == null && t.right == null) {
+            return;
+        }
+        if (t.left != null) {
+            sb.append("(");
+            tree2strHelper(t.left, sb);
+            sb.append(")");
+        }
+        if (t.right != null) {
+            if (t.left == null) {
+                sb.append("()");
+            }
+            sb.append("(");
+            tree2strHelper(t.right, sb);
+            sb.append(")");
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-height-trees/
+     * For an undirected graph with tree characteristics, we can choose any node as the root. The result graph is then a rooted tree. Among all possible rooted trees, those with minimum height are called minimum height trees (MHTs). Given such a graph, write a function to find all the MHTs and return a list of their root labels.
+     *
+     * Format
+     * The graph contains n nodes which are labeled from 0 to n - 1. You will be given the number n and a list of undirected edges (each edge is a pair of labels).
+     *
+     * You can assume that no duplicate edges will appear in edges. Since all edges are undirected, [0, 1] is the same as [1, 0] and thus will not appear together in edges.
+     * Input: n = 4, edges = [[1, 0], [1, 2], [1, 3]]
+     *
+     *         0
+     *         |
+     *         1
+     *        / \
+     *       2   3
+     *
+     * Output: [1]
+     * @param n
+     * @param edges
+     * @return
+     */
+    public List<Integer> findMinHeightTrees(int n, int[][] edges) {
+        if (n == 1) {
+            return Collections.singletonList(0);
+        }
+        //Step 1: init the adj so we can find all the leaves where the linked nodes are 1.
+        List<Set<Integer>> adj = new ArrayList<>(n);
+        for (int i = 0; i < n; ++i) {
+            adj.add(new HashSet<>());
+        }
+        for (int[] edge : edges) {
+            adj.get(edge[0]).add(edge[1]);
+            adj.get(edge[1]).add(edge[0]);
+        }
+        //Step 2: get all the leaves.
+        List<Integer> leaves = new ArrayList<>();
+        for (int i = 0; i < n; ++i) {
+            if (adj.get(i).size() == 1) leaves.add(i);
+        }
+
+        //Step 3: remove leaves till there is less than 2.
+        while (n > 2) {
+            n -= leaves.size();
+            List<Integer> newLeaves = new ArrayList<>();
+            for (int i : leaves) {
+                int j = adj.get(i).iterator().next();
+                adj.get(j).remove(i);
+                if (adj.get(j).size() == 1) {
+                    newLeaves.add(j);
+                }
+            }
+            leaves = newLeaves;
+        }
+        return leaves;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/
+     * Given the root of a binary tree, the level of its root is 1, the level of its children is 2, and so on.
+     *
+     * Return the smallest level X such that the sum of all the values of nodes at level X is maximal.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: [1,7,0,7,-8,null,null]
+     * Output: 2
+     * Explanation:
+     * Level 1 sum = 1.
+     * Level 2 sum = 7 + 0 = 7.
+     * Level 3 sum = 7 + -8 = -1.
+     * So we return the level with the maximum sum which is level 2.
+     *
+     *
+     * Note:
+     *
+     * The number of nodes in the given tree is between 1 and 10^4.
+     * -10^5 <= node.val <= 10^5
+     * Accepted
+     */
+    public int maxLevelSum(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        int maxSum = Integer.MIN_VALUE;
+        int res = 0;
+        if (root != null) {
+            queue.add(root);
+            int level = 1;
+            while (!queue.isEmpty()) {
+                int levelSum = 0;
+                int s = queue.size();
+                for (int i = 0; i < s; i++) {
+                    TreeNode node = queue.remove();
+                    levelSum = levelSum + node.val;
+                    if (node.left != null) {
+                        queue.add(node.left);
+                    }
+                    if (node.right != null) {
+                        queue.add(node.right);
+                    }
+                }
+                maxSum = Math.max(maxSum, levelSum);
+                if (maxSum == levelSum) {
+                    res = level;
+                }
+                level++;
+            }
+        }
+        return res;
+    }
+
+    public int maxLevelSum_recur(TreeNode root) {
+        int[] map = new int[(int) Math.pow(10, 4) + 1];
+        maxLevelSumHelper(root, map, 1);
+        int maxLevel = 1;
+        for (int i = 0; i < map.length; i++) {
+            if (map[i] > map[maxLevel]) maxLevel = i;
+        }
+        return maxLevel;
+    }
+
+    public void maxLevelSumHelper(TreeNode root, int[] map, int level) {
+        if (root == null) return;
+        map[level] += root.val;
+        maxLevelSumHelper(root.right, map, level + 1);
+        maxLevelSumHelper(root.left, map, level + 1);
+    }
+
+    /**
+     * https://leetcode.com/problems/increasing-order-search-tree/
+     */
+    private TreeNode head = null, prev = null;
+    public TreeNode increasingBST(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        increasingBST(root.left);
+        if (prev != null) {
+            prev.right = root;
+            prev.left = null;
+        }
+        if (head == null) {
+            head = root;
+        }
+        prev = root;
+        increasingBST(root.right);
+        return head;
+    }
+
+    /**
+     * https://leetcode.com/problems/binary-tree-preorder-traversal/
+     * @param root
+     * @return
+     */
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> ret = new ArrayList<Integer>();
+        if (root == null) {
+            return ret;
+        }
+        Stack<TreeNode> tree = new Stack<TreeNode>();
+        tree.push(root);
+        while (!tree.isEmpty()) {
+            TreeNode node = tree.peek();
+            ret.add(tree.pop().val);
+            if (node.right != null) {
+                tree.push(node.right);
+            }
+            if (node.left != null) {
+                tree.push(node.left);
+            }
+        }
+        return ret;
+    }
 
     /**
      * https://leetcode.com/problems/unique-binary-search-trees-ii/
@@ -2991,56 +3470,6 @@ public class TreeExe {
                 build(r1, colMid + 1, rowMid, c2, g),//top right
                 build(rowMid + 1, c1, r2, colMid, g),//bottom left
                 build(rowMid + 1, colMid + 1, r2, c2, g));//bottom right
-    }
-
-    private TreeNode createANode() {
-
-        TreeNode root = new TreeNode(2);
-
-        TreeNode node1 = new TreeNode(1);
-        root.left = node1;
-        TreeNode node2 = new TreeNode(4);
-        root.right = node2;
-
-        //TreeNode node3 = new TreeNode(1);
-        //TreeNode node4 = new TreeNode(3);
-        //node1.left = node3;
-       // node1.right = node4;
-        return root;
-    }
-
-    private TreeNode createBNode() {
-
-        TreeNode root = new TreeNode(1);
-
-        TreeNode node1 = new TreeNode(0);
-        root.left = node1;
-        TreeNode node2 = new TreeNode(3);
-        root.right = node2;
-
-//        TreeNode node4 = new TreeNode(10);
-//        node2.right = node4;
-        return root;
-    }
-
-    private TreeNode createCNode() {
-
-        TreeNode node1 = new TreeNode(3);
-
-        TreeNode node2 = new TreeNode(0);
-        node1.left = node2;
-        TreeNode node3 = new TreeNode(0);
-        node1.right = node3;
-//
-//        TreeNode node4 = new TreeNode(4);
-//        node2.left = node4;
-//        TreeNode node5 = new TreeNode(5);
-//        node2.right = node5;
-//
-//        TreeNode node6 = new TreeNode(6);
-//        node3.left = node6;
-
-        return node1;
     }
 
     /**

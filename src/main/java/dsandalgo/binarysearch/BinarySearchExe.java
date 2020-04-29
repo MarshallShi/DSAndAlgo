@@ -16,6 +16,55 @@ public class BinarySearchExe {
     }
 
     /**
+     * https://leetcode.com/problems/search-insert-position/
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int searchInsert(int[] nums, int target) {
+        int low = 0, high = nums.length - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            } else {
+                if (nums[mid] > target) {
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+        }
+        return low;
+    }
+
+    /**
+     * https://leetcode.com/problems/valid-perfect-square/
+     */
+    public boolean isPerfectSquare(int num) {
+        if (num == 1) {
+            return true;
+        }
+        long low = 1, high = num / 2;
+        while (low < high) {
+            long mid = low + (high - low) / 2;
+            if (mid * mid == num) {
+                return true;
+            } else {
+                if (mid * mid < num) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+        }
+        if (low == high && low * high == num) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * https://leetcode.com/problems/sqrtx/
      * @param x
      * @return

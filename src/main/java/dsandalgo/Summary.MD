@@ -67,6 +67,35 @@ Mono stack.
         return ret;
     }
 
+Remove K Digits
+https://leetcode.com/problems/remove-k-digits/
+
+132 Pattern
+https://leetcode.com/problems/132-pattern/
+Maintain a decreasing stack, init the largest value s3 as MIN_VALUE,
+Then this value will only be set when we pop from the mono stack, aka, there was element in stack before.
+Once we find the smaller number on the left than the last popped value, we are done.
+
+    public boolean find132pattern(int[] nums) {
+        int s3 = Integer.MIN_VALUE;
+        Stack<Integer> stack = new Stack<>();
+        for (int i = nums.length - 1; i >= 0; i--) {
+            if (nums[i] < s3) {
+                return true;
+            } else {
+                while (!stack.isEmpty() && nums[i] > stack.peek()) {
+                    s3 = stack.pop();
+                }
+                stack.push(nums[i]);
+            }
+        }
+        return false;
+    }
+
+https://leetcode.com/problems/maximum-width-ramp/
+
+https://leetcode.com/problems/shortest-unsorted-continuous-subarray/
+    
 Largest Rectangle in Histogram
 https://leetcode.com/problems/largest-rectangle-in-histogram/
 Use mono stack to store the increasing height, once height start decreasing, we calculate the temp area, and push new height.
@@ -2093,6 +2122,10 @@ https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
 https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/
 Recursively create the tree from left and right hand.
 
+Find Duplicate Subtrees
+https://leetcode.com/problems/find-duplicate-subtrees/
+Create a string fromate path, store all path from current node in a map, if there is previous stored path, then the node is in the result.
+
 https://leetcode.com/problems/unique-binary-search-trees/
 First intuition come from the recursive way to contrust the left and right sub tree, number of total will be numOfLeft*numOfRight for each root.
 Which then can be evolved to DP.     
@@ -3765,6 +3798,30 @@ Naively we can use BFS to iterative through all k stops for all. But we can use 
 
 Sorting Questions
 
+Count sort:
+https://leetcode.com/problems/sort-characters-by-frequency/
+https://leetcode.com/problems/relative-sort-array/
+
+    public int[] relativeSortArray(int[] arr1, int[] arr2) {
+        //count sort
+        int[] cnt = new int[1001];
+        for (int n : arr1) {
+            cnt[n]++;
+        }
+        int i = 0;
+        for (int n : arr2) {
+            while (cnt[n]-- > 0) {
+                arr1[i++] = n;
+            }
+        }
+        for (int n = 0; n < cnt.length; n++) {
+            while (cnt[n]-- > 0) {
+                arr1[i++] = n;
+            }
+        }
+        return arr1;
+    }
+    
 Increasing Triplet Subsequence
 https://leetcode.com/problems/increasing-triplet-subsequence/
 
@@ -4394,6 +4451,10 @@ if yes all position in the list will form a result pair.
     
 HashMap Questions
 
+Longest Word in Dictionary
+https://leetcode.com/problems/longest-word-in-dictionary/
+Solution 1: sort the string array, and then use hash map to track if previous string exist so it update the max length if exist.
+Solution 2: use trie data structure, sort, build the trie, and do BFS or DFS to find the longest length.
 
 https://leetcode.com/problems/prison-cells-after-n-days/
 Important trick about how to prune the unnecessary loop: cache the state, if same state showing, then reduce N by N = (N - i) % (i);

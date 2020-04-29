@@ -10,9 +10,197 @@ import java.util.stream.Collectors;
 public class TwoPointers {
 
     public static void main(String[] args) {
-
+        TwoPointers exe = new TwoPointers();
+        int[] colors = {2,0,2,1,1,0};
+        exe.sortColors(colors);
+        //System.out.println(exe.sortColors(colors));
     }
 
+    /**
+     * https://leetcode.com/problems/reverse-only-letters/
+     * Given a string S, return the "reversed" string where all characters that are not a letter stay in the same place, and all letters reverse their positions.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: "ab-cd"
+     * Output: "dc-ba"
+     * Example 2:
+     *
+     * Input: "a-bC-dEf-ghIj"
+     * Output: "j-Ih-gfE-dCba"
+     * Example 3:
+     *
+     * Input: "Test1ng-Leet=code-Q!"
+     * Output: "Qedo1ct-eeLg=ntse-T!"
+     *
+     *
+     * Note:
+     *
+     * S.length <= 100
+     * 33 <= S[i].ASCIIcode <= 122
+     * S doesn't contain \ or "
+     */
+    public String reverseOnlyLetters(String S) {
+        StringBuilder sb = new StringBuilder(S);
+        for (int i = 0, j = S.length() - 1; i < j;) {
+            if (!Character.isLetter(sb.charAt(i))) {
+                ++i;
+            } else if (!Character.isLetter(sb.charAt(j))) {
+                --j;
+            } else {
+                sb.setCharAt(i, S.charAt(j));
+                sb.setCharAt(j--, S.charAt(i++));
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * https://leetcode.com/problems/camelcase-matching/
+     *
+     * A query word matches a given pattern if we can insert lowercase letters to the pattern word so that it equals the query. (We may insert each character at any position, and may insert 0 characters.)
+     *
+     * Given a list of queries, and a pattern, return an answer list of booleans, where answer[i] is true if and only if queries[i] matches the pattern.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: queries = ["FooBar","FooBarTest","FootBall","FrameBuffer","ForceFeedBack"], pattern = "FB"
+     * Output: [true,false,true,true,false]
+     * Explanation:
+     * "FooBar" can be generated like this "F" + "oo" + "B" + "ar".
+     * "FootBall" can be generated like this "F" + "oot" + "B" + "all".
+     * "FrameBuffer" can be generated like this "F" + "rame" + "B" + "uffer".
+     * Example 2:
+     *
+     * Input: queries = ["FooBar","FooBarTest","FootBall","FrameBuffer","ForceFeedBack"], pattern = "FoBa"
+     * Output: [true,false,true,false,false]
+     * Explanation:
+     * "FooBar" can be generated like this "Fo" + "o" + "Ba" + "r".
+     * "FootBall" can be generated like this "Fo" + "ot" + "Ba" + "ll".
+     * Example 3:
+     *
+     * Input: queries = ["FooBar","FooBarTest","FootBall","FrameBuffer","ForceFeedBack"], pattern = "FoBaT"
+     * Output: [false,true,false,false,false]
+     * Explanation:
+     * "FooBarTest" can be generated like this "Fo" + "o" + "Ba" + "r" + "T" + "est".
+     *
+     *
+     * Note:
+     *
+     * 1 <= queries.length <= 100
+     * 1 <= queries[i].length <= 100
+     * 1 <= pattern.length <= 100
+     * All strings consists only of lower and upper case English letters.
+     */
+    public List<Boolean> camelMatch(String[] queries, String pattern) {
+        List<Boolean> ret = new ArrayList<>();
+        for (int i = 0; i < queries.length; i++) {
+            ret.add(matchHelper(queries[i], pattern));
+        }
+        return ret;
+    }
+
+    private boolean matchHelper(String query, String pattern) {
+        char[] patternArr = pattern.toCharArray();
+        char[] queryArr = query.toCharArray();
+        int j = 0;
+        for (int i = 0; i < queryArr.length; i++) {
+            if (j < patternArr.length && queryArr[i] == patternArr[j]) {
+                j++;
+            } else {
+                if (Character.isUpperCase(queryArr[i])) {
+                    return false;
+                }
+            }
+        }
+        return j == patternArr.length;
+    }
+
+    /**
+     * https://leetcode.com/problems/sort-colors/
+     * Given an array with n objects colored red, white or blue, sort them in-place so that objects of the same color are adjacent, with the colors in the order red, white and blue.
+     *
+     * Here, we will use the integers 0, 1, and 2 to represent the color red, white, and blue respectively.
+     *
+     * Note: You are not suppose to use the library's sort function for this problem.
+     *
+     * Example:
+     *
+     * Input: [2,0,2,1,1,0]
+     * Output: [0,0,1,1,2,2]
+     * Follow up:
+     *
+     * A rather straight forward solution is a two-pass algorithm using counting sort.
+     * First, iterate the array counting number of 0's, 1's, and 2's, then overwrite array with total number of 0's, then 1's and followed by 2's.
+     * Could you come up with a one-pass algorithm using only constant space?
+     */
+    public void sortColors(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return;
+        }
+        int low = 0, mid = 0, high = nums.length - 1;
+        while (mid <= high) {
+            if (nums[mid] == 0) {
+                swap(nums, low, mid);
+                low ++;
+                mid ++;
+            } else {
+                if (nums[mid] == 1) {
+                    mid ++;
+                } else {
+                    if (nums[mid] == 2) {
+                        swap(nums, mid, high);
+                        high--;
+                    }
+                }
+            }
+        }
+    }
+
+    public void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    /**
+     * https://leetcode.com/problems/3sum-closest/
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int threeSumClosest(int[] nums, int target) {
+        if (nums == null || nums.length < 1) {
+            return 0;
+        }
+        Arrays.sort(nums);
+        int min = Integer.MAX_VALUE;
+        int ret = 0;
+        for (int i=0; i<nums.length; i++) {
+            int low = i+1, high = nums.length - 1;
+            while (low < high) {
+                int temp = nums[i] + nums[low] + nums[high];
+                if (temp == target) {
+                    return target;
+                } else {
+                    if (min > Math.abs(target - temp)) {
+                        min = Math.abs(target - temp);
+                        ret = temp;
+                    }
+                    if (temp > target) {
+                        high--;
+                    } else {
+                        low++;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
 
     /**
      * https://leetcode.com/problems/find-k-closest-elements/

@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -36,6 +37,76 @@ public class PriorityQueueExe {
         int val;
         ListNode next;
         ListNode(int x) { val = x; }
+    }
+
+    /**
+     * https://leetcode.com/problems/last-stone-weight/
+     * @param stones
+     * @return
+     */
+    public int lastStoneWeight(int[] stones) {
+        Queue<Integer> pq = new PriorityQueue<Integer>(10, Collections.reverseOrder());
+        for (int i=0; i<stones.length; i++) {
+            pq.offer(stones[i]);
+        }
+        while (!pq.isEmpty()) {
+            if (pq.size() >= 2) {
+                int top = pq.poll();
+                int second = pq.poll();
+                if (top != second) {
+                    int delta = top - second;
+                    pq.offer(delta);
+                }
+            } else {
+                break;
+            }
+        }
+        if (!pq.isEmpty()) {
+            return pq.peek();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/network-delay-time/
+     * @param times
+     * @param N
+     * @param K
+     * @return
+     */
+    public int networkDelayTime(int[][] times, int N, int K) {
+        Map<Integer, Map<Integer, Integer>> map = new HashMap<>();
+        for (int[] time : times) {
+            map.putIfAbsent(time[0], new HashMap<>());
+            map.get(time[0]).put(time[1], time[2]);
+        }
+
+        //distance, node into pq
+        Queue<int[]> pq = new PriorityQueue<>((a, b) -> (a[0] - b[0]));
+
+        pq.add(new int[]{0, K});
+
+        boolean[] visited = new boolean[N + 1];
+        int res = 0;
+
+        while (!pq.isEmpty()) {
+            int[] cur = pq.remove();
+            int curDist = cur[0];
+            int curNode = cur[1];
+            if (visited[curNode]) {
+                continue;
+            }
+            visited[curNode] = true;
+            res = curDist;
+            N--;
+            if (map.containsKey(curNode)) {
+                for (int next : map.get(curNode).keySet()) {
+                    pq.add(new int[]{curDist + map.get(curNode).get(next), next});
+                }
+            }
+        }
+        return N == 0 ? res : -1;
     }
 
     /**

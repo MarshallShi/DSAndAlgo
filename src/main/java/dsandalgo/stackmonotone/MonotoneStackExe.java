@@ -61,6 +61,155 @@ public class MonotoneStackExe {
     }
 
     /**
+     * https://leetcode.com/problems/maximum-width-ramp/
+     * Given an array A of integers, a ramp is a tuple (i, j) for which i < j and A[i] <= A[j].  The width of such a ramp is j - i.
+     *
+     * Find the maximum width of a ramp in A.  If one doesn't exist, return 0.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [6,0,8,2,1,5]
+     * Output: 4
+     * Explanation:
+     * The maximum width ramp is achieved at (i, j) = (1, 5): A[1] = 0 and A[5] = 5.
+     * Example 2:
+     *
+     * Input: [9,8,1,0,1,9,4,0,4,1]
+     * Output: 7
+     * Explanation:
+     * The maximum width ramp is achieved at (i, j) = (2, 9): A[2] = 1 and A[9] = 1.
+     *
+     *
+     * Note:
+     *
+     * 2 <= A.length <= 50000
+     * 0 <= A[i] <= 50000
+     */
+    public int maxWidthRamp(int[] A) {
+        Stack<Integer> s = new Stack<Integer>();
+        int res = 0, n = A.length;
+        //Store the decreasing number's idx
+        for (int i = 0; i < n; i++){
+            if (s.empty() || A[s.peek()] > A[i]){
+                s.add(i);
+            }
+        }
+        //From end to start, check the diff between lower and higher, get the max.
+        for (int i = n - 1; i > res; i--) {
+            while (!s.empty() && A[s.peek()] <= A[i]) {
+                res = Math.max(res, i - s.pop());
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/remove-k-digits/
+     * Given a non-negative integer num represented as a string, remove k digits from the number so that the new number is the smallest possible.
+     *
+     * Note:
+     * The length of num is less than 10002 and will be ≥ k.
+     * The given num does not contain any leading zero.
+     * Example 1:
+     *
+     * Input: num = "1432219", k = 3
+     * Output: "1219"
+     * Explanation: Remove the three digits 4, 3, and 2 to form the new number 1219 which is the smallest.
+     * Example 2:
+     *
+     * Input: num = "10200", k = 1
+     * Output: "200"
+     * Explanation: Remove the leading 1 and the number is 200. Note that the output must not contain leading zeroes.
+     * Example 3:
+     *
+     * Input: num = "10", k = 2
+     * Output: "0"
+     * Explanation: Remove all the digits from the number and it is left with nothing which is 0.
+     */
+    public String removeKdigits(String num, int k) {
+        if (k == num.length()) {
+            return "0";
+        }
+        Stack<Character> stack = new Stack<Character>();
+        for (int i=0; i<num.length(); i++) {
+            while (k>0 && !stack.isEmpty()) {
+                //whenever meet a digit which is less than the previous digit, discard the previous one
+                if (stack.peek() > num.charAt(i)) {
+                    stack.pop();
+                    k--;
+                } else {
+                    break;
+                }
+            }
+            stack.push(num.charAt(i));
+        }
+        // corner case like "1111"
+        while (k>0) {
+            stack.pop();
+            k--;
+        }
+        String ret = "";
+        while (!stack.isEmpty()) {
+            ret = stack.pop() + ret;
+        }
+        boolean allZero = true;
+        for (int i = 0; i < ret.length(); ++i) {
+            char c = ret.charAt(i);
+            if (c != '0') {
+                allZero = false;
+                return ret.substring(i);
+            }
+        }
+        if (allZero) {
+            return "0";
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/132-pattern/
+     * Given a sequence of n integers a1, a2, ..., an, a 132 pattern is a subsequence ai, aj, ak such that i < j < k and ai < ak < aj. Design an algorithm that takes a list of n numbers as input and checks whether there is a 132 pattern in the list.
+     *
+     * Note: n will be less than 15,000.
+     *
+     * Example 1:
+     * Input: [1, 2, 3, 4]
+     *
+     * Output: False
+     *
+     * Explanation: There is no 132 pattern in the sequence.
+     * Example 2:
+     * Input: [3, 1, 4, 2]
+     *
+     * Output: True
+     *
+     * Explanation: There is a 132 pattern in the sequence: [1, 4, 2].
+     * Example 3:
+     * Input: [-1, 3, 2, 0]
+     *
+     * Output: True
+     *
+     * Explanation: There are three 132 patterns in the sequence: [-1, 3, 2], [-1, 3, 0] and [-1, 2, 0].
+     */
+    public boolean find132pattern(int[] nums) {
+        int s3 = Integer.MIN_VALUE;
+        Stack<Integer> stack = new Stack<>();
+        for (int i = nums.length - 1; i >= 0; i--) {
+            if (nums[i] < s3) {
+                return true;
+            } else {
+                while (!stack.isEmpty() && nums[i] > stack.peek()) {
+                    s3 = stack.pop();
+                }
+                stack.push(nums[i]);
+            }
+        }
+        return false;
+    }
+
+    /**
      * https://leetcode.com/problems/sum-of-subarray-minimums/
      * Given an array of integers A, find the sum of min(B), where B ranges over every (contiguous) subarray of A.
      *

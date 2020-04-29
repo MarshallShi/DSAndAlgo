@@ -153,7 +153,9 @@ An algo designed for traverse a tree without using Stack or Recursion.  (https:/
 
 Boyer-Moore Majority Vote Algorithm
 https://leetcode.com/problems/majority-element/
+https://leetcode.com/problems/majority-element-ii/
 https://www.geeksforgeeks.org/majority-element/
+https://gregable.com/2013/10/majority-vote-algorithm-find-majority.html
 The algo run O(n) time and O(1) space, compare to the HashMap based solution which is O(n) Auxiliary Space.
 NOTE: it only works when the majority element exist, otherwise, need another step to verify if this is the majority.
 
@@ -174,6 +176,56 @@ NOTE: it only works when the majority element exist, otherwise, need another ste
         return nums[maj_index];
     }
     
+    public List<Integer> majorityElement(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        if(nums.length == 0) {
+            return res;
+        }
+        //Majority Voting Algorithm
+        int num1 = nums[0]; int num2 = nums[0]; int count1 = 1; int count2 = 0;
+        //Pass 1: find the potential majority numbers, in this case more than n/3, would be two numbers.
+        for (int val : nums) {
+            if(val == num1) {
+                count1++;
+            } else {
+                if (val == num2){
+                    count2++;
+                } else {
+                    if (count1 == 0) {
+                        num1 = val;
+                        count1++;
+                    } else {
+                        if (count2 == 0) {
+                            num2 = val;
+                            count2++;
+                        } else {
+                            count1--;
+                            count2--;
+                        }
+                    }
+                }
+            }
+        }
+        //Pass 2: verify the two numbers.
+        count1 = 0;
+        count2 = 0;
+        for(int val : nums) {
+            if(val == num1) {
+                count1++;
+            } else {
+                if(val == num2){
+                    count2++;
+                }
+            }
+        }
+        if(count1 > nums.length/3) {
+            res.add(num1);
+        }
+        if(count2 > nums.length/3) {
+            res.add(num2);
+        }
+        return res;
+    }
 
 Quick Select
 

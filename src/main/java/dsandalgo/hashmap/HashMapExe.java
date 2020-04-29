@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,257 @@ public class HashMapExe {
         int[] quiet = {3,2,5,4,6,1,7,0};
 
         exe.maxEqualFreq(groupSizes);
+    }
+
+    /**
+     * https://leetcode.com/problems/word-pattern/
+     * Given a pattern and a string str, find if str follows the same pattern.
+     *
+     * Here follow means a full match, such that there is a bijection between a letter in pattern and a non-empty word in str.
+     *
+     * Example 1:
+     *
+     * Input: pattern = "abba", str = "dog cat cat dog"
+     * Output: true
+     * Example 2:
+     *
+     * Input:pattern = "abba", str = "dog cat cat fish"
+     * Output: false
+     * Example 3:
+     *
+     * Input: pattern = "aaaa", str = "dog cat cat dog"
+     * Output: false
+     * Example 4:
+     *
+     * Input: pattern = "abba", str = "dog dog dog dog"
+     * Output: false
+     * Notes:
+     * You may assume pattern contains only lowercase letters, and str contains lowercase letters that may be separated by a single space.
+     */
+    public boolean wordPattern(String pattern, String str) {
+        String[] strs = str.split(" ");
+        if (pattern.length() != strs.length) {
+            return false;
+        }
+        Map<Character, String> hm1 = new HashMap<>();
+        Map<String, Character> hm2 = new HashMap<>();
+        for (int i = 0; i < pattern.length(); i++) {
+            if (hm1.containsKey(pattern.charAt(i))) {
+                if (!hm1.get(pattern.charAt(i)).equals(strs[i])) {
+                    return false;
+                }
+            } else {
+                if (hm2.containsKey(strs[i])) {
+                    return false;
+                } else {
+                    hm1.put(pattern.charAt(i), strs[i]);
+                    hm2.put(strs[i], pattern.charAt(i));
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-word-in-dictionary/
+     * Given a list of strings words representing an English Dictionary, find the longest word in words that can be built one character at a time by other words in words. If there is more than one possible answer, return the longest word with the smallest lexicographical order.
+     *
+     * If there is no answer, return the empty string.
+     * Example 1:
+     * Input:
+     * words = ["w","wo","wor","worl", "world"]
+     * Output: "world"
+     * Explanation:
+     * The word "world" can be built one character at a time by "w", "wo", "wor", and "worl".
+     * Example 2:
+     * Input:
+     * words = ["a", "banana", "app", "appl", "ap", "apply", "apple"]
+     * Output: "apple"
+     * Explanation:
+     * Both "apply" and "apple" can be built from other words in the dictionary. However, "apple" is lexicographically smaller than "apply".
+     * Note:
+     *
+     * All the strings in the input will only contain lowercase letters.
+     * The length of words will be in the range [1, 1000].
+     * The length of words[i] will be in the range [1, 30].
+     */
+    public String longestWord(String[] words) {
+        Arrays.sort(words);
+        Set<String> built = new HashSet<String>();
+        String res = "";
+        for (String w : words) {
+            if (w.length() == 1 || built.contains(w.substring(0, w.length() - 1))) {
+                res = w.length() > res.length() ? w : res;
+                built.add(w);
+            }
+        }
+        return res;
+    }
+
+    public String longestWord_trie(String[] words) {
+        if (words == null || words.length == 0) {
+            return null;
+        }
+        TrieNode root = new TrieNode();
+        for (int i = 0; i < words.length; i++) {
+            insert(root, words[i]);
+        }
+        String ans = "";
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+
+            boolean found = true;
+            TrieNode node = root;
+            for (int j = 0; j < word.length(); j++) {
+                char cur = word.charAt(j);
+                if (node.links[cur - 'a'] == null) {
+                    found = false;
+                    break;
+                }
+                node = node.links[cur - 'a'];
+                if (!node.isEnd) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) {
+                if (ans.length() < word.length() || ans.length() == word.length() && ans.compareTo(word) > 0) {
+                    ans = word;
+                }
+            }
+        }
+        return ans;
+    }
+    class TrieNode {
+        TrieNode[] links;
+        boolean isEnd;
+        TrieNode() {
+            links = new TrieNode[26];
+            isEnd = false;
+        }
+    }
+    private void insert(TrieNode root, String str) {
+        if (str == null || str.length() == 0) {
+            return;
+        }
+        TrieNode node = root;
+        for (int i = 0; i < str.length(); i++) {
+            char cur = str.charAt(i);
+            if (node.links[cur - 'a'] == null) {
+                node.links[cur - 'a'] = new TrieNode();
+            }
+            node = node.links[cur - 'a'];
+        }
+        node.isEnd = true;
+    }
+
+    /**
+     * https://leetcode.com/problems/k-diff-pairs-in-an-array/
+     * Given an array of integers and an integer k, you need to find the number of unique k-diff pairs in the array. Here a k-diff pair is defined as an integer pair (i, j), where i and j are both numbers in the array and their absolute difference is k.
+     *
+     * Example 1:
+     * Input: [3, 1, 4, 1, 5], k = 2
+     * Output: 2
+     * Explanation: There are two 2-diff pairs in the array, (1, 3) and (3, 5).
+     * Although we have two 1s in the input, we should only return the number of unique pairs.
+     * Example 2:
+     * Input:[1, 2, 3, 4, 5], k = 1
+     * Output: 4
+     * Explanation: There are four 1-diff pairs in the array, (1, 2), (2, 3), (3, 4) and (4, 5).
+     * Example 3:
+     * Input: [1, 3, 1, 5, 4], k = 0
+     * Output: 1
+     * Explanation: There is one 0-diff pair in the array, (1, 1).
+     * Note:
+     * The pairs (i, j) and (j, i) count as the same pair.
+     * The length of the array won't exceed 10,000.
+     * All the integers in the given input belong to the range: [-1e7, 1e7].
+     */
+    public int findPairs(int[] nums, int k) {
+        if (k < 0) {
+            return 0;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        int result = 0;
+        for (int val : nums) {
+            if (map.containsKey(val)) {
+                if (k == 0 && map.get(val) == 1) {
+                    result++;
+                }
+                map.put(val, map.get(val) + 1);
+            } else {
+                if (map.containsKey(val - k)) {
+                    result++;
+                }
+                if (map.containsKey(val + k)) {
+                    result++;
+                }
+                map.put(val, 1);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * https://leetcode.com/problems/subdomain-visit-count/
+     * @param cpdomains
+     * @return
+     */
+    public List<String> subdomainVisits(String[] cpdomains) {
+        List<String> res = new LinkedList<String>();
+        Map<String, Integer> resMap = new HashMap<String,Integer>();
+        for (int i=0; i<cpdomains.length; i++) {
+            String input = cpdomains[i];
+            String[] result = input.split(" ");
+            int count = Integer.parseInt(result[0]);
+            String domainfull = result[1];
+            boolean canSplit = true;
+            while (canSplit) {
+                if (resMap.containsKey(domainfull)) {
+                    resMap.put(domainfull, resMap.get(domainfull) + count);
+                } else {
+                    resMap.put(domainfull, count);
+                }
+                if (domainfull.indexOf(".") == -1) {
+                    canSplit = false;
+                } else {
+                    domainfull = domainfull.substring(domainfull.indexOf(".")+1, domainfull.length());
+                }
+            }
+        }
+        for (Map.Entry<String, Integer> entry : resMap.entrySet()) {
+            res.add(entry.getValue() + " " + entry.getKey());
+        }
+        return res;
+    }
+    /**
+     * https://leetcode.com/problems/contains-duplicate-ii/
+     * Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array
+     * such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
+     *
+     * Example 1:
+     *
+     * Input: nums = [1,2,3,1], k = 3
+     * Output: true
+     * Example 2:
+     *
+     * Input: nums = [1,0,1,1], k = 1
+     * Output: true
+     * Example 3:
+     *
+     * Input: nums = [1,2,3,1,2,3], k = 2
+     * Output: false
+     */
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        for (int i = 0; i < nums.length; i++) {
+            //the hash map .put the previous value associated with key, or null if there was no mapping for key.
+            Integer ord = map.put(nums[i], i);
+            if (ord != null && i - ord <= k) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -964,5 +1216,20 @@ public class HashMapExe {
             }
         }
         return cells;
+    }
+
+    /**
+     * https://leetcode.com/problems/unique-email-addresses/
+     * @param emails
+     * @return
+     */
+    public int numUniqueEmails(String[] emails) {
+        Set<String> normalized = new HashSet<>();
+        for (String email : emails) {
+            String[] parts = email.split("@");
+            String[] local = parts[0].split("\\+");
+            normalized.add(local[0].replace(".", "") + "@" + parts[1]);
+        }
+        return normalized.size();
     }
 }

@@ -3,7 +3,6 @@ package dsandalgo.math;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,9 +21,360 @@ public class MathExe {
         int[] rec2 = {2,2,3,3};
         int[][] shape = {{1,2},{3,4}};
         int[] a = {1,1,0};
-        //2147483647
-        //[1,1,0]
         System.out.println(exe.fractionAddition("-1/2+1/2"));
+    }
+
+    /**
+     * https://leetcode.com/problems/confusing-number/
+     */
+    public boolean confusingNumber(int N) {
+        if (N == 0) {
+            return false;
+        }
+        int num = 0;
+        int tmp = N;
+        while (N != 0) {
+            int n = N % 10;
+            if (n != 0 && n != 1 && n != 6 && n != 8 && n != 9) {
+                return false;
+            }
+            if (n == 6 || n == 9) {
+                n = n == 6 ? 9 : 6;
+            }
+            num = num * 10 + n;
+            N = N / 10;
+        }
+        return num != tmp;
+    }
+
+    /**
+     * https://leetcode.com/problems/greatest-common-divisor-of-strings/
+     * @param str1
+     * @param str2
+     * @return
+     */
+    public String gcdOfStrings(String str1, String str2) {
+        int len1 = str1.length();
+        int len2 = str2.length();
+        int len = Math.min(str1.length(), str2.length());
+        for (int i=len; i>0; i--) {
+            if (len1 % i == 0 && len2 % i == 0) {
+                String cd1 = str1.substring(0, i);
+                String cd2 = str2.substring(0, i);
+                if (cd1.equals(cd2)) {
+                    return cd1;
+                }
+            }
+        }
+        return "";
+    }
+
+    /**
+     * https://leetcode.com/problems/additive-number/
+     * Additive number is a string whose digits can form additive sequence.
+     *
+     * A valid additive sequence should contain at least three numbers. Except for the first two numbers, each subsequent number in the sequence must be the sum of the preceding two.
+     *
+     * Given a string containing only digits '0'-'9', write a function to determine if it's an additive number.
+     *
+     * Note: Numbers in the additive sequence cannot have leading zeros, so sequence 1, 2, 03 or 1, 02, 3 is invalid.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: "112358"
+     * Output: true
+     * Explanation: The digits can form an additive sequence: 1, 1, 2, 3, 5, 8.
+     *              1 + 1 = 2, 1 + 2 = 3, 2 + 3 = 5, 3 + 5 = 8
+     * Example 2:
+     *
+     * Input: "199100199"
+     * Output: true
+     * Explanation: The additive sequence is: 1, 99, 100, 199.
+     *              1 + 99 = 100, 99 + 100 = 199
+     *
+     *
+     * Constraints:
+     *
+     * num consists only of digits '0'-'9'.
+     * 1 <= num.length <= 35
+     */
+    public boolean isAdditiveNumber(String num) {
+        int n = num.length();
+        for (int i = 1; i <= n / 2; ++i) {
+            for (int j = 1; Math.max(j, i) <= n - i - j; ++j) {
+                if (isValid(i, j, num)) return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isValid(int i, int j, String num) {
+        if (num.charAt(0) == '0' && i > 1) return false;
+        if (num.charAt(i) == '0' && j > 1) return false;
+        String sum;
+        Long x1 = Long.parseLong(num.substring(0, i));
+        Long x2 = Long.parseLong(num.substring(i, i + j));
+        for (int start = i + j; start != num.length(); start += sum.length()) {
+            x2 = x2 + x1;
+            x1 = x2 - x1;
+            sum = x2.toString();
+            if (!num.startsWith(sum, start)) return false;
+        }
+        return true;
+    }
+
+    public boolean isAdditiveNumber_recur(String num) {
+        if (num == null || num.length() == 0) {
+            return false;
+        }
+        char[] chars = num.toCharArray();
+        int maxSingleNumLen = chars.length / 2;
+        for (int i = 1; i <= maxSingleNumLen; i++) {
+            for (int j = 1; j <= maxSingleNumLen; j++) {
+                if (isAdditiveNumberHelper(num, i, j) && num.length() > i + j) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isAdditiveNumberHelper(String num, int len1, int len2) {
+        String num1inStr = num.substring(0, len1);
+        if (num1inStr.startsWith("0") && num1inStr.length() > 1) {
+            return false;
+        }
+        long num1 = Long.parseLong(num1inStr);
+        String num2inStr = num.substring(len1, len1 + len2);
+        if (num2inStr.startsWith("0") && num2inStr.length() > 1) {
+            return false;
+        }
+        long num2 = Long.parseLong(num2inStr);
+        if (num.length() > len1 + len2) {
+            String remain = num.substring(len1 + len2, num.length());
+            if (remain.startsWith(num1 + num2 + "")) {
+                return isAdditiveNumberHelper(num.substring(len1, num.length()), len2, String.valueOf(num1 + num2).length());
+            } else {
+                return false;
+            }
+        } else {
+            if (num.length() == len1 + len2) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/self-dividing-numbers/
+     * @param left
+     * @param right
+     * @return
+     */
+    public List<Integer> selfDividingNumbers(int left, int right) {
+        List<Integer> res = new LinkedList<Integer>();
+        for (int i=left; i<=right; i++) {
+            if (isValidSelfDividingNumbers(i)) {
+                res.add(i);
+            }
+        }
+        return res;
+    }
+
+    public boolean isValidSelfDividingNumbers(int number) {
+        if (number < 10) {
+            return true;
+        } else {
+            int self = number;
+            while (number != 0) {
+                int lastDigit = number % 10;
+                if (lastDigit == 0 || self % lastDigit != 0) {
+                    return false;
+                }
+                number = number / 10;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-time-visiting-all-points/
+     * @param points
+     * @return
+     */
+    public int minTimeToVisitAllPoints(int[][] points) {
+        int minLen = 0;
+        for (int i=0; i<points.length-1; i++) {
+            minLen = minLen + getLen(points[i], points[i+1]);
+        }
+        return minLen;
+    }
+
+    private int getLen(int[] point1, int[] point2) {
+        int deltaX = Math.abs(point1[0] - point2[0]);
+        int deltaY = Math.abs(point1[1] - point2[1]);
+        int diag = Math.min(deltaX, deltaY);
+        int straight = Math.abs(deltaX - deltaY);
+        return diag + straight;
+    }
+
+    /**
+     * https://leetcode.com/problems/rotate-function/
+     *
+     * Example:
+     *
+     * A = [4, 3, 2, 6]
+     *
+     * F(0) = (0 * 4) + (1 * 3) + (2 * 2) + (3 * 6) = 0 + 3 + 4 + 18 = 25
+     * F(1) = (0 * 6) + (1 * 4) + (2 * 3) + (3 * 2) = 0 + 4 + 6 + 6 = 16
+     * F(2) = (0 * 2) + (1 * 6) + (2 * 4) + (3 * 3) = 0 + 6 + 8 + 9 = 23
+     * F(3) = (0 * 3) + (1 * 2) + (2 * 6) + (3 * 4) = 0 + 2 + 12 + 12 = 26
+     *
+     * So the maximum value of F(0), F(1), F(2), F(3) is F(3) = 26.
+     */
+    /**
+     * F(k) = 0 * Bk[0] + 1 * Bk[1] + ... + (n-1) * Bk[n-1]
+     * F(k-1) = 0 * Bk-1[0] + 1 * Bk-1[1] + ... + (n-1) * Bk-1[n-1]
+     *        = 0 * Bk[1] + 1 * Bk[2] + ... + (n-2) * Bk[n-1] + (n-1) * Bk[0]
+     * Then,
+     *
+     * F(k) - F(k-1) = Bk[1] + Bk[2] + ... + Bk[n-1] + (1-n)Bk[0]
+     *               = (Bk[0] + ... + Bk[n-1]) - nBk[0]
+     *               = sum - nBk[0]
+     * Thus,
+     *
+     * F(k) = F(k-1) + sum - nBk[0]
+     * What is Bk[0]?
+     *
+     * k = 0; B[0] = A[0];
+     * k = 1; B[0] = A[len-1];
+     * k = 2; B[0] = A[len-2];
+     */
+    public int maxRotateFunction(int[] A) {
+        int allSum = 0;
+        int len = A.length;
+        int F = 0;
+        for (int i = 0; i < len; i++) {
+            F += i * A[i];
+            allSum += A[i];
+        }
+        int max = F;
+        for (int i = len - 1; i >= 1; i--) {
+            F = F + allSum - len * A[i];
+            max = Math.max(F, max);
+        }
+        return max;
+    }
+
+    public int maxRotateFunction_1(int[] A) {
+        int max = Integer.MIN_VALUE;
+        for (int i=0; i<A.length; i++) {
+            max = Math.max(calcFunction(A, i), max);
+        }
+        return max;
+    }
+
+    public int calcFunction(int[] A, int i) {
+        int sum = 0;
+        for (int j=0; j<A.length; j++) {
+            if (i == 0) {
+                sum = sum + j*A[j];
+            } else {
+                int idx = A.length - i + j;
+                if (idx > A.length - 1) {
+                    idx = j - i;
+                }
+                sum = sum + j*A[idx];
+            }
+
+        }
+        return sum;
+    }
+
+    /**
+     * https://leetcode.com/problems/largest-perimeter-triangle/
+     * Given an array A of positive lengths, return the largest perimeter of a triangle with non-zero area, formed from 3 of these lengths.
+     *
+     * If it is impossible to form any triangle of non-zero area, return 0.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [2,1,2]
+     * Output: 5
+     * Example 2:
+     *
+     * Input: [1,2,1]
+     * Output: 0
+     * Example 3:
+     *
+     * Input: [3,2,3,4]
+     * Output: 10
+     * Example 4:
+     *
+     * Input: [3,6,2,3]
+     * Output: 8
+     *
+     *
+     * Note:
+     *
+     * 3 <= A.length <= 10000
+     * 1 <= A[i] <= 10^6
+     */
+    public int largestPerimeter(int[] A) {
+        Arrays.sort(A);
+        for (int i = A.length - 1; i > 1; i--) {
+            if (A[i - 2] + A[i - 1] > A[i]) {
+                return A[i] + A[i - 1] + A[i - 2];
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * https://leetcode.com/problems/multiply-strings/
+     * Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and num2, also represented as a string.
+     *
+     * Example 1:
+     *
+     * Input: num1 = "2", num2 = "3"
+     * Output: "6"
+     * Example 2:
+     *
+     * Input: num1 = "123", num2 = "456"
+     * Output: "56088"
+     * Note:
+     *
+     * The length of both num1 and num2 is < 110.
+     * Both num1 and num2 contain only digits 0-9.
+     * Both num1 and num2 do not contain any leading zero, except the number 0 itself.
+     * You must not use any built-in BigInteger library or convert the inputs to integer directly.
+     */
+    public String multiply(String num1, String num2) {
+        int m = num1.length(), n = num2.length();
+        int[] pos = new int[m + n];
+
+        for (int i = m - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                int mul = (num1.charAt(i) - '0') * (num2.charAt(j) - '0');
+                int p1 = i + j, p2 = i + j + 1;
+                int sum = mul + pos[p2];
+                pos[p1] += sum / 10;
+                pos[p2] = (sum) % 10;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int p : pos) {
+            if (!(sb.length() == 0 && p == 0)) {
+                sb.append(p);
+            }
+        }
+        return sb.length() == 0 ? "0" : sb.toString();
     }
 
     /**
@@ -1872,6 +2222,32 @@ public class MathExe {
             }
         }
         return dp[n-1];
+    }
+
+    /**
+     * https://leetcode.com/problems/super-ugly-number/
+     * @param n
+     * @param primes
+     * @return
+     */
+    public int nthUglyNumber(int n, int[] primes) {
+        if (n==1) return 1;
+        long[] dp = new long[n+1];
+        dp[1] = 1;
+        Arrays.sort(primes);
+        for (int i=2; i<n+1; i++) {
+            long possibleNext = Long.MAX_VALUE;
+            for (int j=i-1; j>0;j--) {
+                for (int k=0; k<primes.length; k++) {
+                    if (dp[j] * primes[k] > dp[i - 1] && dp[j] * primes[k] < possibleNext) {
+                        possibleNext = dp[j] * primes[k];
+                        break;
+                    }
+                }
+            }
+            dp[i] = possibleNext;
+        }
+        return (int)dp[n];
     }
 
     /**

@@ -23,6 +23,285 @@ public class StringExe {
     }
 
     /**
+     * https://leetcode.com/problems/uncommon-words-from-two-sentences/
+     */
+    public String[] uncommonFromSentences(String A, String B) {
+        Map<String, Integer> count = new HashMap<>();
+        for (String w : (A + " " + B).split(" ")) {
+            count.put(w, count.getOrDefault(w, 0) + 1);
+        }
+        List<String> res = new ArrayList<>();
+        for (String w : count.keySet()) {
+            if (count.get(w) == 1) {
+                res.add(w);
+            }
+        }
+        return res.toArray(new String[0]);
+    }
+
+    /**
+     * https://leetcode.com/problems/shortest-completing-word/
+     */
+    public String shortestCompletingWord(String licensePlate, String[] words) {
+        int[] licenseAlpha = new int[26];
+        char[] lichar = licensePlate.toCharArray();
+        for (int i=0; i<lichar.length; i++) {
+            if (Character.isLetter(lichar[i])) {
+                licenseAlpha[Character.toLowerCase(lichar[i]) - 'a']++;
+            }
+        }
+        int lenOfWord = Integer.MAX_VALUE;
+        String ret = null;
+        for (String word : words) {
+            int[] wordAr = new int[26];
+            char[] chArr = word.toCharArray();
+            for (int i=0; i<chArr.length; i++) {
+                wordAr[chArr[i] - 'a']++;
+            }
+            boolean isWordContainPlate = true;
+            for (int i=0; i<26; i++) {
+                if (licenseAlpha[i] > wordAr[i]) {
+                    isWordContainPlate = false;
+                    break;
+                }
+            }
+            if (isWordContainPlate && word.length() < lenOfWord) {
+                ret = word;
+                lenOfWord = word.length();
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/compare-strings-by-frequency-of-the-smallest-character/
+     * Example 2:
+     *
+     * Input: queries = ["bbb","cc"], words = ["a","aa","aaa","aaaa"]
+     * Output: [1,2]
+     * Explanation: On the first query only f("bbb") < f("aaaa").
+     * On the second query both f("aaa") and f("aaaa") are both > f("cc").
+     *
+     * @param queries
+     * @param words
+     * @return
+     */
+    public int[] numSmallerByFrequency(String[] queries, String[] words) {
+        int[] queriesFreq = new int[queries.length];
+        for (int i=0; i<queriesFreq.length; i++) {
+            queriesFreq[i] = findFreq(queries[i]);
+        }
+        int[] wordsFreq = new int[words.length];
+        for (int i=0; i<wordsFreq.length; i++) {
+            wordsFreq[i] = findFreq(words[i]);
+        }
+        Arrays.sort(wordsFreq);
+        int[] ans = new int[queriesFreq.length];
+        for (int i=0; i<ans.length; i++) {
+            ans[i] = findPos(queriesFreq[i], wordsFreq);
+        }
+        return ans;
+    }
+
+    private int findFreq(String str) {
+        int max = 0;
+        int[] ret = new int[26];
+        char[] arr = str.toCharArray();
+        for (int i=0; i<arr.length; i++) {
+            ret[arr[i]-'a']++;
+        }
+        for (int i=0; i<26; i++) {
+            if (ret[i] != 0) {
+                max = ret[i];
+                break;
+            }
+        }
+        return max;
+    }
+
+    private int findPos(int val, int[] wordsFreq) {
+        int low = 0, high = wordsFreq.length - 1;
+        if (val < wordsFreq[low]) {
+            return wordsFreq.length;
+        }
+        if (val > wordsFreq[high]) {
+            return 0;
+        }
+        for (int i=0; i<wordsFreq.length; i++) {
+            if (wordsFreq[i] > val) {
+                return wordsFreq.length - i;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * https://leetcode.com/problems/word-subsets/
+     *
+     * Input: A = ["amazon","apple","facebook","google","leetcode"], B = ["ec","oc","ceo"]
+     * Output: ["facebook","leetcode"]
+     * @param A
+     * @param B
+     * @return
+     */
+    public List<String> wordSubsets(String[] A, String[] B) {
+        List<String> ret = new LinkedList<String>();
+        int[] requiredLetterCount = new int[26];
+        for (int j=0; j<B.length; j++) {
+            char[] bchars = B[j].toCharArray();
+            int[] requiredOne = new int[26];
+            for (int k=0; k<bchars.length; k++) {
+                requiredOne[bchars[k]-'a']++;
+                if (requiredOne[bchars[k]-'a'] > requiredLetterCount[bchars[k]-'a']) {
+                    requiredLetterCount[bchars[k]-'a'] = requiredOne[bchars[k]-'a'];
+                }
+            }
+        }
+
+        for (int i=0; i<A.length; i++) {
+            int[] oneLetterHas = new int[26];
+            char[] chars = A[i].toCharArray();
+            for (int j=0; j<chars.length; j++) {
+                oneLetterHas[chars[j]-'a']++;
+            }
+            boolean isValid = true;
+            for (int k=0; k<26; k++) {
+                if (oneLetterHas[k] < requiredLetterCount[k]) {
+                    isValid = false;
+                    break;
+                }
+            }
+            if (isValid) {
+                ret.add(A[i]);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/shifting-letters/
+     * @param S
+     * @param shifts
+     * @return
+     */
+    public String shiftingLetters(String S, int[] shifts) {
+        char[] arr = S.toCharArray();
+        int shift = 0;
+        for (int i = arr.length - 1; i >= 0; i--) {
+            shift = (shift + shifts[i]) % 26;
+            arr[i] = (char) ((arr[i] - 'a' + shift) % 26 + 'a');
+        }
+        return new String(arr);
+    }
+
+    /**
+     * https://leetcode.com/problems/detect-capital/
+     * @param word
+     * @return
+     */
+    public boolean detectCapitalUse(String word) {
+        if (word == null || word.length() == 0) {
+            return false;
+        }
+        boolean firstCapital = Character.isUpperCase(word.charAt(0));
+        boolean lastCapital = Character.isUpperCase(word.charAt(word.length() - 1));
+        if (!firstCapital && lastCapital) {
+            return false;
+        }
+        for (int i=1; i<word.length()-1; i++) {
+            if (firstCapital && lastCapital) {
+                if (!Character.isUpperCase(word.charAt(i))) {
+                    return false;
+                }
+            } else {
+                if ((firstCapital && !lastCapital) ||(!firstCapital && !lastCapital)) {
+                    if (Character.isUpperCase(word.charAt(i))) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/long-pressed-name/
+     * @param name
+     * @param typed
+     * @return
+     */
+    public boolean isLongPressedName(String name, String typed) {
+        int i = 0, j = 0;
+        while (j < typed.length()) {
+            if (i < name.length() && name.charAt(i) == typed.charAt(j)) {
+                ++i; ++j;
+            } else {
+                if (i > 0 && name.charAt(i - 1) == typed.charAt(j)) {
+                    ++j;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return i == name.length();
+    }
+
+    /**
+     * https://leetcode.com/problems/repeated-substring-pattern/
+     * @param s
+     * @return
+     */
+    public boolean repeatedSubstringPattern(String s) {
+        if (s == null || s.length() == 0) {
+            return false;
+        }
+        int j = 1;
+        int i = 0;
+        while (j<=s.length()/2) {
+            String temp = s.substring(0, j);
+            if (s.length() % temp.length() == 0) {
+                int counter = s.length()/temp.length();
+                for (i=1; i<counter; i++) {
+                    String fromS = s.substring(i*temp.length(), (i+1)*temp.length());
+                    if (!fromS.equals(temp)) {
+                        break;
+                    }
+                }
+                if (i == counter) {
+                    return true;
+                }
+            }
+            j++;
+        }
+        return false;
+    }
+
+    /**
+     * https://leetcode.com/problems/find-common-characters/
+     * @param A
+     * @return
+     */
+    public List<String> commonChars(String[] A) {
+        int[][] count = new int[A.length][26];
+        for (int i=0; i<A.length; i++) {
+            for (int j=0; j<A[i].length(); j++) {
+                count[i][A[i].charAt(j) - 'a']++;
+            }
+        }
+        List<String> ret = new ArrayList<>();
+        for (int i=0; i<26; i++) {
+            int maxCount = Integer.MAX_VALUE;
+            for (int j=0; j<A.length; j++) {
+                maxCount = Math.min(maxCount, count[j][i]);
+            }
+            for (int k=1; k<=maxCount; k++) {
+                ret.add(String.valueOf((char)(i + 'a')));
+            }
+        }
+        return ret;
+    }
+
+    /**
      * https://leetcode.com/problems/reverse-words-in-a-string-iii/
      * Given a string, you need to reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order.
      *

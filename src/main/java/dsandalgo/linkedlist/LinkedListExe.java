@@ -21,6 +21,64 @@ public class LinkedListExe {
         //System.out.println(ret);
     }
 
+    /**
+     * https://leetcode.com/problems/odd-even-linked-list/
+     */
+    public ListNode oddEvenList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode oddHead = head;
+        ListNode evenHead = head.next;
+        ListNode evenNext = head.next;
+        while (oddHead != null && oddHead.next != null) {
+            oddHead.next = oddHead.next.next;
+            if (oddHead.next != null) {
+                oddHead = oddHead.next;
+            }
+            if (oddHead != null) {
+                evenNext.next = oddHead.next;
+                evenNext = evenNext.next;
+            }
+        }
+        oddHead.next = evenHead;
+        return head;
+    }
+
+    /**
+     * https://leetcode.com/problems/rotate-list/
+     * @param head
+     * @param k
+     * @return
+     */
+    public ListNode rotateRight(ListNode head, int k) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode fast = dummy, slow = dummy;
+
+        int i = 0;
+        //Get the total length
+        for (i = 0; fast.next != null; i++) fast = fast.next;
+
+        //Get the i-k%i th node
+        for (int j = i - k % i; j > 0; j--) slow = slow.next;
+
+        //Do the rotation
+        fast.next = dummy.next;
+        dummy.next = slow.next;
+        slow.next = null;
+
+        return dummy.next;
+    }
+
+    /**
+     * https://leetcode.com/problems/linked-list-cycle/
+     * @param head
+     * @return
+     */
     public boolean hasCycle(ListNode head) {
         if (head == null || head.next == null) {
             return false;

@@ -27,6 +27,64 @@ public class SortingExe {
     }
 
     /**
+     * https://leetcode.com/problems/relative-sort-array/
+     * @param arr1
+     * @param arr2
+     * @return
+     */
+    public int[] relativeSortArray(int[] arr1, int[] arr2) {
+        //count sort
+        int[] cnt = new int[1001];
+        for (int n : arr1) {
+            cnt[n]++;
+        }
+        int i = 0;
+        for (int n : arr2) {
+            while (cnt[n]-- > 0) {
+                arr1[i++] = n;
+            }
+        }
+        for (int n = 0; n < cnt.length; n++) {
+            while (cnt[n]-- > 0) {
+                arr1[i++] = n;
+            }
+        }
+        return arr1;
+    }
+
+    /**
+     * https://leetcode.com/problems/sort-characters-by-frequency/
+     * @param s
+     * @return
+     */
+    public String frequencySort(String s) {
+        int[] map = new int[256];
+        for (char c : s.toCharArray()) {
+            map[c]++;
+        }
+        List<Character>[] bucket = new List[s.length() + 1];
+        for (int c = 0 ; c < 256; c++) {
+            int frequency = map[c];
+            if (bucket[frequency] == null) {
+                bucket[frequency] = new ArrayList<>();
+            }
+            bucket[frequency].add((char)c);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int pos = bucket.length - 1; pos >= 0; pos--) {
+            if (bucket[pos] != null) {
+                for (char c : bucket[pos]) {
+                    for (int i = 0; i < map[c]; i++) {
+                        sb.append(c);
+                    }
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
      * https://leetcode.com/problems/diagonal-traverse-ii/
      * @param nums
      * @return

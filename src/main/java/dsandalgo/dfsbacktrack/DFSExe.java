@@ -46,6 +46,65 @@ public class DFSExe {
     }
 
     /**
+     * https://leetcode.com/problems/smallest-string-starting-from-leaf/
+     * Given the root of a binary tree, each node has a value from 0 to 25 representing the letters 'a' to 'z': a value of 0 represents 'a', a value of 1 represents 'b', and so on.
+     *
+     * Find the lexicographically smallest string that starts at a leaf of this tree and ends at the root.
+     *
+     * (As a reminder, any shorter prefix of a string is lexicographically smaller: for example, "ab" is lexicographically smaller than "aba".  A leaf of a node is a node that has no children.)
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: [0,1,2,3,4,3,4]
+     * Output: "dba"
+     * Example 2:
+     *
+     *
+     *
+     * Input: [25,1,3,1,3,0,2]
+     * Output: "adz"
+     * Example 3:
+     *
+     *
+     *
+     * Input: [2,2,1,null,1,0,null,0]
+     * Output: "abc"
+     *
+     *
+     * Note:
+     *
+     * The number of nodes in the given tree will be between 1 and 8500.
+     * Each node in the tree will have a value between 0 and 25.
+     */
+    public String smallestFromLeaf(TreeNode root) {
+        if (root == null) return null;
+        String[] ret = new String[1];
+        smallestFromLeafHelper(root, "", ret);
+        return ret[0];
+    }
+
+    private void smallestFromLeafHelper(TreeNode node, String temp, String[] result) {
+        if (node.left == null && node.right == null) {
+            String candidate = String.valueOf((char)(node.val + 'a')) + temp;
+            if (result[0] == null || result[0].compareTo(candidate) < 0) {
+                result[0] = candidate;
+            }
+            return;
+        } else {
+            if (node.left != null) {
+                smallestFromLeafHelper(node.left, String.valueOf((char)(node.val + 'a')) + temp, result);
+            }
+            if (node.right != null) {
+                smallestFromLeafHelper(node.right, String.valueOf((char)(node.val + 'a')) + temp, result);
+            }
+        }
+    }
+
+    /**
      * https://leetcode.com/problems/number-of-enclaves/
      *
      * Given a 2D array A, each cell is 0 (representing sea) or 1 (representing land)

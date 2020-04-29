@@ -15,15 +15,340 @@ import java.util.TreeMap;
 
 public class ArrayExe {
 
-
     public static void main(String[] args) {
         ArrayExe exe = new ArrayExe();
         int[] c = {1,3,2,3,5,0};
         System.out.println(exe.findMinFibonacciNumbers(7));
     }
 
+    /**
+     * https://leetcode.com/problems/maximum-average-subarray-i/
+     * Given an array consisting of n integers, find the contiguous subarray of given length k that has the maximum average value. And you need to output the maximum average value.
+     *
+     * Example 1:
+     *
+     * Input: [1,12,-5,-6,50,3], k = 4
+     * Output: 12.75
+     * Explanation: Maximum average is (12-5-6+50)/4 = 51/4 = 12.75
+     *
+     *
+     * Note:
+     *
+     * 1 <= k <= n <= 30,000.
+     * Elements of the given array will be in the range [-10,000, 10,000].
+     */
+    public double findMaxAverage(int[] nums, int k) {
+        int sum = 0;
+        int maxSum = Integer.MIN_VALUE;
+
+        for (int i=0; i<nums.length; i++) {
+            if (i<k-1) {
+                sum = sum + nums[i];
+            } else {
+                if (i == k-1) {
+                    sum = sum + nums[i];
+                    maxSum = Math.max(maxSum, sum);
+                } else {
+                    sum = sum + nums[i] - nums[i-k];
+                    maxSum = Math.max(maxSum, sum);
+                }
+            }
+        }
+        double ret = (double)maxSum / (double)k;
+        return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/next-permutation/
+     * Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
+     *
+     * If such arrangement is not possible, it must rearrange it as the lowest possible order (ie, sorted in ascending order).
+     *
+     * The replacement must be in-place and use only constant extra memory.
+     *
+     * Here are some examples. Inputs are in the left-hand column and its corresponding outputs are in the right-hand column.
+     *
+     * 1,2,3 → 1,3,2
+     * 3,2,1 → 1,2,3
+     * 1,1,5 → 1,5,1
+     */
+    public void nextPermutation(int[] nums) {
+        //Step 1: find the last incremental value idx.
+        int lastIncrIdx = -1;
+        for (int i=nums.length-1; i>0; i--) {
+            if (nums[i] > nums[i-1]) {
+                lastIncrIdx = i;
+                break;
+            }
+        }
+        if (lastIncrIdx == -1) {
+            //Not found, then just reverse the array.
+            int low = 0, high = nums.length - 1;
+            reverseNP(nums, low, high);
+        } else {
+            //If found:
+            //Step 2: pick right value just above prev, use it as next permutation.
+            int temp = nums[lastIncrIdx - 1];
+            int idx = lastIncrIdx;
+            while (idx+1 <= nums.length - 1 && nums[idx+1] > temp) {
+                idx++;
+            }
+            swapNP(nums, lastIncrIdx - 1, idx);
+            //Step 3: reverse the rest array.
+            int low = lastIncrIdx, high = nums.length - 1;
+            reverseNP(nums, low, high);
+        }
+    }
+
+    private void swapNP(int[] A, int i, int j) {
+        int tmp = A[i];
+        A[i] = A[j];
+        A[j] = tmp;
+    }
+
+    private void reverseNP(int[] A, int i, int j) {
+        while (i < j) {
+            swapNP(A, i++, j--);
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/island-perimeter/
+     * @param grid
+     * @return
+     */
+    public int islandPerimeter(int[][] grid) {
+        int sum = 0;
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return sum;
+        }
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 0) continue;
+                if (i == 0 || grid[i-1][j] == 0) sum++;
+                if (i == grid.length - 1 || grid[i+1][j] == 0) sum++;
+                if (j == 0 || grid[i][j-1] == 0) sum++;
+                if (j == grid[0].length - 1 || grid[i][j+1] == 0) sum++;
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * https://leetcode.com/problems/third-maximum-number/
+     * @param nums
+     * @return
+     */
+    public int thirdMax(int[] nums) {
+        Integer max1 = null;
+        Integer max2 = null;
+        Integer max3 = null;
+        for (Integer n : nums) {
+            if (n.equals(max1) || n.equals(max2) || n.equals(max3)) continue;
+            if (max1 == null || n > max1) {
+                max3 = max2;
+                max2 = max1;
+                max1 = n;
+            } else if (max2 == null || n > max2) {
+                max3 = max2;
+                max2 = n;
+            } else if (max3 == null || n > max3) {
+                max3 = n;
+            }
+        }
+        return max3 == null ? max1 : max3;
+    }
+
+    /**
+     * https://leetcode.com/problems/distance-between-bus-stops/
+     * A bus has n stops numbered from 0 to n - 1 that form a circle. We know the distance between all pairs of neighboring
+     * stops where distance[i] is the distance between the stops number i and (i + 1) % n.
+     *
+     * The bus goes along both directions i.e. clockwise and counterclockwise.
+     *
+     * Return the shortest distance between the given start and destination stops.
+     * Example 1:
+     * Input: distance = [1,2,3,4], start = 0, destination = 1
+     * Output: 1
+     * Explanation: Distance between 0 and 1 is 1 or 9, minimum is 1.
+     * Example 2:
+     * Input: distance = [1,2,3,4], start = 0, destination = 2
+     * Output: 3
+     * Explanation: Distance between 0 and 2 is 3 or 7, minimum is 3.
+     * Example 3:
+     * Input: distance = [1,2,3,4], start = 0, destination = 3
+     * Output: 4
+     * Explanation: Distance between 0 and 3 is 6 or 4, minimum is 4.
+     * Constraints:
+     * 1 <= n <= 10^4
+     * distance.length == n
+     * 0 <= start, destination < n
+     * 0 <= distance[i] <= 10^4
+     */
+    public int distanceBetweenBusStops(int[] distance, int start, int destination) {
+        int totalSum = 0, clockSum = 0;
+        int s = start < destination ? start : destination;
+        int t = start < destination ? destination : start;
+        for (int i=0; i<distance.length; i++) {
+            totalSum = totalSum + distance[i];
+            if (i>=s && i<t) {
+                clockSum = clockSum + distance[i];
+            }
+        }
+        return totalSum - clockSum > clockSum ? clockSum : totalSum - clockSum;
+    }
+
+    /**
+     * https://leetcode.com/problems/max-consecutive-ones/
+     * @param nums
+     * @return
+     */
+    public int findMaxConsecutiveOnes(int[] nums) {
+        int res = 0, tempSum = 0;
+        for (int i=0; i<nums.length; i++) {
+            if (nums[i] == 0) {
+                res = Math.max(res, tempSum);
+                tempSum = 0;
+            } else {
+                tempSum++;
+            }
+        }
+        res = Math.max(res, tempSum);
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/product-of-array-except-self/
+     * @param nums
+     * @return
+     */
+    public int[] productExceptSelf(int[] nums) {
+        int[] res = new int[nums.length];
+        res[0] = 1;
+        for (int i=0; i<nums.length-1; i++) {
+            res[i+1] = res[i]*nums[i];
+        }
+        int right = 1;
+        for (int i=nums.length-1; i>=0; i--) {
+            res[i] = right * res[i];
+            right = right * nums[i];
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/h-index/
+     * @param citations
+     * @return
+     */
+    public int hIndex(int[] citations) {
+        if (citations == null || citations.length == 0) {
+            return 0;
+        }
+        if (citations[0] >= citations.length) {
+            return citations.length;
+        }
+        if (citations[citations.length - 1] == 0) {
+            return 0;
+        }
+        int low = 0, high = citations.length - 1;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (citations[mid] >= citations.length) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        int counter = citations.length - low;
+        for (int i = low - 1; i >= 0; i--) {
+            if (citations[i] != 0) {
+                counter = counter + 1;
+            }
+            if (counter > i) {
+                return i + 1;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * https://leetcode.com/problems/monotonic-array/
+     * @param A
+     * @return
+     */
+    public boolean isMonotonic(int[] A) {
+        int i = 0;
+        while (i < A.length - 1 && A[i] <= A[i+1]) {
+            i++;
+        }
+        if (i == A.length - 1) {
+            return true;
+        }
+        i = 0;
+        while (i < A.length - 1 && A[i] >= A[i+1]) {
+            i++;
+        }
+        if (i == A.length - 1) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-absolute-difference/
+     * @param arr
+     * @return
+     */
+    public List<List<Integer>> minimumAbsDifference(int[] arr) {
+        Arrays.sort(arr);
+        int min = Integer.MAX_VALUE;
+        List<List<Integer>> res = new ArrayList<List<Integer>>();
+        for (int i=0; i<arr.length-1; i++) {
+            int diff = Math.abs(arr[i+1] - arr[i]);
+            if (diff < min) {
+                res = new ArrayList<List<Integer>>();
+                min = diff;
+                Integer[] temp = new Integer[] { arr[i], arr[i+1] };
+                List<Integer> list = Arrays.asList(temp);
+                res.add(list);
+            } else {
+                if (diff == min) {
+                    Integer[] temp = new Integer[] { arr[i], arr[i+1] };
+                    List<Integer> list = Arrays.asList(temp);
+                    res.add(list);
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/remove-duplicates-from-sorted-array/
+     * @param nums
+     * @return
+     */
+    public int removeDuplicates(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        int i = 0;
+        nums[i++] = nums[0];
+        for (int j = 1; j < nums.length; j++) {
+            if (nums[j] != nums[j - 1]) {
+                nums[i++] = nums[j];
+            }
+        }
+        return i;
+    }
+
+    /**
+     * https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/
+     * @param nums
+     * @return
+     */
     public List<Integer> findDisappearedNumbers(int[] nums) {
-        List<Integer> ret = new ArrayList<Integer>();
+        List<Integer> ret = new ArrayList<>();
         for (int j=0; j<nums.length; j++) {
             if (nums[Math.abs(nums[j]) - 1] > 0) {
                 nums[Math.abs(nums[j]) - 1] = -1 * nums[Math.abs(nums[j]) - 1];
@@ -369,6 +694,62 @@ public class ArrayExe {
             }
         }
         return nums[maj_index];
+    }
+
+    /**
+     * https://leetcode.com/problems/majority-element-ii/
+     * @param nums
+     * @return
+     */
+    public List<Integer> majorityElement_II(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+        if(nums.length == 0) {
+            return res;
+        }
+        //Majority Voting Algorithm
+        int num1 = nums[0]; int num2 = nums[0]; int count1 = 1; int count2 = 0;
+        //Pass 1: find the potential majority numbers, in this case more than n/3, would be two numbers.
+        for (int val : nums) {
+            if(val == num1) {
+                count1++;
+            } else {
+                if (val == num2){
+                    count2++;
+                } else {
+                    if (count1 == 0) {
+                        num1 = val;
+                        count1++;
+                    } else {
+                        if (count2 == 0) {
+                            num2 = val;
+                            count2++;
+                        } else {
+                            count1--;
+                            count2--;
+                        }
+                    }
+                }
+            }
+        }
+        //Pass 2: verify the two numbers.
+        count1 = 0;
+        count2 = 0;
+        for(int val : nums) {
+            if(val == num1) {
+                count1++;
+            } else {
+                if(val == num2){
+                    count2++;
+                }
+            }
+        }
+        if(count1 > nums.length/3) {
+            res.add(num1);
+        }
+        if(count2 > nums.length/3) {
+            res.add(num2);
+        }
+        return res;
     }
 
     /**
@@ -2403,5 +2784,30 @@ public class ArrayExe {
             }
         }
         return ret;
+    }
+
+    /**
+     * https://leetcode.com/problems/maximum-number-of-balloons/
+     * @param text
+     * @return
+     */
+    public int maxNumberOfBalloons(String text) {
+        Map<Character, Integer> chCounterMap = new HashMap<Character, Integer>();
+        String bal = "balloon";
+        for (int i=0; i<bal.length();i++) {
+            chCounterMap.put(bal.charAt(i), 0);
+        }
+        for (int j=0; j<text.length(); j++) {
+            if (chCounterMap.containsKey(text.charAt(j))) {
+                chCounterMap.put(text.charAt(j), chCounterMap.get(text.charAt(j)) + 1);
+            }
+        }
+        int min = text.length();
+        min = Math.min(min, chCounterMap.get('a'));
+        min = Math.min(min, chCounterMap.get('b'));
+        min = Math.min(min, chCounterMap.get('n'));
+        min = Math.min(min, chCounterMap.get('l')/2);
+        min = Math.min(min, chCounterMap.get('o')/2);
+        return min;
     }
 }
