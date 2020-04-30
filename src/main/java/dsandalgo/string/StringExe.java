@@ -1923,11 +1923,23 @@ public class StringExe {
         return ans + repeat * (repeat + 1) / 2;
     }
 
-    public boolean validWordAbbreviation_1(String word, String abbr) {
+    /**
+     * https://leetcode.com/problems/valid-word-abbreviation/
+     * Given a non-empty string s and an abbreviation abbr, return whether the string matches with the given abbreviation.
+     *
+     * A string such as "word" contains only the following valid abbreviations:
+     *
+     * ["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+     * Notice that only the above abbreviations are valid abbreviations of the string "word". Any other string is not a valid abbreviation of "word".
+     *
+     * Note:
+     * Assume s contains only lowercase letters and abbr contains only lowercase letters and digits.
+     */
+    public boolean validWordAbbreviation(String word, String abbr) {
         int i = 0, j = 0;
+        //Use two pointers, move them together
         while (i < word.length() && j < abbr.length()) {
-            if (word.charAt(i) == abbr.charAt(j)) {
-                ++i;++j;
+            if (word.charAt(i++) == abbr.charAt(j++)) {
                 continue;
             }
             if (abbr.charAt(j) <= '0' || abbr.charAt(j) > '9') {
@@ -1941,35 +1953,6 @@ public class StringExe {
             i += num;
         }
         return i == word.length() && j == abbr.length();
-    }
-
-    public boolean validWordAbbreviation(String word, String abbr) {
-        int i = 0, j = 0;
-        String temp = "";
-        while (i < abbr.length() && j < word.length()) {
-            if (Character.isAlphabetic(abbr.charAt(i))) {
-                if (abbr.charAt(i) != word.charAt(j)) {
-                    return false;
-                }
-                i++;
-                j++;
-            } else {
-                if (abbr.charAt(i) <= '0' || abbr.charAt(i) > '9') {
-                    return false;
-                } else {
-                    while (i<abbr.length() && Character.isDigit(abbr.charAt(i))) {
-                        temp = temp + abbr.charAt(i);
-                        i++;
-                    }
-                    j = j + Integer.parseInt(temp);
-                    temp = "";
-                }
-            }
-        }
-        if (i != abbr.length() || j != word.length()) {
-            return false;
-        }
-        return true;
     }
 
     /**

@@ -2788,26 +2788,19 @@ public class ArrayExe {
 
     /**
      * https://leetcode.com/problems/maximum-number-of-balloons/
-     * @param text
-     * @return
      */
     public int maxNumberOfBalloons(String text) {
-        Map<Character, Integer> chCounterMap = new HashMap<Character, Integer>();
-        String bal = "balloon";
-        for (int i=0; i<bal.length();i++) {
-            chCounterMap.put(bal.charAt(i), 0);
+        int[] in = new int[26];
+        for(int i = 0; i< text.length(); i++){
+            in[text.charAt(i) - 'a']++;
         }
-        for (int j=0; j<text.length(); j++) {
-            if (chCounterMap.containsKey(text.charAt(j))) {
-                chCounterMap.put(text.charAt(j), chCounterMap.get(text.charAt(j)) + 1);
-            }
-        }
-        int min = text.length();
-        min = Math.min(min, chCounterMap.get('a'));
-        min = Math.min(min, chCounterMap.get('b'));
-        min = Math.min(min, chCounterMap.get('n'));
-        min = Math.min(min, chCounterMap.get('l')/2);
-        min = Math.min(min, chCounterMap.get('o')/2);
-        return min;
+
+        int answer = Integer.MAX_VALUE;
+        answer = Math.min(answer, in['a'-'a']);
+        answer = Math.min(answer, in['b'-'a']);
+        answer = Math.min(answer, in['l'-'a']/2);
+        answer = Math.min(answer, in['o'-'a']/2);
+        answer = Math.min(answer, in['n'-'a']);
+        return answer;
     }
 }

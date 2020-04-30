@@ -69,61 +69,6 @@ public class Misc {
         return areaOfSqrA + areaOfSqrB - overlap;
     }
 
-    public boolean canReorderDoubled(int[] A) {
-        Arrays.sort(A);
-        Map<Integer, LinkedList<Integer>> map = new HashMap<Integer, LinkedList<Integer>>();
-        for (int i=0; i<A.length; i++) {
-            map.putIfAbsent(A[i], new LinkedList<Integer>());
-            map.get(A[i]).add(i);
-        }
-        Set<Integer> visited = new HashSet<Integer>();
-        for (int i=0; i<A.length; i++) {
-            if (!visited.contains(i)) {
-                visited.add(i);
-                if (A[i] < 0) {
-                    if (!map.containsKey(A[i]/2)) {
-                        return false;
-                    } else {
-                        visited.add(map.get(A[i]/2).getFirst());
-                        map.get(A[i]/2).removeFirst();
-                        if (map.get(A[i]/2).size() == 0) {
-                            map.remove(A[i]/2);
-                        }
-                    }
-                } else {
-                    if (!map.containsKey(A[i]*2)) {
-                        return false;
-                    } else {
-                        if (A[i] == 0) {
-                            visited.add(map.get(A[i]*2).getLast());
-                            map.get(A[i]*2).removeLast();
-                            if (map.get(A[i]*2).size() == 0) {
-                                map.remove(A[i]*2);
-                            }
-                        } else {
-                            visited.add(map.get(A[i]*2).getFirst());
-                            map.get(A[i]*2).removeFirst();
-                            if (map.get(A[i]*2).size() == 0) {
-                                map.remove(A[i]*2);
-                            }
-                        }
-                    }
-                }
-                if (!map.containsKey(A[i])) {
-                    return false;
-                }
-                map.get(A[i]).removeFirst();
-                if (map.get(A[i]).size() == 0) {
-                    map.remove(A[i]);
-                }
-            }
-        }
-        if (map.size() == 0) {
-            return true;
-        }
-        return false;
-    }
-
     public static int removeElement(int[] nums, int val) {
         int low = 0, high = nums.length-1;
         int counter = 0, temp = 0;

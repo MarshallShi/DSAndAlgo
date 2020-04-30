@@ -14,14 +14,8 @@ public class DFSExe {
 
     public static void main(String[] args) {
         DFSExe dfs = new DFSExe();
-        //dfs.sumRootToLeaf(dfs.creaeAOneTree());
-
-        int[][] nums = {
-           {9,9,4},{6,6,8},{2,1,1}
-        };
         int[] mang = {1,2,3,4,5,6,-1};
         int[] info = {0,6,5,4,3,2,1};
-
         System.out.println(dfs.numOfMinutes(7, 6, mang, info));
     }
 
@@ -228,9 +222,6 @@ public class DFSExe {
 
     /**
      * https://leetcode.com/problems/the-k-th-lexicographical-string-of-all-happy-strings-of-length-n/
-     * @param n
-     * @param k
-     * @return
      */
     public String getHappyString(int n, int k) {
         char[] arr = {'a', 'b', 'c'};
@@ -258,9 +249,22 @@ public class DFSExe {
 
     /**
      * https://leetcode.com/problems/populating-next-right-pointers-in-each-node/
-     * @param root
-     * @return
      */
+    public Node connect(Node root) {
+        if (root == null) {
+            return root;
+        }
+        if (root.left != null) {
+            root.left.next = root.right;
+        }
+        if (root.right != null && root.next != null) {
+            root.right.next = root.next.left;
+        }
+        connect(root.left);
+        connect(root.right);
+        return root;
+    }
+
     public Node connect_iter(Node root) {
         if (root == null) {
             return root;
@@ -282,21 +286,6 @@ public class DFSExe {
             pre = root;
         }
         return dummy.next;
-    }
-
-    public Node connect(Node root) {
-        if (root == null) {
-            return root;
-        }
-        if (root.left != null) {
-            root.left.next = root.right;
-        }
-        if (root.right != null && root.next != null) {
-            root.right.next = root.next.left;
-        }
-        connect(root.left);
-        connect(root.right);
-        return root;
     }
 
     /**
@@ -459,33 +448,6 @@ public class DFSExe {
         cache.put(s, res);
         return res;
     }
-
-//    HashMap<String,List<String>> wordBreakMap = new HashMap<String,List<String>>();
-//    public List<String> wordBreak(String s, Set<String> wordDict) {
-//        List<String> res = new ArrayList<String>();
-//        if(s == null || s.length() == 0) {
-//            return res;
-//        }
-//        if(wordBreakMap.containsKey(s)) {
-//            return wordBreakMap.get(s);
-//        }
-//        if(wordDict.contains(s)) {
-//            res.add(s);
-//        }
-//        for(int i = 1 ; i < s.length() ; i++) {
-//            String t = s.substring(i);
-//            if(wordDict.contains(t)) {
-//                List<String> temp = wordBreak(s.substring(0 , i) , wordDict);
-//                if(temp.size() != 0) {
-//                    for(int j = 0 ; j < temp.size() ; j++) {
-//                        res.add(temp.get(j) + " " + t);
-//                    }
-//                }
-//            }
-//        }
-//        wordBreakMap.put(s , res);
-//        return res;
-//    }
 
     /**
      * https://leetcode.com/problems/word-search/

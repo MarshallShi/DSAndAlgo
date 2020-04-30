@@ -270,3 +270,49 @@ connected, that's the value we can return.
         }
     }
 
+Maximum Width Ramp
+https://leetcode.com/problems/maximum-width-ramp/
+We need the store for each element, what is the right hand max value, based on this observation:
+Solution 1: Monotone stack to keep track the decreasing number's idx
+Solution 2: Use an additional equivalent array.
+Both end up with a two pointer to track the max length of a candidate i, j pair.
+
+    public int maxWidthRamp(int[] A) {
+        Stack<Integer> s = new Stack<>();
+        int res = 0, n = A.length;
+        //Store the decreasing number's idx
+        for (int i = 0; i < n; i++){
+            if (s.empty() || A[s.peek()] > A[i]){
+                s.add(i);
+            }
+        }
+        //From end to start, check the diff between lower and higher, get the max.
+        for (int i = n - 1; i > res; i--) {
+            while (!s.empty() && A[s.peek()] <= A[i]) {
+                res = Math.max(res, i - s.pop());
+            }
+        }
+        return res;
+    }
+
+    //Solution based on two pointer
+    public int maxWidthRamp_1(int[] A) {
+        int n = A.length;
+        int[] rMax = new int[n];
+        rMax[n - 1] = A[n - 1];
+        //from i's index, the max value from the right part of the array.
+        for (int i = n - 2; i >= 0; i--) {
+            rMax[i] = Math.max(rMax[i + 1], A[i]);
+        }
+        //two pointers to loop through the original array
+        int left = 0, right = 0;
+        int ans = 0;
+        while (right < n) {
+            while (left < right && A[left] > rMax[right]) {
+                left++;
+            }
+            ans = Math.max(ans, right - left);
+            right++;
+        }
+        return ans;
+    }
