@@ -296,7 +296,7 @@ Both end up with a two pointer to track the max length of a candidate i, j pair.
     }
 
     //Solution based on two pointer
-    public int maxWidthRamp_1(int[] A) {
+    public int maxWidthRamp(int[] A) {
         int n = A.length;
         int[] rMax = new int[n];
         rMax[n - 1] = A[n - 1];
@@ -315,4 +315,56 @@ Both end up with a two pointer to track the max length of a candidate i, j pair.
             right++;
         }
         return ans;
+    }
+    
+Contains Duplicate III    
+https://leetcode.com/problems/contains-duplicate-iii
+Solution 1: use tree set data structure to check if the contraint is valid, o(nlogn)
+Solution 2: use bucket sorting concept.
+
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+        if (nums == null || nums.length == 0) {
+            return false;
+        }
+        if (k == 0) {
+            return false;
+        }
+        int len = nums.length;
+        TreeSet<Long> kWindow = new TreeSet<Long>();
+        for (int i=0; i<len; i++) {
+            // check dup, window size <= kk right now
+            //floor(E e): Returns the greatest element in this set less than or equal to the given element,
+            // or null if there is no such element.
+            if ( kWindow.floor((long)nums[i] + (long)t) !=null && kWindow.floor((long)nums[i]+(long)t) >= (long)nums[i]-(long)t) {
+                return true;
+            }
+            kWindow.add(new Long(nums[i]));
+            if (i >= k) {
+                //remove one, the size has to be k on the next fresh step
+                kWindow.remove(new Long(nums[i-k]));
+            }
+        }
+        return false;
+    }
+
+    //Solution 2: use bucket sort idea, as inspired by the value range.
+    //https://leetcode.com/problems/contains-duplicate-iii/discuss/61645/AC-O(N)-solution-in-Java-using-buckets-with-explanation
+    //O(n)
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+        if (k < 1 || t < 0) return false;
+        Map<Long, Long> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            long remappedNum = (long) nums[i] - Integer.MIN_VALUE;
+            long bucket = remappedNum / ((long) t + 1);
+            if (map.containsKey(bucket)
+                    || (map.containsKey(bucket - 1) && remappedNum - map.get(bucket - 1) <= t)
+                    || (map.containsKey(bucket + 1) && map.get(bucket + 1) - remappedNum <= t))
+                return true;
+            if (map.entrySet().size() >= k) {
+                long lastBucket = ((long) nums[i - k] - Integer.MIN_VALUE) / ((long) t + 1);
+                map.remove(lastBucket);
+            }
+            map.put(bucket, remappedNum);
+        }
+        return false;
     }

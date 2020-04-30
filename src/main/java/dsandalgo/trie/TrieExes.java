@@ -15,13 +15,14 @@ import java.util.TreeMap;
 
 public class TrieExes {
 
-    TrieExes(){
+    TrieExes() {
 
     }
 
     class TrieNode {
         TrieNode[] links;
         boolean isEnd;
+
         TrieNode() {
             links = new TrieNode[26];
             isEnd = false;
@@ -31,7 +32,10 @@ public class TrieExes {
     private TrieNode1 mapSumTrie;
     private Map<String, Integer> map;
     private int res;
-    /** Initialize your data structure here. */
+
+    /**
+     * Initialize your data structure here.
+     */
     public TrieExes(int tes) {
         //System.out.println(tes);
         mapSumTrie = new TrieNode1();
@@ -41,9 +45,9 @@ public class TrieExes {
     public void insert(String key, int val) {
         map.put(key, val);
         TrieNode1 root = mapSumTrie;
-        for(char c : key.toCharArray()){
+        for (char c : key.toCharArray()) {
             int index = c - 'a';
-            if(root.links[index] == null){
+            if (root.links[index] == null) {
                 root.links[index] = new TrieNode1();
             }
             root = root.links[index];
@@ -54,9 +58,9 @@ public class TrieExes {
     public int sum(String prefix) {
         res = 0;
         TrieNode1 root = mapSumTrie;
-        for(char c : prefix.toCharArray()){
+        for (char c : prefix.toCharArray()) {
             int index = c - 'a';
-            if(root.links[index] == null){
+            if (root.links[index] == null) {
                 return 0;
             }
             root = root.links[index];
@@ -65,11 +69,11 @@ public class TrieExes {
         return res;
     }
 
-    public void helper(TrieNode1 root){
+    public void helper(TrieNode1 root) {
         if (root.word != null) {
-            res = res +  map.get(root.word);
+            res = res + map.get(root.word);
         }
-        for (int i=0; i<26; i++) {
+        for (int i = 0; i < 26; i++) {
             if (root.links[i] != null) {
                 helper(root.links[i]);
             }
@@ -80,16 +84,136 @@ public class TrieExes {
         TrieExes exe = new TrieExes();
         String[] dict = {"havana"};
         char[][] board = {
-                {'o','a','a','n'},
-                {'e','t','a','e'},
-                {'i','h','k','r'},
-                {'i','f','l','v'}};
+                {'o', 'a', 'a', 'n'},
+                {'e', 't', 'a', 'e'},
+                {'i', 'h', 'k', 'r'},
+                {'i', 'f', 'l', 'v'}};
         char[][] board1 = {
-                {'a','b'},
-                {'c','d'}};
-        String[] words = {"oath","pea","eat","rain"};
+                {'a', 'b'},
+                {'c', 'd'}};
+        String[] words = {"oath", "pea", "eat", "rain"};
         String[] words1 = {"acdb"};
         //System.out.println(exe.lastSubstring("abab"));
+    }
+
+    /**
+     * https://leetcode.com/problems/minimum-unique-word-abbreviation/
+     * <p>
+     * A string such as "word" contains the following abbreviations:
+     * <p>
+     * ["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+     * Given a target string and a set of strings in a dictionary, find an abbreviation of this target string with the smallest
+     * possible length such that it does not conflict with abbreviations of the strings in the dictionary.
+     * <p>
+     * Each number or letter in the abbreviation is considered length = 1. For example, the abbreviation "a32bc" has length = 4.
+     * <p>
+     * Note:
+     * In the case of multiple answers as shown in the second example below, you may return any one of them.
+     * Assume length of target string = m, and dictionary size = n. You may assume that m ≤ 21, n ≤ 1000, and log2(n) + m ≤ 20.
+     * Examples:
+     * "apple", ["blade"] -> "a4" (because "5" or "4e" conflicts with "blade")
+     * <p>
+     * "apple", ["plain", "amber", "blade"] -> "1p3" (other valid answers include "ap3", "a3e", "2p2", "3le", "3l1").
+     */
+
+    class TrieMinAbbr {
+        TrieMinAbbr[] next = new TrieMinAbbr[26];
+        boolean isEnd = false;
+    }
+
+    TrieMinAbbr root = new TrieMinAbbr();
+
+    public String minAbbreviation(String target, String[] dictionary) {
+        List<String> abbrs = generateAbbreviations(target);
+        List<String> toCompare = new ArrayList<>();
+        for (String dic : dictionary) {
+            if (dic.length() == target.length()) {
+                toCompare.add(dic);
+                addTrie(dic);
+            }
+        }
+        if (toCompare.size() == 0) {
+            return target.length() + "";
+        }
+        Collections.sort(abbrs, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                if (o1.length() == o2.length()) {
+                    int o1NumCounter = 0, o2NumCounter = 0;
+                    for (int i = 0; i < o1.length(); i++) {
+                        if (Character.isDigit(o1.charAt(i))) o1NumCounter++;
+                        if (Character.isDigit(o2.charAt(i))) o2NumCounter++;
+                    }
+                    return o2NumCounter - o1NumCounter;
+                }
+                return o1.length() - o2.length();
+            }
+        });
+        for (String abbr : abbrs) {
+            if (search(abbr, root, 0, 0) == false) {
+                return abbr;
+            }
+        }
+        return "";
+    }
+
+    private List<String> generateAbbreviations(String word) {
+        List<String> res = new ArrayList<>();
+        genBacktrack(res, "", word, 0);
+        return res;
+    }
+
+    private void genBacktrack(List<String> res, String temp, String word, int start) {
+        for (int i = start; i < word.length(); i++) {
+            String abbr = "";
+            if (i != start) {
+                abbr = i - start + "";
+            }
+            genBacktrack(res, temp + abbr + word.substring(i, i + 1), word, i + 1);
+        }
+        if (word.length() == start) {
+            res.add(temp);
+        } else {
+            res.add(temp + (word.length() - start));
+        }
+    }
+
+    private void addTrie(String s) {
+        TrieMinAbbr cur = root;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (cur.next[c - 'a'] == null) {
+                cur.next[c - 'a'] = new TrieMinAbbr();
+            }
+            cur = cur.next[c - 'a'];
+        }
+        cur.isEnd = true;
+    }
+
+    private boolean search(String target, TrieMinAbbr root, int i, int loop) {
+        if (root == null) return false;
+        if (loop != 0) {
+            for (int a = 0; a < 26; a++) {
+                if (search(target, root.next[a], i, loop - 1)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (i == target.length()) {
+            if (root.isEnd) return true;
+            return false;
+        }
+        if (Character.isDigit(target.charAt(i))) {
+            int tmp = 0;
+            while (i < target.length() && Character.isDigit(target.charAt(i))) {
+                tmp = tmp * 10 + target.charAt(i) - '0';
+                i++;
+            }
+            return search(target, root, i, tmp);
+        } else {
+            return search(target, root.next[target.charAt(i) - 'a'], i + 1, 0);
+        }
     }
 
     /**
@@ -101,7 +225,7 @@ public class TrieExes {
         for (String str : dict) {
             addWord(root, str);
         }
-        for(int i=0; i<words.length; i++) {
+        for (int i = 0; i < words.length; i++) {
             String rootWord = findRoot(root, words[i]);
             if (rootWord != null) {
                 words[i] = rootWord;
@@ -116,7 +240,7 @@ public class TrieExes {
 
     public String findRoot(TrieNode2 root, String word) {
         TrieNode2 node = root;
-        for (int i=0; i<word.length();i++) {
+        for (int i = 0; i < word.length(); i++) {
             char c = word.charAt(i);
             if (node.links[c - 'a'] != null) {
                 node = node.links[c - 'a'];
@@ -148,6 +272,7 @@ public class TrieExes {
     class TrieNode2 {
         TrieNode2[] links;
         String text;
+
         TrieNode2() {
             links = new TrieNode2[26];
             text = null;
@@ -156,18 +281,18 @@ public class TrieExes {
 
     /**
      * https://leetcode.com/problems/palindrome-pairs/
-     *
+     * <p>
      * Given a list of unique words, find all pairs of distinct indices (i, j) in the given list, so that the concatenation
      * of the two words, i.e. words[i] + words[j] is a palindrome.
-     *
+     * <p>
      * Example 1:
-     *
+     * <p>
      * Input: ["abcd","dcba","lls","s","sssll"]
      * Output: [[0,1],[1,0],[3,2],[2,4]]
      * Explanation: The palindromes are ["dcbaabcd","abcddcba","slls","llssssll"]
-     *
+     * <p>
      * Example 2:
-     *
+     * <p>
      * Input: ["bat","tab","cat"]
      * Output: [[0,1],[1,0]]
      * Explanation: The palindromes are ["battab","tabbat"]
@@ -182,11 +307,11 @@ public class TrieExes {
             return ret;
         }
         Map<String, Integer> map = new HashMap<String, Integer>();
-        for (int i=0; i<words.length; i++) {
+        for (int i = 0; i < words.length; i++) {
             map.put(words[i], i);
         }
-        for (int i=0; i<words.length; i++) {
-            for (int j=0; j<=words[i].length(); j++) {
+        for (int i = 0; i < words.length; i++) {
+            for (int j = 0; j <= words[i].length(); j++) {
                 String str1 = words[i].substring(0, j);
                 //leverage if str1 is palindrome, then str2 must be forming the palindrome with another word, so reversed value must be existing.
                 String str2 = words[i].substring(j);
@@ -202,7 +327,7 @@ public class TrieExes {
                 if (isPalindrome(str2)) {
                     String str1rvs = new StringBuilder(str1).reverse().toString();
                     // check "str.length() != 0" to avoid duplicates
-                    if (map.containsKey(str1rvs) && map.get(str1rvs) != i && str2.length()!=0) {
+                    if (map.containsKey(str1rvs) && map.get(str1rvs) != i && str2.length() != 0) {
                         List<Integer> list = new ArrayList<Integer>();
                         list.add(i);
                         list.add(map.get(str1rvs));
@@ -213,11 +338,12 @@ public class TrieExes {
         }
         return ret;
     }
+
     private boolean isPalindrome(String str) {
         int left = 0;
         int right = str.length() - 1;
         while (left <= right) {
-            if (str.charAt(left++) !=  str.charAt(right--)) {
+            if (str.charAt(left++) != str.charAt(right--)) {
                 return false;
             }
         }
@@ -304,13 +430,13 @@ public class TrieExes {
     /**
      * https://leetcode.com/problems/word-squares/
      * Given a set of words (without duplicates), find all word squares you can build from them.
-     *
+     * <p>
      * A sequence of words forms a valid word square if the kth row and column read the exact same string,
      * where 0 ≤ k < max(numRows, numColumns).
-     *
+     * <p>
      * For example, the word sequence ["ball","area","lead","lady"] forms a word square because each word
      * reads the same both horizontally and vertically.
-     *
+     * <p>
      * b a l l
      * a r e a
      * l e a d
@@ -321,47 +447,47 @@ public class TrieExes {
      * Word length is at least 1 and at most 5.
      * Each word contains only lowercase English alphabet a-z.
      * Example 1:
-     *
+     * <p>
      * Input:
      * ["area","lead","wall","lady","ball"]
-     *
+     * <p>
      * Output:
      * [
-     *   [ "wall",
-     *     "area",
-     *     "lead",
-     *     "lady"
-     *   ],
-     *   [ "ball",
-     *     "area",
-     *     "lead",
-     *     "lady"
-     *   ]
+     * [ "wall",
+     * "area",
+     * "lead",
+     * "lady"
+     * ],
+     * [ "ball",
+     * "area",
+     * "lead",
+     * "lady"
      * ]
-     *
+     * ]
+     * <p>
      * Explanation:
      * The output consists of two word squares. The order of output does not matter
      * (just the order of words in each word square matters).
-     *
+     * <p>
      * Example 2:
-     *
+     * <p>
      * Input:
      * ["abat","baba","atan","atal"]
-     *
+     * <p>
      * Output:
      * [
-     *   [ "baba",
-     *     "abat",
-     *     "baba",
-     *     "atan"
-     *   ],
-     *   [ "baba",
-     *     "abat",
-     *     "baba",
-     *     "atal"
-     *   ]
+     * [ "baba",
+     * "abat",
+     * "baba",
+     * "atan"
+     * ],
+     * [ "baba",
+     * "abat",
+     * "baba",
+     * "atal"
      * ]
-     *
+     * ]
+     * <p>
      * Explanation:
      * The output consists of two word squares. The order of output does not matter
      * (just the order of words in each word square matters).
@@ -370,13 +496,16 @@ public class TrieExes {
     class TrieNodeWordSquare {
         List<String> startWith;
         TrieNodeWordSquare[] children;
+
         TrieNodeWordSquare() {
             startWith = new ArrayList<>();
             children = new TrieNodeWordSquare[26];
         }
     }
+
     class Trie {
         TrieNodeWordSquare root;
+
         Trie(String[] words) {
             root = new TrieNodeWordSquare();
             for (String w : words) {
@@ -390,6 +519,7 @@ public class TrieExes {
                 }
             }
         }
+
         List<String> findByPrefix(String prefix) {
             List<String> ans = new ArrayList<>();
             TrieNodeWordSquare cur = root;
@@ -439,18 +569,8 @@ public class TrieExes {
         }
     }
 
-    class ProductTrieNode {
-        ProductTrieNode[] children;
-        LinkedList<String> suggestion = new LinkedList<>(); //Each level will store all the suggestions, but keep top 3.
-        ProductTrieNode() {
-            children = new ProductTrieNode[26];
-        }
-    }
     /**
      * https://leetcode.com/problems/search-suggestions-system/
-     * @param products
-     * @param searchWord
-     * @return
      */
     //Solution 1: Trie
     public List<List<String>> suggestedProducts_trie(String[] products, String searchWord) {
@@ -458,12 +578,12 @@ public class TrieExes {
         for (String word : products) {
             char[] arr = word.toCharArray();
             ProductTrieNode node = root;
-            for (int i=0; i<arr.length; i++) {
-                if (node.children[arr[i]-'a'] == null) {
+            for (int i = 0; i < arr.length; i++) {
+                if (node.children[arr[i] - 'a'] == null) {
                     ProductTrieNode nnode = new ProductTrieNode();
-                    node.children[arr[i]-'a'] = nnode;
+                    node.children[arr[i] - 'a'] = nnode;
                 }
-                node = node.children[arr[i]-'a'];
+                node = node.children[arr[i] - 'a'];
                 node.suggestion.offer(word); // put products with same prefix into suggestion list.
                 Collections.sort(node.suggestion); // sort products.
                 if (node.suggestion.size() > 3) {
@@ -479,6 +599,15 @@ public class TrieExes {
             ans.add(root == null ? Arrays.asList() : root.suggestion); // add it if there exist products with current prefix.
         }
         return ans;
+    }
+
+    class ProductTrieNode {
+        ProductTrieNode[] children;
+        LinkedList<String> suggestion = new LinkedList<>(); //Each level will store all the suggestions, but keep top 3.
+
+        ProductTrieNode() {
+            children = new ProductTrieNode[26];
+        }
     }
 
     //Solution 2: Priority Queue to always keep the top three matching
@@ -532,15 +661,15 @@ public class TrieExes {
     /**
      * https://leetcode.com/problems/word-search-ii/
      * Given a 2D board and a list of words from the dictionary, find all words in the board.
-     *
+     * <p>
      * Each word must be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring.
      * The same letter cell may not be used more than once in a word.
      * Input:
      * board = [
-     *   ['o','a','a','n'],
-     *   ['e','t','a','e'],
-     *   ['i','h','k','r'],
-     *   ['i','f','l','v']
+     * ['o','a','a','n'],
+     * ['e','t','a','e'],
+     * ['i','h','k','r'],
+     * ['i','f','l','v']
      * ]
      * words = ["oath","pea","eat","rain"]
      */
@@ -616,15 +745,17 @@ public class TrieExes {
 
 
     private TrieNode tire;
+
     /**
      * https://leetcode.com/problems/concatenated-words/
      * Input: ["cat","cats","catsdogcats","dog","dogcatsdog","hippopotamuses","rat","ratcatdogcat"]
-     *
+     * <p>
      * Output: ["catsdogcats","dogcatsdog","ratcatdogcat"]
-     *
+     * <p>
      * Explanation: "catsdogcats" can be concatenated by "cats", "dog" and "cats";
-     *  "dogcatsdog" can be concatenated by "dog", "cats" and "dog";
+     * "dogcatsdog" can be concatenated by "dog", "cats" and "dog";
      * "ratcatdogcat" can be concatenated by "rat", "cat", "dog" and "cat".
+     *
      * @param words
      * @return
      */
@@ -642,6 +773,7 @@ public class TrieExes {
 
     /**
      * Backtracking to solve the problem
+     *
      * @param chars
      * @param index
      * @param root
@@ -672,12 +804,12 @@ public class TrieExes {
         for (String word : dict) {
             char[] arr = word.toCharArray();
             TrieNode root = tire;
-            for (int i=0; i<arr.length; i++) {
-                if (root.links[arr[i]-'a'] == null) {
+            for (int i = 0; i < arr.length; i++) {
+                if (root.links[arr[i] - 'a'] == null) {
                     TrieNode node = new TrieNode();
-                    root.links[arr[i]-'a'] = node;
+                    root.links[arr[i] - 'a'] = node;
                 }
-                root = root.links[arr[i]-'a'];
+                root = root.links[arr[i] - 'a'];
             }
             root.isEnd = true;
         }

@@ -23,6 +23,60 @@ public class HardBFSExe {
     }
 
     /**
+     * https://leetcode.com/problems/last-substring-in-lexicographical-order/
+     */
+    /*
+    First store indexes of the highest character.
+    Then find second highest character.
+    Iterate through the list until list has 1 element.
+    We prune index1 at each iteration if there is another index2 = index1 + shift. This is used to handle strings like 'aaaaa.....aaa' or 'abababababab'.
+    Its each to see that index1 will never be an answer.
+     */
+    //BFS approach, start from the highest char index
+    public String lastSubstring(String s) {
+        char highest = '@';
+        Set<Integer> indexes = null;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) > highest) {
+                highest = s.charAt(i);
+                indexes = new HashSet<Integer>();
+            }
+            if (s.charAt(i) == highest) {
+                indexes.add(i);
+            }
+        }
+        int shift = 1;
+        //Increment length one by one to check if the substring starting with each index is the highest one or not.
+        while (indexes.size() > 1) {
+            char shiftHighest = '@';
+            Set<Integer> nextLevel = null;
+            Set<Integer> toDelete = new HashSet<>();
+            for (int ind : indexes) {
+                int newIndex = ind + shift;
+                if (newIndex < s.length()) {
+                    if (s.charAt(newIndex) > shiftHighest) {
+                        shiftHighest = s.charAt(newIndex);
+                        nextLevel = new HashSet<>();
+                    }
+                    if (s.charAt(newIndex) == shiftHighest) {
+                        nextLevel.add(ind);
+                    }
+                    if (indexes.contains(newIndex)) {
+                        toDelete.add(newIndex);
+                    }
+                }
+            }
+            for (int del : toDelete) {
+                nextLevel.remove(del);
+            }
+            indexes = nextLevel;
+            shift++;
+        }
+        //Return substring from the only index left.
+        return s.substring(indexes.iterator().next());
+    }
+
+    /**
      * https://leetcode.com/problems/word-ladder-ii/
      *
      * Given two words (beginWord and endWord), and a dictionary's word list, find all shortest transformation

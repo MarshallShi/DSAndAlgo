@@ -18,24 +18,6 @@ import java.util.Stack;
  *   }
  *   in_stk.push(A[i]);
  * }
- *
- * More questions to do in the bottom of this post:
- * https://leetcode.com/problems/sum-of-subarray-minimums/discuss/178876/stack-solution-with-very-detailed-explanation-step-by-step
- *
- * Maximal Rectangle(please do this problem after you solve the above one)
- * Trapping Rain Water (challenge)
- * Remove K Digits
- * Create Maximum Number
- * 132 Pattern(challenge, instead of focusing on the elements in the stack, this problem focuses on the elements poped from the monotone stack)
- * sliding window maximum(challenge, monotone queue)
- * Max Chunks To Make Sorted II
- *
- * 84 Largest Rectangle in Histogram
- * 255 Verify Preorder Sequence in Binary Search Tree
- * 402 Remove K Digits
- * 456 132 Pattern
- *
- *
  */
 public class MonotoneStackExe {
 
@@ -48,10 +30,6 @@ public class MonotoneStackExe {
     public static void main(String[] args) {
         MonotoneStackExe exe = new MonotoneStackExe();
         int[] nums = {2,1,5,6,2,3};
-        //     *   ["1","0","1","0","0"],
-        //     *   ["1","0","1","1","1"],
-        //     *   ["1","1","1","1","1"],
-        //     *   ["1","0","0","1","0"]
         char[][] input = {
                 {'1','0','1','0','0'},
                 {'1','0','1','1','1'},

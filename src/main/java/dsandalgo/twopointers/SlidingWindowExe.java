@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 public class SlidingWindowExe {
 
@@ -15,6 +16,74 @@ public class SlidingWindowExe {
         SlidingWindowExe exe = new SlidingWindowExe();
         int[] data = {0,0,0,1,0,1,1,0};
         System.out.println(exe.minKBitFlips(data, 3));
+    }
+
+    /**
+     * https://leetcode.com/problems/contains-duplicate-iii
+     *
+     * Given an array of integers, find out whether there are two distinct indices i and j in the array such that the absolute
+     * difference between nums[i] and nums[j] is at most t and the absolute difference between i and j is at most k.
+     *
+     * Example 1:
+     *
+     * Input: nums = [1,2,3,1], k = 3, t = 0
+     * Output: true
+     * Example 2:
+     *
+     * Input: nums = [1,0,1,1], k = 1, t = 2
+     * Output: true
+     * Example 3:
+     *
+     * Input: nums = [1,5,9,1,5,9], k = 2, t = 3
+     * Output: false
+     */
+    //Solution 1: use a tree set to if we can have a floor number from the saved numbers, remove previous number as the sliding window moves.
+    //O(nlogn)
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+        if (nums == null || nums.length == 0) {
+            return false;
+        }
+        if (k == 0) {
+            return false;
+        }
+        int len = nums.length;
+        TreeSet<Long> kWindow = new TreeSet<Long>();
+        for (int i=0; i<len; i++) {
+            // check dup, window size <= kk right now
+            //floor(E e): Returns the greatest element in this set less than or equal to the given element,
+            // or null if there is no such element.
+            if ( kWindow.floor((long)nums[i] + (long)t) !=null && kWindow.floor((long)nums[i]+(long)t) >= (long)nums[i]-(long)t) {
+                return true;
+            }
+            kWindow.add(new Long(nums[i]));
+            if (i >= k) {
+                //remove one, the size has to be k on the next fresh step
+                kWindow.remove(new Long(nums[i-k]));
+            }
+        }
+        return false;
+    }
+
+    //Solution 2: use bucket sort idea, as inspired by the value range.
+    //https://leetcode.com/problems/contains-duplicate-iii/discuss/61645/AC-O(N)-solution-in-Java-using-buckets-with-explanation
+    //O(n)
+    public boolean containsNearbyAlmostDuplicate_1(int[] nums, int k, int t) {
+        if (k < 1 || t < 0) return false;
+        Map<Long, Long> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            long remappedNum = (long) nums[i] - Integer.MIN_VALUE;
+            long bucket = remappedNum / ((long) t + 1);
+            if (map.containsKey(bucket)
+                    || (map.containsKey(bucket - 1) && remappedNum - map.get(bucket - 1) <= t)
+                    || (map.containsKey(bucket + 1) && map.get(bucket + 1) - remappedNum <= t))
+                return true;
+            if (map.entrySet().size() >= k) {
+                long lastBucket = ((long) nums[i - k] - Integer.MIN_VALUE) / ((long) t + 1);
+                map.remove(lastBucket);
+            }
+            map.put(bucket, remappedNum);
+        }
+        return false;
     }
 
     /**

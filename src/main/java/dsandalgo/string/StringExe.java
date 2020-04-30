@@ -19,7 +19,7 @@ public class StringExe {
         StringExe exe = new StringExe();
         String[] ranks = {"WXYZ","XYZW"};
         int[][] shift = {{1, 1},{1, 1}};
-        //System.out.println(exe.stringShift("abcdefg", shift));
+        System.out.println(exe.uncommonFromSentences("abcdefg", ""));
     }
 
     /**
@@ -1642,12 +1642,6 @@ public class StringExe {
 
     /**
      * https://leetcode.com/problems/find-and-replace-in-string/
-     *
-     * @param S
-     * @param indexes
-     * @param sources
-     * @param targets
-     * @return
      */
     public String findReplaceString(String S, int[] indexes, String[] sources, String[] targets) {
         List<int[]> sorted = new ArrayList<>();
@@ -1668,9 +1662,6 @@ public class StringExe {
 
     /**
      * https://leetcode.com/problems/short-encoding-of-words/
-     *
-     * @param words
-     * @return
      */
     public int minimumLengthEncoding(String[] words) {
         //Build the set
@@ -1761,17 +1752,6 @@ public class StringExe {
         return ret;
     }
 
-    private boolean isPalindrome(String str) {
-        int left = 0;
-        int right = str.length() - 1;
-        while (left <= right) {
-            if (str.charAt(left++) !=  str.charAt(right--)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     /**
      * https://leetcode.com/problems/text-justification/
      *
@@ -1833,9 +1813,6 @@ public class StringExe {
      *   "everything  else  we",
      *   "do                  "
      * ]
-     * @param words
-     * @param maxWidth
-     * @return
      */
     public List<String> fullJustify(String[] words, int maxWidth) {
         List<String> ans = new ArrayList<String>();
@@ -1908,9 +1885,6 @@ public class StringExe {
 
     /**
      * https://leetcode.com/problems/count-substrings-with-only-one-distinct-letter/
-     *
-     * @param S
-     * @return
      */
     public int countLetters(String S) {
         int ans = 0, repeat = 1;

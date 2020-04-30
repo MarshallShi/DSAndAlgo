@@ -1,8 +1,5 @@
 package dsandalgo.tree;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class HardTreeExe {
 
     public static void main(String[] args) {

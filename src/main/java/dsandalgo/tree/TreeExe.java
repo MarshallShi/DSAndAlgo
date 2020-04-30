@@ -28,6 +28,63 @@ public class TreeExe {
         System.out.println(n);
     }
 
+    class Node {
+        public int val;
+        public Node left;
+        public Node right;
+
+        public Node() {}
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val,Node _left,Node _right) {
+            val = _val;
+            left = _left;
+            right = _right;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
+     *
+     * Convert a Binary Search Tree to a sorted Circular Doubly-Linked List in place.
+     *
+     * You can think of the left and right pointers as synonymous to the predecessor and successor pointers in
+     * a doubly-linked list. For a circular doubly linked list, the predecessor of the first element is the last
+     * element, and the successor of the last element is the first element.
+     *
+     * We want to do the transformation in place. After the transformation, the left pointer of the tree node
+     * should point to its predecessor, and the right pointer should point to its successor.
+     * You should return the pointer to the smallest element of the linked list.
+     *
+     * @param root
+     * @return
+     */
+    public Node treeToDoublyList(Node root) {
+        if (root == null) {
+            return null;
+        }
+        Node dummy = new Node(0, null, null);
+        Node prev = dummy;
+        prev = inorderTraverseHelper(root, prev);
+        prev.right = dummy.right;
+        dummy.right.left = prev;
+        return dummy.right;
+    }
+
+    private Node inorderTraverseHelper(Node node, Node prev) {
+        if (node == null) {
+            return prev;
+        }
+        prev = inorderTraverseHelper(node.left, prev);
+        prev.right = node;
+        node.left = prev;
+        prev = inorderTraverseHelper(node.right, node);
+        return prev;
+    }
+
     /**
      * https://leetcode.com/problems/minimum-absolute-difference-in-bst/
      * Given a binary search tree with non-negative values, find the minimum absolute difference between values of any two nodes.
@@ -2080,50 +2137,6 @@ public class TreeExe {
         return new int[] {inr, dcr};
     }
 
-    //Key trick is how to split the node decreasing length and increasing length.
-    //Result is return the sum, and the max sum.
-//    public int longestConsecutive_2(TreeNode root) {
-//        Map<TreeNode,Integer> increase = new HashMap<TreeNode,Integer>();
-//        Map<TreeNode,Integer> decrease = new HashMap<TreeNode,Integer>();
-//        increase.put(root,1);
-//        decrease.put(root,1);
-//        int max = search(root, increase, decrease,1);
-//        return max;
-//    }
-//
-//    public int search(TreeNode root,Map<TreeNode,Integer> increase,Map<TreeNode,Integer> decrease,int max){
-//        if (root == null) {
-//            return 0;
-//        }
-//        max = Math.max(max, search(root.left, increase, decrease, max));
-//        max = Math.max(max, search(root.right, increase, decrease, max));
-//
-//        increase.put(root,1);
-//        decrease.put(root,1);
-//
-//        if (root.left != null) {
-//            if (root.val - root.left.val == 1){
-//                int maxValue = Math.max(increase.get(root), increase.get(root.left) + 1);
-//                increase.put(root, maxValue);
-//            } else if (root.val - root.left.val == -1) {
-//                int maxValue = Math.max(decrease.get(root), decrease.get(root.left) + 1);
-//                decrease.put(root, maxValue);
-//            }
-//        }
-//        if (root.right != null) {
-//            if (root.val - root.right.val == 1) {
-//                int maxValue = Math.max(increase.get(root), increase.get(root.right) + 1);
-//                increase.put(root, maxValue);
-//            } else if (root.val - root.right.val == -1) {
-//                int maxValue = Math.max(decrease.get(root), decrease.get(root.right) + 1);
-//                decrease.put(root, maxValue);
-//            }
-//        }
-//
-//        max = Math.max(max, increase.get(root) + decrease.get(root) -1);
-//        return max;
-//    }
-
     /**
      * https://leetcode.com/problems/binary-tree-longest-consecutive-sequence/
      *
@@ -2182,19 +2195,6 @@ public class TreeExe {
         return Math.max(Math.max(left, right), count);
     }
 
-    private TreeNode createTest1(){
-        TreeNode r = new TreeNode(1);
-        TreeNode n1 = new TreeNode(2);
-        TreeNode n2 = new TreeNode(3);
-        r.left = n1;
-        r.right = n2;
-        TreeNode n3 = new TreeNode(4);
-        n1.left = n3;
-        TreeNode n4 = new TreeNode(5);
-        n2.right = n4;
-        return r;
-    }
-
     /**
      * https://leetcode.com/problems/split-bst/
      *
@@ -2233,10 +2233,6 @@ public class TreeExe {
      *
      * The size of the BST will not exceed 50.
      * The BST is always valid and each node's value is different.
-     *
-     * @param root
-     * @param V
-     * @return
      */
 
     public TreeNode[] splitBST(TreeNode root, int V) {
@@ -2381,9 +2377,6 @@ public class TreeExe {
     /**
      * https://leetcode.com/problems/delete-leaves-with-a-given-value/
      *
-     * @param root
-     * @param target
-     * @return
      */
 
     public TreeNode removeLeafNodes(TreeNode root, int target) {
@@ -2453,9 +2446,6 @@ public class TreeExe {
      * If the given node has no in-order successor in the tree, return null.
      * It's guaranteed that the values of the tree are unique.
      *
-     * @param root
-     * @param p
-     * @return
      */
     //https://leetcode.com/problems/inorder-successor-in-bst/discuss/72653/Share-my-Java-recursive-solution
     public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
@@ -2488,9 +2478,6 @@ public class TreeExe {
      *           5   5   5
      *
      * Output: 4
-     *
-     * @param root
-     * @return
      */
     public int countUnivalSubtrees(TreeNode root) {
         if(root == null) {
@@ -3440,14 +3427,12 @@ public class TreeExe {
 
     /**
      * https://leetcode.com/problems/construct-quad-tree/
-     * @param g
-     * @return
      */
-    public Node construct(int[][] g) {
+    public QuadNode construct(int[][] g) {
         return build(0, 0, g.length - 1, g.length - 1, g);
     }
 
-    private Node build(int r1, int c1, int r2, int c2, int[][] g) {
+    private QuadNode build(int r1, int c1, int r2, int c2, int[][] g) {
         if (r1 > r2 || c1 > c2) {
             return null;
         }
@@ -3462,14 +3447,34 @@ public class TreeExe {
             }
         }
         if (isLeaf) {
-            return new Node(val == 1, true, null, null, null, null);
+            return new QuadNode(val == 1, true, null, null, null, null);
         }
         int rowMid = (r1 + r2) / 2, colMid = (c1 + c2) / 2;
-        return new Node(false, false,
+        return new QuadNode(false, false,
                 build(r1, c1, rowMid, colMid, g),//top left
                 build(r1, colMid + 1, rowMid, c2, g),//top right
                 build(rowMid + 1, c1, r2, colMid, g),//bottom left
                 build(rowMid + 1, colMid + 1, r2, c2, g));//bottom right
+    }
+
+    public class QuadNode {
+        public boolean val;
+        public boolean isLeaf;
+        public QuadNode topLeft;
+        public QuadNode topRight;
+        public QuadNode bottomLeft;
+        public QuadNode bottomRight;
+
+        public QuadNode() {}
+
+        public QuadNode(boolean _val,boolean _isLeaf,QuadNode _topLeft,QuadNode _topRight,QuadNode _bottomLeft,QuadNode _bottomRight) {
+            val = _val;
+            isLeaf = _isLeaf;
+            topLeft = _topLeft;
+            topRight = _topRight;
+            bottomLeft = _bottomLeft;
+            bottomRight = _bottomRight;
+        }
     }
 
     /**
@@ -3556,6 +3561,41 @@ public class TreeExe {
         while (node != null) {
             stack.push(node);
             node = node.left;
+        }
+    }
+
+    /**
+     * https://leetcode.com/problems/binary-tree-level-order-traversal-ii/
+     */
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        if (root == null) {
+            return ret;
+        }
+        List<List<Integer>> temp = new ArrayList<List<Integer>>();
+        levelOrderHelper(root, temp, 0);
+        for (int i=temp.size()-1; i>=0; i--) {
+            ret.add(temp.get(i));
+        }
+        return ret;
+    }
+
+    public void levelOrderHelper(TreeNode node, List<List<Integer>> ret, int level) {
+        if (node == null) {
+            return;
+        }
+        if (ret.size() == 0 || ret.size() <= level) {
+            List<Integer> levelRet = new ArrayList<Integer>();
+            levelRet.add(node.val);
+            ret.add(levelRet);
+        } else {
+            ret.get(level).add(node.val);
+        }
+        if (node.left != null) {
+            levelOrderHelper(node.left, ret, level + 1);
+        }
+        if (node.right != null) {
+            levelOrderHelper(node.right, ret, level + 1);
         }
     }
 

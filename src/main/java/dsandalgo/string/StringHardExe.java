@@ -17,9 +17,9 @@ public class StringHardExe {
         StringHardExe exe = new StringHardExe();
         String[] str = {"plain", "amber", "blade"};
         List<String> s = Arrays.asList(str);
-        System.out.println(exe.lastSubstring("abab"));
+        System.out.println("zz".compareTo("z"));
+        System.out.println("z".compareTo(""));
     }
-
 
     /**
      * https://leetcode.com/problems/integer-to-english-words/
@@ -212,120 +212,6 @@ public class StringHardExe {
     }
 
     /**
-     * https://leetcode.com/problems/minimum-unique-word-abbreviation/
-     *
-     * A string such as "word" contains the following abbreviations:
-     *
-     * ["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
-     * Given a target string and a set of strings in a dictionary, find an abbreviation of this target string with the smallest
-     * possible length such that it does not conflict with abbreviations of the strings in the dictionary.
-     *
-     * Each number or letter in the abbreviation is considered length = 1. For example, the abbreviation "a32bc" has length = 4.
-     *
-     * Note:
-     * In the case of multiple answers as shown in the second example below, you may return any one of them.
-     * Assume length of target string = m, and dictionary size = n. You may assume that m ≤ 21, n ≤ 1000, and log2(n) + m ≤ 20.
-     * Examples:
-     * "apple", ["blade"] -> "a4" (because "5" or "4e" conflicts with "blade")
-     *
-     * "apple", ["plain", "amber", "blade"] -> "1p3" (other valid answers include "ap3", "a3e", "2p2", "3le", "3l1").
-     */
-
-    class Trie{
-        Trie[] next = new Trie[26];
-        boolean isEnd = false;
-    }
-    Trie root = new Trie();
-    public String minAbbreviation(String target, String[] dictionary) {
-        List<String> abbrs = generateAbbreviations(target);
-        List<String> toCompare = new ArrayList<>();
-        for (String dic : dictionary) {
-            if (dic.length() == target.length()) {
-                toCompare.add(dic);
-                addTrie(dic);
-            }
-        }
-        if (toCompare.size() == 0) {
-            return target.length()+"";
-        }
-        Collections.sort(abbrs, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                if (o1.length() == o2.length()) {
-                    int o1NumCounter = 0, o2NumCounter = 0;
-                    for (int i=0; i<o1.length(); i++) {
-                        if (Character.isDigit(o1.charAt(i))) o1NumCounter++;
-                        if (Character.isDigit(o2.charAt(i))) o2NumCounter++;
-                    }
-                    return o2NumCounter - o1NumCounter;
-                }
-                return o1.length() - o2.length();
-            }
-        });
-        for (String abbr : abbrs) {
-            if(search(abbr, root, 0, 0) == false) {
-                return abbr;
-            }
-        }
-        return "";
-    }
-    private void addTrie(String s) {
-        Trie cur = root;
-        for (int i=0; i<s.length(); i++) {
-            char c = s.charAt(i);
-            if (cur.next[c-'a'] == null) {
-                cur.next[c-'a'] = new Trie();
-            }
-            cur = cur.next[c-'a'];
-        }
-        cur.isEnd = true;
-    }
-    private boolean search(String target, Trie root, int i, int loop) {
-        if (root == null) return false;
-        if (loop != 0) {
-            for (int a=0; a<26; a++) {
-                if (search(target, root.next[a], i, loop-1)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        if (i == target.length()) {
-            if (root.isEnd) return true;
-            return false;
-        }
-        if (Character.isDigit(target.charAt(i))) {
-            int tmp = 0;
-            while (i<target.length() && Character.isDigit(target.charAt(i))) {
-                tmp = tmp*10 + target.charAt(i)-'0';
-                i++;
-            }
-            return search(target, root, i, tmp);
-        } else {
-            return search(target, root.next[target.charAt(i)-'a'], i+1, 0);
-        }
-    }
-    private List<String> generateAbbreviations(String word) {
-        List<String> res = new ArrayList<>();
-        genBacktrack(res, "", word, 0);
-        return res;
-    }
-    private void genBacktrack(List<String> res, String temp, String word, int start){
-        for (int i = start; i < word.length(); i++) {
-            String abbr = "";
-            if (i != start) {
-                abbr = i - start + "";
-            }
-            genBacktrack(res, temp + abbr + word.substring(i, i+1), word, i+1);
-        }
-        if (word.length() == start) {
-            res.add(temp);
-        } else {
-            res.add(temp + (word.length() - start));
-        }
-    }
-
-    /**
      * https://leetcode.com/problems/word-abbreviation/
      *
      * Given an array of n distinct non-empty strings, you need to generate minimal possible abbreviations for every word following rules below.
@@ -372,6 +258,7 @@ public class StringHardExe {
         }
         return Arrays.asList(ans);
     }
+
     private String makeAbbr(String s, int k) {
         if (k >= s.length() - 2) {
             //not shorter, directly return the string.
@@ -531,20 +418,20 @@ public class StringHardExe {
      * s contains only lowercase English letters.
      */
     //https://leetcode.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/discuss/532101/Java-o(n)-one-pass-solution.-Easy-to-understand.
-    HashMap<Character, Integer> voewlToIndex = new HashMap<Character, Integer>() {
-        {
-            put('a', 0);
-            put('e', 1);
-            put('i', 2);
-            put('o', 3);
-            put('u', 4);
-        }
-    };
     public int findTheLongestSubstring(String s) {
-        HashMap<Integer, Integer> stateToIndex = new HashMap<>();
+        Map<Character, Integer> voewlToIndex = new HashMap<Character, Integer>() {
+            {
+                put('a', 0);
+                put('e', 1);
+                put('i', 2);
+                put('o', 3);
+                put('u', 4);
+            }
+        };
+        Map<Integer, Integer> stateToIndex = new HashMap<>();
         stateToIndex.put(0, -1);
         int state = 0, maxLen = 0;
-        for(int i = 0; i < s.length(); ++i) {
+        for (int i = 0; i < s.length(); ++i) {
             char cur = s.charAt(i);
             if (voewlToIndex.containsKey(cur)) {
                 // flip the digits of the state. 1-> 0 or 0 -> 1
@@ -624,9 +511,6 @@ public class StringHardExe {
 
     /**
      * https://leetcode.com/problems/scramble-string/
-     * @param s1
-     * @param s2
-     * @return
      */
     public boolean isScramble(String s1, String s2) {
         if (s1 == null || s2 == null) return false;
@@ -654,82 +538,8 @@ public class StringHardExe {
 
     /**
      * https://leetcode.com/problems/last-substring-in-lexicographical-order/
-     *
-     * @param s
-     * @return
-     */
-    /*
-    First store indexes of the highest character.
-    Then find second highest character.
-    Iterate through the list until list has 1 element.
-    We prune index1 at each iteration if there is another index2 = index1 + shift. This is used to handle strings like 'aaaaa.....aaa' or 'abababababab'.
-    Its each to see that index1 will never be an answer.
      */
     public String lastSubstring(String s) {
-        char highest = '@';
-        Set<Integer> indexes = null;
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) > highest) {
-                highest = s.charAt(i);
-                indexes = new HashSet<Integer>();
-            }
-            if (s.charAt(i) == highest) {
-                indexes.add(i);
-            }
-        }
-        int shift = 1;
-        //Increment length one by one to check if the substring starting with each index is the highest one or not.
-        while (indexes.size() > 1) {
-            char shiftHighest = '@';
-            Set<Integer> nextLevel = null;
-            Set<Integer> toDelete = new HashSet<>();
-            for (int ind : indexes) {
-                int newIndex = ind + shift;
-                if (newIndex < s.length()) {
-                    if (s.charAt(newIndex) > shiftHighest) {
-                        shiftHighest = s.charAt(newIndex);
-                        nextLevel = new HashSet<>();
-                    }
-                    if (s.charAt(newIndex) == shiftHighest) {
-                        nextLevel.add(ind);
-                    }
-                    if (indexes.contains(newIndex)) {
-                        toDelete.add(newIndex);
-                    }
-                }
-            }
-            for (int del : toDelete) {
-                nextLevel.remove(del);
-            }
-            indexes = nextLevel;
-            shift++;
-        }
-        //Return substring from the only index left.
-        return s.substring(indexes.iterator().next());
-    }
-
-    public String lastSubstring_slow(String s) {
-        int largestCharacter = s.charAt(0);
-        boolean allCharsSame = true;
-        for(char c : s.toCharArray()){
-            if(c != largestCharacter) {
-                allCharsSame = false;
-            }
-            largestCharacter = Math.max(largestCharacter, c);
-        }
-        if(allCharsSame) {
-            return s;
-        }
-        String result = "";
-        for(int i = 0; i < s.length(); i++){
-            if (s.charAt(i) == largestCharacter && s.substring(i).compareTo(result) > 0) {
-                result = s.substring(i);
-            }
-        }
-        return result;
-    }
-
-    public String lastSubstring_2(String s) {
         int n = s.length();
         //k is the len when we have two candidates
         //i is the first candidate start position, j is the second one (can not be candidate)
