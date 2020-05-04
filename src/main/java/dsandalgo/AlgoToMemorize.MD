@@ -1,12 +1,256 @@
 Sorting:
+The implementations are as below:
+
+quick sort
+
+    class Solution {
+        public List<Integer> sortArray(int[] nums) {
+            List<Integer> res = new ArrayList<>();
+            if (nums == null || nums.length == 0) return res;
+            quickSort(nums, 0, nums.length - 1);
+            for (int i : nums) res.add(i);
+            return res;
+        }
+        private void quickSort(int[] nums, int l, int r) {
+            if (l >= r) return;
+            int mid = partition(nums, l, r);
+            quickSort(nums, l, mid);
+            quickSort(nums, mid + 1, r);
+        }
+        private int partition(int[] nums, int l, int r) {
+            int pivot = nums[l];
+            while (l < r) {
+                while (l < r && nums[r] >= pivot) r--;
+                nums[l] = nums[r];
+                while (l < r && nums[l] <= pivot) l++;
+                nums[r] = nums[l];
+            }
+            nums[l] = pivot;
+            return l;
+        }
+    }
+
+top-down merge sort
+
+    class Solution {
+        public List<Integer> sortArray(int[] nums) {
+            List<Integer> res = new ArrayList<>();
+            if (nums == null || nums.length == 0) return res;
+            mergeSort(nums, 0, nums.length - 1);
+            for (int i : nums) res.add(i);
+            return res;
+        }
+        private void mergeSort(int[] nums, int l, int r) {
+            if (l >= r) return;
+            int mid = l + (r - l) / 2;
+            mergeSort(nums, l, mid);
+            mergeSort(nums, mid + 1, r);
+            merge(nums, l, r);
+        }
+        private void merge(int[] nums, int l, int r) {
+            int mid = l + (r - l) / 2;
+            int[] tmp = new int[r - l + 1];
+            int i = l, j = mid + 1, k = 0;
+            while (i <= mid || j <= r) {
+                if (i > mid || j <= r && nums[i] > nums[j]) {
+                    tmp[k++] = nums[j++];
+                } else {
+                    tmp[k++] = nums[i++];
+                }
+            }
+            System.arraycopy(tmp, 0, nums, l, r - l + 1);
+        }
+    }
+
+bottom-up merge sort
+
+    class Solution {
+        public List<Integer> sortArray(int[] nums) {
+            List<Integer> res = new ArrayList<>();
+            if (nums == null || nums.length == 0) return res;
+            mergeSort2(nums);
+            for (int i : nums) res.add(i);
+            return res;
+        }
+        private void mergeSort2(int[] nums) {
+            for (int size = 1; size < nums.length; size *= 2) {
+                for (int i = 0; i < nums.length - size; i += 2 * size) {
+                    int mid = i + size - 1;
+                    int end = Math.min(i + 2 * size - 1, nums.length - 1);
+                    merge2(nums, i, mid, end);
+                }
+            }
+        }
+        private void merge2(int[] nums, int l, int mid, int r) {
+            int[] tmp = new int[r - l + 1];
+            int i = l, j = mid + 1, k = 0;
+            while (i <= mid || j <= r) {
+                if (i > mid || j <= r && nums[i] > nums[j]) {
+                    tmp[k++] = nums[j++];
+                } else {
+                    tmp[k++] = nums[i++];
+                }
+            }
+            System.arraycopy(tmp, 0, nums, l, r - l + 1);
+        }
+    }
+
+heap sort
+    
+    class Solution {
+        public List<Integer> sortArray(int[] nums) {
+            List<Integer> res = new ArrayList<>();
+            if (nums == null || nums.length == 0) return res;
+            heapSort(nums);
+            for (int i : nums) res.add(i);
+            return res;
+        }
+        private void heapSort(int[] nums) {
+            for (int i = nums.length / 2 - 1; i >= 0; i--) {
+                heapify(nums, i, nums.length - 1);
+            }
+            for (int i = nums.length - 1; i >= 1; i--) {
+                swap(nums, 0, i);
+                heapify(nums, 0, i - 1);
+            }
+        }
+        private void heapify(int[] nums, int i, int end) {
+            while (i <= end) {
+                int l = 2 * i + 1, r = 2 * i + 2;
+                int maxIndex = i;
+                if (l <= end && nums[l] > nums[maxIndex]) maxIndex = l;
+                if (r <= end && nums[r] > nums[maxIndex]) maxIndex = r;
+                if (maxIndex == i) break;
+                swap(nums, i, maxIndex);
+                i = maxIndex;
+            }
+        }
+        private void swap(int[] nums, int i, int j) {
+            int tmp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = tmp;
+        }
+    }
+
+selection sort
+
+    class Solution {
+        public List<Integer> sortArray(int[] nums) {
+            List<Integer> res = new ArrayList<>();
+            if (nums == null || nums.length == 0) return res;
+            selectionSort(nums);
+            for (int i : nums) res.add(i);
+            return res;
+        }
+        private void selectionSort(int[] nums) {
+            for (int i = 0; i < nums.length; i++) {
+                int minIndex = i;
+                for (int j = i + 1; j < nums.length; j++) {
+                    if (nums[j] < nums[minIndex]) minIndex = j;
+                }
+                if (minIndex != i) swap(nums, i, minIndex);
+            }
+        }
+        private void swap(int[] nums, int i, int j) {
+            nums[i] = nums[i] ^ nums[j];
+            nums[j] = nums[i] ^ nums[j];
+            nums[i] = nums[i] ^ nums[j];
+        }
+    }
+
+insertion sort
+    
+    class Solution {
+        public List<Integer> sortArray(int[] nums) {
+            List<Integer> res = new ArrayList<>();
+            if (nums == null || nums.length == 0) return res;
+            insertionSort(nums);
+            for (int i : nums) res.add(i);
+            return res;
+        }
+        private void insertionSort(int[] nums) {
+            for (int i = 1; i < nums.length; i++) {
+                for (int j = i; j >= 1; j--) {
+                    if (nums[j] >= nums[j - 1]) break;
+                    swap(nums, j, j - 1);
+                }
+            }
+        }
+        private void swap(int[] nums, int i, int j) {
+            nums[i] = nums[i] ^ nums[j];
+            nums[j] = nums[i] ^ nums[j];
+            nums[i] = nums[i] ^ nums[j];
+        }
+    }
+
+bubble sort
+    
+    class Solution {
+        public List<Integer> sortArray(int[] nums) {
+            List<Integer> res = new ArrayList<>();
+            if (nums == null || nums.length == 0) return res;
+            bubbleSort(nums);
+            for (int i : nums) res.add(i);
+            return res;
+        }
+        private void bubbleSort(int[] nums) {
+            for (int k = nums.length - 1; k >= 1; k--) {
+                for (int i = 0; i < k; i++) {
+                    if (nums[i] > nums[i + 1]) swap(nums, i, i + 1);
+                }
+            }
+        }
+        private void swap(int[] nums, int i, int j) {
+            nums[i] = nums[i] ^ nums[j];
+            nums[j] = nums[i] ^ nums[j];
+            nums[i] = nums[i] ^ nums[j];
+        }
+    }
 
 
-Quick Sort:
+Merge Sort: (time O(nlogn), space O(n))
+Divide the array to recursively to left part and right part, sort them recursively, then merge the left sorted and right sorted.
+Divide, Conquer, Merge
 
+    private void merge(int arr[], int low, int mid, int high) {
+        // Find sizes of two sub arrays to be merged
+        int leftLen = mid - low + 1;
+        int rightLen = high - mid;
+        /* Create temp arrays */
+        int[] leftArr = new int[leftLen];
+        int[] rightArr = new int[rightLen];
+        /*Copy data to temp arrays*/
+        for (int i = 0; i < leftLen; ++i) leftArr[i] = arr[low + i];
+        for (int j = 0; j < rightLen; ++j) rightArr[j] = arr[mid + 1 + j];
+        /* Merge the temp arrays */
+        // Initial indexes of first and second subarrays
+        int i = 0, j = 0;
+        // Initial index of merged subarry array
+        int k = low;
+        while (i < leftLen && j < rightLen) {
+            if (leftArr[i] <= rightArr[j]) {
+                arr[k++] = leftArr[i++];
+            } else {
+                arr[k++] = rightArr[j++];
+            }
+        }
+        /* Copy remaining elements of L[] if any */
+        while (i < leftLen) arr[k++] = leftArr[i++];
+        /* Copy remaining elements of R[] if any */
+        while (j < rightLen) arr[k++] = rightArr[j++];
+    }
 
-
-Merge Sort:
-
+    private void mergeSort(int arr[], int l, int r) {
+        if (l < r) {
+            // Find the middle point
+            int m = l + (r - l) / 2;
+            // Sort first and second halves
+            mergeSort(arr, l, m);
+            mergeSort(arr, m + 1, r);
+            // Merge the sorted halves
+            merge(arr, l, m, r);
+        }
+    }
 
 
 Array:
@@ -28,6 +272,38 @@ https://leetcode.com/problems/maximum-subarray/
 2D version of Kadane's algorithm
 https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k/
 
+
+LinkedList Floyd's cycle detection algo
+
+https://leetcode.com/problems/linked-list-cycle-ii/
+
+    //Solution: use Floyd's cycle detection algo.
+    //Start with two pointers with 2 steps each and 1 step each. (fast and slow).
+    //If they met at one node, keep the slow as it, but reinit the fast to the head and restart, but this time both move 1 step each.
+    //The meeting point is the starting point of the cycle.
+    //Mathematical proof: let l be the length of cycle, k be the length of point where slow and fast first met, m be the length 
+    //from head to the cycle start point, p and q be the number of cycles the two points already travelled in the cycle.
+    //we have: for slow: distance = m + p*l + k; for fast: distance = m + q*l + k.
+    //then we have: m + q*l + k = 2 * (m + p*l + k) --> m + k = (q - 2p)*l.  --> so if the two pointer both travel from head and current meeting point for m distance, 
+    //they'll meet at the cycle starting point.
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast!=null && fast.next!=null){
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow){
+                ListNode slow2 = head;
+                while (slow2 != slow){
+                    slow = slow.next;
+                    slow2 = slow2.next;
+                }
+                return slow;
+            }
+        }
+        return null;
+    }
+
 String
 
 Trie (Prefix tree)
@@ -43,3 +319,5 @@ Shortest path algo
 Topological sorting
 
 Minimal spanning tree (Union Find)
+
+

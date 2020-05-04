@@ -2,6 +2,7 @@ package dsandalgo.dp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,65 @@ public class DPOnArrayExe {
     public static void main(String[] args) {
         DPOnArrayExe exe = new DPOnArrayExe();
         int[] arr = {1,2,3,4,5,6,7};
-        System.out.println(exe.largestSumOfAverages(arr, 4));
+        System.out.println(exe.getRow(3));
+    }
+
+    /**
+     * https://leetcode.com/problems/pascals-triangle-ii/
+     * Given a non-negative index k where k ≤ 33, return the kth index row of the Pascal's triangle.
+     *
+     * Note that the row index starts from 0.
+     *
+     *
+     * In Pascal's triangle, each number is the sum of the two numbers directly above it.
+     *
+     * Example:
+     *
+     * Input: 3
+     * Output: [1,3,3,1]
+     * Follow up:
+     *
+     * Could you optimize your algorithm to use only O(k) extra space?
+     */
+    public List<Integer> getRow(int rowIndex) {
+        List<Integer> row = new ArrayList<Integer>(rowIndex + 1) {
+            {
+                        add(1);
+            }
+        };
+        for (int i = 0; i < rowIndex; i++) {
+            //To reuse the previous list.
+            for (int j = i; j > 0; j--) {
+                row.set(j, row.get(j) + row.get(j - 1));
+            }
+            row.add(1);
+        }
+        return row;
+    }
+
+    public List<Integer> getRow_2(int rowIndex) {
+        List<Integer> prev = new LinkedList<Integer>();
+        List<Integer> res = null;
+        for (int i=0; i<=rowIndex; i++) {
+            List<Integer> cur = new LinkedList<Integer>();
+            if (i == 0) {
+                prev.add(1);
+                cur = prev;
+            } else {
+                cur.add(1);
+                for (int j=0; j<prev.size()-1; j++) {
+                    cur.add(prev.get(j) + prev.get(j+1));
+                }
+                cur.add(1);
+            }
+            if (i == rowIndex) {
+                res = cur;
+                break;
+            } else {
+                prev = cur;
+            }
+        }
+        return res;
     }
 
     /**

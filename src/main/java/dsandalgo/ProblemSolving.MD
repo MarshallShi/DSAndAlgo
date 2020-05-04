@@ -368,3 +368,84 @@ Solution 2: use bucket sorting concept.
         }
         return false;
     }
+    
+Perfect Squares
+https://leetcode.com/problems/perfect-squares/
+Solution 1: DP, for each number get the min count. 
+Solution 2: Simple recursion
+Solution 3: BFS
+Solution 4: Math.
+
+    //dp[i] = min(dp(i-perfect_num_1), dp(i-perfect_num_4), dp(i-perfect_num_9)... till less then i.) + 1
+    public int numSquares(int n) {
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (int i = 1; i <= n; ++i) {
+            int min = Integer.MAX_VALUE;
+            int j = 1;
+            while (i - j * j >= 0) {
+                min = Math.min(min, dp[i - j * j] + 1);
+                ++j;
+            }
+            dp[i] = min;
+        }
+        return dp[n];
+    }
+    
+    private Set<Integer> square_nums = new HashSet<Integer>();
+    
+    private boolean is_divided_by(int n, int count) {
+        if (count == 1) {
+            return square_nums.contains(n);
+        }
+        for (Integer square : square_nums) {
+            if (is_divided_by(n - square, count - 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public int numSquares_2(int n) {
+        this.square_nums.clear();
+        for (int i = 1; i * i <= n; ++i) {
+            this.square_nums.add(i * i);
+        }
+        int count = 1;
+        for (; count <= n; ++count) {
+            if (is_divided_by(n, count)) {
+                return count;
+            }
+        }
+        return count;
+    }
+    
+    public int numSquares_3(int n) {
+        List<Integer> squareNums = new ArrayList<>();
+        for (int i = 1; i * i <= n; ++i) {
+            squareNums.add(i * i);
+        }
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(n);
+        int level = 0;
+        while (q.size() > 0) {
+            level++;
+            int s = q.size();
+            for (int i = 0; i < s; i++) {
+                Integer remainder = q.poll();
+                for (Integer square : squareNums) {
+                    if (remainder.equals(square)) {
+                        return level;
+                    } else {
+                        if (remainder < square) {
+                            break;
+                        } else {
+                            q.offer(remainder - square);
+                        }
+                    }
+                }
+            }
+        }
+        return level;
+    }

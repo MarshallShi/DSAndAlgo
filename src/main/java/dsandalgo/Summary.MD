@@ -49,6 +49,40 @@ Trick is to move from both ends, if we see mismatch, try remove one by one.
 
 Stack question
 
+Decode String
+https://leetcode.com/problems/decode-string/
+Solution can be built with recursion and stack.
+
+    public String decodeString(String s) {
+        Stack<Integer> intStack = new Stack<>();
+        Stack<StringBuilder> strStack = new Stack<>();
+        StringBuilder cur = new StringBuilder();
+        int k = 0;
+        for (char ch : s.toCharArray()) {
+            if (Character.isDigit(ch)) {
+                k = k * 10 + ch - '0';
+            } else{
+                if (ch == '[') {
+                    intStack.push(k);
+                    strStack.push(cur);
+                    cur = new StringBuilder();
+                    k = 0;
+                } else {
+                    if (ch == ']') {
+                        StringBuilder tmp = cur;
+                        cur = strStack.pop();
+                        for (k = intStack.pop(); k > 0; --k) {
+                            cur.append(tmp);
+                        }
+                    } else {
+                        cur.append(ch);
+                    }
+                }
+            }
+        }
+        return cur.toString();
+    }
+
 Next Greater Number
 Daily Temperatures
 https://leetcode.com/problems/daily-temperatures/
@@ -456,6 +490,9 @@ https://leetcode.com/problems/happy-number/
 
     
 Array Question
+
+https://leetcode.com/problems/intersection-of-two-arrays-ii/
+Use hash map to store the index, use the shorter array to directly store the intersection as we traverse the longer array.
 
 Pairs of Songs With Total Durations Divisible by 60
 https://leetcode.com/problems/pairs-of-songs-with-total-durations-divisible-by-60/
@@ -1085,8 +1122,29 @@ https://leetcode.com/problems/minimize-max-distance-to-gas-station/
 
 https://leetcode.com/problems/split-array-largest-sum/
 
+https://leetcode.com/problems/find-k-th-smallest-pair-distance/
+
 
 Two Pointers question
+
+Longest Substring Without Repeating Characters
+https://leetcode.com/problems/longest-substring-without-repeating-characters/
+Always keep the latest index of the letter, so we can based on the latest index to do the slow pointer move.
+
+    public int lengthOfLongestSubstring(String s) {
+        int n = s.length(), ans = 0;
+        // current index of character, note, maintain only the latest index.
+        int[] indexes = new int[128];
+        // try to extend the range [i, j]
+        for (int j = 0, i = 0; j < n; j++) {
+            //i be the first
+            i = Math.max(indexes[s.charAt(j)], i);
+            ans = Math.max(ans, j - i + 1);
+            indexes[s.charAt(j)] = j + 1;
+        }
+        return ans;
+    }
+
 
 Container with most water
 https://leetcode.com/problems/container-with-most-water/
@@ -1437,8 +1495,74 @@ Factor Combinations
 https://leetcode.com/problems/factor-combinations/
 start from 2, increase one by one, then try the target/i as next target (dfs), remove the attempt.
 
-Linked List Questions
+LinkedList Questions
 
+https://leetcode.com/problems/remove-nth-node-from-end-of-list/
+Classic two pointers application, one pointer move first for n, then next pointer start from the head, move both pointer at the same time.
+
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode start = new ListNode(0);
+        ListNode slow = start, fast = start;
+        slow.next = head;
+
+        //Move fast in front so that the gap between slow and fast becomes n
+        for(int i=1; i<=n+1; i++)   {
+            fast = fast.next;
+        }
+        //Move fast to the end, maintaining the gap
+        while(fast != null) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        //Skip the desired node
+        slow.next = slow.next.next;
+        return start.next;
+    }
+    
+Intersection of Two Linked Lists
+https://leetcode.com/problems/intersection-of-two-linked-lists/
+Optimal solution rely on the facts the same node only happen when they travel the same distance.
+So in the end of first iteration, if they can't met on same node, traverse another list again, so both will be same distance.
+
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        //boundary check
+        if(headA == null || headB == null) {
+            return null;
+        }
+        ListNode a = headA;
+        ListNode b = headB;
+        //if a & b have different len, then we will stop the loop after second iteration
+        while( a != b){
+            //for the end of traverse, reset the pointer to the head of another list
+            a = a == null? headB : a.next;
+            b = b == null? headA : b.next;
+        }
+        return a;
+    }
+
+https://leetcode.com/problems/odd-even-linked-list/
+
+    public ListNode oddEvenList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode oddHead = head;
+        ListNode evenHead = head.next;
+        ListNode evenNext = head.next;
+        while (oddHead != null && oddHead.next != null) {
+            oddHead.next = oddHead.next.next;
+            if (oddHead.next != null) {
+                oddHead = oddHead.next;
+            }
+            if (oddHead != null) {
+                evenNext.next = oddHead.next;
+                evenNext = evenNext.next;
+            }
+        }
+        oddHead.next = evenHead;
+        return head;
+    }
+        
 Reverse singly linked list.
 https://leetcode.com/problems/reverse-linked-list/
 Define three pointers: head, prevHead, recordNext.
@@ -2102,6 +2226,61 @@ Instead we use below:
    traverse(node.left);
 Use stack the mimic this reversed traverse flow, then get the result, and resverse it.
 
+Count Univalue Subtrees
+https://leetcode.com/problems/count-univalue-subtrees/
+Trival preorder traverse will require traverse the tree multiple times.
+Use post order traverse, but trick is how to pass the result from the children to parent. Here we use a array.
+
+    public int countUnivalSubtrees(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int[] count = new int[1];
+        countUnivalSubtreesHelper(root, count);
+        return count[0];
+    }
+    
+    public boolean countUnivalSubtreesHelper(TreeNode root, int[] count) {
+        if (root == null) {
+            return true;
+        }
+        boolean left = countUnivalSubtreesHelper(root.left, count);
+        boolean right = countUnivalSubtreesHelper(root.right, count);
+        if (left && right && (root.left == null || root.left.val == root.val) && (root.right == null || root.right.val == root.val)) {
+            count[0]++;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+Find Duplicate Subtrees
+https://leetcode.com/problems/find-duplicate-subtrees/
+When traversing the tree, keep a track of the current path, store in a hash map. Then if we encounter same path, we have a duplicate sub tree.
+
+    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+        List<TreeNode> res = new LinkedList<TreeNode>();
+        Map<String, Integer> nodeAsStringCount = new HashMap<String, Integer>();
+        if (root == null) {
+            return res;
+        }
+        findDuplicateHelper(root, res, nodeAsStringCount);
+        return res;
+    }
+
+    private String findDuplicateHelper(TreeNode node, List<TreeNode> res, Map<String, Integer> nodeAsStringCount) {
+        if (node == null) {
+            return "&";
+        }
+        String curNode = node.val + "&" + findDuplicateHelper(node.left, res, nodeAsStringCount) 
+                + "&" + findDuplicateHelper(node.right, res, nodeAsStringCount);
+        nodeAsStringCount.put(curNode, nodeAsStringCount.getOrDefault(curNode, 0) + 1);
+        if (nodeAsStringCount.get(curNode) == 2) {
+            res.add(node);
+        }
+        return curNode;
+    }
+        
 Range Sum of BST
 https://leetcode.com/problems/range-sum-of-bst/
 When traversing the tree, use L and R to prune the path.
@@ -2117,6 +2296,32 @@ Maximum Depth of Binary Tree
 https://leetcode.com/problems/maximum-depth-of-binary-tree/
 Recursive and Iterative solution.
 
+Populating Next Right Pointers in Each Node II
+https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/
+Use the level traverse idea, for each level, create a dummy head, as we create the next pointer, move the dummy down to right end.
+
+    public Node connect(Node root) {
+        Node dummy = new Node(0);
+        dummy.next = root;
+        while (root != null) {
+            Node tempChild = new Node(0);
+            Node currentChild = tempChild;
+            while (root != null) {
+                if (root.left != null) {
+                    currentChild.next = root.left;
+                    currentChild = currentChild.next;
+                }
+                if (root.right != null) {
+                    currentChild.next = root.right;
+                    currentChild = currentChild.next;
+                }
+                root = root.next;
+            }
+            root = tempChild.next;
+        }
+        return dummy.next;
+    }
+    
 BST question:
 https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
 https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/
@@ -2170,6 +2375,7 @@ Can use the same approach, recursively get each of the unique tree.
     public List<TreeNode> generateTrees(int n) {
         return generateSubtrees(1, n);
     }
+    
     
     private List<TreeNode> generateSubtrees(int s, int e) {
         List<TreeNode> res = new LinkedList<TreeNode>();
@@ -2364,6 +2570,11 @@ Solution 1: recursively check if left and right are symmetric.
         }
         return isSymmetricHelper(node1.left, node2.right) && isSymmetricHelper(node1.right, node2.left) && (node1.val == node2.val);
     }
+
+Unique Binary Search Trees II
+https://leetcode.com/problems/unique-binary-search-trees-ii/
+Classic recursive solution, where we create the possible list of left tree node, list of right tree node, and then return the entire tree with 
+current node as root.
     
 Path Sum Questions
 
@@ -3061,6 +3272,32 @@ Solution 3: Binary Indexed Tree based, get the ranking of each element, track th
     
 DFS Question
 
+Clone Graph
+https://leetcode.com/problems/clone-graph/
+Use a map to store the reference of the new cloned node, use DFS to explore the graph.
+
+    public Node cloneGraph(Node node) {
+        return clone(node);
+    }
+
+    //Key is the node label, which is unique, value is the Node object.
+    private Map<Integer, Node> clonedNodesMap = new HashMap<>();
+
+    //DFS traverse the graph node.
+    private Node clone(Node node) {FfindTargetSumWays
+        if (node == null) return null;
+
+        if (clonedNodesMap.containsKey(node.val)) {
+            return clonedNodesMap.get(node.val);
+        }
+        Node clone = new Node(node.val, new ArrayList<Node>());
+        clonedNodesMap.put(clone.val, clone);
+        for (Node neighbor : node.neighbors) {
+            clone.neighbors.add(clone(neighbor));
+        }
+        return clone;
+    }
+    
 Word Search
 https://leetcode.com/problems/word-search/
 Do DFS on each cell where it starts as the same as the word.

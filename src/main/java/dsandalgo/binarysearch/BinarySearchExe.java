@@ -7,12 +7,269 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * ======================================================================
+ * Binary search template 1:
+ *
+ * int binarySearch(int[] nums, int target){
+ *   if(nums == null || nums.length == 0)
+ *     return -1;
+ *
+ *   int left = 0, right = nums.length - 1;
+ *   while(left <= right){
+ *     // Prevent (left + right) overflow
+ *     int mid = left + (right - left) / 2;
+ *     if(nums[mid] == target){ return mid; }
+ *     else if(nums[mid] < target) { left = mid + 1; }
+ *     else { right = mid - 1; }
+ *   }
+ *
+ *   // End Condition: left > right
+ *   return -1;
+ * }
+ *
+ * Distinguishing Syntax:
+ *
+ * Initial Condition: left = 0, right = length-1
+ * Termination: left > right
+ * Searching Left: right = mid-1
+ * Searching Right: left = mid+1
+ *
+ *======================================================================
+ * Binary search template 2:
+ *
+ * int binarySearch(int[] nums, int target){
+ *   if(nums == null || nums.length == 0)
+ *     return -1;
+ *
+ *   int left = 0, right = nums.length;
+ *   while(left < right){
+ *     // Prevent (left + right) overflow
+ *     int mid = left + (right - left) / 2;
+ *     if(nums[mid] == target){ return mid; }
+ *     else if(nums[mid] < target) { left = mid + 1; }
+ *     else { right = mid; }
+ *   }
+ *
+ *   // Post-processing:
+ *   // End Condition: left == right
+ *   if(left != nums.length && nums[left] == target) return left;
+ *   return -1;
+ * }
+ *
+ * Distinguishing Syntax:
+ *
+ * Initial Condition: left = 0, right = length
+ * Termination: left == right
+ * Searching Left: right = mid
+ * Searching Right: left = mid+1
+ *
+ *======================================================================
+ * Binary search template 3:
+ *
+ * int binarySearch(int[] nums, int target) {
+ *     if (nums == null || nums.length == 0)
+ *         return -1;
+ *
+ *     int left = 0, right = nums.length - 1;
+ *     while (left + 1 < right){
+ *         // Prevent (left + right) overflow
+ *         int mid = left + (right - left) / 2;
+ *         if (nums[mid] == target) {
+ *             return mid;
+ *         } else if (nums[mid] < target) {
+ *             left = mid;
+ *         } else {
+ *             right = mid;
+ *         }
+ *     }
+ *
+ *     // Post-processing:
+ *     // End Condition: left + 1 == right
+ *     if(nums[left] == target) return left;
+ *     if(nums[right] == target) return right;
+ *     return -1;
+ * }
+ *
+ * Distinguishing Syntax:
+ *
+ * Initial Condition: left = 0, right = length-1
+ * Termination: left + 1 == right
+ * Searching Left: right = mid
+ * Searching Right: left = mid
+ */
+
 public class BinarySearchExe {
 
     public static void main(String[] args) {
         BinarySearchExe exe = new BinarySearchExe();
         int[] nums = {1,3,5};
         System.out.println(Arrays.binarySearch(nums, 6));
+    }
+
+    /**
+     * https://leetcode.com/problems/search-in-a-sorted-array-of-unknown-size/
+     * Given an integer array sorted in ascending order, write a function to search target in nums.  If target exists, then return its index, otherwise return -1. However, the array size is unknown to you. You may only access the array using an ArrayReader interface, where ArrayReader.get(k) returns the element of the array at index k (0-indexed).
+     *
+     * You may assume all integers in the array are less than 10000, and if you access the array out of bounds, ArrayReader.get will return 2147483647.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: array = [-1,0,3,5,9,12], target = 9
+     * Output: 4
+     * Explanation: 9 exists in nums and its index is 4
+     * Example 2:
+     *
+     * Input: array = [-1,0,3,5,9,12], target = 2
+     * Output: -1
+     * Explanation: 2 does not exist in nums so return -1
+     *
+     *
+     * Note:
+     *
+     * You may assume that all elements in the array are unique.
+     * The value of each element in the array will be in the range [-9999, 9999].
+     */
+    //Trick: a sub problem is to establish the right boundary, to make sure it is log time, we double the right boundary each time.
+    public int search(ArrayReader reader, int target) {
+        if (reader == null) {
+            return 0;
+        }
+        int left = 0;
+        int right = 1;
+        //find the right boundary for binary search, also move the left boundary.
+        //extends until we  are sure the target is within the [left, right] range.
+        while (reader.get(right) < target) {
+            //1. move left to right
+            //2. double right index
+            left = right;
+            right = 2*right;
+        }
+        return binarySearch(reader, target, left, right);
+    }
+
+    private int binarySearch(ArrayReader reader, int target, int left, int right) {
+        //classical binary search
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (reader.get(mid) > target) {
+                right = mid-1;
+            } else if (reader.get(mid) < target) {
+                left = mid + 1;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+    }
+
+    public interface ArrayReader{
+        int get(int index);
+    }
+
+    /**
+     * https://leetcode.com/problems/find-k-closest-elements/
+     * Given a sorted array, two integers k and x, find the k closest elements to x in the array.
+     * The result should also be sorted in ascending order. If there is a tie, the smaller elements
+     * are always preferred.
+     *
+     * Example 1:
+     * Input: [1,2,3,4,5], k=4, x=3
+     * Output: [1,2,3,4]
+     *
+     * Example 2:
+     * Input: [1,2,3,4,5], k=4, x=-1
+     * Output: [1,2,3,4]
+     *
+     * Note:
+     * The value k is positive and will always be smaller than the length of the sorted array.
+     * Length of the given array is positive and will not exceed 104
+     * Absolute value of elements in the array and x will not exceed 104
+     */
+    //Assume we are taking A[i] ~ A[i + k -1].
+    //We can binary research i
+    //We compare the distance between x - A[mid] and A[mid + k] - x
+    public List<Integer> findClosestElements(int[] arr, int k, int x) {
+        int left = 0, right = arr.length - k;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (x - arr[mid] > arr[mid + k] - x) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return Arrays.stream(arr, left, left + k).boxed().collect(Collectors.toList());
+    }
+
+    /**
+     * https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+     * Given an array of integers nums sorted in ascending order, find the starting and ending position of a given target value.
+     *
+     * Your algorithm's runtime complexity must be in the order of O(log n).
+     *
+     * If the target is not found in the array, return [-1, -1].
+     *
+     * Example 1:
+     *
+     * Input: nums = [5,7,7,8,8,10], target = 8
+     * Output: [3,4]
+     * Example 2:
+     *
+     * Input: nums = [5,7,7,8,8,10], target = 6
+     * Output: [-1,-1]
+     */
+    public int[] searchRange(int[] nums, int target) {
+        int[] targetRange = {-1, -1};
+        // find the left index
+        int leftIdx = findInsertIdx(nums, target, true);
+        if (leftIdx == nums.length || nums[leftIdx] != target) {
+            return targetRange;
+        }
+        targetRange[0] = leftIdx;
+        // find the right index
+        targetRange[1] = findInsertIdx(nums, target, false) - 1;
+        return targetRange;
+    }
+
+    private int findInsertIdx(int[] nums, int target, boolean left) {
+        int lo = 0;
+        int hi = nums.length;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (nums[mid] > target || (left && target == nums[mid])) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;
+    }
+
+    /**
+     * https://leetcode.com/problems/first-bad-version/
+     */
+    //Binary search template 2
+    public class FirstBadVersion extends VersionControl {
+        public int firstBadVersion(int n) {
+            int low = 1, high = n;
+            while (low < high) {
+                int mid = low + (high - low) / 2;
+                if (!isBadVersion(mid)) {
+                    low = mid + 1;
+                } else {
+                    high = mid;
+                }
+            }
+            return low;
+        }
+    }
+    public class VersionControl{
+        boolean isBadVersion(int version) {
+            return true;
+        }
     }
 
     /**
@@ -780,41 +1037,6 @@ public class BinarySearchExe {
             return v;
         }
         return v+1;
-    }
-
-    /**
-     * https://leetcode.com/problems/find-k-closest-elements/
-     * Given a sorted array, two integers k and x, find the k closest elements to x in the array.
-     * The result should also be sorted in ascending order. If there is a tie, the smaller elements
-     * are always preferred.
-     *
-     * Example 1:
-     * Input: [1,2,3,4,5], k=4, x=3
-     * Output: [1,2,3,4]
-     *
-     * Example 2:
-     * Input: [1,2,3,4,5], k=4, x=-1
-     * Output: [1,2,3,4]
-     *
-     * Note:
-     * The value k is positive and will always be smaller than the length of the sorted array.
-     * Length of the given array is positive and will not exceed 104
-     * Absolute value of elements in the array and x will not exceed 104
-     */
-    //Assume we are taking A[i] ~ A[i + k -1].
-    //We can binary research i
-    //We compare the distance between x - A[mid] and A[mid + k] - x
-    public List<Integer> findClosestElements(int[] arr, int k, int x) {
-        int left = 0, right = arr.length - k;
-        while (left < right) {
-            int mid = (left + right) / 2;
-            if (x - arr[mid] > arr[mid + k] - x) {
-                left = mid + 1;
-            } else {
-                right = mid;
-            }
-        }
-        return Arrays.stream(arr, left, left + k).boxed().collect(Collectors.toList());
     }
 
     /**

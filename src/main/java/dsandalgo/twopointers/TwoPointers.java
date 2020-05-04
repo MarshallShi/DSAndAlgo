@@ -11,9 +11,129 @@ public class TwoPointers {
 
     public static void main(String[] args) {
         TwoPointers exe = new TwoPointers();
-        int[] colors = {2,0,2,1,1,0};
-        exe.sortColors(colors);
-        //System.out.println(exe.sortColors(colors));
+        int[] nums = {4,2,2,2,4,4,2,2};
+        System.out.println(exe.longestSubarray(nums, 0));
+    }
+
+    /**
+     * https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/
+     * Given an array of integers nums and an integer limit, return the size of the longest continuous subarray such
+     * that the absolute difference between any two elements is less than or equal to limit.
+     *
+     * In case there is no subarray satisfying the given condition return 0.
+     *
+     * Example 1:
+     *
+     * Input: nums = [8,2,4,7], limit = 4
+     * Output: 2
+     * Explanation: All subarrays are:
+     * [8] with maximum absolute diff |8-8| = 0 <= 4.
+     * [8,2] with maximum absolute diff |8-2| = 6 > 4.
+     * [8,2,4] with maximum absolute diff |8-2| = 6 > 4.
+     * [8,2,4,7] with maximum absolute diff |8-2| = 6 > 4.
+     * [2] with maximum absolute diff |2-2| = 0 <= 4.
+     * [2,4] with maximum absolute diff |2-4| = 2 <= 4.
+     * [2,4,7] with maximum absolute diff |2-7| = 5 > 4.
+     * [4] with maximum absolute diff |4-4| = 0 <= 4.
+     * [4,7] with maximum absolute diff |4-7| = 3 <= 4.
+     * [7] with maximum absolute diff |7-7| = 0 <= 4.
+     * Therefore, the size of the longest subarray is 2.
+     * Example 2:
+     *
+     * Input: nums = [10,1,2,4,7,2], limit = 5
+     * Output: 4
+     * Explanation: The subarray [2,4,7,2] is the longest since the maximum absolute diff is |2-7| = 5 <= 5.
+     * Example 3:
+     *
+     * Input: nums = [4,2,2,2,4,4,2,2], limit = 0
+     * Output: 3
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= nums.length <= 10^5
+     * 1 <= nums[i] <= 10^9
+     * 0 <= limit <= 10^9
+     */
+    public int longestSubarray(int[] nums, int limit) {
+        int res = 0, i = 0;
+        int s = nums[0] - limit, e = nums[0] + limit;
+        for (int j=1; j<nums.length; j++) {
+            if (nums[j] < s || nums[j] > e) {
+                int k = j;
+                s = nums[k] - limit;
+                e = nums[k] + limit;
+                while (k > i) {
+                    if (nums[k-1] <= e && nums[k-1] >= s) {
+                        s = Math.max(s, nums[k-1] - limit);
+                        e = Math.min(e, nums[k-1] + limit);
+                        k--;
+                    } else {
+                        break;
+                    }
+                }
+                i = k;
+            } else {
+                s = Math.max(s, nums[j] - limit);
+                e = Math.min(e, nums[j] + limit);
+            }
+            res = Math.max(res, j - i + 1);
+        }
+        if (res == 1) return 0;
+        return res;
+    }
+
+    /**
+     * https://leetcode.com/problems/rotate-array/
+     * Given an array, rotate the array to the right by k steps, where k is non-negative.
+     *
+     * Follow up:
+     *
+     * Try to come up as many solutions as you can, there are at least 3 different ways to solve this problem.
+     * Could you do it in-place with O(1) extra space?
+     *
+     *
+     * Example 1:
+     *
+     * Input: nums = [1,2,3,4,5,6,7], k = 3
+     * Output: [5,6,7,1,2,3,4]
+     * Explanation:
+     * rotate 1 steps to the right: [7,1,2,3,4,5,6]
+     * rotate 2 steps to the right: [6,7,1,2,3,4,5]
+     * rotate 3 steps to the right: [5,6,7,1,2,3,4]
+     * Example 2:
+     *
+     * Input: nums = [-1,-100,3,99], k = 2
+     * Output: [3,99,-1,-100]
+     * Explanation:
+     * rotate 1 steps to the right: [99,-1,-100,3]
+     * rotate 2 steps to the right: [3,99,-1,-100]
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= nums.length <= 2 * 10^4
+     * It's guaranteed that nums[i] fits in a 32 bit-signed integer.
+     * k >= 0
+     */
+    public void rotate(int[] nums, int k) {
+        if (nums == null || nums.length < 2 || k % nums.length == 0) {
+            return;
+        }
+        int tnewK = k % nums.length;
+        reverseArray(nums, 0, nums.length - 1);
+        reverseArray(nums, 0, tnewK - 1);
+        reverseArray(nums, tnewK, nums.length - 1);
+    }
+
+    private void reverseArray(int[] nums, int low, int high) {
+        while (low < high) {
+            int temp = nums[low];
+            nums[low] = nums[high];
+            nums[high] = temp;
+            low++;
+            high--;
+        }
     }
 
     /**
@@ -304,6 +424,20 @@ public class TwoPointers {
      * Note that the answer must be a substring, "pwke" is a subsequence and not a substring.
      */
     public int lengthOfLongestSubstring(String s) {
+        int n = s.length(), ans = 0;
+        // current index of character, note, maintain only the latest index.
+        int[] indexes = new int[128];
+        // try to extend the range [i, j]
+        for (int j = 0, i = 0; j < n; j++) {
+            //i be the first
+            i = Math.max(indexes[s.charAt(j)], i);
+            ans = Math.max(ans, j - i + 1);
+            indexes[s.charAt(j)] = j + 1;
+        }
+        return ans;
+    }
+
+    public int lengthOfLongestSubstring_2(String s) {
         if (s == null || s.length() == 0) {
             return 0;
         }

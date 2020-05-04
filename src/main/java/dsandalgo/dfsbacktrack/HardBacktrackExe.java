@@ -18,6 +18,153 @@ public class HardBacktrackExe {
     }
 
     /**
+     * https://leetcode.com/problems/sudoku-solver/
+     *
+     * Write a program to solve a Sudoku puzzle by filling the empty cells.
+     *
+     * A sudoku solution must satisfy all of the following rules:
+     *
+     * Each of the digits 1-9 must occur exactly once in each row.
+     * Each of the digits 1-9 must occur exactly once in each column.
+     * Each of the the digits 1-9 must occur exactly once in each of the 9 3x3 sub-boxes of the grid.
+     * Empty cells are indicated by the character '.'.
+     *
+     * Note:
+     *
+     * The given board contain only digits 1-9 and the character '.'.
+     * You may assume that the given Sudoku puzzle will have a single unique solution.
+     * The given board size is always 9x9.
+     *
+     */
+    public void solveSudoku(char[][] board) {
+        backtrackSudoku(board);
+    }
+
+    private boolean backtrackSudoku(char[][] board) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] == '.') {
+                    for (char c = '1'; c <= '9'; c++) {
+                        if (isValidMove(board, i, j, c)) {
+                            board[i][j] = c;
+                            if (backtrackSudoku(board)) {
+                                return true;
+                            } else {
+                                board[i][j] = '.';
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean isValidMove(char[][] board, int i, int j, char c) {
+        for (int x = 0; x < 9; x++) {
+            if (board[i][x] == c) {
+                return false;
+            }
+        }
+        for (int x = 0; x < 9; x++) {
+            if (board[x][j] == c) {
+                return false;
+            }
+        }
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                Set<Character> seen = new HashSet<>();
+                for (int dx = 0; dx < 3; dx++) {
+                    for (int dy = 0; dy < 3; dy++) {
+                        if (board[x * 3 + dx][y * 3 + dy] <= '9' && board[x * 3 + dx][y * 3 + dy] >= '1') {
+                            if (!seen.contains(board[x * 3 + dx][y * 3 + dy])) {
+                                seen.add(board[x * 3 + dx][y * 3 + dy]);
+                            } else {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * https://leetcode.com/problems/n-queens-ii/
+     * The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.
+     *
+     *
+     *
+     * Given an integer n, return the number of distinct solutions to the n-queens puzzle.
+     *
+     * Example:
+     *
+     * Input: 4
+     * Output: 2
+     * Explanation: There are two distinct solutions to the 4-queens puzzle as shown below.
+     * [
+     *  [".Q..",  // Solution 1
+     *   "...Q",
+     *   "Q...",
+     *   "..Q."],
+     *
+     *  ["..Q.",  // Solution 2
+     *   "Q...",
+     *   "...Q",
+     *   ".Q.."]
+     * ]
+     */
+    public int totalNQueens(int n) {
+        char[][] chess = new char[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                chess[i][j] = '.';
+            }
+        }
+        int[] res = new int[1];
+        solve_ii(res, chess, 0);
+        return res[0];
+    }
+
+    private void solve_ii(int[] res, char[][] chess, int row) {
+        if (row == chess.length) {
+            res[0]++;
+            return;
+        }
+        for (int col = 0; col < chess.length; col++) {
+            if (valid_ii(chess, row, col)) {
+                chess[row][col] = 'Q';
+                solve_ii(res, chess, row + 1);
+                chess[row][col] = '.';
+            }
+        }
+    }
+
+    private boolean valid_ii(char[][] chess, int row, int col) {
+        // check all cols
+        for (int i = 0; i < row; i++) {
+            if (chess[i][col] == 'Q') {
+                return false;
+            }
+        }
+        //check 45 degree
+        for (int i = row - 1, j = col + 1; i >= 0 && j < chess.length; i--, j++) {
+            if (chess[i][j] == 'Q') {
+                return false;
+            }
+        }
+        //check 135
+        for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+            if (chess[i][j] == 'Q') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * https://leetcode.com/problems/n-queens/
      * The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.
      *
@@ -98,52 +245,52 @@ public class HardBacktrackExe {
         return path;
     }
 
-    public List<List<String>> solveNQueens_2(int n) {
-        List<List<String>> res = new LinkedList<List<String>>();
-        List<Integer> temp = new LinkedList<Integer>();
-        backtrackNQueens(res, temp, n);
-        return res;
-    }
-
-    public void backtrackNQueens(List<List<String>> res, List<Integer> temp, int n){
-        if (temp.size() == n) {
-            res.add(convertResult(temp));
-            return;
-        }
-        for(int i=0; i<n; i++) {
-            if (!temp.contains(i)) {
-                if (!isDiagonalAttack(temp, i)) {
-                    temp.add(i);
-                    backtrackNQueens(res, temp, n);
-                    temp.remove(temp.size()-1);
-                }
-            }
-        }
-    }
-
-    private List<String> convertResult(List<Integer> currentQueen) {
-        List<String> temp = new ArrayList<String>();
-        for (int i = 0; i < currentQueen.size(); i++) {
-            char[] t = new char[currentQueen.size()];
-            Arrays.fill(t, '.');
-            t[currentQueen.get(i)] = 'Q';
-            temp.add(new String(t));
-        }
-        return temp;
-    }
-
-    private boolean isDiagonalAttack(List<Integer> currentQueen, int i) {
-        int current_row = currentQueen.size();
-        int current_col = i;
-        //判断每一行的皇后的情况
-        for (int row = 0; row < currentQueen.size(); row++) {
-            //左上角的对角线和右上角的对角线，差要么相等，要么互为相反数，直接写成了绝对值
-            if (Math.abs(current_row - row) == Math.abs(current_col - currentQueen.get(row))) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public List<List<String>> solveNQueens_2(int n) {
+//        List<List<String>> res = new LinkedList<List<String>>();
+//        List<Integer> temp = new LinkedList<Integer>();
+//        backtrackNQueens(res, temp, n);
+//        return res;
+//    }
+//
+//    public void backtrackNQueens(List<List<String>> res, List<Integer> temp, int n){
+//        if (temp.size() == n) {
+//            res.add(convertResult(temp));
+//            return;
+//        }
+//        for(int i=0; i<n; i++) {
+//            if (!temp.contains(i)) {
+//                if (!isDiagonalAttack(temp, i)) {
+//                    temp.add(i);
+//                    backtrackNQueens(res, temp, n);
+//                    temp.remove(temp.size()-1);
+//                }
+//            }
+//        }
+//    }
+//
+//    private List<String> convertResult(List<Integer> currentQueen) {
+//        List<String> temp = new ArrayList<String>();
+//        for (int i = 0; i < currentQueen.size(); i++) {
+//            char[] t = new char[currentQueen.size()];
+//            Arrays.fill(t, '.');
+//            t[currentQueen.get(i)] = 'Q';
+//            temp.add(new String(t));
+//        }
+//        return temp;
+//    }
+//
+//    private boolean isDiagonalAttack(List<Integer> currentQueen, int i) {
+//        int current_row = currentQueen.size();
+//        int current_col = i;
+//        //判断每一行的皇后的情况
+//        for (int row = 0; row < currentQueen.size(); row++) {
+//            //左上角的对角线和右上角的对角线，差要么相等，要么互为相反数，直接写成了绝对值
+//            if (Math.abs(current_row - row) == Math.abs(current_col - currentQueen.get(row))) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * https://leetcode.com/problems/verbal-arithmetic-puzzle/

@@ -40,6 +40,89 @@ public class BFSExes {
         System.out.println(exe.minKnightMoves(-45, -102));
     }
 
+    /**
+     * https://leetcode.com/problems/01-matrix/
+     * Given a matrix consists of 0 and 1, find the distance of the nearest 0 for each cell.
+     *
+     * The distance between two adjacent cells is 1.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input:
+     * [[0,0,0],
+     *  [0,1,0],
+     *  [0,0,0]]
+     *
+     * Output:
+     * [[0,0,0],
+     *  [0,1,0],
+     *  [0,0,0]]
+     * Example 2:
+     *
+     * Input:
+     * [[0,0,0],
+     *  [0,1,0],
+     *  [1,1,1]]
+     *
+     * Output:
+     * [[0,0,0],
+     *  [0,1,0],
+     *  [1,2,1]]
+     *
+     *
+     * Note:
+     *
+     * The number of elements of the given matrix will not exceed 10,000.
+     * There are at least one 0 in the given matrix.
+     * The cells are adjacent in only four directions: up, down, left and right.
+     */
+    public int[][] updateMatrix(int[][] matrix) {
+        int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
+        int m = matrix.length;
+        int n = matrix[0].length;
+        boolean[][] visited = new boolean[m][n];
+        Queue<int[]> queue = new LinkedList<int[]>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1) {
+                    for (int k = 0; k < directions.length; k++) {
+                        int newX = i + directions[k][0];
+                        int newY = j + directions[k][1];
+                        if (newX < m && newX >= 0 && newY < n && newY >= 0 && matrix[newX][newY] == 0 && !visited[i][j]) {
+                            int[] pos = {i, j};
+                            visited[i][j] = true;
+                            queue.add(pos);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        int[][] res = new int[m][n];
+        int level = 0;
+        while (!queue.isEmpty()) {
+            level++;
+            int s = queue.size();
+            for (int i = 0; i < s; i++) {
+                int[] pos = queue.poll();
+                int x = pos[0], y = pos[1];
+                matrix[x][y] = 0;
+                res[x][y] = level;
+                for (int k = 0; k < directions.length; k++) {
+                    int newX = x + directions[k][0];
+                    int newY = y + directions[k][1];
+                    if (newX < m && newX >= 0 && newY < n && newY >= 0 && matrix[newX][newY] == 1 && !visited[newX][newY]) {
+                        int[] nextpos = {newX, newY};
+                        queue.offer(nextpos);
+                        visited[newX][newY] = true;
+                    }
+                }
+            }
+        }
+        return res;
+    }
 
     /**
      * https://leetcode.com/problems/binary-tree-level-order-traversal/

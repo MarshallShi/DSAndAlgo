@@ -210,10 +210,3 @@ On manager node:
 docker service create --replicas=3 my-web-server
 
 
-Kubernetes
-
-kubectl run --replicas=1000 my-web-server
-
-API Server, etcd, kubelet, Containter runtime, controller, scheduler.
-
-

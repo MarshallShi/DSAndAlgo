@@ -69,3 +69,10 @@ https://leetcode.com/problems/sqrtx/
         return (int) ans;
     }
     
+K-th Symbol in Grammar
+https://leetcode.com/problems/k-th-symbol-in-grammar/
+
+    public int kthGrammar(int N, int K) {
+        return Integer.bitCount(K - 1) & 1;
+    }
+    

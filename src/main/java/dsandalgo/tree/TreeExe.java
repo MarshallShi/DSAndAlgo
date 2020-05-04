@@ -21,11 +21,10 @@ import java.util.TreeMap;
 
 public class TreeExe {
 
-    public static void main(String[] args) {
-        TreeExe exe = new TreeExe();
-        int[] preorder = {8,5,1,7,10,12};
-        TreeNode n = exe.str2tree("4(2(3)(1))(6(5))");
-        System.out.println(n);
+    public class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int x) { val = x; }
     }
 
     class Node {
@@ -44,6 +43,13 @@ public class TreeExe {
             left = _left;
             right = _right;
         }
+    }
+
+    public static void main(String[] args) {
+        TreeExe exe = new TreeExe();
+        int[] preorder = {8,5,1,7,10,12};
+        TreeNode n = exe.str2tree("4(2(3)(1))(6(5))");
+        System.out.println(n);
     }
 
     /**
@@ -2480,11 +2486,34 @@ public class TreeExe {
      * Output: 4
      */
     public int countUnivalSubtrees(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int[] count = new int[1];
+        countUnivalSubtreesHelper(root, count);
+        return count[0];
+    }
+
+    public boolean countUnivalSubtreesHelper(TreeNode root, int[] count) {
+        if (root == null) {
+            return true;
+        }
+        boolean left = countUnivalSubtreesHelper(root.left, count);
+        boolean right = countUnivalSubtreesHelper(root.right, count);
+        if (left && right && (root.left == null || root.left.val == root.val) && (root.right == null || root.right.val == root.val)) {
+            count[0]++;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public int countUnivalSubtrees_1(TreeNode root) {
         if(root == null) {
             return 0;
         }
         int count = isUnivalue(root) ? 1 : 0;
-        return count + countUnivalSubtrees(root.left) + countUnivalSubtrees(root.right);
+        return count + countUnivalSubtrees_1(root.left) + countUnivalSubtrees_1(root.right);
     }
 
     private boolean isUnivalue(TreeNode node){
@@ -2498,12 +2527,6 @@ public class TreeExe {
             isUni &= isUnivalue(node.right);
         }
         return isUni;
-    }
-
-    public class ListNode {
-        int val;
-        ListNode next;
-        ListNode(int x) { val = x; }
     }
 
     /**

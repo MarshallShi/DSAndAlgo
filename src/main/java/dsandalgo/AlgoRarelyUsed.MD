@@ -1,6 +1,23 @@
-Data Structure
+Huffman coding
+
+
+
+Tail recursion
+Tail recursion is a recursion where the recursive call is the final instruction in the recursion 
+function. And there should be only one recursive call in the function.
+
+https://leetcode.com/explore/learn/card/recursion-i/256/complexity-analysis/2374/
+
+The benefit of having tail recursion is that it could avoid the accumulation of stack overheads 
+during the recursive calls, since the system could reuse a fixed amount space in the stack for 
+each recursive call. 
+
+A tail recursion function can be executed as non-tail-recursion functions, i.e. with piles 
+of call stacks, without impact on the result. 
+
 
 Segment Trees
+
 
 
 Fenwick Tree (Binary Index Tree)
@@ -229,4 +246,45 @@ NOTE: it only works when the majority element exist, otherwise, need another ste
 
 Quick Select
 
-    
+Cycle detection algo (Floyd's cycle detection algo)
+https://leetcode.com/problems/linked-list-cycle/
+
+https://leetcode.com/problems/linked-list-cycle-ii/
+
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast!=null && fast.next!=null){
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow){
+                ListNode slow2 = head;
+                while (slow2 != slow){
+                    slow = slow.next;
+                    slow2 = slow2.next;
+                }
+                return slow;
+            }
+        }
+        return null;
+    }
+
+https://leetcode.com/problems/find-the-duplicate-number/
+
+    public int findDuplicate(int[] nums) {
+        if (nums != null && nums.length > 1) {
+            int slow = nums[0];
+            int fast = nums[nums[0]];
+            while (slow != fast) {
+                slow = nums[slow];
+                fast = nums[nums[fast]];
+            }
+            fast = 0;
+            while (fast != slow) {
+                fast = nums[fast];
+                slow = nums[slow];
+            }
+            return slow;
+        }
+        return -1;
+    }

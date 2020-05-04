@@ -243,6 +243,54 @@ Trick: all the duplicated number contribute to a total sum. Once we get the tota
 
 Knapsack problem
 
+Target Sum
+https://leetcode.com/problems/target-sum/
+
+    /** solution 2: DP (0/1 knapsack) - Time: O(n^2), Space: O(n^2) */
+    /**
+     * sub-problem: dp[i][j] represents number of possible ways to reach sum j by using first ith items
+     * base case: dp[0][sum], position sum represents sum 0
+     * recurrence relation:
+     * dp[i][j] += dp[i - 1][j + nums[i - 1]] if j + nums[i - 1] <= sum * 2
+     * dp[i][j] += dp[i - 1][j - nums[i - 1]] if j - nums[i - 1] >= 0
+     * 
+     * explanation: if j + nums[i - 1] or j - nums[i - 1] is in correct range, we can use the number nums[i - 1]
+     * to generate next state of dp array
+     * */
+    public int findTargetSumWays2(int[] nums, int S) {
+        if (nums.length == 0) {
+            return 0;
+        }
+    
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+    
+        // corner case: when S is out of range [-sum, sum]
+        if (S < -sum || S > sum) {
+            return 0;
+        }
+    
+        int[][] dp = new int[nums.length + 1][sum * 2 + 1];
+        dp[0][sum] = 1;
+        int leftBound = 0;
+        int rightBound = sum * 2;
+        for (int i = 1; i <= nums.length; i++) {
+            for (int j = leftBound; j < rightBound + 1; j++) {
+                // try all possible sum of (previous sum j + current number nums[i - 1]) and all possible difference of
+                // (previous sum j - current number nums[i - 1])
+                if (j + nums[i - 1] <= rightBound) {
+                    dp[i][j] += dp[i - 1][j + nums[i - 1]];
+                }
+                if (j - nums[i - 1] >= leftBound) {
+                    dp[i][j] += dp[i - 1][j - nums[i - 1]];
+                }
+            }
+        }
+        return dp[nums.length][sum + S];
+    }
+
 https://leetcode.com/problems/partition-equal-subset-sum/
 It is an 0/1 knapsack problem, for each number, we can pick it or not. 
 Let us assume dp[i][j] means whether the specific sum j can be gotten from the first i numbers. 
@@ -692,4 +740,54 @@ This is similar to Longest Increasing Subsequence.  We use bit to store the leng
             }
         }
         return res;
+    }
+    
+    
+DP + bitmasking
+
+
+https://leetcode.com/problems/number-of-ways-to-wear-different-hats-to-each-other/
+Trick: the implementation should reverse the requirement, instead of assign based on people, assign based on hat. That's much smaller
+amount of loop, as hats are more than people. 
+Create bitmask on people. For each hat, we know a list of people we can assign. 
+
+    public int numberWays(List<List<Integer>> hats) {
+        int n = hats.size();
+        //for each hat, which ppl can be assigned
+        List<Integer>[] h2p = new List[40];
+        for (int i=0; i<40; i++) {
+            h2p[i] = new ArrayList<>();
+        }
+        for (int i=0; i<hats.size(); i++) {
+            for (int val : hats.get(i)) {
+                h2p[val - 1].add(i);
+            }
+        }
+        int[][] dp = new int[1<<n][41];
+        for (int i=0; i<dp.length; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return numberWaysHelper(h2p, 0, 0, n, dp);
+    }
+    
+    private int numberWaysHelper(List<Integer>[] h2p, int pplMask, int hats, int n, int[][] dp) {
+        if (pplMask == (1<<n) - 1) {
+            return 1;
+        }
+        if (hats == 40) {
+            return 0;
+        }
+        if (dp[pplMask][hats] != -1) {
+            return dp[pplMask][hats];
+        }
+        int res = 0;
+        for (int i=hats; i<40; i++) {
+            for (int ppl : h2p[i]) {
+                if ((pplMask&(1<<ppl)) == 0) {
+                    res = res + numberWaysHelper(h2p, (pplMask^(1<<ppl)), i+1, n, dp);
+                    res = res % 1000000007;
+                }
+            }
+        }
+        return dp[pplMask][hats] = res;
     }

@@ -95,7 +95,7 @@ public class GraphExe {
     }
 
     //Key is the node label, which is unique, value is the Node object.
-    private HashMap<Integer, Node> clonedNodesMap = new HashMap<>();
+    private Map<Integer, Node> clonedNodesMap = new HashMap<>();
 
     //DFS traverse the graph node.
     private Node clone(Node node) {

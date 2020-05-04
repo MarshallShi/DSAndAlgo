@@ -22,6 +22,98 @@ public class ArrayExe {
     }
 
     /**
+     * https://leetcode.com/problems/intersection-of-two-arrays-ii/
+     * Given two arrays, write a function to compute their intersection.
+     *
+     * Example 1:
+     *
+     * Input: nums1 = [1,2,2,1], nums2 = [2,2]
+     * Output: [2,2]
+     * Example 2:
+     *
+     * Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+     * Output: [4,9]
+     * Note:
+     *
+     * Each element in the result should appear as many times as it shows in both arrays.
+     * The result can be in any order.
+     * Follow up:
+     *
+     * What if the given array is already sorted? How would you optimize your algorithm?
+     * What if nums1's size is small compared to nums2's size? Which algorithm is better?
+     * What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?
+     */
+    public int[] intersect(int[] nums1, int[] nums2) {
+        //A tip to swap the input parameters...
+        if (nums1.length > nums2.length) {
+            return intersect(nums2, nums1);
+        }
+        Map<Integer, Integer> m = new HashMap<>();
+        for (int n : nums1) {
+            m.put(n, m.getOrDefault(n, 0) + 1);
+        }
+        int k = 0;
+        for (int n : nums2) {
+            int cnt = m.getOrDefault(n, 0);
+            if (cnt > 0) {
+                nums1[k++] = n;
+                m.put(n, cnt - 1);
+            }
+        }
+        return Arrays.copyOfRange(nums1, 0, k);
+    }
+
+    public int[] intersect_sort(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int i = 0, j = 0, k = 0;
+        while (i < nums1.length && j < nums2.length) {
+            if (nums1[i] < nums2[j]) {
+                ++i;
+            } else if (nums1[i] > nums2[j]) {
+                ++j;
+            } else {
+                nums1[k++] = nums1[i++];
+                ++j;
+            }
+        }
+        return Arrays.copyOfRange(nums1, 0, k);
+    }
+
+    /**
+     * https://leetcode.com/problems/plus-one/
+     * Given a non-empty array of digits representing a non-negative integer, plus one to the integer.
+     *
+     * The digits are stored such that the most significant digit is at the head of the list, and each element in the array contain a single digit.
+     *
+     * You may assume the integer does not contain any leading zero, except the number 0 itself.
+     *
+     * Example 1:
+     *
+     * Input: [1,2,3]
+     * Output: [1,2,4]
+     * Explanation: The array represents the integer 123.
+     * Example 2:
+     *
+     * Input: [4,3,2,1]
+     * Output: [4,3,2,2]
+     * Explanation: The array represents the integer 4321.
+     */
+    public int[] plusOne(int[] digits) {
+        int n = digits.length;
+        for (int i = n - 1; i >= 0; i--) {
+            if (digits[i] < 9) {
+                digits[i]++;
+                return digits;
+            }
+            digits[i] = 0;
+        }
+        int[] newNumber = new int[n + 1];
+        newNumber[0] = 1;
+        return newNumber;
+    }
+
+    /**
      * https://leetcode.com/problems/maximum-average-subarray-i/
      * Given an array consisting of n integers, find the contiguous subarray of given length k that has the maximum average value. And you need to output the maximum average value.
      *
@@ -906,6 +998,40 @@ public class ArrayExe {
             }
         }
         return output;
+    }
+
+    //Another approach is to iterate through diagnal, but reverse the odd step intermediate result.
+    public int[] findDiagonalOrder_2(int[][] matrix) {
+        if (matrix == null || matrix.length == 0) {
+            return new int[0];
+        }
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] result = new int[m*n];
+        int k = 0;
+        List<Integer> intermediate = null;
+        // We have to go over all the elements in the first
+        // row and the last column to cover all possible diagonals
+        for (int d = 0; d < m + n - 1; d++) {
+            intermediate = new ArrayList<>();
+            // We need to figure out the "head" of this diagonal
+            // The elements in the first row and the last column
+            // are the respective heads.
+            int r = d < n ? 0 : d - n + 1;
+            int c = d < n ? d : n - 1;
+            while (r < m && c > -1) {
+                intermediate.add(matrix[r][c]);
+                ++r;
+                --c;
+            }
+            if (d % 2 == 0) {
+                Collections.reverse(intermediate);
+            }
+            for (int i = 0; i < intermediate.size(); i++) {
+                result[k++] = intermediate.get(i);
+            }
+        }
+        return result;
     }
 
     /**

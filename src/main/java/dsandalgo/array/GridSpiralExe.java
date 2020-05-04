@@ -1,5 +1,6 @@
 package dsandalgo.array;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -100,56 +101,34 @@ public class GridSpiralExe {
      *   [9,10,11,12]
      * ]
      * Output: [1,2,3,4,8,12,11,10,9,5,6,7]
-     *
-     * @param matrix
-     * @return
      */
+    //Just simulate.
     public List<Integer> spiralOrder(int[][] matrix) {
-        if (matrix == null) {
-            return null;
-        }
-        List<Integer> res = new LinkedList<Integer>();
-        int m = matrix.length;
-        if (m == 0) {
-            return res;
-        }
-        int n = matrix[0].length;
-        if (n == 0) {
-            return res;
-        }
-        int total = m*n;
-        int maxCol = n - 1;
-        int maxRow = m - 1;
-        int lesser = Math.min(m, n);
-        int counter = 0;
-        if (lesser % 2 == 0) {
-            counter = lesser / 2;
-        } else {
-            counter = lesser / 2 + 1;
-        }
-        for (int diff=0; diff<counter; diff++) {
-            if (res.size() < total) {
-                for (int i=diff; i<=maxCol-diff;i++) {
-                    res.add(matrix[diff][i]);
+        List<Integer> ans = new ArrayList<>();
+        if (matrix.length == 0) return ans;
+        int r1 = 0, r2 = matrix.length - 1;
+        int c1 = 0, c2 = matrix[0].length - 1;
+        while (r1 <= r2 && c1 <= c2) {
+            for (int c = c1; c <= c2; c++) {
+                ans.add(matrix[r1][c]);
+            }
+            for (int r = r1 + 1; r <= r2; r++) {
+                ans.add(matrix[r][c2]);
+            }
+            if (r1 < r2 && c1 < c2) {
+                for (int c = c2 - 1; c > c1; c--) {
+                    ans.add(matrix[r2][c]);
+                }
+                for (int r = r2; r > r1; r--) {
+                    ans.add(matrix[r][c1]);
                 }
             }
-            if (res.size() < total) {
-                for (int i=diff+1; i<=maxRow-diff;i++) {
-                    res.add(matrix[i][maxCol-diff]);
-                }
-            }
-            if (res.size() < total) {
-                for (int i=maxCol-diff-1; i>=diff;i--) {
-                    res.add(matrix[maxRow-diff][i]);
-                }
-            }
-            if (res.size() < total) {
-                for (int i=maxRow-diff-1; i>=diff+1;i--) {
-                    res.add(matrix[i][diff]);
-                }
-            }
+            r1++;
+            r2--;
+            c1++;
+            c2--;
         }
-        return res;
+        return ans;
     }
 
     /**

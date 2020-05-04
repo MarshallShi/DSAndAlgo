@@ -1,4 +1,4 @@
-package dsandalgo.design;
+package dsandalgo.tree;
 
 import java.util.LinkedList;
 import java.util.List;

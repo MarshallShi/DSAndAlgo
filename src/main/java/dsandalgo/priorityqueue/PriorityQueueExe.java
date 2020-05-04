@@ -15,7 +15,6 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -29,14 +28,116 @@ public class PriorityQueueExe {
     public static void main(String[] args) {
         PriorityQueueExe pqexe = new PriorityQueueExe();
         //[[5,4,5],[1,2,6],[7,4,6]]
-        int[][] s = {{5,4,5},{1,2,6},{7,4,6}};
-        System.out.println(pqexe.maximumMinimumPath(s));
+        int[][] s = {{1,3,11},{2,4,6}};
+        System.out.println(pqexe.kthSmallest(s, 5));
     }
 
     public class ListNode {
         int val;
         ListNode next;
         ListNode(int x) { val = x; }
+    }
+
+    /**
+     * https://leetcode.com/problems/find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows/
+     * You are given an m * n matrix, mat, and an integer k, which has its rows sorted in non-decreasing order.
+     *
+     * You are allowed to choose exactly 1 element from each row to form an array. Return the Kth smallest array sum among all possible arrays.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: mat = [[1,3,11],[2,4,6]], k = 5
+     * Output: 7
+     * Explanation: Choosing one element from each row, the first k smallest sum are:
+     * [1,2], [1,4], [3,2], [3,4], [1,6]. Where the 5th sum is 7.
+     * Example 2:
+     *
+     * Input: mat = [[1,3,11],[2,4,6]], k = 9
+     * Output: 17
+     * Example 3:
+     *
+     * Input: mat = [[1,10,10],[1,4,5],[2,3,6]], k = 7
+     * Output: 9
+     * Explanation: Choosing one element from each row, the first k smallest sum are:
+     * [1,1,2], [1,1,3], [1,4,2], [1,4,3], [1,1,6], [1,5,2], [1,5,3]. Where the 7th sum is 9.
+     * Example 4:
+     *
+     * Input: mat = [[1,1,10],[2,2,9]], k = 7
+     * Output: 12
+     *
+     *
+     * Constraints:
+     *
+     * m == mat.length
+     * n == mat.length[i]
+     * 1 <= m, n <= 40
+     * 1 <= k <= min(200, n ^ m)
+     * 1 <= mat[i][j] <= 5000
+     * mat[i] is a non decreasing array.
+     */
+    public int kthSmallest(int[][] mat, int k) {
+        int row = mat.length;
+        int col = mat[0].length;
+        // max priority queue for the first column
+        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> b - a);
+        for (int c = 0; c < col; c++) {
+            pq.add(mat[0][c]);
+            // keep pq size less than or equal to k
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+        for (int r = 1; r < row; r++) {
+            // max priority queue for the i-th column
+            PriorityQueue<Integer> nextPq = new PriorityQueue<>((a, b) -> b - a);
+            // test all the combination of previous row's data with next row
+            for (int i : pq) {
+                for (int c = 0; c < col; c++) {
+                    nextPq.add(i + mat[r][c]);
+                    // keep pq size less than or equal to k
+                    if (nextPq.size() > k) {
+                        nextPq.poll();
+                    }
+                }
+            }
+            pq = nextPq;
+        }
+        return pq.poll();
+    }
+
+    public int kthSmallest_binarySearch(int[][] mat, int k) {
+        int m = mat.length, n = mat[0].length;
+        int left = m, right = m * 5000, ans = -1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            int cnt = countArraysHaveSumLessOrEqual(mat, m, n, mid, 0, 0, k);
+            if (cnt >= k) {
+                ans = mid;
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return ans;
+    }
+
+    private int countArraysHaveSumLessOrEqual(int[][] mat, int m, int n, int targetSum, int r, int sum, int k) {
+        //temp sum already bigger than targetSum, prune.
+        if (sum > targetSum) return 0;
+        //here it must be less than targetSum, and also picked last number from last row, return 1.
+        if (r == m) return 1;
+        int ans = 0;
+        //from lower value to greater value, so we can early terminate.
+        for (int c = 0; c < n; ++c) {
+            int cnt = countArraysHaveSumLessOrEqual(mat, m, n, targetSum, r + 1, sum + mat[r][c], k - ans);
+            if (cnt == 0) break;
+            ans += cnt;
+            // prune when count > k
+            if (ans > k) break;
+        }
+        return ans;
     }
 
     /**

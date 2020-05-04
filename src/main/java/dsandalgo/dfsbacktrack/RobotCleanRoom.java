@@ -1,6 +1,5 @@
 package dsandalgo.dfsbacktrack;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -83,14 +82,16 @@ public class RobotCleanRoom {
         }
         visited.add(path);
         robot.clean();
+        //explore the four direction each time.
         for (int i = 0; i < 4; i++) {
+            //if move is successful, we can clean and backtrack.
             if (robot.move()) {
                 //go all the way till cannot move, then back one step
                 int nx = x + dir[arrow][0];
                 int ny = y + dir[arrow][1];
-
+                //recursively clean the next position
                 cleanRoomDFS(robot, visited, nx, ny, arrow);
-                //Trick: this is how we go back based on the provided API.
+                //back to previous position.
                 robot.turnLeft();
                 robot.turnLeft();
                 robot.move();

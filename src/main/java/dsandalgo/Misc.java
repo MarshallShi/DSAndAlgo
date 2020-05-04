@@ -214,24 +214,6 @@ public class Misc {
         return ret;
     }
 
-    public static int findDuplicate(int[] nums) {
-        if (nums!=null && nums.length > 1) {
-            int slow = nums[0];
-            int fast = nums[nums[0]];
-            while (slow != fast) {
-                slow = nums[slow];
-                fast = nums[nums[fast]];
-            }
-            fast = 0;
-            while (fast != slow) {
-                fast = nums[fast];
-                slow = nums[slow];
-            }
-            return slow;
-        }
-        return -1;
-    }
-
     public static int[][] reconstructQueue(int[][] people) {
         if (people == null || people.length == 0 || people[0].length == 0)
             return new int[0][0];
@@ -1006,40 +988,6 @@ public class Misc {
         return totalResult;
     }
 
-    public int[] searchRange(int[] nums, int target) {
-        int[] ret = new int[2];
-        int low = 0, high = nums.length - 1;
-        while (low < high) {
-            int mid = low + (high - low) / 2;
-            if (nums[mid] == target) {
-                high = mid;
-            } else {
-                if (nums[mid] < target) {
-                    low = mid + 1;
-                } else {
-                    high = mid;
-                }
-            }
-        }
-        if (nums[low] == target) {
-            ret[0] = low;
-            high = nums.length - 1;
-            while (low < high) {
-                int mid = 1 + low + (high - low) / 2;
-                if (nums[mid] > target) {
-                    high = mid - 1;
-                } else {
-                    low = mid;
-                }
-            }
-            ret[1] = high;
-        } else {
-            ret[0] = -1;
-            ret[1] = -1;
-        }
-        return ret;
-    }
-
     public class StartAndEnd{
         public int start;
         public int end;
@@ -1083,85 +1031,6 @@ public class Misc {
             res = Math.min(res, map.get(val).end - map.get(val).start + 1);
         }
         return res;
-    }
-
-    public int[][] updateMatrix(int[][] matrix) {
-        int[][] directions = {{0,1}, {1,0}, {-1,0}, {0,-1}};
-        int m = matrix.length;
-        int n = matrix[0].length;
-        boolean[][] visited = new boolean[m][n];
-        LinkedList<int[]> queue = new LinkedList<int[]>();
-        for (int i=0; i<m; i++) {
-            for (int j=0; j<n; j++) {
-                if (matrix[i][j] == 1) {
-                    for (int k=0; k<directions.length; k++) {
-                        int newX = i+directions[k][0];
-                        int newY = j+directions[k][1];
-                        if (newX < m && newX>=0 && newY < n && newY>=0){
-                            if (matrix[newX][newY] == 0) {
-                                int[] pos = new int[2];
-                                pos[0] = i;
-                                pos[1] = j;
-                                visited[i][j] = true;
-                                queue.add(pos);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        int[][] res = new int[m][n];
-        int level = 0;
-        while (!queue.isEmpty()) {
-            level++;
-            int s = queue.size();
-            for (int i=0; i<s; i++) {
-                int[] pos = queue.pop();
-                matrix[pos[0]][pos[1]] = 0;
-                res[pos[0]][pos[1]] = level;
-            }
-            for (int i=0; i<m; i++) {
-                for (int j=0; j<n; j++) {
-                    if (matrix[i][j] == 1) {
-                        for (int k=0; k<directions.length; k++) {
-                            int newX = i+directions[k][0];
-                            int newY = j+directions[k][1];
-                            if (newX < m && newX>=0 && newY < n && newY>=0){
-                                if (matrix[newX][newY] == 0) {
-                                    int[] pos = new int[2];
-                                    pos[0] = i;
-                                    pos[1] = j;
-                                    queue.add(pos);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return res;
-    }
-
-    class Node {
-        public int val;
-        public Node left;
-        public Node right;
-        public Node next;
-
-        public Node() {}
-
-        public Node(int _val) {
-            val = _val;
-        }
-
-        public Node(int _val, Node _left, Node _right, Node _next) {
-            val = _val;
-            left = _left;
-            right = _right;
-            next = _next;
-        }
     }
 
     public int hammingDistance(int x, int y) {

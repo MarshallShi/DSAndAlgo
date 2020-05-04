@@ -102,7 +102,6 @@ public class NumberOfIsland2 {
             for(int[] cell : island){
                 newIsland.add(transform(transform, cell));
             }
-
             codedIsland.add(encodeIsland(newIsland));
         }
         Collections.sort(codedIsland);
