@@ -1,5 +1,8 @@
 Huffman coding
 
+Traveling Salesman Problem Dynamic Programming Held-Karp
+Questions:
+https://leetcode.com/problems/find-the-shortest-superstring/
 
 
 Tail recursion

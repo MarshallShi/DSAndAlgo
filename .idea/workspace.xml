@@ -2,50 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a386c200-b4a7-4ed0-a4c0-437e7ab23533" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/TimeComplexity.MD" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPBitMaskExe.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/linkedlist/LinkedListCycle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/tree/ConnectNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/tree/NAryTree.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tooling/Kubernetes.MD" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/tooling/Linux.MD" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/AlgoRarelyUsed.MD" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/AlgoRarelyUsed.MD" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/AlgoToMemorize.MD" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/AlgoToMemorize.MD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/Bit.MD" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/Bit.MD" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/DP.MD" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/DP.MD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/Misc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/Misc.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/ProblemSolving.MD" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/ProblemSolving.MD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/Graph.MD" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/Graph.MD" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/Summary.MD" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/Summary.MD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/array/ArrayExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/array/ArrayExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/array/GridSpiralExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/array/GridSpiralExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/bfs/BFSExes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/bfs/BFSExes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/binarysearch/BinarySearchExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/binarysearch/BinarySearchExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/binarysearch/HardBinarySearchExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/binarysearch/HardBinarySearchExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/design/MyHashMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/design/MyHashMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/design/MyHashSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/design/MyHashSet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/design/NAryTreeCodec.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/tree/NAryTreeCodec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/design/TreeCodec.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeCodec.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/BacktrackExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/BacktrackExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/DFSExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/DFSExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/HardBacktrackExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/HardBacktrackExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/HardDFSExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/HardDFSExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/NumberOfIsland2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/NumberOfIsland2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/RobotCleanRoom.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/RobotCleanRoom.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/divideandconquer/DivConquerExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/divideandconquer/DivConquerExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPOnArrayExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPOnArrayExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/DistinctWaysExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/DistinctWaysExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/MinMaxPathExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/MinMaxPathExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/graph/GraphExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/graph/GraphExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/hashmap/HashMapExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/hashmap/HashMapExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/linkedlist/LinkedListExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/linkedlist/LinkedListExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/priorityqueue/PriorityQueueExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/priorityqueue/PriorityQueueExe.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPBitMaskExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPBitMaskExe.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/game/minimax/MinimaxAlgoExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/game/minimax/MinimaxAlgoExe.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/graph/ArticulationPointsAndBridges.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/graph/ArticulationPointsAndBridges.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/graph/DijkstrasAlgo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/graph/DijkstrasAlgo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/sorting/KthLargestNumber.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/sorting/KthLargestNumber.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/stack/StackExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/stack/StackExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/stackmonotone/MonotoneStackExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/stackmonotone/MonotoneStackExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeExe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeExe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dsandalgo/twopointers/TwoPointers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dsandalgo/twopointers/TwoPointers.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/tooling/Docker.MD" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/tooling/Docker.MD" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -92,30 +59,30 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="MD" value="123" />
-          <entry key="java" value="1543" />
+          <entry key="MD" value="129" />
+          <entry key="java" value="1551" />
           <entry key="xml" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="JAVA" value="1543" />
-          <entry key="Markdown" value="123" />
+          <entry key="JAVA" value="1551" />
+          <entry key="Markdown" value="129" />
           <entry key="XML" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="MD" value="42183" />
+          <entry key="MD" value="42218" />
           <entry key="dummy" value="41" />
-          <entry key="java" value="318845" />
+          <entry key="java" value="319353" />
           <entry key="xml" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="318845" />
-          <entry key="Markdown" value="42183" />
+          <entry key="JAVA" value="319353" />
+          <entry key="Markdown" value="42218" />
           <entry key="PLAIN_TEXT" value="41" />
           <entry key="XML" value="3" />
         </counts>
@@ -128,8 +95,20 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/Summary.MD">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="380">
-                <caret line="1139" column="28" lean-forward="true" selection-start-line="1139" selection-start-column="28" selection-end-line="1139" selection-end-column="28" />
+              <first_editor relative-caret-position="172">
+                <caret line="2325" column="73" lean-forward="true" selection-start-line="2325" selection-start-column="73" selection-end-line="2325" selection-end-column="73" />
+              </first_editor>
+              <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/AlgoToMemorize.MD">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="515">
+                <caret line="333" column="62" lean-forward="true" selection-start-line="333" selection-start-column="62" selection-end-line="333" selection-end-column="62" />
               </first_editor>
               <second_editor />
             </state>
@@ -137,106 +116,31 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/NAryTree.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="215">
-              <caret line="201" column="36" lean-forward="true" selection-start-line="201" selection-start-column="36" selection-end-line="201" selection-end-column="36" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#1358#1367#0" expanded="true" />
-              </folding>
+        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/Graph.MD">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="249">
+                <caret line="148" column="41" lean-forward="true" selection-start-line="148" selection-start-column="41" selection-end-line="148" selection-end-column="41" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/design/Codec.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/graph/DijkstrasAlgo.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="28" column="1" lean-forward="true" selection-start-line="28" selection-start-column="1" selection-end-line="28" selection-end-column="1" />
+            <state relative-caret-position="238">
+              <caret line="19" lean-forward="true" selection-start-line="19" selection-end-line="19" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeCodec.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/graph/DijkstrasExe.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="861">
-              <caret line="56" column="18" lean-forward="true" selection-start-line="56" selection-start-column="18" selection-end-line="56" selection-end-column="18" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/twopointers/TwoPointers.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="28" column="38" lean-forward="true" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/priorityqueue/PriorityQueueExe.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="89">
-              <caret line="109" column="4" lean-forward="true" selection-start-line="109" selection-start-column="4" selection-end-line="140" selection-end-column="5" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#53287#53288#0" expanded="true" />
-                <element signature="e#53363#53364#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPBitMaskExe.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="55">
-              <caret line="9" column="7" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="89" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/BacktrackExe.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="22" column="50" lean-forward="true" selection-start-line="22" selection-start-column="50" selection-end-line="22" selection-end-column="50" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/hashmap/HashMapExe.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="470">
-              <caret line="400" column="13" lean-forward="true" selection-start-line="400" selection-start-column="13" selection-end-line="400" selection-end-column="13" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeExe.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="287">
-              <caret line="181" column="7" selection-start-line="181" selection-start-column="7" selection-end-line="181" selection-end-column="61" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="221">
+              <caret line="19" column="7" lean-forward="true" selection-start-line="19" selection-start-column="7" selection-end-line="19" selection-end-column="73" />
             </state>
           </provider>
         </entry>
@@ -253,11 +157,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>https://leetcode.com/problems/search-in-a-sorted-array-of-unknown-size/</find>
-      <find>https://leetcode.com/problems/find-the-duplicate-number/</find>
-      <find>findDuplicate</find>
-      <find>https://leetcode.com/problems/find-k-th-smallest-pair-distance/</find>
-      <find>plusOne</find>
       <find>Binary Search</find>
       <find>findDiagonalOrder</find>
       <find>spiralOrder</find>
@@ -278,11 +177,16 @@
       <find>isValidSudoku</find>
       <find>findDuplicateSubtrees</find>
       <find>lengthOfLongestSubstring</find>
-      <find>Tree Q</find>
       <find>preorder</find>
       <find>https://leetcode.com/problems/maximum-depth-of-n-ary-tree/</find>
       <find>maxDepth</find>
       <find>Two Pointer</find>
+      <find>https://leetcode.com/problems/longest-happy-prefix/</find>
+      <find>deleteNode</find>
+      <find>Tree Q</find>
+      <find>KthLargest</find>
+      <find>Critical</find>
+      <find>dij</find>
     </findStrings>
     <replaceStrings>
       <replace>}</replace>
@@ -299,10 +203,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/tree/Node.java" />
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/tree/FindElements.java" />
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/tree/HardTreeExe.java" />
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/trie/TrieExe2.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/bfs/HardBFSExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/string/StringHardExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/trie/TrieExes.java" />
@@ -324,12 +224,9 @@
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/Bit.MD" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/binarysearch/BinarySearchExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/Misc.java" />
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/AlgoRarelyUsed.MD" />
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/sorting/KthLargestNumber.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/binarysearch/HardBinarySearchExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/array/GridSpiralExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPOnArrayExe.java" />
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/AlgoToMemorize.MD" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/RobotCleanRoom.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/HardDFSExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/HardBacktrackExe.java" />
@@ -343,13 +240,20 @@
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/linkedlist/LinkedListCycle.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/array/ArrayExe.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/hashmap/HashMapExe.java" />
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/Summary.MD" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/tree/NAryTree.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeCodec.java" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/twopointers/TwoPointers.java" />
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPBitMaskExe.java" />
-        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/DP.MD" />
         <option value="$PROJECT_DIR$/src/main/java/dsandalgo/priorityqueue/PriorityQueueExe.java" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/game/minimax/MinimaxAlgoExe.java" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/DP.MD" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPBitMaskExe.java" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/Summary.MD" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/sorting/KthLargestNumber.java" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/graph/ArticulationPointsAndBridges.java" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/Graph.MD" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/AlgoRarelyUsed.MD" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/graph/DijkstrasAlgo.java" />
+        <option value="$PROJECT_DIR$/src/main/java/dsandalgo/AlgoToMemorize.MD" />
       </list>
     </option>
   </component>
@@ -413,24 +317,7 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
-              <item name="priorityqueue" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="dsandalgo" type="462c0819:PsiDirectoryNode" />
-              <item name="twopointers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DSandAlgExe" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DSAndAlgo" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="tooling" type="462c0819:PsiDirectoryNode" />
+              <item name="graph" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -443,7 +330,7 @@
     <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://C:/tech/Algo/DSAndAlgo/src/main/java/dsandalgo/dfsbacktrack/RecursiveSolution.java&#10;Coding&#9;PSI&#9;JAVA://dsandalgo.CodingEx" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1588571808171" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1588598477370" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -598,18 +485,18 @@
       <workItem from="1586771738557" duration="39382000" />
       <workItem from="1587021322759" duration="1878000" />
       <workItem from="1587032684533" duration="67951000" />
-      <workItem from="1587726771816" duration="173269000" />
+      <workItem from="1587726771816" duration="180614000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2159403000" />
+    <option name="totallyTimeSpent" value="2166748000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1688" y="-8" width="1696" height="1026" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21547619" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21547619" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -619,7 +506,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.33770493" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.18251365" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.27103826" />
+      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.27103826" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -997,61 +884,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/DistinctWaysExe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="179">
-          <caret line="518" column="7" selection-start-line="518" selection-start-column="7" selection-end-line="518" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/ConnectNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="134" column="20" lean-forward="true" selection-start-line="134" selection-start-column="20" selection-end-line="134" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/stack/StackExe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="179" column="62" lean-forward="true" selection-start-line="179" selection-start-column="62" selection-end-line="179" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/patterns/MinMaxPathExe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="553">
-          <caret line="585" column="21" lean-forward="true" selection-start-line="585" selection-start-column="21" selection-end-line="585" selection-end-column="21" />
-          <folding>
-            <element signature="e#19449#19458#0" expanded="true" />
-            <element signature="e#35572#35573#0" expanded="true" />
-            <element signature="e#35596#35597#0" expanded="true" />
-            <element signature="e#35748#35749#0" expanded="true" />
-            <element signature="e#35772#35773#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/systemdesign/RateLimit.MD">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="357">
-            <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/tooling/Linux.MD">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="1360">
-            <caret line="80" column="23" lean-forward="true" selection-start-line="80" selection-start-column="23" selection-end-line="80" selection-end-column="23" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/tooling/Docker.MD">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -1120,16 +952,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/AlgoRarelyUsed.MD">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="593">
-            <caret line="289" column="5" lean-forward="true" selection-start-line="289" selection-start-column="5" selection-end-line="289" selection-end-column="5" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/systemdesign/Algo.MD">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -1159,13 +981,6 @@
             <element signature="e#2431#2432#0" expanded="true" />
             <element signature="e#2466#2467#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/sorting/KthLargestNumber.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="155">
-          <caret line="203" column="5" selection-start-line="203" selection-start-column="5" selection-end-line="203" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -1205,16 +1020,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
           <caret line="4" column="4" lean-forward="true" selection-start-line="4" selection-start-column="4" selection-end-line="42" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/AlgoToMemorize.MD">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="357">
-            <caret line="21" column="27" lean-forward="true" selection-start-line="21" selection-start-column="27" selection-end-line="21" selection-end-column="27" />
-          </first_editor>
-          <second_editor />
         </state>
       </provider>
     </entry>
@@ -1349,6 +1154,70 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/Codec.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" column="38" lean-forward="true" selection-start-line="15" selection-start-column="38" selection-end-line="15" selection-end-column="38" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/NAryTreeCodec.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1173">
+          <caret line="123" column="28" lean-forward="true" selection-start-line="123" selection-start-column="28" selection-end-line="123" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/priorityqueue/PriorityQueueExe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#53287#53288#0" expanded="true" />
+            <element signature="e#53363#53364#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/twopointers/TwoPointers.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="28" column="38" lean-forward="true" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeCodec.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="861">
+          <caret line="56" column="18" lean-forward="true" selection-start-line="56" selection-start-column="18" selection-end-line="56" selection-end-column="18" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/design/Codec.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="28" column="1" lean-forward="true" selection-start-line="28" selection-start-column="1" selection-end-line="28" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/NAryTree.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="201" column="36" lean-forward="true" selection-start-line="201" selection-start-column="36" selection-end-line="201" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1358#1367#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dfsbacktrack/BacktrackExe.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
@@ -1369,75 +1238,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/string/RollingHashExe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="50" lean-forward="true" selection-start-line="7" selection-start-column="50" selection-end-line="7" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/game/minimax/MinimaxAlgoExe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="254" column="23" lean-forward="true" selection-start-line="254" selection-start-column="23" selection-end-line="254" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/sorting/KthLargestNumber.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="293">
+          <caret line="288" column="62" selection-start-line="288" selection-start-column="62" selection-end-line="288" selection-end-column="62" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeExe.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="287">
-          <caret line="181" column="7" selection-start-line="181" selection-start-column="7" selection-end-line="181" selection-end-column="61" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/Summary.MD">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="380">
-            <caret line="1139" column="28" lean-forward="true" selection-start-line="1139" selection-start-column="28" selection-end-line="1139" selection-end-column="28" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/Codec.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="38" lean-forward="true" selection-start-line="15" selection-start-column="38" selection-end-line="15" selection-end-column="38" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/NAryTree.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="201" column="36" lean-forward="true" selection-start-line="201" selection-start-column="36" selection-end-line="201" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1358#1367#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/NAryTreeCodec.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1173">
-          <caret line="123" column="28" lean-forward="true" selection-start-line="123" selection-start-column="28" selection-end-line="123" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/design/Codec.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="28" column="1" lean-forward="true" selection-start-line="28" selection-start-column="1" selection-end-line="28" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/tree/TreeCodec.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="861">
-          <caret line="56" column="18" lean-forward="true" selection-start-line="56" selection-start-column="18" selection-end-line="56" selection-end-column="18" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPBitMaskExe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="55">
-          <caret line="9" column="7" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="89" />
+        <state relative-caret-position="442">
+          <caret line="278" column="38" lean-forward="true" selection-start-line="278" selection-start-column="38" selection-end-line="278" selection-end-column="38" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1447,29 +1275,81 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/DP.MD">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="277">
-            <caret line="779" column="38" lean-forward="true" selection-start-line="779" selection-start-column="38" selection-end-line="779" selection-end-column="38" />
+          <first_editor relative-caret-position="192">
+            <caret line="747" column="36" lean-forward="true" selection-start-line="747" selection-start-column="36" selection-end-line="747" selection-end-column="36" />
           </first_editor>
           <second_editor />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/twopointers/TwoPointers.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/dp/DPBitMaskExe.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="28" column="38" lean-forward="true" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
+        <state relative-caret-position="242">
+          <caret line="139" column="44" lean-forward="true" selection-start-line="139" selection-start-column="44" selection-end-line="139" selection-end-column="44" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/priorityqueue/PriorityQueueExe.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/graph/ArticulationPointsAndBridges.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="89">
-          <caret line="109" column="4" lean-forward="true" selection-start-line="109" selection-start-column="4" selection-end-line="140" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#53287#53288#0" expanded="true" />
-            <element signature="e#53363#53364#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="646">
+          <caret line="108" column="5" lean-forward="true" selection-start-line="108" selection-start-column="5" selection-end-line="108" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/Summary.MD">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="172">
+            <caret line="2325" column="73" lean-forward="true" selection-start-line="2325" selection-start-column="73" selection-end-line="2325" selection-end-column="73" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/AlgoRarelyUsed.MD">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="340">
+            <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/Graph.MD">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="249">
+            <caret line="148" column="41" lean-forward="true" selection-start-line="148" selection-start-column="41" selection-end-line="148" selection-end-column="41" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/graph/DijkstrasAlgo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="19" lean-forward="true" selection-start-line="19" selection-end-line="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/graph/DijkstrasExe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="19" column="7" lean-forward="true" selection-start-line="19" selection-start-column="7" selection-end-line="19" selection-end-column="73" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/dsandalgo/AlgoToMemorize.MD">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="515">
+            <caret line="333" column="62" lean-forward="true" selection-start-line="333" selection-start-column="62" selection-end-line="333" selection-end-column="62" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>

@@ -14,7 +14,7 @@ public class KthLargestNumber {
 
     public static void main(String[] args) {
         KthLargestNumber exe = new KthLargestNumber();
-        int[] arr = {1,6,1};
+        int[] arr = {1, 6, 1};
         exe.findKthNumber(3, 1, 2);
     }
 
@@ -22,10 +22,10 @@ public class KthLargestNumber {
      * https://leetcode.com/problems/kth-smallest-number-in-multiplication-table/
      * Nearly every one have used the Multiplication Table.
      * But could you find out the k-th smallest number quickly from the multiplication table?
-     *
+     * <p>
      * Given the height m and the length n of a m * n Multiplication Table, and a positive integer k,
      * you need to return the k-th smallest number in this table.
-     *
+     * <p>
      * Example 1:
      * Input: m = 3, n = 3, k = 5
      * Output:
@@ -34,7 +34,7 @@ public class KthLargestNumber {
      * 1	2	3
      * 2	4	6
      * 3	6	9
-     *
+     * <p>
      * The 5-th smallest number is 3 (1, 2, 2, 3, 3).
      * Example 2:
      * Input: m = 2, n = 3, k = 6
@@ -43,7 +43,7 @@ public class KthLargestNumber {
      * The Multiplication Table:
      * 1	2	3
      * 2	4	6
-     *
+     * <p>
      * The 6-th smallest number is 6 (1, 2, 2, 3, 4, 6).
      * Note:
      * The m and n will be in the range [1, 30000].
@@ -62,11 +62,12 @@ public class KthLargestNumber {
         }
         return high;
     }
+
     private int count(int v, int m, int n) {
         int count = 0;
         //Trick: quickly calculate the numbers less than v.
         for (int i = 1; i <= m; i++) {
-            int temp = Math.min(v / i , n);
+            int temp = Math.min(v / i, n);
             count += temp;
         }
         return count;
@@ -75,22 +76,22 @@ public class KthLargestNumber {
     /**
      * https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/
      * Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.
-     *
+     * <p>
      * Note that it is the kth smallest element in the sorted order, not the kth distinct element.
-     *
+     * <p>
      * Example:
-     *
+     * <p>
      * matrix = [
-     *    [ 1,  5,  9],
-     *    [10, 11, 13],
-     *    [12, 13, 15]
+     * [ 1,  5,  9],
+     * [10, 11, 13],
+     * [12, 13, 15]
      * ],
      * k = 8,
-     *
+     * <p>
      * return 13.
      * Note:
      * You may assume k is always valid, 1 ≤ k ≤ n2.
-     *
+     * <p>
      * Accepted
      * 155,975
      * Submissions
@@ -104,7 +105,7 @@ public class KthLargestNumber {
                 return Integer.compare(matrix[a[0]][a[1]], matrix[b[0]][b[1]]);
             }
         });
-        for (int i=0; i<matrix.length; i++) {
+        for (int i = 0; i < matrix.length; i++) {
             pq.offer(new int[]{i, 0});
         }
         while (--k > 0) {
@@ -124,7 +125,7 @@ public class KthLargestNumber {
         for (int cnt = 0; l < r; cnt = 0) { // this is the binary search loop
             int m = l + (r - l) / 2;
             //search the matrix to find number of greaters.
-            for (int i = 0, j = n - 1; i < n; i++)  {
+            for (int i = 0, j = n - 1; i < n; i++) {
                 while (j >= 0 && matrix[i][j] > m) j--;  // the pointer j will only go in one direction
                 cnt += (j + 1);
             }
@@ -140,25 +141,25 @@ public class KthLargestNumber {
     /**
      * https://leetcode.com/problems/find-k-pairs-with-smallest-sums/
      * You are given two integer arrays nums1 and nums2 sorted in ascending order and an integer k.
-     *
+     * <p>
      * Define a pair (u,v) which consists of one element from the first array and one element from the second array.
-     *
+     * <p>
      * Find the k pairs (u1,v1),(u2,v2) ...(uk,vk) with the smallest sums.
-     *
+     * <p>
      * Example 1:
-     *
+     * <p>
      * Input: nums1 = [1,7,11], nums2 = [2,4,6], k = 3
      * Output: [[1,2],[1,4],[1,6]]
      * Explanation: The first 3 pairs are returned from the sequence:
-     *              [1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]
+     * [1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]
      * Example 2:
-     *
+     * <p>
      * Input: nums1 = [1,1,2], nums2 = [1,2,3], k = 2
      * Output: [1,1],[1,1]
      * Explanation: The first 2 pairs are returned from the sequence:
-     *              [1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]
+     * [1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]
      * Example 3:
-     *
+     * <p>
      * Input: nums1 = [1,2], nums2 = [3], k = 3
      * Output: [1,3],[2,3]
      * Explanation: All possible pairs are returned from the sequence: [1,3],[2,3]
@@ -170,8 +171,8 @@ public class KthLargestNumber {
                 return (o2.get(0) + o2.get(1)) - (o1.get(0) + o1.get(1));
             }
         });
-        for (int i=0; i<nums1.length; i++) {
-            for (int j=0; j< nums2.length; j++) {
+        for (int i = 0; i < nums1.length; i++) {
+            for (int j = 0; j < nums2.length; j++) {
                 if (maxHeap.size() < k) {
                     List<Integer> obj = new ArrayList<Integer>();
                     obj.add(nums1[i]);
@@ -190,14 +191,13 @@ public class KthLargestNumber {
             }
         }
 
-        int size = maxHeap.size();
         List<List<Integer>> resArr = new ArrayList<List<Integer>>();
         while (!maxHeap.isEmpty()) {
             List<Integer> max = maxHeap.poll();
             resArr.add(max);
         }
         List<List<Integer>> res = new ArrayList<List<Integer>>();
-        for (int i=resArr.size()-1; i>=0; i--){
+        for (int i = resArr.size() - 1; i >= 0; i--) {
             res.add(resArr.get(i));
         }
         return res;
@@ -206,13 +206,13 @@ public class KthLargestNumber {
     /**
      * https://leetcode.com/problems/kth-largest-element-in-an-array/
      * Find the kth largest element in an unsorted array. Note that it is the kth largest element in the sorted order, not the kth distinct element.
-     *
+     * <p>
      * Example 1:
-     *
+     * <p>
      * Input: [3,2,1,5,6,4] and k = 2
      * Output: 5
      * Example 2:
-     *
+     * <p>
      * Input: [3,2,3,1,2,4,5,5,6] and k = 4
      * Output: 4
      * Note:
@@ -242,15 +242,14 @@ public class KthLargestNumber {
     }
 
     //O(N) best case / O(N^2) worst case running time + O(1) memory
-    //The smart approach for this problem is to use the selection algorithm (based on the partion method - the same one as used in quicksort).
+    //The smart approach for this problem is to use the selection algorithm (based on the partition method - the same one as used in quick sort).
     public int findKthLargest_3(int[] nums, int k) {
-
         k = nums.length - k;
         int lo = 0;
         int hi = nums.length - 1;
         while (lo < hi) {
             final int j = partition(nums, lo, hi);
-            if(j < k) {
+            if (j < k) {
                 lo = j + 1;
             } else if (j > k) {
                 hi = j - 1;
@@ -262,13 +261,12 @@ public class KthLargestNumber {
     }
 
     private int partition(int[] a, int lo, int hi) {
-
         int i = lo;
         int j = hi + 1;
-        while(true) {
-            while(i < hi && less(a[++i], a[lo]));
-            while(j > lo && less(a[lo], a[--j]));
-            if(i >= j) {
+        while (true) {
+            while (i < hi && less(a[++i], a[lo])) ;
+            while (j > lo && less(a[lo], a[--j])) ;
+            if (i >= j) {
                 break;
             }
             exch(a, i, j);
@@ -289,16 +287,15 @@ public class KthLargestNumber {
 
     //O(N) guaranteed running time + O(1) space
     //So how can we improve the above solution and make it O(N) guaranteed? The answer is quite simple, we can randomize the input,
-    // so that even when the worst case input would be provided the algorithm wouldn't be affected. So all what it is needed to be done is to shuffle the input.
+    //so that even when the worst case input would be provided the algorithm wouldn't be affected. So all what it is needed to be done is to shuffle the input.
     public int findKthLargest_4(int[] nums, int k) {
-
         shuffle(nums);
         k = nums.length - k;
         int lo = 0;
         int hi = nums.length - 1;
         while (lo < hi) {
             final int j = partition(nums, lo, hi);
-            if(j < k) {
+            if (j < k) {
                 lo = j + 1;
             } else if (j > k) {
                 hi = j - 1;
@@ -310,9 +307,8 @@ public class KthLargestNumber {
     }
 
     private void shuffle(int a[]) {
-
         final Random random = new Random();
-        for(int ind = 1; ind < a.length; ind++) {
+        for (int ind = 1; ind < a.length; ind++) {
             final int r = random.nextInt(ind + 1);
             exch(a, ind, r);
         }

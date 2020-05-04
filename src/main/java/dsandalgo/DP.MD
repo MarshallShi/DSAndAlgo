@@ -745,6 +745,8 @@ This is similar to Longest Increasing Subsequence.  We use bit to store the leng
     
 DP + bitmasking
 
+http://codeforces.com/blog/entry/337
+https://www.hackerearth.com/ja/practice/algorithms/dynamic-programming/bit-masking/tutorial/
 
 https://leetcode.com/problems/number-of-ways-to-wear-different-hats-to-each-other/
 Trick: the implementation should reverse the requirement, instead of assign based on people, assign based on hat. That's much smaller

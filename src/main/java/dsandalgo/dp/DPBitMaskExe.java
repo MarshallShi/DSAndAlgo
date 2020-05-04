@@ -2,6 +2,7 @@ package dsandalgo.dp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class DPBitMaskExe {
@@ -89,5 +90,106 @@ public class DPBitMaskExe {
             }
         }
         return dp[pplMask][hats] = res;
+    }
+
+    /**
+     * https://leetcode.com/problems/partition-to-k-equal-sum-subsets/
+     * Given an array of integers nums and a positive integer k, find whether it's possible to divide this array into k non-empty subsets whose sums are all equal.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: nums = [4, 3, 2, 3, 5, 2, 1], k = 4
+     * Output: True
+     * Explanation: It's possible to divide it into 4 subsets (5), (1, 4), (2,3), (2,3) with equal sums.
+     *
+     *
+     * Note:
+     *
+     * 1 <= k <= len(nums) <= 16.
+     * 0 < nums[i] < 10000.
+     */
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        if (nums == null || nums.length == 0) {
+            return false;
+        }
+        int n = nums.length;
+        //result array
+        boolean dp[] = new boolean[1 << n];
+        int total[] = new int[1 << n];
+        dp[0] = true;
+
+        int sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        Arrays.sort(nums);
+
+        if (sum % k != 0) {
+            return false;
+        }
+        sum /= k;
+        if (nums[n - 1] > sum) {
+            return false;
+        }
+        // Loop over power set
+        for (int i = 0; i < (1 << n); i++) {
+            if (dp[i]) {
+                // Loop over each element to find subset
+                for (int j = 0; j < n; j++) {
+                    // set the jth bit
+                    int temp = i | (1 << j);
+                    if (temp != i) {
+                        // if total sum is less than target store in dp and total array
+                        if (nums[j] <= (sum - (total[i] % sum))) {
+                            dp[temp] = true;
+                            total[temp] = nums[j] + total[i];
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[(1 << n) - 1];
+    }
+
+    /**
+     * https://leetcode.com/problems/subsets/
+     * Given a set of distinct integers, nums, return all possible subsets (the power set).
+     *
+     * Note: The solution set must not contain duplicate subsets.
+     *
+     * Example:
+     *
+     * Input: nums = [1,2,3]
+     * Output:
+     * [
+     *   [3],
+     *   [1],
+     *   [2],
+     *   [1,2,3],
+     *   [1,3],
+     *   [2,3],
+     *   [1,2],
+     *   []
+     * ]
+     */
+    //Use the bit represent which set of number we need to take for each sub set.
+    public List<List<Integer>> subsets(int[] S) {
+        Arrays.sort(S);
+        int totalNumber = 1 << S.length;
+        List<List<Integer>> collection = new ArrayList<>(totalNumber);
+        for (int i = 0; i < totalNumber; i++) {
+            List<Integer> set = new LinkedList<>();
+            for (int j = 0; j < S.length; j++) {
+                if ((i & (1 << j)) != 0) {
+                    set.add(S[j]);
+                }
+            }
+            collection.add(set);
+        }
+        return collection;
     }
 }

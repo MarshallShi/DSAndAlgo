@@ -2327,6 +2327,42 @@ https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
 https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/
 Recursively create the tree from left and right hand.
 
+Delete Node in a BST
+https://leetcode.com/problems/delete-node-in-a-bst/
+
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null) {
+            return root;
+        }
+        if (root.val > key) {
+            root.left = deleteNode(root.left, key);
+        } else {
+            if (root.val < key) {
+                root.right = deleteNode(root.right, key);
+            } else {
+                //Once find the node to delete.
+                if (root.left == null) {
+                    return root.right;
+                } else {
+                    if (root.right == null) {
+                        return root.left;
+                    }
+                    // node with two children, replace with the inOrder successor(minVal) in the right subtree
+                    root.val = getMinForDeleteNode(root.right);
+                    root.right = deleteNode(root.right, root.val);
+                }
+            }
+        }
+        return root;
+    }
+
+    private int getMinForDeleteNode(TreeNode root) {
+        while (root.left != null) {
+            root = root.left;
+        }
+        return root.val;
+    }
+    
 Find Duplicate Subtrees
 https://leetcode.com/problems/find-duplicate-subtrees/
 Create a string fromate path, store all path from current node in a map, if there is previous stored path, then the node is in the result.

@@ -15,7 +15,6 @@ import java.util.Set;
 //   - Choose an evaluation node from the unsettled nodes set, the evaluation node should be the one with the lowest distance from the source.
 //   - Calculate new distances to direct neighbors by keeping the lowest distance at each evaluation.
 //   - Add neighbors that are not yet settled to the unsettled nodes set.
-//These steps can be aggregated into two stages, Initialization and Evaluation. Let's see how does that apply to our sample graph:
 
 public class DijkstrasAlgo {
 

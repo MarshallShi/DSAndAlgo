@@ -157,4 +157,106 @@ public class MinimaxAlgoExe {
      * }
      */
 
+
+    /**
+     * https://leetcode.com/problems/cat-and-mouse/
+     * A game on an undirected graph is played by two players, Mouse and Cat, who alternate turns.
+     *
+     * The graph is given as follows: graph[a] is a list of all nodes b such that ab is an edge of the graph.
+     *
+     * Mouse starts at node 1 and goes first, Cat starts at node 2 and goes second, and there is a Hole at node 0.
+     *
+     * During each player's turn, they must travel along one edge of the graph that meets where they are.  For example, if the Mouse is at node 1, it must travel to any node in graph[1].
+     *
+     * Additionally, it is not allowed for the Cat to travel to the Hole (node 0.)
+     *
+     * Then, the game can end in 3 ways:
+     *
+     * If ever the Cat occupies the same node as the Mouse, the Cat wins.
+     * If ever the Mouse reaches the Hole, the Mouse wins.
+     * If ever a position is repeated (ie. the players are in the same position as a previous turn, and it is the same player's turn to move), the game is a draw.
+     * Given a graph, and assuming both players play optimally, return 1 if the game is won by Mouse, 2 if the game is won by Cat, and 0 if the game is a draw.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [[2,5],[3],[0,4,5],[1,4,5],[2,3],[0,2,3]]
+     * Output: 0
+     * Explanation:
+     * 4---3---1
+     * |   |
+     * 2---5
+     *  \ /
+     *   0
+     *
+     *
+     * Note:
+     *
+     * 3 <= graph.length <= 50
+     * It is guaranteed that graph[1] is non-empty.
+     * It is guaranteed that graph[2] contains a non-zero element.
+     */
+    //The basic idea is the memory cache search.
+    //There are 3 dimensions: The time t, mouse position x, and cat position y.
+    //so at any time and any position   f(t, x, y) should have a value.
+    //value       0       1                   2
+    //result      draw   mouse win            cat win
+    public int catMouseGame(int[][] graph) {
+        int n = graph.length;
+        int[][][] dp = new int[2 * n][n][n];
+        for (int i = 0; i < dp.length; i++) {
+            for (int j = 0; j < dp[0].length; j++) {
+                Arrays.fill(dp[i][j], -1);
+            }
+        }
+        return catMouseGameSearch(graph, 0, 1, 2, dp);
+    }
+
+    // t is which step, x is mouse location, y is cat location
+    private int catMouseGameSearch(int[][] graph, int t, int x, int y, int[][][] dp) {
+        if (t == graph.length * 2) return 0;
+        if (x == y) return dp[t][x][y] = 2;
+        if (x == 0) return dp[t][x][y] = 1;
+        if (dp[t][x][y] != -1) return dp[t][x][y];
+        int who = t % 2;
+        boolean flag;
+        if (who == 0) { // mouse's turn
+            flag = true; // by default, is cat win
+            for (int i = 0; i < graph[x].length; i++) {
+                int nxt = catMouseGameSearch(graph, t + 1, graph[x][i], y, dp);
+                if (nxt == 1) {
+                    return dp[t][x][y] = 1;
+                } else {
+                    if (nxt != 2) {
+                        flag = false;
+                    }
+                }
+            }
+            if (flag) {
+                return dp[t][x][y] = 2;
+            } else {
+                return dp[t][x][y] = 0;
+            }
+        } else { // cat's turn
+            flag = true; // by default is mouse win
+            for (int i = 0; i < graph[y].length; i++) {
+                if (graph[y][i] != 0) {
+                    int nxt = catMouseGameSearch(graph, t + 1, x, graph[y][i], dp);
+                    if (nxt == 2) {
+                        return dp[t][x][y] = 2;
+                    } else {
+                        if (nxt != 1) {
+                            flag = false;
+                        }
+                    }
+                }
+            }
+            if (flag) {
+                return dp[t][x][y] = 1;
+            } else {
+                return dp[t][x][y] = 0;
+            }
+        }
+    }
 }

@@ -313,8 +313,51 @@ https://leetcode.com/problems/word-search-ii/
 
 Graph:
 
-Shortest path algo
-1. Dijkstra
+Dijkstra’s Algorithm (Shortest path algo)
+1. Set all the node’s distances to infinity and add them to an unexplored set
+2. Set the starting node’s distance to 0
+3. Repeat the following:
+A) Look for the node with the lowest distance, let this be the current node
+B) Remove it from the unexplored set
+C) For each of the nodes adjacent to this node…
+If it is not walkable, ignore it. Otherwise do the following.
+Calculate a potential new distance based on the current node’s distance plus the distance to the adjacent node you are at.
+If the potential distance is less than the adjacent node’s current distance, then set the adjacent node’s distance to the potential new distance and set the adjacent node’s parent to the current node
+D) Stop when you:
+Remove the end node from the unexplored set, in which case the path has been found, or
+Fail to find the end node, and the unexplored set is empty. In this case, there is no path.
+
+    // Dijkstra’s Algorithm
+    // Set each node's position to infinity
+    for each node in the graph
+        set the node's distance to infinity
+        set the node's parent to none
+    // Create an unexplored set
+    let the unexploredSet equal a set of all the nodes
+    while the unexploredSet is not empty
+        // Get the current node
+        let the currentNode equal the node with the smallest distance
+        remove the currentNode from the unexploredSet
+        // Check completed
+        if currentNode's position is your goal
+            Congratz! You've found the end! Backtrack to get path
+        // Get all the neighbors
+        for each neighbor (still in unexploredSet) to the currentNode
+        
+        // Calculate the new distance
+        let newDist equal currentNode's dist plus distance between
+            the currentNode and the neighbor
+        // Check to see if the new distance is better
+        if newDist is less than currentNode's distance
+            set neighbor's distance to newDist
+            set neighbor's parent to currentNode
+            
+https://leetcode.com/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/
+https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/
+https://leetcode.com/problems/reachable-nodes-in-subdivided-graph/
+https://leetcode.com/problems/network-delay-time/
+https://leetcode.com/problems/cheapest-flights-within-k-stops/
+
 
 Topological sorting
 
