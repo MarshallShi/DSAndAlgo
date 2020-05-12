@@ -18,6 +18,11 @@ import java.util.Stack;
  *   }
  *   in_stk.push(A[i]);
  * }
+ *
+ * Practice:
+ *
+ * https://medium.com/@gregsh9.5/monotonic-queue-notes-980a019d5793
+ *
  */
 public class MonotoneStackExe {
 

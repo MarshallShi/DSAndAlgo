@@ -1,8 +1,11 @@
 package dsandalgo.graph;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -14,6 +17,73 @@ public class DijkstrasExe {
         DijkstrasExe exe = new DijkstrasExe();
         int[][] grids = {{0,1,10},{0,2,1},{1,2,2}};
         System.out.println(exe.reachableNodes(grids, 6, 3));
+    }
+
+    /**
+     * https://leetcode.com/problems/network-delay-time/
+     * There are N network nodes, labelled 1 to N.
+     *
+     * Given times, a list of travel times as directed edges times[i] = (u, v, w), where u is the source node, v is the target node, and w is the time it takes for a signal to travel from source to target.
+     *
+     * Now, we send a signal from a certain node K. How long will it take for all nodes to receive the signal? If it is impossible, return -1.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: times = [[2,1,1],[2,3,1],[3,4,1]], N = 4, K = 2
+     * Output: 2
+     *
+     *
+     * Note:
+     *
+     * N will be in the range [1, 100].
+     * K will be in the range [1, N].
+     * The length of times will be in the range [1, 6000].
+     * All edges times[i] = (u, v, w) will have 1 <= u, v <= N and 0 <= w <= 100.
+     */
+    public int networkDelayTime(int[][] times, int N, int K) {
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        for (int i=0; i<times.length; i++) {
+            List<int[]> adj = graph.getOrDefault(times[i][0], new ArrayList<>());
+            adj.add(new int[]{times[i][1], times[i][2]});
+            graph.put(times[i][0], adj);
+        }
+        boolean[] visited = new boolean[N+1];
+        //int[] 0:node, 1:distance
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[1] == o2[1]) {
+                    return o1[0] - o2[0];
+                }
+                return o1[1] - o2[1];
+            }
+        });
+        pq.offer(new int[]{K, 0});
+        int[] dist = new int[N + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[K] = 0;
+        int res = -1;
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            if (visited[cur[0]]) {
+                continue;
+            }
+            visited[cur[0]] = true;
+            res = cur[1];
+            N--;
+            if (graph.containsKey(cur[0])) {
+                for (int[] next : graph.get(cur[0])) {
+                    if (!visited[next[0]] && cur[1] + next[1] < dist[next[0]]) {
+                        pq.offer(new int[]{next[0], cur[1] + next[1]});
+                    }
+                }
+            }
+        }
+        return N == 0 ? res : -1;
     }
 
     /**

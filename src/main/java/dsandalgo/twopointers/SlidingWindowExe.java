@@ -1,6 +1,5 @@
 package dsandalgo.twopointers;
 
-//TODO: follow all these same type of problems.
 //https://leetcode.com/problems/subarrays-with-k-different-integers/discuss/235002/One-code-template-to-solve-all-of-these-problems!
 
 import java.util.ArrayList;

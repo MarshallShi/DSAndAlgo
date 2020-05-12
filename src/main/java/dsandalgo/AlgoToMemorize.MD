@@ -357,6 +357,8 @@ https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-
 https://leetcode.com/problems/reachable-nodes-in-subdivided-graph/
 https://leetcode.com/problems/network-delay-time/
 https://leetcode.com/problems/cheapest-flights-within-k-stops/
+https://leetcode.com/problems/word-ladder-ii/
+https://leetcode.com/problems/jump-game-ii/
 
 
 Topological sorting

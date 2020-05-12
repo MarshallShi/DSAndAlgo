@@ -1,4 +1,19 @@
-Docker basic command:
+What is hypervisor? What is containerization? Difference between virtual machine and docker?
+Virtualization software make the docker possible.
+
+What is docker container?
+Dockerfile ->  Docker Build cmd -> Docker Image -> Docker Run cmd -> Docker Container.
+
+Docker Namespace? A namespace is one of the Linux features and an important concept of containers.
+Namespace adds a layer of isolation in containers. dna, mount, ipc, network etc.
+
+What is the lifecycle of a docker container?
+Docker pull the image, and docker run -> started, then stopped.
+
+Docker commands:
+
+docker version
+Give the docker client and server versions.
 
 docker run 
 Run a image as a container, by default will download the image as well if not found.
@@ -18,9 +33,14 @@ Save the container as a image.
 docker exec 
 Execute a command in docker container.
 
+docker system prune
+Remove all the stopped containers etc.
+
 CMD vs ENTRYPOINT
 Networking
 Storage
+
+Once docker container exits, we don't lose the data, unless it is been explicitly deleted.
 
 Compose
 A configuration file in yml, to define multiple services: web, database, messaging...
@@ -209,4 +229,14 @@ docker swarm join  -> worker.
 On manager node:
 docker service create --replicas=3 my-web-server
 
+
+
+Application of docker:
+1. simplify configuration.
+2. code pipeline management
+3. developer productivity
+4. application isolation
+5. debugging capabilities
+6. multi-tenancy
+7. rapid deployment
 

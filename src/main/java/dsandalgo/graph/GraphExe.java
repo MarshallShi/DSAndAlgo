@@ -1,6 +1,7 @@
 package dsandalgo.graph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +28,56 @@ public class GraphExe {
         int[][] graph = {
                 {},{0,2,3,4},{3},{4},{}
         };
-        exe.eventualSafeNodes(graph);
+              //  [[0,1],[1,2],[2,0],[1,3]]
+        List<List<Integer>> connections = new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
+        res.add(0);
+        res.add(1);
+        connections.add(res);
+        res = new ArrayList<>();
+        res.add(1);
+        res.add(2);
+        connections.add(res);
+        res = new ArrayList<>();
+        res.add(2);
+        res.add(0);
+        connections.add(res);
+        res = new ArrayList<>();
+        res.add(1);
+        res.add(3);
+        connections.add(res);
+        exe.criticalConnections(4, connections);
+    }
+
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        for (List<Integer> lst : connections) {
+            graph.putIfAbsent(lst.get(0), new ArrayList<>());
+            graph.get(lst.get(0)).add(lst.get(1));
+            graph.putIfAbsent(lst.get(1), new ArrayList<>());
+            graph.get(lst.get(1)).add(lst.get(0));
+        }
+        int[] timers = new int[n];
+        int time = 1;
+        List<List<Integer>> ret = new ArrayList<>();
+        dfsHelper(graph, timers, 0, 0, time, ret);
+        return ret;
+    }
+
+    private int dfsHelper(Map<Integer, List<Integer>> graph, int[] timers, int from, int node, int curTime, List<List<Integer>> ret){
+        timers[node] = curTime;
+        for (Integer nextNode : graph.getOrDefault(node, new ArrayList<>())) {
+            if (nextNode == from) continue;
+            if (timers[nextNode] == 0) {
+                timers[node] = Math.min(timers[node], dfsHelper(graph, timers, node, nextNode, curTime + 1, ret));
+            } else {
+                timers[node] = Math.min(timers[node], timers[nextNode]);
+            }
+            if (curTime < timers[nextNode]) {
+                ret.add(Arrays.asList(node, nextNode));
+            }
+        }
+        return timers[node];
     }
 
     /**

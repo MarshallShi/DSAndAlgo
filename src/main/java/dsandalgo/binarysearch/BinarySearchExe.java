@@ -104,6 +104,10 @@ public class BinarySearchExe {
     public static void main(String[] args) {
         BinarySearchExe exe = new BinarySearchExe();
         int[] nums = {1,3,5};
+        String s = "Bob hit a ball, the hit BALL flew far after it was hit.";
+        s = s.replaceAll(",", "");
+        s = s.replaceAll("\\.", "");
+        String[] ws = s.split(" ");
         System.out.println(Arrays.binarySearch(nums, 6));
     }
 

@@ -83,6 +83,26 @@ Solution can be built with recursion and stack.
         return cur.toString();
     }
 
+Validate Stack Sequences
+https://leetcode.com/problems/validate-stack-sequences/
+    
+    public boolean validateStackSequences(int[] pushed, int[] popped) {
+        Stack<Integer> stack = new Stack<Integer>();
+        int j = 0;
+        for (int i=0; i<pushed.length; i++) {
+            stack.push(pushed[i]);
+            while (!stack.isEmpty()) {
+                if (stack.peek() == popped[j]) {
+                    stack.pop();
+                    j++;
+                } else {
+                    break;
+                }          
+            }
+        }
+        return stack.isEmpty();
+    }
+
 Next Greater Number
 Daily Temperatures
 https://leetcode.com/problems/daily-temperatures/
@@ -493,6 +513,13 @@ Array Question
 
 https://leetcode.com/problems/intersection-of-two-arrays-ii/
 Use hash map to store the index, use the shorter array to directly store the intersection as we traverse the longer array.
+
+Create Maximum Number
+https://leetcode.com/problems/create-maximum-number/
+Subproblems: 1. given an array, pick k numbers to form max value; 2. given two array, pick all of the values to form max value.
+
+This is similar to sub problem 1.
+https://leetcode.com/problems/remove-k-digits/
 
 Pairs of Songs With Total Durations Divisible by 60
 https://leetcode.com/problems/pairs-of-songs-with-total-durations-divisible-by-60/
@@ -1738,6 +1765,9 @@ https://leetcode.com/problems/binary-subarrays-with-sum/
 https://leetcode.com/problems/subarrays-with-k-different-integers/
 https://leetcode.com/problems/fruit-into-baskets/
 
+High frequency problem:
+https://leetcode.com/problems/subarrays-with-k-different-integers/
+
 
 https://leetcode.com/problems/longest-repeating-character-replacement/
 Need to observe the fact we need to always use the most frequent character plus k as the sliding window size.
@@ -2253,6 +2283,8 @@ Use post order traverse, but trick is how to pass the result from the children t
             return false;
         }
     }
+
+https://leetcode.com/problems/binary-search-tree-iterator/
 
 Find Duplicate Subtrees
 https://leetcode.com/problems/find-duplicate-subtrees/

@@ -111,26 +111,52 @@ public class GreedyExe{
     public int leastInterval(char[] tasks, int n) {
         int[] counter = new int[26];
         int max = 0;
-        int maxCount = 0;
+        int sameMaxCount = 0;
         for (char task : tasks) {
             counter[task - 'A']++;
             if (max == counter[task - 'A']) {
-                maxCount++;
+                sameMaxCount++;
             } else {
                 if (max < counter[task - 'A']) {
                     max = counter[task - 'A'];
-                    maxCount = 1;
+                    sameMaxCount = 1;
                 }
             }
         }
 
         int partCount = max - 1;
-        int partLength = n - (maxCount - 1);
+        int partLength = n - (sameMaxCount - 1);
         int emptySlots = partCount * partLength;
-        int availableTasks = tasks.length - max * maxCount;
+        int availableTasks = tasks.length - max * sameMaxCount;
         int idles = Math.max(0, emptySlots - availableTasks);
 
         return tasks.length + idles;
+    }
+
+    public String frequencySort(String s) {
+        int[] count = new int[128];
+        for (int i=0; i<s.length(); i++) {
+            count[s.charAt(i)]++;
+        }
+        List<int[]> coll = new ArrayList<>();
+        for (int i=0; i<128; i++) {
+            if (count[i] != 0) {
+                coll.add(new int[]{i, count[i]});
+            }
+        }
+        Collections.sort(coll, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o2[1] - o1[1];
+            }
+        });
+        StringBuilder sb = new StringBuilder();
+        for (int[] data : coll) {
+            for (int i=1; i<=data[1]; i++) {
+                sb.append((char)data[0]);
+            }
+        }
+        return sb.toString();
     }
 
     /**
@@ -164,9 +190,9 @@ public class GreedyExe{
      * Output:
      * [9, 8, 9]
      */
-    //https://web.archive.org/web/20160120093629/http://algobox.org/create-maximum-number/
-    //Idea is to split between nums1 and nums2 for i and k-i, merge the maxArray in tht end.
-    //On the merge, tricky part is if the first element is the same, will check next till the end find which is greater.
+    //Sub problems:
+    // 1. given an array, pick k numbers, to get the max number.
+    // 2. given two arrays, use all of their elements to get a max number.
     public int[] maxNumber(int[] nums1, int[] nums2, int k) {
         int n = nums1.length;
         int m = nums2.length;
@@ -179,6 +205,8 @@ public class GreedyExe{
         }
         return ans;
     }
+
+    //For sub problem 2
     private int[] merge(int[] nums1, int[] nums2, int k) {
         int[] ans = new int[k];
         for (int i = 0, j = 0, r = 0; r < k; ++r) {
@@ -186,17 +214,28 @@ public class GreedyExe{
         }
         return ans;
     }
+
+    //Make sure check until there is a difference
     private boolean greater(int[] nums1, int i, int[] nums2, int j) {
         while (i < nums1.length && j < nums2.length && nums1[i] == nums2[j]) {
             i++;
             j++;
         }
-        return j == nums2.length || (i < nums1.length && nums1[i] > nums2[j]);
+        if (j == nums2.length) {
+            return true;
+        }
+        if (i < nums1.length && nums1[i] > nums2[j]) {
+            return true;
+        }
+        return false;
     }
+
+    //For sub problem 1: given an array, pick k numbers, to get the max number.
     private int[] maxArray(int[] nums, int k) {
         int n = nums.length;
+        //use array to represent current k max numbers
         int[] ans = new int[k];
-        for (int i = 0, j = 0; i < n; ++i) {
+        for (int i = 0, j = 0; i < n; i++) {
             while (n - i + j > k && j > 0 && ans[j - 1] < nums[i]) {
                 j--;
             }

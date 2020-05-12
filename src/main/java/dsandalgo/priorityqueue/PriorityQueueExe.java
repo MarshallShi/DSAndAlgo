@@ -1,14 +1,11 @@
 package dsandalgo.priorityqueue;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -27,9 +24,8 @@ public class PriorityQueueExe {
 
     public static void main(String[] args) {
         PriorityQueueExe pqexe = new PriorityQueueExe();
-        //[[5,4,5],[1,2,6],[7,4,6]]
-        int[][] s = {{1,3,11},{2,4,6}};
-        System.out.println(pqexe.kthSmallest(s, 5));
+        int[][] s = {{2,1,1},{2,3,1},{3,4,1}};
+        //System.out.println(pqexe.networkDelayTime(s, 4, 2));
     }
 
     public class ListNode {
@@ -167,47 +163,6 @@ public class PriorityQueueExe {
         } else {
             return 0;
         }
-    }
-
-    /**
-     * https://leetcode.com/problems/network-delay-time/
-     * @param times
-     * @param N
-     * @param K
-     * @return
-     */
-    public int networkDelayTime(int[][] times, int N, int K) {
-        Map<Integer, Map<Integer, Integer>> map = new HashMap<>();
-        for (int[] time : times) {
-            map.putIfAbsent(time[0], new HashMap<>());
-            map.get(time[0]).put(time[1], time[2]);
-        }
-
-        //distance, node into pq
-        Queue<int[]> pq = new PriorityQueue<>((a, b) -> (a[0] - b[0]));
-
-        pq.add(new int[]{0, K});
-
-        boolean[] visited = new boolean[N + 1];
-        int res = 0;
-
-        while (!pq.isEmpty()) {
-            int[] cur = pq.remove();
-            int curDist = cur[0];
-            int curNode = cur[1];
-            if (visited[curNode]) {
-                continue;
-            }
-            visited[curNode] = true;
-            res = curDist;
-            N--;
-            if (map.containsKey(curNode)) {
-                for (int next : map.get(curNode).keySet()) {
-                    pq.add(new int[]{curDist + map.get(curNode).get(next), next});
-                }
-            }
-        }
-        return N == 0 ? res : -1;
     }
 
     /**
