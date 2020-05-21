@@ -2003,39 +2003,6 @@ public class ArrayExe {
     }
 
     /**
-     * https://leetcode.com/problems/grumpy-bookstore-owner/
-     *
-     * @param customers
-     * @param grumpy
-     * @param X
-     * @return
-     */
-    public int maxSatisfied(int[] customers, int[] grumpy, int X) {
-        int sum = 0;
-        //Get the inital value.
-        for (int i=0; i<X; i++) {
-            sum = sum + customers[i];
-        }
-        for (int i=X; i<customers.length; i++) {
-            if (grumpy[i] == 0) {
-                sum = sum + customers[i];
-            }
-        }
-        int maxSatisfied = sum;
-        //Move the window of X length.
-        for (int i=X; i< grumpy.length; i++) {
-            if (grumpy[i] == 1) {
-                sum = sum + customers[i];
-            }
-            if (grumpy[i - X] == 1) {
-                sum = sum - customers[i - X];
-            }
-            maxSatisfied = Math.max(maxSatisfied, sum);
-        }
-        return maxSatisfied;
-    }
-
-    /**
      * https://leetcode.com/problems/contiguous-array/
      *
      * Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.

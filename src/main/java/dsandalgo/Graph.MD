@@ -266,3 +266,227 @@ Solution 3: Union Find
         }
     }
     
+Graph longest path question.
+Theory: longest path through a node is sum of top 2 depths of neighbours's tree.
+So we can apply bottom up approach, get the top 2 depths from its neighours, then get the result candidate.
+It can be done in just one traverse. 
+    
+https://leetcode.com/problems/count-univalue-subtrees/
+
+    public int countUnivalSubtrees(TreeNode root) {
+        int[] res = countUnivalSubtreesHelper(root);
+        return res[1];
+    }
+    
+    public int[] countUnivalSubtreesHelper(TreeNode root) {
+        if (root == null) {
+            return new int[]{1,0};
+        }
+        if (root.left == null && root.right == null) {
+            return new int[]{1,1};
+        }
+        int[] left = countUnivalSubtreesHelper(root.left);
+        int[] right = countUnivalSubtreesHelper(root.right);
+        if (root.left != null && root.right != null) {
+            if (root.val == root.left.val && root.val == root.right.val && left[0] == 1 && right[0] == 1) {
+                return new int[]{1, 1 + left[1] + right[1]};
+            } else {
+                return new int[]{0, left[1] + right[1]};
+            }
+        } else {
+            if (root.left != null && root.right == null) {
+                if (root.val == root.left.val && left[0] == 1) {
+                    return new int[]{1, 1 + left[1]};
+                } else {
+                    return new int[]{0, left[1]};
+                }
+            } else {
+                if (root.val == root.right.val && right[0] == 1) {
+                    return new int[]{1, 1 + right[1]};
+                } else {
+                    return new int[]{0, right[1]};
+                }
+            }
+        }
+    }
+    
+https://leetcode.com/problems/most-frequent-subtree-sum/
+
+https://leetcode.com/problems/diameter-of-binary-tree/
+
+    private int ans = 0;
+    
+    public int diameterOfBinaryTree(TreeNode root) {
+        helper(root);
+        return ans;
+    }
+    
+    private int helper(TreeNode node){
+        if (node == null) {
+            return 0;
+        }
+        int left = helper(node.left);
+        int right = helper(node.right);
+        ans = Math.max(ans, left + right);
+        return Math.max(left, right) + 1;
+    }
+
+https://leetcode.com/problems/tree-diameter/
+
+    private int ans = 0;
+    
+    public int treeDiameter(int[][] edges) {
+        if (edges == null || edges.length == 0) return 0;
+        Map<Integer, List<Integer>> g = new HashMap<>();
+        for (int i=0; i<edges.length+1; i++) {
+            g.putIfAbsent(i, new ArrayList<>());
+        }
+        for (int i=0; i<edges.length; i++) {
+            g.get(edges[i][0]).add(edges[i][1]);
+            g.get(edges[i][1]).add(edges[i][0]);
+        }
+        boolean[] visited = new boolean[edges.length+1];
+        treeDiameterDFS(g, 0, visited);
+        return ans;
+    }
+    
+    private int treeDiameterDFS(Map<Integer, List<Integer>> g, int node, boolean[] visited){
+        visited[node] = true;
+        int topFirst = 0, topSecond = 0;
+        for (Integer adj : g.get(node)) {
+            if (visited[adj]) continue;
+            int dep = treeDiameterDFS(g, adj, visited);
+            if (dep > topFirst) {
+                topSecond = topFirst;
+                topFirst = dep;
+            } else {
+                if (dep > topSecond) {
+                    topSecond = dep;
+                }
+            }
+        }
+        ans = Math.max(ans, topFirst + topSecond);
+        return 1 + Math.max(topFirst, topSecond);
+    }
+
+
+https://leetcode.com/problems/longest-univalue-path/
+
+    private int ans;
+    
+    public int longestUnivaluePath(TreeNode root) {
+        helper(root);
+        return ans;
+    }
+    
+    private int helper(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return 1;
+        }
+        int left = helper(root.left);
+        int right = helper(root.right);
+        int curRes = 0;
+        boolean fromLeft = false, fromRight = false;
+        if (root.left != null && root.val == root.left.val) {
+            fromLeft = true;
+            curRes += left;
+        }
+        if (root.right != null && root.val == root.right.val) {
+            fromRight = true;
+            curRes += right;
+        }
+        ans = Math.max(ans, curRes);
+        if (fromLeft && fromRight) return 1 + Math.max(left, right);
+        if (fromLeft && !fromRight) return 1 + left;
+        if (!fromLeft && fromRight) return 1 + right;
+        return 1;
+    }
+
+https://leetcode.com/problems/binary-tree-maximum-path-sum/
+
+    private int ans = Integer.MIN_VALUE;
+    
+    public int maxPathSum(TreeNode root) {
+        helper(root);
+        return ans;
+    }
+    
+    private int helper(TreeNode root) {
+        if (root.left == null && root.right == null) {
+            ans = Math.max(ans, root.val);
+            return root.val;
+        }
+        int left = 0, right = 0;
+        if (root.left != null) {
+            left = helper(root.left);
+        }
+        if (root.right != null) {
+            right = helper(root.right);
+        }
+        ans = Math.max(ans, Math.max(Math.max(root.val + left + right, root.val), Math.max(root.val + left, root.val + right)));
+        return Math.max(root.val, Math.max(left, right) + root.val);
+    }
+    
+https://leetcode.com/problems/binary-tree-longest-consecutive-sequence/
+
+    private int max = 0;
+    
+    public int longestConsecutive(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        helper(root, 0, root.val);
+        return max;
+    }
+    
+    public void helper(TreeNode root, int cur, int target){
+        if (root == null) return;
+        if (root.val == target) {
+            cur++;
+        } else {
+            cur = 1;
+        }
+        max = Math.max(cur, max);
+        helper(root.left, cur, root.val + 1);
+        helper(root.right, cur, root.val + 1);
+    }
+    
+https://leetcode.com/problems/binary-tree-longest-consecutive-sequence-ii/
+
+    private int maxval = 0;
+    
+    public int longestConsecutive(TreeNode root) {
+        longestPath(root);
+        return maxval;
+    }
+    public int[] longestPath(TreeNode root) {
+        if (root == null) {
+            return new int[] {0,0};
+        }
+        int inr = 1, dcr = 1;
+        if (root.left != null) {
+            int[] l = longestPath(root.left);
+            if (root.val == root.left.val + 1) {
+                dcr = l[1] + 1;
+            } else {
+                if (root.val == root.left.val - 1) {
+                    inr = l[0] + 1;
+                }
+            }
+        }
+        if (root.right != null) {
+            int[] r = longestPath(root.right);
+            if (root.val == root.right.val + 1) {
+                dcr = Math.max(dcr, r[1] + 1);
+            } else {
+                if (root.val == root.right.val - 1) {
+                    inr = Math.max(inr, r[0] + 1);
+                }
+            }
+        }
+        maxval = Math.max(maxval, dcr + inr - 1);
+        return new int[] {inr, dcr};
+    }

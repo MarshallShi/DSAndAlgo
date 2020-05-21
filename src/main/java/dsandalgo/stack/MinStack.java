@@ -24,42 +24,47 @@ package dsandalgo.stack;
 //We can also use the idea of saving the delta between prev min and current value, to save the space from each Node.
 public class MinStack {
 
-    class Node{
+    class Node {
         int value;
         int min;
         Node next;
 
-        Node(int x, int min){
-            this.value=x;
-            this.min=min;
+        Node(int x, int min) {
+            this.value = x;
+            this.min = min;
             next = null;
         }
     }
-    Node head;
+
+    private Node head;
+
     public void push(int x) {
-        if(null==head){
-            head = new Node(x,x);
-        }else{
-            Node n = new Node(x, Math.min(x,head.min));
-            n.next=head;
-            head=n;
+        if (head == null) {
+            head = new Node(x, x);
+        } else {
+            Node n = new Node(x, Math.min(x, head.min));
+            n.next = head;
+            head = n;
         }
     }
 
     public void pop() {
-        if(head!=null)
-            head =head.next;
+        if (head != null) {
+            head = head.next;
+        }
     }
 
     public int top() {
-        if(head!=null)
+        if (head != null) {
             return head.value;
+        }
         return -1;
     }
 
     public int getMin() {
-        if(null!=head)
+        if (null != head) {
             return head.min;
+        }
         return -1;
     }
 }

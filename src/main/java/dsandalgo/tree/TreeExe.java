@@ -52,6 +52,62 @@ public class TreeExe {
         System.out.println(n);
     }
 
+
+    /**
+     * https://leetcode.com/problems/count-good-nodes-in-binary-tree/
+     * Given a binary tree root, a node X in the tree is named good if in the path from root to X there are no nodes with a value greater than X.
+     *
+     * Return the number of good nodes in the binary tree.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: root = [3,1,4,3,null,1,5]
+     * Output: 4
+     * Explanation: Nodes in blue are good.
+     * Root Node (3) is always a good node.
+     * Node 4 -> (3,4) is the maximum value in the path starting from the root.
+     * Node 5 -> (3,4,5) is the maximum value in the path
+     * Node 3 -> (3,1,3) is the maximum value in the path.
+     * Example 2:
+     *
+     *
+     *
+     * Input: root = [3,3,null,4,2]
+     * Output: 3
+     * Explanation: Node 2 -> (3, 3, 2) is not good, because "3" is higher than it.
+     * Example 3:
+     *
+     * Input: root = [1]
+     * Output: 1
+     * Explanation: Root is considered as good.
+     *
+     *
+     * Constraints:
+     *
+     * The number of nodes in the binary tree is in the range [1, 10^5].
+     * Each node's value is between [-10^4, 10^4].
+     */
+    public int goodNodes(TreeNode root) {
+        return goodNodesHelper(root, root.val);
+    }
+
+    private int goodNodesHelper(TreeNode root, int curMax) {
+        int res = 0;
+        if (root == null) return res;
+        if (root.val >= curMax) {
+            res++;
+        }
+        int soFarMax = Math.max(root.val, curMax);
+        res += goodNodesHelper(root.left, soFarMax);
+        res += goodNodesHelper(root.right, soFarMax);
+        return res;
+    }
+
+
     /**
      * https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/
      *
@@ -3112,53 +3168,34 @@ public class TreeExe {
      * https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/
      *
      */
-
-    class CompositeTreeNode{
-        TreeNode node;
-        int x;
-        int y;
-        public CompositeTreeNode(TreeNode _node, int _x, int _y) {
-            node = _node;
-            x = _x;
-            y = _y;
-        }
-    }
     public List<List<Integer>> verticalTraversal(TreeNode root) {
-        List<List<Integer>> ret = new ArrayList<List<Integer>>();
-        if (root == null) {
-            return ret;
-        }
-        TreeMap<Integer, PriorityQueue<CompositeTreeNode>> map = new TreeMap<Integer, PriorityQueue<CompositeTreeNode>>();
-        traversalHelper(root, 0, 0, map);
-        for (PriorityQueue<CompositeTreeNode> pq : map.values()) {
-            List<Integer> list = new ArrayList<Integer>();
-            while (!pq.isEmpty()) {
-                list.add(pq.poll().node.val);
+        TreeMap<Integer, TreeMap<Integer, PriorityQueue<Integer>>> map = new TreeMap<>();
+        verticalTraversalDFS(root, 0, 0, map);
+        List<List<Integer>> list = new ArrayList<>();
+        for (TreeMap<Integer, PriorityQueue<Integer>> ys : map.values()) {
+            list.add(new ArrayList<>());
+            for (PriorityQueue<Integer> nodes : ys.values()) {
+                while (!nodes.isEmpty()) {
+                    list.get(list.size() - 1).add(nodes.poll());
+                }
             }
-            ret.add(list);
         }
-        return ret;
+        return list;
     }
 
-    private void traversalHelper(TreeNode node, int x, int y, TreeMap<Integer, PriorityQueue<CompositeTreeNode>> map) {
-        PriorityQueue<CompositeTreeNode> pq = map.getOrDefault(x, new PriorityQueue<CompositeTreeNode>(new Comparator<CompositeTreeNode>() {
-            @Override
-            public int compare(CompositeTreeNode o1, CompositeTreeNode o2) {
-                if (o1.y == o2.y) {
-                    return o1.node.val - o2.node.val;
-                }
-                return o1.y - o2.y;
-            }
-        }));
-        CompositeTreeNode cnode = new CompositeTreeNode(node, x, y);
-        pq.offer(cnode);
-        map.put(x, pq);
-        if (node.left != null) {
-            traversalHelper(node.left, x-1, y-1, map);
+    private void verticalTraversalDFS(TreeNode root, int x, int y, TreeMap<Integer, TreeMap<Integer, PriorityQueue<Integer>>> map) {
+        if (root == null) {
+            return;
         }
-        if (node.right != null) {
-            traversalHelper(node.right, x+1, y-1, map);
+        if (!map.containsKey(x)) {
+            map.put(x, new TreeMap<>());
         }
+        if (!map.get(x).containsKey(y)) {
+            map.get(x).put(y, new PriorityQueue<>());
+        }
+        map.get(x).get(y).offer(root.val);
+        verticalTraversalDFS(root.left, x - 1, y + 1, map);
+        verticalTraversalDFS(root.right, x + 1, y + 1, map);
     }
 
 

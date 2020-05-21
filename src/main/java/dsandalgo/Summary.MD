@@ -1769,6 +1769,27 @@ High frequency problem:
 https://leetcode.com/problems/subarrays-with-k-different-integers/
 
 
+    public int maxSatisfied(int[] customers, int[] grumpy, int X) {
+        int n = customers.length;
+        // currently how many customers change to be happy if using technique, sliding window
+        int save = 0; 
+        // sum of all customers
+        int totalCustomer = 0; 
+        // sum of all unsatisfied customers without using technique
+        int totalGrumpy = 0; 
+        int maxSave = 0; 
+        for(int i = 0; i < n; i++) {
+            totalCustomer += customers[i];
+            totalGrumpy += customers[i] * grumpy[i];
+            save += customers[i] * grumpy[i];
+            if(i > X - 1) {
+                save -= customers[i - X] * grumpy[i - X];
+            }
+            maxSave = Math.max(save, maxSave);
+        }
+        return totalCustomer - totalGrumpy + maxSave;
+    }
+    
 https://leetcode.com/problems/longest-repeating-character-replacement/
 Need to observe the fact we need to always use the most frequent character plus k as the sliding window size.
 
@@ -2255,6 +2276,35 @@ Instead we use below:
    traverse(node.right);
    traverse(node.left);
 Use stack the mimic this reversed traverse flow, then get the result, and resverse it.
+
+
+https://leetcode.com/problems/find-leaves-of-binary-tree/
+Use post order traversal to collect the leaves by level, but the level is from leaves to root. so, -1, 0, ..., as the question asked.
+
+    public List<List<Integer>> findLeaves(TreeNode root) {
+        List<List<Integer>> list = new ArrayList<>();
+        findLeavesHelper(list, root);
+        return list;
+    }
+
+    private int findLeavesHelper(List<List<Integer>> list, TreeNode root) {
+        if (root == null) {
+            return -1;
+        }
+        int leftLevel = findLeavesHelper(list, root.left);
+        int rightLevel = findLeavesHelper(list, root.right);
+        int level = Math.max(leftLevel, rightLevel) + 1;
+        if (list.size() == level) {
+            list.add(new ArrayList<>());
+        }
+        list.get(level).add(root.val);
+        return level;
+    }
+    
+https://leetcode.com/problems/minimum-height-trees/
+Step 1: find all the leaves
+Step 2: remove leaves one by one, reduce the neigbours for non leaves
+Repeat till there are only less than 3 elements left. (1 or 2), which will be the result to return.
 
 Count Univalue Subtrees
 https://leetcode.com/problems/count-univalue-subtrees/
@@ -3339,6 +3389,33 @@ Solution 3: Binary Indexed Tree based, get the ranking of each element, track th
 
     
 DFS Question
+
+https://leetcode.com/problems/friend-circles/
+Solution 1: DFS, on each friend, instead of each cell...
+Solution 2: Union Found.
+
+    //Another DFS based solution, if not visited, then it is a new circle.
+    public int findCircleNum(int[][] M) {
+        boolean[] visited = new boolean[M.length]; //visited[i] means if ith person is visited in this algorithm
+        int count = 0;
+        for(int i = 0; i < M.length; i++) {
+            if(!visited[i]) {
+                findCircleNumDFS(M, visited, i);
+                count++;
+            }
+        }
+        return count;
+    }
+    private void findCircleNumDFS(int[][] M, boolean[] visited, int person) {
+        for(int other = 0; other < M.length; other++) {
+            if(M[person][other] == 1 && !visited[other]) {
+                //We found an unvisited person in the current friend cycle
+                visited[other] = true;
+                findCircleNumDFS(M, visited, other); //Start DFS on this new found person
+            }
+        }
+    }
+    
 
 Clone Graph
 https://leetcode.com/problems/clone-graph/

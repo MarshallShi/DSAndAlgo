@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -23,12 +24,15 @@ public class HashMapExe {
     public static void main(String[] args) {
         HashMapExe exe = new HashMapExe();
 
-        int[] groupSizes = {1,1,1,2,2,2,3,3,3,4,4,4,5};
+        int[] groupSizes = {1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5};
         String[] input = {"root/a 1.txt(abcd) 2.txt(efgh)", "root/c 3.txt(abcd)", "root/c/d 4.txt(efgh)", "root 4.txt(efgh)"};
-        int[][] richer = {{1,2},{2,1},{1,0},{0,1}};
-        int[] quiet = {3,2,5,4,6,1,7,0};
+        int[][] richer = {{1, 2}, {2, 1}, {1, 0}, {0, 1}};
+        int[] quiet = {3, 2, 5, 4, 6, 1, 7, 0};
 
-        exe.maxEqualFreq(groupSizes);
+        List<String> lst = new ArrayList<>();
+        lst.add("abcdefghijklmnopqrstuvwxyz");//["a", "abc", "d", "de", "def"]["abcdefghijklmnopqrstuvwxyz"]
+
+        //exe.maxLength(lst);
     }
 
     /**

@@ -360,42 +360,48 @@ public class HardBinarySearchExe {
     //Binary search idea: apply the binary search in shorter array to gain better performance.
     //Once get the mid idx number, we know what to pick from the longer array, use the feature: left part < right part, in both array, so we can decide next move.
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
-        int m = nums1.length;
-        int n = nums2.length;
-        if (m > n) {
+        int smallLen = nums1.length;
+        int largeLen = nums2.length;
+        if (smallLen > largeLen) {
             return findMedianSortedArrays(nums2, nums1);
         }
-        int i = 0, j = 0, imin = 0, imax = m, half = (m + n + 1) / 2;
+        //Assume now nums1 is small, nums2 is large.
+        int midInSmallArr = 0, idxInLargeArr = 0, low = 0, high = smallLen, half = (smallLen + largeLen + 1) / 2;
         double maxLeft = 0, minRight = 0;
-        while (imin <= imax) {
-            //i: index in shorter array, testing this idx.
-            i = (imin + imax) / 2;
-            //j: index in the longer array.
-            j = half - i;
-            if (j > 0 && i < m && nums2[j - 1] > nums1[i]) {
-                imin = i + 1;
-            } else if (i > 0 && j < n && nums1[i - 1] > nums2[j]) {
-                imax = i - 1;
+        while (low <= high) {
+            //index in shorter array, pick the middle, verify if it is the right median cut.
+            midInSmallArr = low + (high - low) / 2;
+            //index in the longer array.
+            idxInLargeArr = half - midInSmallArr;
+            if (idxInLargeArr > 0 && midInSmallArr < smallLen && nums2[idxInLargeArr - 1] > nums1[midInSmallArr]) {
+                //small array mid is smaller than the left max in large array, increase the mid in the small array
+                low = midInSmallArr + 1;
             } else {
-                if (i == 0) {
-                    maxLeft = (double) nums2[j - 1];
-                } else if (j == 0) {
-                    maxLeft = (double) nums1[i - 1];
+                if (midInSmallArr > 0 && idxInLargeArr < largeLen && nums1[midInSmallArr - 1] > nums2[idxInLargeArr]) {
+                    //small arry left max is greater than mid of large array, need to reduce to left
+                    high = midInSmallArr - 1;
                 } else {
-                    maxLeft = (double) Math.max(nums1[i - 1], nums2[j - 1]);
+                    //median numbers found, get the left max
+                    if (midInSmallArr == 0) {
+                        maxLeft = (double) nums2[idxInLargeArr - 1];
+                    } else if (idxInLargeArr == 0) {
+                        maxLeft = (double) nums1[midInSmallArr - 1];
+                    } else {
+                        maxLeft = (double) Math.max(nums1[midInSmallArr - 1], nums2[idxInLargeArr - 1]);
+                    }
+                    break;
                 }
-                break;
             }
         }
-        if ((m + n) % 2 == 1) {
+        if ((smallLen + largeLen) % 2 == 1) {
             return maxLeft;
         }
-        if (i == m) {
-            minRight = (double) nums2[j];
-        } else if (j == n) {
-            minRight = (double) nums1[i];
+        if (midInSmallArr == smallLen) {
+            minRight = (double) nums2[idxInLargeArr];
+        } else if (idxInLargeArr == largeLen) {
+            minRight = (double) nums1[midInSmallArr];
         } else {
-            minRight = (double) Math.min(nums1[i], nums2[j]);
+            minRight = (double) Math.min(nums1[midInSmallArr], nums2[idxInLargeArr]);
         }
         return (double) (maxLeft + minRight) / 2;
     }

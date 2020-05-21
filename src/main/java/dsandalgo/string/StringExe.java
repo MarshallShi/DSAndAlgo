@@ -23,6 +23,34 @@ public class StringExe {
     }
 
     /**
+     * https://leetcode.com/problems/zigzag-conversion/
+     */
+    public String convert(String s, int nRows) {
+        char[] arr = s.toCharArray();
+        //Use sb to collect each row.
+        StringBuffer[] sb = new StringBuffer[nRows];
+        for (int i = 0; i < sb.length; i++) {
+            sb[i] = new StringBuffer();
+        }
+
+        int i = 0;
+        int len = arr.length;
+        while (i < len) {
+            // vertically down
+            for (int idx = 0; idx < nRows && i < len; idx++) {
+                sb[idx].append(arr[i++]);
+            }
+            // obliquely up
+            for (int idx = nRows - 2; idx >= 1 && i < len; idx--) {
+                sb[idx].append(arr[i++]);
+            }
+        }
+        for (int idx = 1; idx < sb.length; idx++) {
+            sb[0].append(sb[idx]);
+        }
+        return sb[0].toString();
+    }
+    /**
      * https://leetcode.com/problems/uncommon-words-from-two-sentences/
      */
     public String[] uncommonFromSentences(String A, String B) {

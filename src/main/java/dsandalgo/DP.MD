@@ -793,3 +793,9 @@ Create bitmask on people. For each hat, we know a list of people we can assign.
         }
         return dp[pplMask][hats] = res;
     }
+    
+    
+Popular DP question:
+
+https://leetcode.com/problems/cherry-pickup/
+

@@ -20,6 +20,33 @@ public class DFSExe {
     }
 
     /**
+     * https://leetcode.com/problems/minimum-time-to-collect-all-apples-in-a-tree/
+     */
+    public int minTime(int n, int[][] edges, List<Boolean> hasApple) {
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] edge : edges) {
+            int a = edge[0], b = edge[1];
+            map.putIfAbsent(a, new LinkedList<>());
+            map.putIfAbsent(b, new LinkedList<>());
+            map.get(a).add(b);
+            map.get(b).add(a);
+        }
+        Set<Integer> visited = new HashSet<>();
+        return minTimeDFS(0, map, hasApple, visited);
+    }
+
+    private int minTimeDFS(int node, Map<Integer, List<Integer>> map, List<Boolean> hasApple, Set<Integer> visited) {
+        visited.add(node);
+        int res = 0;
+        for (int child : map.getOrDefault(node, new LinkedList<>())) {
+            if (visited.contains(child)) continue;
+            res += minTimeDFS(child, map, hasApple, visited);
+        }
+        if ((res > 0 || hasApple.get(node)) && node != 0) res += 2;
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/smallest-string-starting-from-leaf/
      * Given the root of a binary tree, each node has a value from 0 to 25 representing the letters 'a' to 'z': a value of 0 represents 'a', a value of 1 represents 'b', and so on.
      *
@@ -1671,40 +1698,59 @@ public class DFSExe {
      * @param root
      * @return
      */
-
     public List<List<Integer>> findLeaves(TreeNode root) {
-        List<List<Integer>> answer = new ArrayList<List<Integer>>();
+        List<List<Integer>> list = new ArrayList<>();
+        findLeavesHelper(list, root);
+        return list;
+    }
+
+    private int findLeavesHelper(List<List<Integer>> list, TreeNode root) {
+        if (root == null) {
+            return -1;
+        }
+        int leftLevel = findLeavesHelper(list, root.left);
+        int rightLevel = findLeavesHelper(list, root.right);
+        int level = Math.max(leftLevel, rightLevel) + 1;
+        if (list.size() == level) {
+            list.add(new ArrayList<>());
+        }
+        list.get(level).add(root.val);
+        return level;
+    }
+
+    public List<List<Integer>> findLeaves_2(TreeNode root) {
+        List<List<Integer>> answer = new ArrayList<>();
         if (root == null) {
             return answer;
         }
         while (root.left != null || root.right != null) {
-            List<Integer> temp = new ArrayList<Integer>();
-            Set<TreeNode> seen = new HashSet<TreeNode>();
-            leavesDFS(root, null, null, temp, seen);
+            List<Integer> temp = new ArrayList<>();
+            Set<TreeNode> seen = new HashSet<>();
+            findLeavesDFS(root, null, null, temp, seen);
             answer.add(temp);
         }
-        List<Integer> rootRet = new ArrayList<Integer>();
+        List<Integer> rootRet = new ArrayList<>();
         rootRet.add(root.val);
         answer.add(rootRet);
         return answer;
     }
 
-    private void leavesDFS(TreeNode node, TreeNode prev, String leftOrRight, List<Integer> temp, Set<TreeNode> seen) {
+    private void findLeavesDFS(TreeNode node, TreeNode parent, String leftOrRight, List<Integer> temp, Set<TreeNode> seen) {
         if (node.left != null) {
-            leavesDFS(node.left, node, "L", temp, seen);
+            findLeavesDFS(node.left, node, "L", temp, seen);
         }
         if (node.right != null) {
-            leavesDFS(node.right, node, "R", temp, seen);
+            findLeavesDFS(node.right, node, "R", temp, seen);
         }
         if (node.left == null && node.right == null && !seen.contains(node)) {
             temp.add(node.val);
-            if (leftOrRight == "L" && prev != null) {
-                prev.left = null;
+            if (leftOrRight == "L" && parent != null) {
+                parent.left = null;
             }
-            if (leftOrRight == "R" && prev != null) {
-                prev.right = null;
+            if (leftOrRight == "R" && parent != null) {
+                parent.right = null;
             }
-            seen.add(prev);
+            seen.add(parent);
         }
     }
 

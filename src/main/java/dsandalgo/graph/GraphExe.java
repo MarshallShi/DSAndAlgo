@@ -216,7 +216,6 @@ public class GraphExe {
         }
     }
 
-
     /**
      * https://leetcode.com/problems/tree-diameter/
      *
@@ -245,43 +244,40 @@ public class GraphExe {
      * 0 <= edges[i][j] <= edges.length
      * The given edges form an undirected tree.
      */
-    private int diameter = 0;
+    private int ans = 0;
+
     public int treeDiameter(int[][] edges) {
-        int n = edges.length + 1;
-        LinkedList<Integer>[] adjacencyList = new LinkedList[n];
-        for (int i = 0; i < n; ++i) {
-            adjacencyList[i] = new LinkedList<>();
+        if (edges == null || edges.length == 0) return 0;
+        Map<Integer, List<Integer>> g = new HashMap<>();
+        for (int i=0; i<edges.length+1; i++) {
+            g.putIfAbsent(i, new ArrayList<>());
         }
-        for (int[] edge : edges) {
-            adjacencyList[edge[0]].add(edge[1]);
-            adjacencyList[edge[1]].add(edge[0]);
+        for (int i=0; i<edges.length; i++) {
+            g.get(edges[i][0]).add(edges[i][1]);
+            g.get(edges[i][1]).add(edges[i][0]);
         }
-        depth(0, -1, adjacencyList);
-        return diameter;
+        boolean[] visited = new boolean[edges.length+1];
+        treeDiameterDFS(g, 0, visited);
+        return ans;
     }
 
-    private int depth(int root, int parent, LinkedList<Integer>[] adjacencyList) {
-        int maxDepth1st = 0, maxDepth2nd = 0;
-        for (int child : adjacencyList[root]) {
-            // Only one way from root node to child node, don't allow child node go to root node again!
-            if (child != parent) {
-                int childDepth = depth(child, root, adjacencyList);
-                //maintaining two of the longest path value.
-                if (childDepth > maxDepth1st) {
-                    maxDepth2nd = maxDepth1st;
-                    maxDepth1st = childDepth;
-                } else {
-                    if (childDepth > maxDepth2nd) {
-                        maxDepth2nd = childDepth;
-                    }
+    private int treeDiameterDFS(Map<Integer, List<Integer>> g, int node, boolean[] visited){
+        visited[node] = true;
+        int topFirst = 0, topSecond = 0;
+        for (Integer adj : g.get(node)) {
+            if (visited[adj]) continue;
+            int dep = treeDiameterDFS(g, adj, visited);
+            if (dep > topFirst) {
+                topSecond = topFirst;
+                topFirst = dep;
+            } else {
+                if (dep > topSecond) {
+                    topSecond = dep;
                 }
             }
         }
-        // Sum of the top 2 highest depths is the longest path through this root
-        // This is the trick to get the longest path, as a path through root only need first two longest path from its children
-        int longestPathThroughRoot = maxDepth1st + maxDepth2nd;
-        diameter = Math.max(diameter, longestPathThroughRoot);
-        return maxDepth1st + 1;
+        ans = Math.max(ans, topFirst + topSecond);
+        return 1 + Math.max(topFirst, topSecond);
     }
 
     /**
