@@ -49,24 +49,46 @@ public class MathExe {
 
     /**
      * https://leetcode.com/problems/greatest-common-divisor-of-strings/
-     * @param str1
-     * @param str2
-     * @return
+     * For strings S and T, we say "T divides S" if and only if S = T + ... + T  (T concatenated with itself 1 or more times)
+     *
+     * Return the largest string X such that X divides str1 and X divides str2.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: str1 = "ABCABC", str2 = "ABC"
+     * Output: "ABC"
+     * Example 2:
+     *
+     * Input: str1 = "ABABAB", str2 = "ABAB"
+     * Output: "AB"
+     * Example 3:
+     *
+     * Input: str1 = "LEET", str2 = "CODE"
+     * Output: ""
+     *
+     *
+     * Note:
+     *
+     * 1 <= str1.length <= 1000
+     * 1 <= str2.length <= 1000
+     * str1[i] and str2[i] are English uppercase letters.
      */
     public String gcdOfStrings(String str1, String str2) {
         int len1 = str1.length();
         int len2 = str2.length();
-        int len = Math.min(str1.length(), str2.length());
-        for (int i=len; i>0; i--) {
-            if (len1 % i == 0 && len2 % i == 0) {
-                String cd1 = str1.substring(0, i);
-                String cd2 = str2.substring(0, i);
-                if (cd1.equals(cd2)) {
-                    return cd1;
-                }
-            }
+        if ((str1 + str2).equals(str2 + str1)) {
+            return str1.substring(0, gcdOfS(len1, len2));
         }
         return "";
+    }
+
+    public int gcdOfS(int a, int b){
+        if (b == 0) {
+            return a;
+        }
+        return gcdOfS(b, a%b);
     }
 
     /**

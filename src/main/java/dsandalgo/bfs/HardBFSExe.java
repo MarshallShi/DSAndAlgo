@@ -1458,6 +1458,7 @@ public class HardBFSExe {
      * @return
      */
     public int slidingPuzzle(int[][] board) {
+        // user string to represent state
         String target = "123450";
         String start = "";
         for (int i = 0; i < board.length; i++) {
@@ -1465,8 +1466,8 @@ public class HardBFSExe {
                 start += board[i][j];
             }
         }
-        HashSet<String> visited = new HashSet<>();
-        // all the positions 0 can be swapped to
+        Set<String> visited = new HashSet<>();
+        // all the positions 0 can be swapped to, index of dirs is the 0 index
         int[][] dirs = new int[][] { { 1, 3 }, { 0, 2, 4 },
                 { 1, 5 }, { 0, 4 }, { 1, 3, 5 }, { 2, 4 } };
         Queue<String> queue = new LinkedList<>();
@@ -1481,16 +1482,15 @@ public class HardBFSExe {
                 if (cur.equals(target)) {
                     return res;
                 }
-                int zero = cur.indexOf('0');
+                int curZeroPos = cur.indexOf('0');
                 // swap if possible
-                for (int dir : dirs[zero]) {
-                    String next = swap(cur, zero, dir);
+                for (int nextPos : dirs[curZeroPos]) {
+                    String next = swap(cur, curZeroPos, nextPos);
                     if (visited.contains(next)) {
                         continue;
                     }
                     visited.add(next);
                     queue.offer(next);
-
                 }
             }
             res++;

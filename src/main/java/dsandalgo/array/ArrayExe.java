@@ -18,7 +18,12 @@ public class ArrayExe {
     public static void main(String[] args) {
         ArrayExe exe = new ArrayExe();
         int[] c = {1,3,2,3,5,0};
-        System.out.println(exe.findMinFibonacciNumbers(7));
+        String a = "3";
+        String b = "4";
+        String aa = "30";
+        System.out.println(a.compareTo(b));
+        System.out.println(a.compareTo(aa));
+        //System.out.println(exe.findMinFibonacciNumbers(7));
     }
 
     /**
@@ -960,17 +965,19 @@ public class ArrayExe {
      * The total number of elements of the given matrix will not exceed 10,000.
      */
     public int[] findDiagonalOrder(int[][] matrix) {
-        if (matrix == null || matrix.length == 0) return new int[0];
-        int row = 0, col = 0, pos = 0, m = matrix.length, n=matrix[0].length, output [] = new int[m * n];
+        if (matrix == null || matrix.length == 0) {
+            return new int[0];
+        }
+        int row = 0, col = 0, pos = 0, m = matrix.length, n = matrix[0].length, output[] = new int[m * n];
         //Get all the element one by one according to the position.
         for (pos = 0; pos < m * n; pos++) {
             output[pos] = matrix[row][col];
             if ((row + col) % 2 == 0) {
                 // The direction is always up when the sum of row & col is even
                 // For last column, go down
-                if (col == n-1) {
+                if (col == n - 1) {
                     row++;
-                } else{
+                } else {
                     // For first row & non-last columns, go right
                     if (row == 0) {
                         col++;
@@ -983,7 +990,7 @@ public class ArrayExe {
             } else {
                 // The direction is always down when the sum of row & col is odd
                 // For last row, go right
-                if (row == m-1) {
+                if (row == m - 1) {
                     col++;
                 } else {
                     if (col == 0) {
@@ -1082,7 +1089,7 @@ public class ArrayExe {
     public int firstMissingPositive(int[] A) {
         int i = 0;
         while (i < A.length) {
-            //Trick: for any valid integer, get it to right position.
+            //For any valid integer, move it to right position, just so we can ignore the right number in second loop
             if (A[i] >= 1 && A[i] <= A.length && A[A[i] - 1] != A[i]) {
                 swap(A, i, A[i] - 1);
             } else {

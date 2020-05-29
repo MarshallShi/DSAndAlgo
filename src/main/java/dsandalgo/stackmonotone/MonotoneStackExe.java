@@ -46,6 +46,81 @@ public class MonotoneStackExe {
     }
 
     /**
+     * https://leetcode.com/problems/minimum-cost-tree-from-leaf-values/
+     *
+     * Given an array arr of positive integers, consider all binary trees such that:
+     *
+     * Each node has either 0 or 2 children;
+     * The values of arr correspond to the values of each leaf in an in-order traversal of the tree.
+     * (Recall that a node is a leaf if and only if it has 0 children.)
+     * The value of each non-leaf node is equal to the product of the largest leaf value in its
+     * left and right subtree respectively.
+     * Among all possible binary trees considered, return the smallest possible sum of the values
+     * of each non-leaf node.  It is guaranteed this sum fits into a 32-bit integer.
+     *
+     * Example 1:
+     *
+     * Input: arr = [6,2,4]
+     * Output: 32
+     * Explanation:
+     * There are two possible trees.  The first has non-leaf node sum 36, and the second has non-leaf node sum 32.
+     *
+     *     24            24
+     *    /  \          /  \
+     *   12   4        6    8
+     *  /  \               / \
+     * 6    2             2   4
+     *
+     *
+     * Constraints:
+     *
+     * 2 <= arr.length <= 40
+     * 1 <= arr[i] <= 15
+     * It is guaranteed that the answer fits into a 32-bit signed integer (ie. it is less than 2^31).
+     *
+     */
+    //https://leetcode.com/problems/minimum-cost-tree-from-leaf-values/discuss/339959/One-Pass-O(N)-Time-and-Space
+    public int mctFromLeafValues(int[] A) {
+        int res = 0;
+        Stack<Integer> stack = new Stack<>();
+        stack.push(Integer.MAX_VALUE);
+        for (int a : A) {
+            while (stack.peek() <= a) {
+                int mid = stack.pop();
+                res += mid * Math.min(stack.peek(), a);
+            }
+            stack.push(a);
+        }
+        while (stack.size() > 2) {
+            res += stack.pop() * stack.peek();
+        }
+        return res;
+    }
+
+    public int mctFromLeafValues_Greedy(int[] arr) {
+        int res = 0;
+        List<Integer> nums = new ArrayList<>();
+        for (int a : arr) nums.add(a);
+        while (nums.size() > 1) {
+            int min = Integer.MAX_VALUE, l = 0, r = 0;
+            for (int i = 1; i < nums.size(); i++) {
+                if (nums.get(i) * nums.get(i - 1) < min) {
+                    min = nums.get(i) * nums.get(i - 1);
+                    l = i - 1;
+                    r = i;
+                }
+            }
+            res += min;
+            if (nums.get(l) > nums.get(r)) {
+                nums.remove(r);
+            } else {
+                nums.remove(l);
+            }
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/maximum-width-ramp/
      * Given an array A of integers, a ramp is a tuple (i, j) for which i < j and A[i] <= A[j].  The width of such a ramp is j - i.
      *
@@ -695,6 +770,29 @@ public class MonotoneStackExe {
             return r - l + 1;
         }
         return 0;
+    }
+
+    public int findUnsortedSubarray_2(int[] nums) {
+        int len = nums.length;
+        int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
+        int start = -1, end = -1;
+        for (int i = 0; i < len; i++) {
+            //from left to right, search the current max
+            max = Math.max(max, nums[i]);
+            //from right to left, search the current min
+            min = Math.min(min, nums[len - i - 1]);
+            if (nums[i] < max) {
+                end = i;
+            }
+            if (nums[len - i - 1] > min) {
+                start = len - i - 1;
+            }
+        }
+        if (start == -1) {
+            //the entire array is already sorted
+            return 0;
+        }
+        return end - start + 1;
     }
 
     /**

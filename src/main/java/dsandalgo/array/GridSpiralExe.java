@@ -104,31 +104,31 @@ public class GridSpiralExe {
      */
     //Just simulate.
     public List<Integer> spiralOrder(int[][] matrix) {
-        List<Integer> ans = new ArrayList<>();
-        if (matrix.length == 0) return ans;
-        int r1 = 0, r2 = matrix.length - 1;
-        int c1 = 0, c2 = matrix[0].length - 1;
-        while (r1 <= r2 && c1 <= c2) {
-            for (int c = c1; c <= c2; c++) {
-                ans.add(matrix[r1][c]);
-            }
-            for (int r = r1 + 1; r <= r2; r++) {
-                ans.add(matrix[r][c2]);
-            }
-            if (r1 < r2 && c1 < c2) {
-                for (int c = c2 - 1; c > c1; c--) {
-                    ans.add(matrix[r2][c]);
-                }
-                for (int r = r2; r > r1; r--) {
-                    ans.add(matrix[r][c1]);
-                }
-            }
-            r1++;
-            r2--;
-            c1++;
-            c2--;
+        List<Integer> res = new ArrayList<>();
+        if (matrix == null || matrix.length == 0) {
+            return res;
         }
-        return ans;
+        int m = matrix.length, n = matrix[0].length;
+        int up = 0,  down = m - 1, left = 0, right = n - 1;
+        while (res.size() < m * n) {
+            for (int j = left; j <= right && res.size() < m * n; j++) {
+                res.add(matrix[up][j]);
+            }
+            for (int i = up + 1; i <= down - 1 && res.size() < m * n; i++) {
+                res.add(matrix[i][right]);
+            }
+            for (int j = right; j >= left && res.size() < m * n; j--) {
+                res.add(matrix[down][j]);
+            }
+            for (int i = down - 1; i >= up + 1 && res.size() < m * n; i--) {
+                res.add(matrix[i][left]);
+            }
+            left++;
+            right--;
+            up++;
+            down--;
+        }
+        return res;
     }
 
     /**

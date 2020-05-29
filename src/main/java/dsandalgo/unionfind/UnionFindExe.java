@@ -1310,10 +1310,6 @@ public class UnionFindExe {
      *      * @return
      */
     public List<List<String>> accountsMerge(List<List<String>> accounts) {
-        if (accounts.size() == 0) {
-            return new ArrayList<List<String>>();
-        }
-
         int n = accounts.size();
         UnionFindAccountsMerge uf = new UnionFindAccountsMerge(n);
 

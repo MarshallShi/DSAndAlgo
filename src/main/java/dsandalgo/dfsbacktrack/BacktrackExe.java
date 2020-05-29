@@ -975,7 +975,6 @@ public class BacktrackExe {
         }
         List<String> temp = new ArrayList<String>(); //list of xx,yy,oo,zz where ip is formated as xx.yy.oo.zz
         backtrackRIP(s, 0, ans, temp);
-        System.out.println(ans);
         return ans;
     }
 

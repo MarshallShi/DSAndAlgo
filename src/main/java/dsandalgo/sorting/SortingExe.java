@@ -27,10 +27,88 @@ public class SortingExe {
     }
 
     /**
+     * https://leetcode.com/problems/two-city-scheduling/
+     * There are 2N people a company is planning to interview. The cost of flying the i-th person to city A is costs[i][0],
+     * and the cost of flying the i-th person to city B is costs[i][1].
+     *
+     * Return the minimum cost to fly every person to a city such that exactly N people arrive in each city.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [[10,20],[30,200],[400,50],[30,20]]
+     * Output: 110
+     * Explanation:
+     * The first person goes to city A for a cost of 10.
+     * The second person goes to city A for a cost of 30.
+     * The third person goes to city B for a cost of 50.
+     * The fourth person goes to city B for a cost of 20.
+     *
+     * The total minimum cost is 10 + 30 + 50 + 20 = 110 to have half the people interviewing in each city.
+     *
+     *
+     * Note:
+     *
+     * 1 <= costs.length <= 100
+     * It is guaranteed that costs.length is even.
+     * 1 <= costs[i][0], costs[i][1] <= 1000
+     */
+    public int twoCitySchedCost(int[][] costs) {
+        Arrays.sort(costs, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) {
+                return (a[1] - a[0]) - (b[1] - b[0]);
+            }
+        });
+        int cost = 0;
+        for (int i = 0; i < costs.length / 2; i++) {
+            cost += costs[i][1] + costs[costs.length-i-1][0];
+        }
+        return cost;
+    }
+
+    /**
+     * https://leetcode.com/problems/queue-reconstruction-by-height/
+     * Suppose you have a random list of people standing in a queue. Each person is described by a pair of integers (h, k),
+     * where h is the height of the person and k is the number of people in front of this person who have a height greater than or
+     * equal to h. Write an algorithm to reconstruct the queue.
+     *
+     * Note:
+     * The number of people is less than 1,100.
+     *
+     *
+     * Example
+     *
+     * Input:
+     * [[7,0], [4,4], [7,1], [5,0], [6,1], [5,2]]
+     *
+     * Output:
+     * [[5,0], [7,0], [5,2], [6,1], [4,4], [7,1]]
+     */
+    public int[][] reconstructQueue(int[][] people) {
+        if (people == null || people.length == 0 || people[0].length == 0) return new int[0][0];
+        Arrays.sort(people, new Comparator<int[]>() {
+            public int compare(int[] a, int[] b) {
+                if (b[0] == a[0]) return a[1] - b[1];
+                return b[0] - a[0];
+            }
+        });
+        int n = people.length;
+        List<int[]> tmp = new ArrayList<int[]>();
+        for (int i = 0; i < n; i++) {
+            tmp.add(people[i][1], new int[]{people[i][0], people[i][1]});
+        }
+        int[][] res = new int[people.length][2];
+        int i = 0;
+        for (int[] k : tmp) {
+            res[i][0] = k[0];
+            res[i++][1] = k[1];
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/relative-sort-array/
-     * @param arr1
-     * @param arr2
-     * @return
      */
     public int[] relativeSortArray(int[] arr1, int[] arr2) {
         //count sort
