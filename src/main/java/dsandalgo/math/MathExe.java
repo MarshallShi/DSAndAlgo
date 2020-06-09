@@ -17,11 +17,31 @@ public class MathExe {
     public static void main(String[] args) {
         MathExe exe = new MathExe();
         int[][] points = {{0,0},{94911151,94911150},{94911152,94911151}};
-        int[] rec1 = {0,0,1,1};
+        int[] rec1 = {0,0,0};
         int[] rec2 = {2,2,3,3};
         int[][] shape = {{1,2},{3,4}};
         int[] a = {1,1,0};
-        System.out.println(exe.fractionAddition("-1/2+1/2"));
+        System.out.println(exe.multiply("12","23"));
+    }
+
+
+    /**
+     * https://leetcode.com/problems/water-and-jug-problem/
+     */
+    public boolean canMeasureWater(int x, int y, int z) {
+        //limit brought by the statement that water is finallly in one or both buckets
+        if(x + y < z) return false;
+        //case x or y is zero
+        if( x == z || y == z || x + y == z ) return true;
+        //get GCD, then we can use the property of Bézout's identity
+        return z%GCD(x, y) == 0;
+    }
+
+    private int GCD(int a, int b){
+        if (b == 0) {
+            return a;
+        }
+        return GCD(b, a%b);
     }
 
     /**

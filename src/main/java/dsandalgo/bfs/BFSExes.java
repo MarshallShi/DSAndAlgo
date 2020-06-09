@@ -1642,9 +1642,9 @@ public class BFSExes {
      * @return
      */
     public int openLock(String[] deadends, String target) {
-        LinkedList<String> queue = new LinkedList<String>();
+        LinkedList<String> queue = new LinkedList<>();
         int level = 0;
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         for (int j = 0; j<deadends.length; j++) {
             set.add(deadends[j]);
         }
@@ -1656,7 +1656,6 @@ public class BFSExes {
         visited[0] = true;
         while (!queue.isEmpty()) {
             int levelSize = queue.size();
-            boolean allDeadEnds = true;
             for (int i=0; i<levelSize; i++) {
                 String cur = queue.pop();
                 if (cur.equals(target)) {

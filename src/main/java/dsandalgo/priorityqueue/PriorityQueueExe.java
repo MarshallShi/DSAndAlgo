@@ -35,6 +35,24 @@ public class PriorityQueueExe {
     }
 
     /**
+     * https://leetcode.com/problems/the-k-strongest-values-in-an-array/
+     */
+    public int[] getStrongest(int[] arr, int k) {
+        Arrays.sort(arr);
+        int i = 0, j = arr.length - 1, idx = 0;
+        int median = arr[(arr.length - 1) / 2];
+        int[] res = new int[k];
+        while (idx < k) {
+            if (Math.abs(arr[i] - median) > Math.abs(arr[j] - median)) {
+                res[idx++] = arr[i++];
+            } else {
+                res[idx++] = arr[j--];
+            }
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows/
      * You are given an m * n matrix, mat, and an integer k, which has its rows sorted in non-decreasing order.
      *

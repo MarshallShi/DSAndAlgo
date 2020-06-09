@@ -1924,7 +1924,7 @@ https://leetcode.com/problems/sliding-window-maximum/
 Solution 1: To achieve linear time, we use double ended queue, LinkedList as data structure to simulate the move.
 Record the index of array in a LinkedList, on each move, 1) Remove the out of window index; 2) Remove all smaller numbers 
 compare to the new number to be added, to make sure the first element via peek is the maxium of current window.
-Solution 2: Do mutiple traversal of array, record left max, and right max.
+Solution 2: Do multiple traversal of array, record left max, and right max.
 
     public int[] maxSlidingWindow(int[] a, int k) {
         int n = a.length;

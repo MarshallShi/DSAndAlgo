@@ -12,6 +12,9 @@ public class SubSetExe {
         exe.canPartitionKSubsets(nums, 4);
     }
 
+    /**
+     * https://leetcode.com/problems/subsets-ii/
+     */
     public List<List<Integer>> subsetsWithDup(int[] nums) {
         List<List<Integer>> list = new ArrayList<>();
         Arrays.sort(nums);
@@ -96,11 +99,7 @@ public class SubSetExe {
      * Note:
      *
      * 1 <= k <= len(nums) <= 16.
-     * 0 < nums[i] < 10000.
-     *
-     * @param nums
-     * @param k
-     * @return
+     * 0 < nums[i] < 100000
      */
     public boolean canPartitionKSubsets(int[] nums, int k) {
         int sum = 0, maxNum = 0;
@@ -134,13 +133,4 @@ public class SubSetExe {
         //If all the above 'return true' not going out of the recursion, return false.
         return false;
     }
-
-    private int sumOfList(List<Integer> lst) {
-        int sum = 0;
-        for (Integer val : lst) {
-            sum+=val;
-        }
-        return sum;
-    }
-
 }

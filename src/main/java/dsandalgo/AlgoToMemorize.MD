@@ -366,3 +366,17 @@ Topological sorting
 Minimal spanning tree (Union Find)
 
 
+Fisher-Yates shuffle
+https://www.geeksforgeeks.org/shuffle-a-given-array-using-fisher-yates-shuffle-algorithm/
+
+    /** Returns a random shuffling of the array. */
+    public int[] shuffle() {
+        Random r = new Random(); 
+        for (int i = arr.length - 1; i > 0; i--) { 
+            int j = r.nextInt(i+1); 
+            int temp = arr[i]; 
+            arr[i] = arr[j]; 
+            arr[j] = temp; 
+        }
+        return arr;
+    }

@@ -41,8 +41,7 @@ public class MonotoneStackExe {
                 {'1','1','1','1','1'},
                 {'1','0','0','1','0'}};
         //System.out.println(exe.largestRectangleArea(nums));
-        String s = "012345";
-        System.out.println(s.substring(0,2));
+        System.out.println(System.currentTimeMillis());
     }
 
     /**

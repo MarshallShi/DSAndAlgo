@@ -562,9 +562,11 @@ public class DPOnArrayExe {
             if (A[i - 1] < A[i]) {
                 state[i][0] = state[i - 1][1] + 1;
                 maxLen = Math.max(maxLen, state[i][0]);
-            } else if (A[i - 1] > A[i]) {
-                state[i][1] = state[i - 1][0] + 1;
-                maxLen = Math.max(maxLen, state[i][1]);
+            } else {
+                if (A[i - 1] > A[i]) {
+                    state[i][1] = state[i - 1][0] + 1;
+                    maxLen = Math.max(maxLen, state[i][1]);
+                }
             }
         }
 

@@ -974,46 +974,6 @@ public class DFSExe {
     }
 
     /**
-     * https://leetcode.com/problems/reach-a-number/
-     * You are standing at position 0 on an infinite number line. There is a goal at position target.
-     *
-     * On each move, you can either go left or right. During the n-th move (starting from 1), you take n steps.
-     *
-     * Return the minimum number of steps required to reach the destination.
-     *
-     * Example 1:
-     * Input: target = 3
-     * Output: 2
-     * Explanation:
-     * On the first move we step from 0 to 1.
-     * On the second step we step from 1 to 3.
-     * Example 2:
-     * Input: target = 2
-     * Output: 3
-     * Explanation:
-     * On the first move we step from 0 to 1.
-     * On the second move we step  from 1 to -1.
-     * On the third move we step from -1 to 2.
-     */
-    int res = Integer.MAX_VALUE;
-    public int reachNumber(int target) {
-        reachNumberDFS(0, target, 0);
-        return res;
-    }
-
-    public int reachNumberDFS(int temp, int target, int cur) {
-        if (target == cur) {
-            res = Math.min(temp, res);
-            return temp;
-        }
-        int ret = Integer.MAX_VALUE;
-        if (Math.abs(cur) < Math.abs(target)) {
-            ret = Math.min(reachNumberDFS(temp + 1, target, cur + temp), reachNumberDFS(temp + 1, target, cur - temp));
-        }
-        return ret;
-    }
-
-    /**
      * https://leetcode.com/problems/dice-roll-simulation/
      * A die simulator generates a random number from 1 to 6 for each roll. You introduced a constraint to
      * the generator such that it cannot roll the number i more than rollMax[i] (1-indexed) consecutive times.
@@ -1937,7 +1897,7 @@ public class DFSExe {
      * @return
      */
     public List<Integer> lexicalOrder(int n) {
-        List<Integer> ret = new ArrayList<Integer>();
+        List<Integer> ret = new ArrayList<>();
         for (int i=1; i<10; i++) {
             lexicalOrderDFS(n, i, ret);
         }
@@ -1949,7 +1909,7 @@ public class DFSExe {
             return;
         }
         ret.add(i);
-        if (i*10 < n) {
+        if (i*10 <= n) {
             for (int j=0; j<10; j++) {
                 lexicalOrderDFS(n, i*10 + j, ret);
             }

@@ -55,10 +55,6 @@ public class BinarySearchTreeExe {
             this.val = val;
             this.count = 1;
         }
-
-        public int less_or_equal() {
-            return count + left_count;
-        }
     }
 
     private int countSmallerBSTInsert(CountSmallerBSTNode root, int val) {
@@ -76,9 +72,9 @@ public class BinarySearchTreeExe {
             } else {
                 if (root.right == null) {
                     root.right = new CountSmallerBSTNode(val);
-                    return root.less_or_equal();
+                    return root.count + root.left_count;
                 }
-                return root.less_or_equal() + countSmallerBSTInsert(root.right, val);
+                return root.count + root.left_count + countSmallerBSTInsert(root.right, val);
             }
         }
     }
