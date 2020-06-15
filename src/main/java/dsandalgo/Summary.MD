@@ -1626,26 +1626,39 @@ https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list/
 
 Reverse Nodes in k-Group
 https://leetcode.com/problems/reverse-nodes-in-k-group/
+Iterative reverse k group: keep moving the pre.next, but always keep the start static, pointing to next.next so it can
+be recorded very handy.
 
     public ListNode reverseKGroup(ListNode head, int k) {
-        int n = 0;
-        //Find the total number of nodes.
-        for (ListNode i = head; i != null; n++, i = i.next);
-        //Add a dummy head.
-        ListNode dmy = new ListNode(0);
-        dmy.next = head;
-        //Iterate through and reverse k group nodes.
-        for(ListNode prev = dmy, tail = head; n >= k; n -= k) {
-            for (int i = 1; i < k; i++) {
-                ListNode next = tail.next.next;
-                tail.next.next = prev.next;
-                prev.next = tail.next;
-                tail.next = next;
-            }
-            prev = tail;
-            tail = tail.next;
+        if (head == null) return null;
+        //1. find the length of this list
+        int len = 0;
+        ListNode l = head; 
+        while(l != null){
+            len++;
+            l = l.next;
         }
-        return dmy.next;
+        //2. find how many groups need to be reversed
+        int round = len / k;   
+        if (round == 0) return head;
+        
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode pre = dummy;
+        for (int i = 0; i < round; i++){
+            //for each list with size k, reverse it
+            ListNode start = pre.next;
+            ListNode then = start.next;
+            //only do k-1 times.
+            for (int j = 0; j < k-1; j++) {
+                start.next = then.next;
+                then.next = pre.next;
+                pre.next = then;
+                then = start.next;
+            }
+            pre = start;
+        }
+        return dummy.next;
     }
 
 Reorder List

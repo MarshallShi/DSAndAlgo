@@ -42,7 +42,7 @@ public class DPOnStringsExe {
 
     public static void main(String[] args) {
         DPOnStringsExe exe = new DPOnStringsExe();
-        System.out.println(exe.minCut_II("delete"));
+        System.out.println(exe.isMatch_wild("acdcb", "a*c?b"));
     }
 
     /**
@@ -831,9 +831,50 @@ public class DPOnStringsExe {
 
     /**
      * https://leetcode.com/problems/wildcard-matching/
-     * @param s
-     * @param p
-     * @return
+     * Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*'.
+     *
+     * '?' Matches any single character.
+     * '*' Matches any sequence of characters (including the empty sequence).
+     * The matching should cover the entire input string (not partial).
+     *
+     * Note:
+     *
+     * s could be empty and contains only lowercase letters a-z.
+     * p could be empty and contains only lowercase letters a-z, and characters like ? or *.
+     * Example 1:
+     *
+     * Input:
+     * s = "aa"
+     * p = "a"
+     * Output: false
+     * Explanation: "a" does not match the entire string "aa".
+     * Example 2:
+     *
+     * Input:
+     * s = "aa"
+     * p = "*"
+     * Output: true
+     * Explanation: '*' matches any sequence.
+     * Example 3:
+     *
+     * Input:
+     * s = "cb"
+     * p = "?a"
+     * Output: false
+     * Explanation: '?' matches 'c', but the second letter is 'a', which does not match 'b'.
+     * Example 4:
+     *
+     * Input:
+     * s = "adceb"
+     * p = "*a*b"
+     * Output: true
+     * Explanation: The first '*' matches the empty sequence, while the second '*' matches the substring "dce".
+     * Example 5:
+     *
+     * Input:
+     * s = "acdcb"
+     * p = "a*c?b"
+     * Output: false
      */
     public boolean isMatch_wild(String s, String p) {
         if (s == null || p == null) {
@@ -842,9 +883,6 @@ public class DPOnStringsExe {
         int m = s.length(), n = p.length();
         boolean[][] dp = new boolean[m+1][n+1];
         dp[0][0] = true;
-        for (int i=1; i<=m; i++) {
-            dp[i][0] = false;
-        }
         for (int j=1; j<=n; j++) {
             if (p.charAt(j-1) == '*') {
                 dp[0][j] = true;
@@ -912,6 +950,53 @@ public class DPOnStringsExe {
             }
         }
         return dp[s.length()][p.length()];
+    }
+
+    public boolean isMatch_2(String s, String p) {
+        /*
+            'match' below including .
+        f(i,j) means s where s.len=i matches p where p.len=j
+        f(i,j) =
+            if (p_j-1 != * ) f(i-1, j-1) and s_i-1 matches p_j-1
+            if (p_j-1 == * )
+                * matches zero times: f(i,j-2)
+                or * matches at least one time: f(i-1,j) and s_i-1 matches p_j-2
+         */
+
+        if (!p.isEmpty() && p.charAt(0) == '*') {
+            return false;   // invalid p
+        }
+
+        boolean[][] f = new boolean[s.length() + 1][p.length() + 1];
+
+        // initialize f(0,0)
+        f[0][0] = true;
+
+        // f(k,0) and f(0,2k-1) where k>=1 are false by default
+
+        // initialize f(0,2k) where p_2k-1 = * for any k>=1
+        for (int j = 1; j < p.length(); j+=2) {
+            if (p.charAt(j) == '*') {
+                f[0][j+1] = f[0][j-1];
+            }
+        }
+
+        for (int i = 1; i <= s.length(); i++) {
+            for (int j = 1; j <= p.length(); j++) {
+                if (p.charAt(j - 1) != '*') {
+                    f[i][j] = f[i - 1][j - 1] && isCharMatch(s.charAt(i - 1), p.charAt(j - 1));
+                } else {
+                    f[i][j] = f[i][j - 2] || f[i - 1][j] && isCharMatch(s.charAt(i - 1), p.charAt(j - 2));
+                }
+            }
+        }
+
+        return f[s.length()][p.length()];
+    }
+
+    // no * in p
+    private boolean isCharMatch(char s, char p) {
+        return p == '.' || s == p;
     }
     //https://leetcode.com/problems/regular-expression-matching/discuss/5847/Evolve-from-brute-force-to-dp
 

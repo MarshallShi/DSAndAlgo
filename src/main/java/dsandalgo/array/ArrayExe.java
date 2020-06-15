@@ -1804,23 +1804,33 @@ public class ArrayExe {
      *
      */
     public int[] pourWater(int[] heights, int V, int K) {
-        //for each drop, find the target column to add this drop in.
-        //always start from the k col to search according to the condition
-        for(int i = 0; i < V; i++) {
-            int cur = K;
-            // Move left
-            while(cur > 0 && heights[cur] >= heights[cur - 1]) {
-                cur--;
+        if (heights == null || heights.length == 0 || V == 0) {
+            return heights;
+        }
+        int index;
+        while (V > 0) {
+            index = K;
+            for (int i = K - 1; i >= 0; i--) {
+                if (heights[i] > heights[index]) {
+                    break;
+                } else if (heights[i] < heights[index]) {
+                    index = i;
+                }
             }
-            // Move right
-            while(cur < heights.length - 1 && heights[cur] >= heights[cur + 1]) {
-                cur++;
+            if (index != K) {
+                heights[index]++;
+                V--;
+                continue;
             }
-            // Move left to K
-            while(cur > K && heights[cur] >= heights[cur - 1]) {
-                cur--;
+            for (int i = K + 1; i < heights.length; i++) {
+                if (heights[i] > heights[index]) {
+                    break;
+                } else if (heights[i] < heights[index]) {
+                    index = i;
+                }
             }
-            heights[cur]++;
+            heights[index]++;
+            V--;
         }
         return heights;
     }

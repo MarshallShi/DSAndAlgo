@@ -932,6 +932,18 @@ public class StringExe {
         return res.toString();
     }
 
+//    public String strWithout3a3b(int A, int B) {
+//        return generate(A, B, "a", "b");
+//    }
+//
+//    private String generate(int a, int b, String aa, String bb) {
+//        if (a < b) return generate(b, a, bb, aa);
+//        if (b == 0) return aa.repeat(Math.min(2, a));
+//        int use_a = Math.min(2, a);
+//        int use_b = a - use_a >= b ? 1 : 0;
+//        return aa.repeat(use_a) + bb.repeat(use_b) + generate(a - use_a, b - use_b, aa, bb);
+//    }
+
     /**
      * https://leetcode.com/problems/smallest-string-with-swaps/
      * @param s

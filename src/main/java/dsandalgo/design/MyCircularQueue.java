@@ -2,7 +2,7 @@ package dsandalgo.design;
 
 public class MyCircularQueue {
 
-    private int [] arr;
+    private int[] arr;
     private int size;
     private int capacity;
     private int front;

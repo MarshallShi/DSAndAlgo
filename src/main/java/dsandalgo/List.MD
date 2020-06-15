@@ -6,6 +6,8 @@ https://leetcode.com/problems/maximal-rectangle/
 
 Array:
 
+https://leetcode.com/problems/contiguous-array/
+
 https://leetcode.com/problems/first-missing-positive/
 
 https://leetcode.com/problems/queue-reconstruction-by-height/
@@ -28,11 +30,15 @@ https://leetcode.com/problems/longest-repeating-substring/
 
 https://leetcode.com/problems/find-positive-integer-solution-for-a-given-equation/
 
+https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/
+
 Linked List:
 
 https://leetcode.com/problems/reorder-list/
 
 https://leetcode.com/problems/swap-nodes-in-pairs/
+
+https://leetcode.com/problems/reverse-nodes-in-k-group/
 
 https://leetcode.com/problems/lru-cache/
 
@@ -46,6 +52,10 @@ https://leetcode.com/problems/diagonal-traverse/
 
 https://leetcode.com/problems/largest-bst-subtree/
 
+https://leetcode.com/problems/serialize-and-deserialize-n-ary-tree/
+
+https://leetcode.com/problems/encode-n-ary-tree-to-binary-tree/
+
 Stack:
 
 https://leetcode.com/problems/basic-calculator/
@@ -53,6 +63,10 @@ https://leetcode.com/problems/basic-calculator/
 https://leetcode.com/problems/basic-calculator-ii/
 
 https://leetcode.com/problems/longest-valid-parentheses/
+
+https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/
+
+https://leetcode.com/problems/remove-duplicate-letters/
 
 Sort: 
 
@@ -67,6 +81,10 @@ https://leetcode.com/problems/count-of-smaller-numbers-after-self/
 Priority Queue:
 
 https://leetcode.com/problems/find-median-from-data-stream/
+
+https://leetcode.com/problems/the-maze-ii/
+
+https://leetcode.com/problems/the-maze-iii/
 
 Two Pointers / Sliding Window:
 
@@ -86,6 +104,14 @@ https://leetcode.com/problems/longest-consecutive-sequence/
 
 DP:
 
+https://leetcode.com/problems/wildcard-matching/
+
+https://leetcode.com/problems/regular-expression-matching/
+
+https://leetcode.com/problems/longest-common-subsequence/
+
+https://leetcode.com/problems/longest-palindromic-subsequence/
+
 https://leetcode.com/problems/coin-change-2/
 
 https://leetcode.com/problems/palindromic-substrings/
@@ -98,6 +124,8 @@ https://leetcode.com/problems/regular-expression-matching/
 
 https://leetcode.com/problems/edit-distance/
 
+https://leetcode.com/problems/perfect-squares/
+
 (DFS)
 
 https://leetcode.com/problems/word-break-ii/
@@ -105,6 +133,10 @@ https://leetcode.com/problems/word-break-ii/
 (Trie / DP)
 
 https://leetcode.com/problems/concatenated-words/
+
+Trie
+
+https://leetcode.com/problems/word-squares/
 
 DP with BitMask:
 
@@ -118,11 +150,25 @@ https://leetcode.com/problems/lexicographical-numbers/
 
 https://leetcode.com/problems/is-graph-bipartite/
 
+https://leetcode.com/problems/target-sum/
+
+https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
+
+https://leetcode.com/problems/course-schedule-iv/
+
 BFS:
+
+https://leetcode.com/problems/perfect-squares/
 
 https://leetcode.com/problems/remove-invalid-parentheses/
 
+https://leetcode.com/problems/number-of-matching-subsequences/
+
+https://leetcode.com/problems/shortest-bridge/
+
 Backtrack:
+
+https://leetcode.com/problems/letter-case-permutation/
 
 https://leetcode.com/problems/increasing-subsequences/
 
@@ -131,6 +177,12 @@ Greedy:
 https://leetcode.com/problems/gas-station/
 
 https://leetcode.com/problems/jump-game-ii/
+
+https://leetcode.com/problems/longest-happy-string/
+
+Graph
+
+https://leetcode.com/problems/string-transforms-into-another-string/
 
 Reverse thinking:
 
@@ -176,6 +228,10 @@ https://leetcode.com/problems/reach-a-number/
 https://leetcode.com/problems/multiply-strings/
 
 https://leetcode.com/problems/consecutive-numbers-sum/
+
+https://leetcode.com/problems/convert-to-base-2/
+
+https://leetcode.com/problems/prime-arrangements/
 
 Random
 

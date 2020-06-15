@@ -3,8 +3,10 @@ package dsandalgo.string;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class SubsequencesExe {
 
@@ -129,11 +131,38 @@ public class SubsequencesExe {
      * The length of S will be in the range of [1, 50000].
      * The length of words will be in the range of [1, 5000].
      * The length of words[i] will be in the range of [1, 50].
-     * @param S
-     * @param words
-     * @return
      */
     public int numMatchingSubseq(String S, String[] words) {
+        Map<Character, Queue<String>> map = new HashMap<>();
+        int count = 0;
+        for (int i = 0; i < S.length(); i++) {
+            map.putIfAbsent(S.charAt(i), new LinkedList<>());
+        }
+        for (String word : words) {
+            char c = word.charAt(0);
+            if (map.containsKey(c)) {
+                map.get(c).offer(word);
+            }
+        }
+        for (int i = 0; i < S.length(); i++) {
+            char c = S.charAt(i);
+            Queue<String> q = map.get(c);
+            int size = q.size();
+            for (int k = 0; k < size; k++) {
+                String str = q.poll();
+                if (str.length() == 1) {
+                    count++;
+                } else {
+                    if (map.containsKey(str.charAt(1))) {
+                        map.get(str.charAt(1)).add(str.substring(1));
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    public int numMatchingSubseq_1(String S, String[] words) {
         //Store the indexes of each letter in from the source.
         List<Integer>[] idx = new List[26];
         for (int i = 0; i < S.length(); i++) {
