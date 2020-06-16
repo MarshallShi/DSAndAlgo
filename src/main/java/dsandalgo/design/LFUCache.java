@@ -1,6 +1,7 @@
 package dsandalgo.design;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * https://leetcode.com/problems/lfu-cache/
@@ -25,18 +26,18 @@ public class LFUCache {
 
     private int capacity;
     private int count;
-    private HashMap<Integer, Tuple> data; // whether appeared
-    private HashMap<Integer, Tuple> finalNodes; // value : the final node of key times
-    private Tuple dummyHead;
-    private Tuple dummyEnd;
+    private Map<Integer, DataNode> data;
+    private Map<Integer, DataNode> finalNodes;
+    private DataNode dummyHead;
+    private DataNode dummyEnd;
 
     public LFUCache(int capacity) {
         this.capacity = capacity;
         count = 0;
-        data = new HashMap<Integer, Tuple>();
-        finalNodes = new HashMap<Integer, Tuple>();
-        dummyHead = new Tuple(0, 0, 0);
-        dummyEnd = new Tuple(0, 0, 0);
+        data = new HashMap<Integer, DataNode>();
+        finalNodes = new HashMap<Integer, DataNode>();
+        dummyHead = new DataNode(0, 0, 0);
+        dummyEnd = new DataNode(0, 0, 0);
         dummyHead.next = dummyEnd;
         dummyEnd.prev = dummyHead;
     }
@@ -45,7 +46,7 @@ public class LFUCache {
         if (capacity == 0 || !data.containsKey(key)) {
             return -1;
         }
-        Tuple old = data.get(key);
+        DataNode old = data.get(key);
         put(key, old.value);
         return old.value;
     }
@@ -55,7 +56,7 @@ public class LFUCache {
             return;
         }
         if (data.containsKey(key)) { // this key has appeared
-            Tuple cur = data.get(key);
+            DataNode cur = data.get(key);
             if (finalNodes.get(cur.times) == cur && finalNodes.get(cur.times + 1) == null) { // the position should not change
                 finalNodes.put(cur.times, cur.prev.times == cur.times ? cur.prev : null);
                 cur.times++;
@@ -69,32 +70,32 @@ public class LFUCache {
             }
             cur.times++;
             cur.value = value;
-            Tuple finalNode = finalNodes.get(cur.times) == null ? finalNodes.get(cur.times - 1) : finalNodes.get(cur.times);
+            DataNode finalNode = finalNodes.get(cur.times) == null ? finalNodes.get(cur.times - 1) : finalNodes.get(cur.times);
             insertNode(finalNode, cur);
-            finalNodes.put(cur.times, cur); // cur is the final node whitch appeared cur.times
+            finalNodes.put(cur.times, cur); // cur is the final node which appeared cur.times
         } else if (count == capacity) { // reach limt of the cache
-            Tuple head = dummyHead.next;
+            DataNode head = dummyHead.next;
             removeNode(head); //remove the first which appeared least times and is the least Used
             data.remove(head.key);
             if (finalNodes.get(head.times) == head) {
                 finalNodes.remove(head.times);
             }
-            Tuple cur = new Tuple(key, value, 1);
+            DataNode cur = new DataNode(key, value, 1);
             if (finalNodes.get(1) == null) {
                 insertNode(dummyHead, cur);
             } else {
-                Tuple finalNode = finalNodes.get(1);
+                DataNode finalNode = finalNodes.get(1);
                 insertNode(finalNode, cur);
             }
             finalNodes.put(1, cur);
             data.put(key, cur);
         } else {
             count++;
-            Tuple cur = new Tuple(key, value, 1);
+            DataNode cur = new DataNode(key, value, 1);
             if (finalNodes.get(1) == null){
                 insertNode(dummyHead, cur);
             } else {
-                Tuple finalNode = finalNodes.get(1);
+                DataNode finalNode = finalNodes.get(1);
                 insertNode(finalNode, cur);
             }
             finalNodes.put(1, cur);
@@ -102,24 +103,25 @@ public class LFUCache {
         }
     }
 
-    public void insertNode(Tuple t1, Tuple t2) {
+    public void insertNode(DataNode t1, DataNode t2) {
         t2.next = t1.next;
         t1.next.prev = t2;
         t1.next = t2;
         t2.prev = t1;
     }
 
-    public void removeNode(Tuple node) {
+    public void removeNode(DataNode node) {
         node.next.prev = node.prev;
         node.prev.next = node.next;
     }
-    class Tuple {
+
+    class DataNode {
         int key;
         int value;
         int times;
-        Tuple prev;
-        Tuple next;
-        public Tuple(int key, int value, int times) {
+        DataNode prev;
+        DataNode next;
+        public DataNode(int key, int value, int times) {
             this.key = key;
             this.value = value;
             this.times = times;

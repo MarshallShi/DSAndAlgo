@@ -359,27 +359,23 @@ public class TrieExes {
     //2. search, once find the position list not null, check if remaining chars form palindrome, if yes all position in the list will form a result pair.
     public List<List<Integer>> palindromePairs(String[] words) {
         List<List<Integer>> res = new ArrayList<>();
-
         TrieNodePalindromePairs root = new TrieNodePalindromePairs();
-
         for (int i = 0; i < words.length; i++) {
             addWord(root, words[i], i);
         }
-
         for (int i = 0; i < words.length; i++) {
             search(words, i, root, res);
         }
-
         return res;
     }
 
     class TrieNodePalindromePairs {
-        TrieNodePalindromePairs[] next;
+        TrieNodePalindromePairs[] children;
         int index;
         List<Integer> list;
 
         TrieNodePalindromePairs() {
-            next = new TrieNodePalindromePairs[26];
+            children = new TrieNodePalindromePairs[26];
             index = -1;
             list = new ArrayList<>();
         }
@@ -388,18 +384,14 @@ public class TrieExes {
     private void addWord(TrieNodePalindromePairs root, String word, int index) {
         for (int i = word.length() - 1; i >= 0; i--) {
             int j = word.charAt(i) - 'a';
-
-            if (root.next[j] == null) {
-                root.next[j] = new TrieNodePalindromePairs();
+            if (root.children[j] == null) {
+                root.children[j] = new TrieNodePalindromePairs();
             }
-
             if (isPalindrome(word, 0, i)) {
                 root.list.add(index);
             }
-
-            root = root.next[j];
+            root = root.children[j];
         }
-
         root.list.add(index);
         root.index = index;
     }
@@ -409,11 +401,9 @@ public class TrieExes {
             if (root.index >= 0 && root.index != i && isPalindrome(words[i], j, words[i].length() - 1)) {
                 res.add(Arrays.asList(i, root.index));
             }
-
-            root = root.next[words[i].charAt(j) - 'a'];
+            root = root.children[words[i].charAt(j) - 'a'];
             if (root == null) return;
         }
-
         for (int j : root.list) {
             if (i == j) continue;
             res.add(Arrays.asList(i, j));

@@ -1046,9 +1046,9 @@ public class SlidingWindowExe {
 
         for (int j = 0; j < s.length(); j++) {
             if (count[s.charAt(j)] == 0) {    // if count[s.charAt(j)] == 0, we know that it is a distinct character
-                count[s.charAt(j)]++;
                 num++;
             }
+            count[s.charAt(j)]++;
             //sliding window
             //Do this until we have num back to k.
             while (num > k && i < s.length()) {

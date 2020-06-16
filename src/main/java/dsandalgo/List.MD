@@ -24,6 +24,10 @@ https://leetcode.com/problems/maximum-sum-of-two-non-overlapping-subarrays/
 
 https://leetcode.com/problems/range-sum-query-2d-immutable/
 
+String
+
+https://leetcode.com/problems/strong-password-checker/
+
 Binary Search
 
 https://leetcode.com/problems/longest-repeating-substring/
@@ -96,6 +100,8 @@ https://leetcode.com/problems/contains-duplicate-iii/
 
 https://leetcode.com/problems/max-consecutive-ones-iii/
 
+https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/
+
 Union Found:
 
 https://leetcode.com/problems/accounts-merge/
@@ -103,6 +109,8 @@ https://leetcode.com/problems/accounts-merge/
 https://leetcode.com/problems/longest-consecutive-sequence/
 
 DP:
+
+https://leetcode.com/problems/frog-jump/
 
 https://leetcode.com/problems/wildcard-matching/
 
@@ -137,6 +145,10 @@ https://leetcode.com/problems/concatenated-words/
 Trie
 
 https://leetcode.com/problems/word-squares/
+
+https://leetcode.com/problems/short-encoding-of-words/
+
+https://leetcode.com/problems/palindrome-pairs/
 
 DP with BitMask:
 
@@ -184,6 +196,10 @@ Graph
 
 https://leetcode.com/problems/string-transforms-into-another-string/
 
+Data Structure Design
+
+https://leetcode.com/problems/lfu-cache/
+
 Reverse thinking:
 
 https://leetcode.com/problems/find-the-celebrity/
@@ -191,9 +207,7 @@ https://leetcode.com/problems/find-the-celebrity/
 Monotonestack:
 
 https://leetcode.com/problems/largest-rectangle-in-histogram/
-
 https://leetcode.com/problems/maximal-rectangle/
-
 https://leetcode.com/problems/trapping-rain-water/
 https://leetcode.com/problems/daily-temperatures/
 https://leetcode.com/problems/132-pattern/
