@@ -37,20 +37,47 @@ public class HardBacktrackExe {
      *
      */
     public void solveSudoku(char[][] board) {
-        backtrackSudoku(board);
+        Set<Character>[] row = new HashSet[9], col= new HashSet[9], cell= new HashSet[9];
+        for (int i=0; i<9; i++) {
+            row[i] = new HashSet<>();
+            col[i] = new HashSet<>();
+            cell[i] = new HashSet<>();
+        }
+        for (int i=0; i<9; i++) {
+            for (int j=0; j<9; j++) {
+                if (board[i][j] != '.') {
+                    row[i].add(board[i][j]);
+                    col[j].add(board[i][j]);
+                    cell[getCellIdx(i, j)].add(board[i][j]);
+                }
+            }
+        }
+        backtrack(board, row, col, cell);
     }
 
-    private boolean backtrackSudoku(char[][] board) {
+    private int getCellIdx(int x, int y) {
+        int r = (x/3)*3;
+        int c = y/3;
+        return r + c;
+    }
+
+    private boolean backtrack(char[][] board, Set<Character>[] row, Set<Character>[] col, Set<Character>[] cell) {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 if (board[i][j] == '.') {
                     for (char c = '1'; c <= '9'; c++) {
-                        if (isValidMove(board, i, j, c)) {
+                        if (isValidMove(i, j, c, row, col, cell)) {
                             board[i][j] = c;
-                            if (backtrackSudoku(board)) {
+                            row[i].add(c);
+                            col[j].add(c);
+                            cell[getCellIdx(i, j)].add(c);
+                            if (backtrack(board, row, col, cell)) {
                                 return true;
                             } else {
                                 board[i][j] = '.';
+                                row[i].remove(c);
+                                col[j].remove(c);
+                                cell[getCellIdx(i, j)].remove(c);
                             }
                         }
                     }
@@ -61,33 +88,10 @@ public class HardBacktrackExe {
         return true;
     }
 
-    private boolean isValidMove(char[][] board, int i, int j, char c) {
-        for (int x = 0; x < 9; x++) {
-            if (board[i][x] == c) {
-                return false;
-            }
-        }
-        for (int x = 0; x < 9; x++) {
-            if (board[x][j] == c) {
-                return false;
-            }
-        }
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                Set<Character> seen = new HashSet<>();
-                for (int dx = 0; dx < 3; dx++) {
-                    for (int dy = 0; dy < 3; dy++) {
-                        if (board[x * 3 + dx][y * 3 + dy] <= '9' && board[x * 3 + dx][y * 3 + dy] >= '1') {
-                            if (!seen.contains(board[x * 3 + dx][y * 3 + dy])) {
-                                seen.add(board[x * 3 + dx][y * 3 + dy]);
-                            } else {
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    private boolean isValidMove(int i, int j, char c, Set<Character>[] row, Set<Character>[] col, Set<Character>[] cell){
+        if (row[i].contains(c)) return false;
+        if (col[j].contains(c)) return false;
+        if (cell[getCellIdx(i, j)].contains(c)) return false;
         return true;
     }
 

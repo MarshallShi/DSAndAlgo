@@ -26,6 +26,81 @@ public class OverlappingIntervalExe {
         System.out.println(exe.minTaps(9, ranges));
     }
 
+
+    /**
+     * https://leetcode.com/problems/add-bold-tag-in-string/
+     * Given a string s and a list of strings dict, you need to add a closed pair of bold tag <b> and </b> to wrap the substrings in s that exist in dict. If two such substrings overlap, you need to wrap them together by only one pair of closed bold tag. Also, if two substrings wrapped by bold tags are consecutive, you need to combine them.
+     * Example 1:
+     *
+     * Input:
+     * s = "abcxyz123"
+     * dict = ["abc","123"]
+     * Output:
+     * "<b>abc</b>xyz<b>123</b>"
+     *
+     *
+     * Example 2:
+     *
+     * Input:
+     * s = "aaabbcc"
+     * dict = ["aaa","aab","bc"]
+     * Output:
+     * "<b>aaabbc</b>c"
+     *
+     *
+     * Constraints:
+     *
+     * The given dict won't contain duplicates, and its length won't exceed 100.
+     * All the strings in input have length in range [1, 1000].
+     */
+    public String addBoldTag(String s, String[] dict) {
+        //Step 1: generate intervals
+        //int[0]=start, int[1] = end
+        List<int[]> intervals = new ArrayList<>();
+        int end = -1;
+        for (int i = 0; i < s.length(); i++) {//O(s.length), for each start, find the max end position
+            for (String word : dict) {
+                if (s.startsWith(word, i))
+                    end = Math.max(end, i + word.length() - 1);
+            }
+            if (end != -1) {
+                intervals.add(new int[]{i, end});
+                end = -1;
+            }
+        }
+        if (intervals.size() == 0) return s;
+        //Step 2: merge intervals, O(L), because we start from index 0 to end, intervals is already sorted by start
+        List<int[]> merged = mergeIntervals(intervals);
+        //Step 3: output result, O(L)
+        StringBuilder sb = new StringBuilder();
+        int pre = 0;
+        for (int[] interval : merged) {
+            sb.append(s.substring(pre, interval[0]));
+            sb.append("<b>" + s.substring(interval[0], interval[1] + 1) + "</b>");
+            pre = interval[1] + 1;
+        }
+        sb.append(s.substring(pre, s.length()));
+        return sb.toString();
+    }
+
+    //same idea as https://leetcode.com/problems/merge-intervals/
+    private List<int[]> mergeIntervals(List<int[]> intervals) {
+        List<int[]> ans = new ArrayList<>();
+        int pre_start = intervals.get(0)[0];
+        int pre_end = intervals.get(0)[1];
+        for (int i = 1; i < intervals.size(); i++) {
+            if (intervals.get(i)[0] <= pre_end + 1) {//we also want to merge [1,2] [3,4]->[1,4]
+                pre_end = Math.max(pre_end, intervals.get(i)[1]);
+            } else {
+                ans.add(new int[]{pre_start, pre_end});
+                pre_start = intervals.get(i)[0];
+                pre_end = intervals.get(i)[1];
+            }
+        }
+        ans.add(new int[]{pre_start, pre_end});
+        return ans;
+    }
+
     /**
      * https://leetcode.com/problems/minimum-number-of-taps-to-open-to-water-a-garden/
      * There is a one-dimensional garden on the x-axis. The garden starts at the point 0 and ends at the point n.

@@ -24,9 +24,13 @@ https://leetcode.com/problems/maximum-sum-of-two-non-overlapping-subarrays/
 
 https://leetcode.com/problems/range-sum-query-2d-immutable/
 
+https://leetcode.com/problems/candy-crush/
+
 String
 
 https://leetcode.com/problems/strong-password-checker/
+
+https://leetcode.com/problems/bold-words-in-string/
 
 Binary Search
 
@@ -37,6 +41,8 @@ https://leetcode.com/problems/find-positive-integer-solution-for-a-given-equatio
 https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/
 
 Linked List:
+
+https://leetcode.com/problems/odd-even-linked-list/
 
 https://leetcode.com/problems/reorder-list/
 
@@ -60,6 +66,8 @@ https://leetcode.com/problems/serialize-and-deserialize-n-ary-tree/
 
 https://leetcode.com/problems/encode-n-ary-tree-to-binary-tree/
 
+https://leetcode.com/problems/inorder-successor-in-bst/
+
 Stack:
 
 https://leetcode.com/problems/basic-calculator/
@@ -81,6 +89,10 @@ https://leetcode.com/problems/two-city-scheduling/
 https://leetcode.com/problems/sliding-window-maximum/
 
 https://leetcode.com/problems/count-of-smaller-numbers-after-self/
+
+https://leetcode.com/problems/pancake-sorting/
+
+https://leetcode.com/problems/add-bold-tag-in-string/
 
 Priority Queue:
 
@@ -134,6 +146,8 @@ https://leetcode.com/problems/edit-distance/
 
 https://leetcode.com/problems/perfect-squares/
 
+https://leetcode.com/problems/number-of-dice-rolls-with-target-sum/
+
 (DFS)
 
 https://leetcode.com/problems/word-break-ii/
@@ -149,6 +163,10 @@ https://leetcode.com/problems/word-squares/
 https://leetcode.com/problems/short-encoding-of-words/
 
 https://leetcode.com/problems/palindrome-pairs/
+
+Suffix Trie
+
+https://leetcode.com/problems/last-substring-in-lexicographical-order/
 
 DP with BitMask:
 
@@ -184,6 +202,8 @@ https://leetcode.com/problems/letter-case-permutation/
 
 https://leetcode.com/problems/increasing-subsequences/
 
+https://leetcode.com/problems/combinations/
+
 Greedy:
 
 https://leetcode.com/problems/gas-station/
@@ -199,6 +219,8 @@ https://leetcode.com/problems/string-transforms-into-another-string/
 Data Structure Design
 
 https://leetcode.com/problems/lfu-cache/
+
+https://leetcode.com/problems/all-oone-data-structure/
 
 Reverse thinking:
 
@@ -246,6 +268,8 @@ https://leetcode.com/problems/consecutive-numbers-sum/
 https://leetcode.com/problems/convert-to-base-2/
 
 https://leetcode.com/problems/prime-arrangements/
+
+https://leetcode.com/problems/reaching-points/
 
 Random
 

@@ -449,3 +449,43 @@ Solution 4: Math.
         }
         return level;
     }
+
+    
+Read N Characters Given Read4 II - Call multiple times    
+
+https://leetcode.com/problems/read-n-characters-given-read4-ii-call-multiple-times/
+
+    /**
+     * The read4 API is defined in the parent class Reader4.
+     *     int read4(char[] buf); 
+     */
+
+    public class Solution extends Reader4 {
+        /**
+         * @param buf Destination buffer
+         * @param n   Number of characters to read
+         * @return    The number of actual characters read
+         */
+        private char[] prevBuf = new char[4];
+        private int prevSize = 0;
+        private int prevIndex = 0;
+        
+        public int read(char[] buf, int n) {
+            int count = 0;
+            while (count < n) {
+                if (prevIndex < prevSize) {
+                    // extract char one by one from the buffer array
+                    buf[count++] = prevBuf[prevIndex++];
+                } else {
+                    // buffer array all read, get next 4 in.
+                    prevSize = read4(prevBuf);
+                    prevIndex = 0;
+                    if (prevSize == 0) {
+                        // no more data to consume from stream
+                        break;
+                    }
+                }
+            }
+            return count;
+        }
+    }
