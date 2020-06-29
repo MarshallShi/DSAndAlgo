@@ -1193,8 +1193,6 @@ public class MathExe {
 
     /**
      * https://leetcode.com/problems/maximum-swap/
-     * @param num
-     * @return
      */
     public int maximumSwap(int num) {
         char[] digits = String.valueOf(num).toCharArray();

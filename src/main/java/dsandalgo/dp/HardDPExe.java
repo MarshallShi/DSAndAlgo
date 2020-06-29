@@ -12,10 +12,220 @@ public class HardDPExe {
 
     public static void main(String[] args) {
         HardDPExe exe = new HardDPExe();
-        int[] arr1 = {1,2,3,7};
-        System.out.println(exe.stoneGameIII(arr1));
+        int[] arr1 = {1,4,8,10,20};
+        //[1,4,8,10,20]
+        //3
+        System.out.println(exe.minDistance(arr1, 3));
     }
 
+
+    /**
+     * https://leetcode.com/problems/max-dot-product-of-two-subsequences/
+     * Given two arrays nums1 and nums2.
+     *
+     * Return the maximum dot product between non-empty subsequences of nums1 and nums2 with the same length.
+     *
+     * A subsequence of a array is a new array which is formed from the original array by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, [2,3,5] is a subsequence of [1,2,3,4,5] while [1,5,3] is not).
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: nums1 = [2,1,-2,5], nums2 = [3,0,-6]
+     * Output: 18
+     * Explanation: Take subsequence [2,-2] from nums1 and subsequence [3,-6] from nums2.
+     * Their dot product is (2*3 + (-2)*(-6)) = 18.
+     * Example 2:
+     *
+     * Input: nums1 = [3,-2], nums2 = [2,-6,7]
+     * Output: 21
+     * Explanation: Take subsequence [3] from nums1 and subsequence [7] from nums2.
+     * Their dot product is (3*7) = 21.
+     * Example 3:
+     *
+     * Input: nums1 = [-1,-1], nums2 = [1,1]
+     * Output: -1
+     * Explanation: Take subsequence [-1] from nums1 and subsequence [1] from nums2.
+     * Their dot product is -1.
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= nums1.length, nums2.length <= 500
+     * -1000 <= nums1[i], nums2[i] <= 1000
+     */
+    public int maxDotProduct(int[] nums1, int[] nums2) {
+        int m = nums1.length;
+        int n = nums2.length;
+        int[][] dp = new int[m][n];
+        dp[0][0] = nums1[0]*nums2[0];
+        for (int i=1; i<n; i++) {
+            dp[0][i] = Math.max(dp[0][i-1], nums2[i]*nums1[0]);
+        }
+        for (int i=1; i<m; i++) {
+            dp[i][0] = Math.max(dp[i-1][0], nums1[i]*nums2[0]);
+        }
+        for (int i=1; i<m; i++) {
+            for (int j=1; j<n; j++) {
+                int toUse = Math.max(dp[i-1][j-1] + nums1[i]*nums2[j], nums1[i]*nums2[j]);
+                int notUse = Math.max(dp[i][j-1], dp[i-1][j]);
+                dp[i][j] = Math.max(toUse, notUse);
+            }
+        }
+        return dp[m-1][n-1];
+    }
+
+    /**
+     * https://leetcode.com/problems/allocate-mailboxes/
+     * Given the array houses and an integer k. where houses[i] is the location of the ith house along a street, your task is to allocate k mailboxes in the street.
+     *
+     * Return the minimum total distance between each house and its nearest mailbox.
+     *
+     * The answer is guaranteed to fit in a 32-bit signed integer.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: houses = [1,4,8,10,20], k = 3
+     * Output: 5
+     * Explanation: Allocate mailboxes in position 3, 9 and 20.
+     * Minimum total distance from each houses to nearest mailboxes is |3-1| + |4-3| + |9-8| + |10-9| + |20-20| = 5
+     * Example 2:
+     *
+     *
+     *
+     * Input: houses = [2,3,5,12,18], k = 2
+     * Output: 9
+     * Explanation: Allocate mailboxes in position 3 and 14.
+     * Minimum total distance from each houses to nearest mailboxes is |2-3| + |3-3| + |5-3| + |12-14| + |18-14| = 9.
+     * Example 3:
+     *
+     * Input: houses = [7,4,6,1], k = 1
+     * Output: 8
+     * Example 4:
+     *
+     * Input: houses = [3,6,14,10], k = 4
+     * Output: 0
+     *
+     *
+     * Constraints:
+     *
+     * n == houses.length
+     * 1 <= n <= 100
+     * 1 <= houses[i] <= 10^4
+     * 1 <= k <= n
+     * Array houses contain unique integers.
+     */
+    private int MAXCOST = 1000000;
+    public int minDistance(int[] houses, int k) {
+        int n = houses.length;
+        Arrays.sort(houses);
+        int[][] cache = new int[n][k];
+        for (int i = 0; i < n; ++i) {
+            Arrays.fill(cache[i], -1);
+        }
+        return minDistanceDFS(houses, k, 0, 0, cache);
+    }
+
+    private int minDistanceDFS(int[] houses, int k, int pos, int curK, int[][] cache) {
+        if (pos == houses.length) {
+            if (curK == k) {
+                return 0;
+            }
+            return MAXCOST;
+        }
+        if (curK == k) return MAXCOST;
+        if (cache[pos][curK] != -1) return cache[pos][curK];
+        int minDis = MAXCOST;
+        for (int i = pos; i < houses.length; i++) {
+            // Best way to place a mailbox between [i, pos] houses is to place at the median house
+            int median = houses[(i + pos) / 2];
+            // Step 1: Calculate cost when we place at median house
+            int cost = 0;
+            for (int j = pos; j <= i; j++) {
+                cost += Math.abs(median - houses[j]);
+            }
+            // Step 2: Recursively, calculate cost of placing rest of the mailboxes at i+1 pos
+            minDis = Math.min(minDis, minDistanceDFS(houses, k, i + 1, curK + 1, cache) + cost);
+        }
+        cache[pos][curK] = minDis;
+        return minDis;
+    }
+
+    /**
+     * https://leetcode.com/problems/number-of-ways-of-cutting-a-pizza/
+     * Given a rectangular pizza represented as a rows x cols matrix containing the following characters: 'A' (an apple) and '.' (empty cell) and given the integer k. You have to cut the pizza into k pieces using k-1 cuts.
+     *
+     * For each cut you choose the direction: vertical or horizontal, then you choose a cut position at the cell boundary and cut the pizza into two pieces. If you cut the pizza vertically, give the left part of the pizza to a person. If you cut the pizza horizontally, give the upper part of the pizza to a person. Give the last piece of pizza to the last person.
+     *
+     * Return the number of ways of cutting the pizza such that each piece contains at least one apple. Since the answer can be a huge number, return this modulo 10^9 + 7.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: pizza = ["A..","AAA","..."], k = 3
+     * Output: 3
+     * Explanation: The figure above shows the three ways to cut the pizza. Note that pieces must contain at least one apple.
+     * Example 2:
+     *
+     * Input: pizza = ["A..","AA.","..."], k = 3
+     * Output: 1
+     * Example 3:
+     *
+     * Input: pizza = ["A..","A..","..."], k = 1
+     * Output: 1
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= rows, cols <= 50
+     * rows == pizza.length
+     * cols == pizza[i].length
+     * 1 <= k <= 10
+     * pizza consists of characters 'A' and '.' only.
+     */
+    public int ways(String[] pizza, int k) {
+        int m = pizza.length;
+        int n = pizza[0].length();
+        //Add up the sum from bottom right to up left.
+        //While cutting, it is always from left to right, up to bottom.
+        int[][] sums = new int[m+1][n+1];
+        for (int i = m-1; i >= 0; i--) {
+            for (int j = n-1; j >= 0; j--) {
+                sums[i][j] = (pizza[i].charAt(j) == 'A' ? 1 : 0)
+                        + sums[i+1][j] + sums[i][j+1] - sums[i+1][j+1];
+            }
+        }
+        Integer[][][] dp = new Integer[m][n][k+1];
+        return wayRecursive(0, 0, 1, k, dp, sums, m, n);
+    }
+
+    private int wayRecursive(int i, int j, int v, int k, Integer[][][] dp, int[][] sums, int m, int n) {
+        if (dp[i][j][v] != null) {
+            return dp[i][j][v];
+        }
+        if (v == k) {
+            return dp[i][j][v] = (sums[i][j] > 0 ? 1 : 0);
+        }
+        int ret = 0;
+        for (int r = i; r < m-1; r++) {
+            if (sums[i][j] - sums[r + 1][j] > 0) {
+                ret = (ret + wayRecursive(r + 1, j, v + 1, k, dp, sums, m, n)) % 1000000007;
+            }
+        }
+        for (int c = j; c < n-1; c++) {
+            if (sums[i][j] - sums[i][c+1] > 0) {
+                ret = (ret + wayRecursive(i, c+1, v+1, k, dp, sums, m, n)) % 1000000007;
+            }
+        }
+        return dp[i][j][v] = ret;
+    }
 
     /**
      * https://leetcode.com/problems/number-of-ways-to-paint-n-3-grid/
@@ -1840,36 +2050,6 @@ public class HardDPExe {
      * 1 <= startTime[i] < endTime[i] <= 10^9
      * 1 <= profit[i] <= 10^4
      */
-//    public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {
-//        int[][] items = new int[startTime.length][3];
-//        for (int i = 0; i < startTime.length; i++) {
-//            items[i] = new int[] {startTime[i], endTime[i], profit[i]};
-//        }
-//        // sort by endTime
-//        Arrays.sort(items, (a1, a2)->a1[1] - a2[1]);
-//        List<Integer> dpEndTime = new ArrayList<>();
-//        List<Integer> dpProfit = new ArrayList<>();
-//        // dynamic build up these two in the loop to track current max.
-//        dpEndTime.add(0);
-//        dpProfit.add(0);
-//        for (int[] item : items) {
-//            int start = item[0], end = item[1], seProfit = item[2];
-//            // find previous endTime index
-//            int prevIdx = Collections.binarySearch(dpEndTime, start + 1);
-//            if (prevIdx < 0) {
-//                prevIdx = -prevIdx - 1;
-//            }
-//            prevIdx--;
-//            //current max profit : max(use current, not use current).
-//            int currProfit = dpProfit.get(prevIdx) + seProfit, maxProfit = dpProfit.get(dpProfit.size() - 1);
-//            if (currProfit > maxProfit) {
-//                dpProfit.add(currProfit);
-//                dpEndTime.add(end);
-//            }
-//        }
-//        return dpProfit.get(dpProfit.size() - 1);
-//    }
-
     public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {
         int[][] jobs = new int[startTime.length][3];
         for (int i = 0; i < startTime.length; i++) {

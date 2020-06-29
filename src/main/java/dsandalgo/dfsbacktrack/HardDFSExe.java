@@ -839,16 +839,6 @@ public class HardDFSExe {
     }
 
     /**
-     * https://leetcode.com/problems/number-of-distinct-islands-ii/
-     *
-     * @param grid
-     * @return
-     */
-    public int numDistinctIslands2(int[][] grid) {
-        return 0;
-    }
-
-    /**
      * https://leetcode.com/problems/unique-paths-iii/
      *
      * On a 2-dimensional grid, there are 4 types of squares:

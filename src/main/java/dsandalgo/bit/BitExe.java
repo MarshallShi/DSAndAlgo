@@ -212,6 +212,7 @@ public class BitExe {
      * Input: [0,1]
      * Output: 0
      */
+    //TRICK: As long as the two number not equal, we can't keep the bits, as they differ, the last digit will have zero.
     public int rangeBitwiseAnd(int m, int n) {
         if(m == 0){
             return 0;

@@ -2660,11 +2660,6 @@ public class TreeExe {
      * Constraints:
      * Each tree has at most 5000 nodes.
      * -10^9 <= target, node.val <= 10^9
-     *
-     * @param root1
-     * @param root2
-     * @param target
-     * @return
      */
     //Idea: traverse one tree to get the already seen value in a map.
     public boolean twoSumBSTs(TreeNode root1, TreeNode root2, int target) {
@@ -2781,24 +2776,6 @@ public class TreeExe {
         return ret;
     }
 
-    private ListNode createTestNode(){
-        ListNode node1 = new ListNode(-10);
-        ListNode node2 = new ListNode(-3);
-        node1.next = node2;
-
-        ListNode node3 = new ListNode(0);
-        node2.next = node3;
-//
-//        ListNode node4 = new ListNode(5);
-//        node3.next = node4;
-//
-//        ListNode node5 = new ListNode(9);
-//        node4.next = node5;
-//
-//        ListNode node6 = new ListNode(10);
-//        node5.next = node6;
-        return node1;
-    }
     /**
      * https://leetcode.com/problems/closest-binary-search-tree-value-ii/
      *
@@ -2822,11 +2799,6 @@ public class TreeExe {
      * Output: [4,3]
      * Follow up:
      * Assume that the BST is balanced, could you solve it in less than O(n) runtime (where n = total nodes)?
-     *
-     * @param root
-     * @param target
-     * @param k
-     * @return
      */
     public List<Integer> closestKValues(TreeNode root, double target, int k) {
         Stack<TreeNode> smaller = new Stack<>();
@@ -2874,13 +2846,10 @@ public class TreeExe {
 
     public List<Integer> closestKValues_2(TreeNode root, double target, int k) {
         List<Integer> res = new ArrayList<>();
-
         Stack<Integer> stackLower = new Stack<>();
         Stack<Integer> stackHigher = new Stack<>();
-
         inorder(root, target, false, stackLower);
         inorder(root, target, true, stackHigher);
-
         while (k-- > 0) {
             if (stackLower.isEmpty()) {
                 res.add(stackHigher.pop());
@@ -2896,7 +2865,6 @@ public class TreeExe {
                 }
             }
         }
-
         return res;
     }
 
@@ -2913,22 +2881,6 @@ public class TreeExe {
         // track the value of current node
         stack.push(root.val);
         inorder(reverse ? root.left : root.right, target, reverse, stack);
-    }
-
-    private TreeNode createDNode() {
-
-        TreeNode root = new TreeNode(4);
-
-        TreeNode node1 = new TreeNode(2);
-        root.left = node1;
-        TreeNode node2 = new TreeNode(5);
-        root.right = node2;
-
-        TreeNode node4 = new TreeNode(1);
-        node1.left = node4;
-        TreeNode node5 = new TreeNode(3);
-        node1.right = node5;
-        return root;
     }
 
     /**

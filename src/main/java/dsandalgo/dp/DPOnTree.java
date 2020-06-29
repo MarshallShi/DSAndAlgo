@@ -148,8 +148,6 @@ public class DPOnTree {
      */
 
     //https://leetcode.com/problems/house-robber-iii/discuss/79330/Step-by-step-tackling-of-the-problem
-    //DFS Solution:
-    //HARD
     public int rob(TreeNode root) {
         int[] num = dfs(root);
         //int[0] value taking current node; int[1] value without taking current node.
@@ -167,41 +165,5 @@ public class DPOnTree {
         //Take left and right child, only take their max though.
         res[1] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
         return res;
-    }
-
-    public int rob_WrongAnswer(TreeNode root) {
-        if (root == null) {
-            return 0;
-        }
-        if (root.left == null && root.right == null) {
-            return root.val;
-        }
-        List<Integer> ret = new ArrayList<Integer>();
-        Queue<TreeNode> queue = new LinkedList<TreeNode>();
-        queue.offer(root);
-        while (!queue.isEmpty()) {
-            int s = queue.size();
-            int sumPerLevel = 0;
-            for (int i=0; i<s; i++) {
-                TreeNode node = queue.poll();
-                sumPerLevel = sumPerLevel + node.val;
-                if (node.left != null) {
-                    queue.offer(node.left);
-                }
-                if (node.right != null) {
-                    queue.offer(node.right);
-                }
-            }
-            ret.add(sumPerLevel);
-        }
-        int[] dp = new int[ret.size()];
-        dp[0] = ret.get(0);
-        dp[1] = Math.max(ret.get(1), ret.get(0));
-        int max = Math.max(dp[0], dp[1]);
-        for (int i = 2; i<ret.size(); i++) {
-            dp[i] = Math.max(dp[i-2] + ret.get(i), dp[i-1]);
-            max = Math.max(dp[i], max);
-        }
-        return max;
     }
 }

@@ -621,90 +621,9 @@ public class StringExe {
     private boolean isleap(int year) {
         return (year % 100 != 0 && year % 4 == 0) || (year % 100 == 0 && year % 400 == 0);
     }
-	
-	/**
-     * https://leetcode.com/problems/number-of-substrings-containing-all-three-characters/
-     * Given a string s consisting only of characters a, b and c.
-     *
-     * Return the number of substrings containing at least one occurrence of all these characters a, b and c.
-     *
-     * Example 1:
-     * Input: s = "abcabc"
-     * Output: 10
-     * Explanation: The substrings containing at least one occurrence of the characters a, b and c are "abc", "abca",
-     * "abcab", "abcabc", "bca", "bcab", "bcabc", "cab", "cabc" and "abc" (again).
-     *
-     * Example 2:
-     * Input: s = "aaacb"
-     * Output: 3
-     * Explanation: The substrings containing at least one occurrence of the characters a, b and c are "aaacb", "aacb" and "acb".
-     *
-     * Example 3:
-     * Input: s = "abc"
-     * Output: 1
-     *
-     * Constraints:
-     * 3 <= s.length <= 5 x 10^4
-     * s only consists of a, b or c characters.
-     */
-    public int numberOfSubstrings(String s) {
-        LinkedList<Integer> aIdxList = new LinkedList<Integer>();
-        LinkedList<Integer> bIdxList = new LinkedList<Integer>();
-        LinkedList<Integer> cIdxList = new LinkedList<Integer>();
-        for (int i=0; i<s.length(); i++) {
-            if (s.charAt(i) == 'a') {
-                aIdxList.add(i);
-            } else {
-                if (s.charAt(i) == 'b') {
-                    bIdxList.add(i);
-                } else {
-                    cIdxList.add(i);
-                }
-            }
-        }
-        int ans = 0;
-        for (int i=0; i<s.length() - 2; i++) {
-            int idxA = -1, idxB = -1, idxC = - 1;
-            for (int j=0; j<aIdxList.size(); j++) {
-                if (aIdxList.get(j) >= i) {
-                    idxA = aIdxList.get(j);
-                    break;
-                }
-            }
-            for (int j=0; j<bIdxList.size(); j++) {
-                if (bIdxList.get(j) >= i) {
-                    idxB = bIdxList.get(j);
-                    break;
-                }
-            }
-            for (int j=0; j<cIdxList.size(); j++) {
-                if (cIdxList.get(j) >= i) {
-                    idxC = cIdxList.get(j);
-                    break;
-                }
-            }
-            if (idxA == -1 || idxB == -1 || idxC == -1) {
-                break;
-            } else {
-                ans = ans + s.length() - Math.max(idxA, Math.max(idxB, idxC));
-            }
-            while (!aIdxList.isEmpty() && aIdxList.getFirst()<i) {
-                aIdxList.removeFirst();
-            }
-            while (!bIdxList.isEmpty() && bIdxList.getFirst()<i) {
-                bIdxList.removeFirst();
-            }
-            while (!cIdxList.isEmpty() && cIdxList.getFirst()<i) {
-                cIdxList.removeFirst();
-            }
-        }
-        return ans;
-    }
 
     /**
      * https://leetcode.com/problems/remove-comments/
-     * @param source
-     * @return
      */
     public List<String> removeComments(String[] source) {
         List<String> res = new ArrayList<>();
@@ -717,15 +636,16 @@ public class StringExe {
                         mode = false;
                         i++;        //skip '/' on next iteration of i
                     }
-                }
-                else {
+                } else {
                     if (s.charAt(i) == '/' && i < s.length() - 1 && s.charAt(i + 1) == '/') {
                         break;      //ignore remaining characters on line s
-                    } else if (s.charAt(i) == '/' && i < s.length() - 1 && s.charAt(i + 1) == '*') {
-                        mode = true;
-                        i++;           //skip '*' on next iteration of i
-                    }  else {
-                        sb.append(s.charAt(i));     //not a comment
+                    } else {
+                        if (s.charAt(i) == '/' && i < s.length() - 1 && s.charAt(i + 1) == '*') {
+                            mode = true;
+                            i++;           //skip '*' on next iteration of i
+                        }  else {
+                            sb.append(s.charAt(i));     //not a comment
+                        }
                     }
                 }
             }
