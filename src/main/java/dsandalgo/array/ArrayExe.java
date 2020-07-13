@@ -2005,7 +2005,7 @@ public class ArrayExe {
         return res;
     }
 
-    String getRange(long n1, long n2) {
+    private String getRange(long n1, long n2) {
         return (n1 == n2) ? String.valueOf(n1) : String.format("%d->%d", n1, n2);
     }
 

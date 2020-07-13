@@ -15,8 +15,90 @@ public class DijkstrasExe {
 
     public static void main(String[] args) {
         DijkstrasExe exe = new DijkstrasExe();
-        int[][] grids = {{0,1,10},{0,2,1},{1,2,2}};
-        System.out.println(exe.reachableNodes(grids, 6, 3));
+        int[][] edges = {{0,1},{1,2},{0,2}};
+        double[] prob = {0.5, 0.5, 0.2};
+        System.out.println(exe.maxProbability(3, edges, prob, 0, 2));
+    }
+
+
+    /**
+     * https://leetcode.com/problems/path-with-maximum-probability/
+     *
+     * You are given an undirected weighted graph of n nodes (0-indexed), represented by an edge list where edges[i] = [a, b] is an undirected edge
+     * connecting the nodes a and b with a probability of success of traversing that edge succProb[i].
+     *
+     * Given two nodes start and end, find the path with the maximum probability of success to go from start to end and return its success probability.
+     *
+     * If there is no path from start to end, return 0. Your answer will be accepted if it differs from the correct answer by at most 1e-5.
+     *
+     * Example 1:
+     *
+     * Input: n = 3, edges = [[0,1],[1,2],[0,2]], succProb = [0.5,0.5,0.2], start = 0, end = 2
+     * Output: 0.25000
+     * Explanation: There are two paths from start to end, one having a probability of success = 0.2 and the other has 0.5 * 0.5 = 0.25.
+     *
+     * Example 2:
+     *
+     * Input: n = 3, edges = [[0,1],[1,2],[0,2]], succProb = [0.5,0.5,0.3], start = 0, end = 2
+     * Output: 0.30000
+     *
+     * Example 3:
+     *
+     * Input: n = 3, edges = [[0,1]], succProb = [0.5], start = 0, end = 2
+     * Output: 0.00000
+     * Explanation: There is no path between 0 and 2.
+     *
+     *
+     * Constraints:
+     *
+     * 2 <= n <= 10^4
+     * 0 <= start, end < n
+     * start != end
+     * 0 <= a, b < n
+     * a != b
+     * 0 <= succProb.length == edges.length <= 2*10^4
+     * 0 <= succProb[i] <= 1
+     * There is at most one edge between every two nodes.
+     */
+    public class Tuple{
+        public int from;
+        public int to;
+        public double prob;
+        public Tuple(int _f, int _t, double _p){
+            this.from = _f;
+            this.to = _t;
+            this.prob = _p;
+        }
+    }
+    public double maxProbability(int n, int[][] edges, double[] succProb, int start, int end) {
+        Map<Integer, Map<Integer, Double>> graph = new HashMap<>();
+        for (int i=0; i<edges.length; i++) {
+            graph.putIfAbsent(edges[i][0], new HashMap<>());
+            graph.get(edges[i][0]).put(edges[i][1], succProb[i]);
+            graph.putIfAbsent(edges[i][1], new HashMap<>());
+            graph.get(edges[i][1]).put(edges[i][0], succProb[i]);
+        }
+        PriorityQueue<Tuple> pq = new PriorityQueue<>((a, b) -> (Double.compare(b.prob, a.prob)));
+        pq.offer(new Tuple(start, start, 1));
+        boolean[][] pathSeen = new boolean[n][n];
+        pathSeen[start][start] = true;
+        while (!pq.isEmpty()) {
+            Tuple cur = pq.poll();
+            if (cur.to == end) {
+                return cur.prob;
+            }
+            if (graph.containsKey(cur.to)) {
+                for (Map.Entry<Integer, Double> next : graph.get(cur.to).entrySet()) {
+                    if (!pathSeen[cur.to][next.getKey()] && !pathSeen[next.getKey()][cur.to]) {
+                        pathSeen[cur.to][next.getKey()] = true;
+                        pathSeen[next.getKey()][cur.to] = true;
+                        Tuple topush = new Tuple(cur.to, next.getKey(), next.getValue()*cur.prob);
+                        pq.offer(topush);
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     /**

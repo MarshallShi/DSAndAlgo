@@ -30,6 +30,8 @@ https://leetcode.com/problems/candy-crush/
 
 String
 
+https://leetcode.com/problems/valid-number/
+
 https://leetcode.com/problems/strong-password-checker/
 
 https://leetcode.com/problems/bold-words-in-string/
@@ -60,6 +62,12 @@ https://leetcode.com/problems/insert-into-a-sorted-circular-linked-list/
 
 Tree:
 
+https://leetcode.com/problems/verify-preorder-sequence-in-binary-search-tree/
+
+https://leetcode.com/problems/recover-binary-search-tree/
+
+https://leetcode.com/problems/increasing-order-search-tree/
+
 https://leetcode.com/problems/house-robber-iii/
 
 https://leetcode.com/problems/boundary-of-binary-tree/
@@ -82,15 +90,25 @@ https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked
 
 https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/
 
+Segment Tree
+
+https://leetcode.com/problems/range-sum-query-mutable/
+
 Tree Set:
 
 https://leetcode.com/problems/avoid-flood-in-the-city/
 
+https://leetcode.com/problems/hand-of-straights/
+
 Stack:
+
+https://leetcode.com/problems/number-of-atoms/
 
 https://leetcode.com/problems/basic-calculator/
 
 https://leetcode.com/problems/basic-calculator-ii/
+
+https://leetcode.com/problems/basic-calculator-iii/
 
 https://leetcode.com/problems/longest-valid-parentheses/
 
@@ -99,6 +117,8 @@ https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/
 https://leetcode.com/problems/remove-duplicate-letters/
 
 Sort: 
+
+https://leetcode.com/problems/campus-bikes/
 
 https://leetcode.com/problems/increasing-triplet-subsequence/
 
@@ -118,11 +138,19 @@ https://leetcode.com/problems/pancake-sorting/
 
 https://leetcode.com/problems/add-bold-tag-in-string/
 
+
+Overlap
+
+https://leetcode.com/problems/video-stitching/
+
 https://leetcode.com/problems/insert-interval/
 
 https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended/
 
 https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/
+
+https://leetcode.com/problems/minimum-number-of-taps-to-open-to-water-a-garden/
+
 
 Priority Queue:
 
@@ -135,6 +163,22 @@ https://leetcode.com/problems/sliding-window-median/
 https://leetcode.com/problems/the-maze-ii/
 
 https://leetcode.com/problems/the-maze-iii/
+
+
+Dijkstras
+
+https://leetcode.com/problems/path-with-maximum-probability/
+
+https://leetcode.com/problems/cheapest-flights-within-k-stops/
+
+https://leetcode.com/problems/network-delay-time/
+
+https://leetcode.com/problems/reachable-nodes-in-subdivided-graph/
+
+https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/
+
+https://leetcode.com/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/
+
 
 Two Pointers / Sliding Window:
 
@@ -206,6 +250,20 @@ https://leetcode.com/problems/partition-equal-subset-sum/
 
 https://leetcode.com/problems/delete-and-earn/
 
+https://leetcode.com/problems/form-largest-integer-with-digits-that-add-up-to-target/
+
+https://leetcode.com/problems/last-stone-weight-ii/
+
+https://leetcode.com/problems/smallest-sufficient-team/
+
+https://leetcode.com/problems/largest-sum-of-averages/
+
+https://leetcode.com/problems/ugly-number-ii/
+
+https://leetcode.com/problems/bomb-enemy/
+
+https://leetcode.com/problems/tallest-billboard/
+
 (DFS)
 
 https://leetcode.com/problems/word-break-ii/
@@ -266,15 +324,23 @@ https://leetcode.com/problems/shortest-bridge/
 
 https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/
 
+https://leetcode.com/problems/synonymous-sentences/
+
 Backtrack:
 
 https://leetcode.com/problems/letter-case-permutation/
 
 https://leetcode.com/problems/increasing-subsequences/
 
+https://leetcode.com/problems/permutations-ii/
+
+https://leetcode.com/problems/beautiful-arrangement/
+
 https://leetcode.com/problems/combinations/
 
 https://leetcode.com/problems/factor-combinations/
+
+https://leetcode.com/problems/expression-add-operators/
 
 Greedy:
 
@@ -294,11 +360,15 @@ https://leetcode.com/problems/string-transforms-into-another-string/
 
 https://leetcode.com/problems/parallel-courses-ii/
 
+https://leetcode.com/problems/evaluate-division/
+
 Data Structure Design
 
 https://leetcode.com/problems/lfu-cache/
 
 https://leetcode.com/problems/all-oone-data-structure/
+
+https://leetcode.com/problems/first-unique-number/
 
 Reverse thinking:
 
@@ -309,6 +379,8 @@ Monotone Queue
 https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/
 
 Monotonestack:
+
+https://leetcode.com/problems/sum-of-subarray-minimums/
 
 https://leetcode.com/problems/largest-rectangle-in-histogram/
 https://leetcode.com/problems/maximal-rectangle/
@@ -321,7 +393,6 @@ https://leetcode.com/problems/next-greater-element-ii/
 https://leetcode.com/problems/online-stock-span/
 https://leetcode.com/problems/shortest-unsorted-continuous-subarray/
 https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/
-https://leetcode.com/problems/sum-of-subarray-minimums/
 https://leetcode.com/problems/sum-of-subsequence-widths/
 https://leetcode.com/problems/count-unique-characters-of-all-substrings-of-a-given-string/
 https://leetcode.com/problems/remove-duplicate-letters/
@@ -355,7 +426,7 @@ https://leetcode.com/problems/reaching-points/
 
 https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/
 
-https://leetcode.com/problems/broken-calculator/
+https://leetcode.com/prlastStoneWeightIIoblems/broken-calculator/
 
 https://leetcode.com/problems/minimum-area-rectangle/
 
@@ -368,3 +439,5 @@ https://leetcode.com/problems/shuffle-an-array/
 Bit
 
 https://leetcode.com/problems/bitwise-and-of-numbers-range/
+
+https://leetcode.com/problems/counting-bits/

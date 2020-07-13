@@ -429,6 +429,7 @@ public class StackExe {
      * formula will only consist of letters, digits, and round parentheses, and is a valid formula as defined in the problem.
      */
     private Map<String, Integer> count = new HashMap<>();
+
     public String countOfAtoms(String formula) {
         countOfAtomsHelper(formula, 1);
         PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(new Comparator<Map.Entry<String, Integer>>() {
@@ -450,11 +451,12 @@ public class StackExe {
         }
         return sb.toString();
     }
+
     private void countOfAtomsHelper(String formula, int times) {
-        for (int i=0; i<formula.length(); i++) {
+        for (int i = 0; i < formula.length(); i++) {
             if (formula.charAt(i) == '(') {
                 int c = 1, ending = 0;
-                for (int j=i+1; j<formula.length(); j++) {
+                for (int j = i + 1; j < formula.length(); j++) {
                     if (formula.charAt(j) == '(') {
                         c++;
                     }
@@ -466,37 +468,37 @@ public class StackExe {
                         break;
                     }
                 }
-                String subString = formula.substring(i+1, ending);
-                int numIdx = ending+1;
-                while (numIdx<formula.length() && Character.isDigit(formula.charAt(numIdx))) {
+                String subString = formula.substring(i + 1, ending);
+                int numIdx = ending + 1;
+                while (numIdx < formula.length() && Character.isDigit(formula.charAt(numIdx))) {
                     numIdx++;
                 }
-                if (numIdx >= ending+1 && ending+1 < formula.length()) {
-                    int nTimes = Integer.parseInt(formula.substring(ending+1, numIdx));
-                    countOfAtomsHelper(subString, nTimes*times);
-                    i = numIdx-1;
+                if (numIdx >= ending + 1 && ending + 1 < formula.length()) {
+                    int nTimes = Integer.parseInt(formula.substring(ending + 1, numIdx));
+                    countOfAtomsHelper(subString, nTimes * times);
+                    i = numIdx - 1;
                 } else {
-                    countOfAtomsHelper(subString, 1*times);
+                    countOfAtomsHelper(subString, 1 * times);
                     i = ending;
                 }
             } else {
                 if (Character.isUpperCase(formula.charAt(i))) {
-                    int ending = i+1;
+                    int ending = i + 1;
                     while (ending < formula.length() && Character.isLowerCase(formula.charAt(ending))) {
                         ending++;
                     }
                     String atomKey = formula.substring(i, ending);
-                    if (ending<formula.length() && Character.isDigit(formula.charAt(ending))) {
+                    if (ending < formula.length() && Character.isDigit(formula.charAt(ending))) {
                         int numEnd = ending + 1;
                         while (numEnd < formula.length() && Character.isDigit(formula.charAt(numEnd))) {
                             numEnd++;
                         }
                         int ntimes = Integer.parseInt(formula.substring(ending, numEnd));
-                        count.put(atomKey, count.getOrDefault(atomKey, 0) + ntimes*times);
-                        i = numEnd-1;
+                        count.put(atomKey, count.getOrDefault(atomKey, 0) + ntimes * times);
+                        i = numEnd - 1;
                     } else {
-                        count.put(atomKey, count.getOrDefault(atomKey, 0) + 1*times);
-                        i = ending-1;
+                        count.put(atomKey, count.getOrDefault(atomKey, 0) + 1 * times);
+                        i = ending - 1;
                     }
                 }
             }

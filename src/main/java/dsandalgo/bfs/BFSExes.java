@@ -701,24 +701,22 @@ public class BFSExes {
      * synonyms[0] != synonyms[1]
      * All words consist of at most 10 English letters only.
      * text is a single space separated sentence of at most 10 words.
-     *
-     * @param synonyms
-     * @param text
-     * @return
      */
     public List<String> generateSentences(List<List<String>> synonyms, String text) {
         Map<String, List<String>> graph = new HashMap<>();
         for (List<String> synonymPair : synonyms) {
             String w1 = synonymPair.get(0), w2 = synonymPair.get(1);
-            connect(graph, w1, w2);
-            connect(graph, w2, w1);
+            graph.putIfAbsent(w1, new LinkedList<String>());
+            graph.get(w1).add(w2);
+            graph.putIfAbsent(w2, new LinkedList<String>());
+            graph.get(w2).add(w1);
         }
         // BFS
         Set<String> ans = new TreeSet<String>();
         Queue<String> q = new LinkedList<String>();
-        q.add(text);
+        q.offer(text);
         while (!q.isEmpty()) {
-            String out = q.remove();
+            String out = q.poll();
             ans.add(out); // Add to result
             String[] words = out.split("\\s");
             for (int i = 0; i < words.length; i++) {
@@ -730,19 +728,12 @@ public class BFSExes {
                     words[i] = neighbor;
                     String newText = Arrays.stream(words).collect(Collectors.joining(" "));
                     if (!ans.contains(newText)) {
-                        q.add(newText);
+                        q.offer(newText);
                     }
                 }
             }
         }
         return new ArrayList<>(ans);
-    }
-
-    private void connect(Map<String, List<String>> graph, String v1, String v2) {
-        if (graph.get(v1) == null) {
-            graph.put(v1, new LinkedList<String>());
-        }
-        graph.get(v1).add(v2);
     }
 
     /**

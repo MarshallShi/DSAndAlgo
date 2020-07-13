@@ -104,14 +104,4 @@ public class DPOnStringExe {
         }
         return res;
     }
-
-    private boolean oneLetterDiff(String word2, String word1, Map<String,int[]> map) {
-        int[] w2 = map.get(word2);
-        int[] w1 = map.get(word1);
-        int diff = 0;
-        for (int i=0; i<26; i++) {
-            diff = diff + Math.abs(w2[i] - w1[i]);
-        }
-        return diff == 1;
-     }
 }

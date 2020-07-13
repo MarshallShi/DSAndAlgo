@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.TreeMap;
@@ -281,32 +280,29 @@ public class LineSweepExe {
      * There must be no consecutive horizontal lines of equal height in the output skyline. For instance,
      * [...[2 3], [4 5], [7 5], [11 5], [12 7]...] is not acceptable; the three lines of height 5 should
      * be merged into one in the final output as such: [...[2 3], [4 5], [12 7], ...]
-     * @param buildings
-     * @return
      */
     public List<int[]> getSkyline(int[][] buildings) {
         List<int[]> result = new ArrayList<>();
         List<int[]> height = new ArrayList<>();
-        for (int[] b:buildings) {
+        for (int[] b : buildings) {
             height.add(new int[]{b[0], -b[2]});
             height.add(new int[]{b[1], b[2]});
         }
         Collections.sort(height, (a, b) -> {
-            if(a[0] != b[0])
-                return a[0] - b[0];
+            if (a[0] != b[0]) return a[0] - b[0];
             return a[1] - b[1];
         });
         Queue<Integer> pq = new PriorityQueue<>((a, b) -> (b - a));
         pq.offer(0);
         int prev = 0;
-        for(int[] h:height) {
-            if(h[1] < 0) {
+        for (int[] h : height) {
+            if (h[1] < 0) {
                 pq.offer(-h[1]);
             } else {
                 pq.remove(h[1]);
             }
             int cur = pq.peek();
-            if(prev != cur) {
+            if (prev != cur) {
                 result.add(new int[]{h[0], cur});
                 prev = cur;
             }

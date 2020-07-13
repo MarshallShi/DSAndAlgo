@@ -18,6 +18,101 @@ public class HardDPExe {
         System.out.println(exe.minDistance(arr1, 3));
     }
 
+    /**
+     * https://leetcode.com/problems/form-largest-integer-with-digits-that-add-up-to-target/
+     * Given an array of integers cost and an integer target. Return the maximum integer you can paint under the following rules:
+     *
+     * The cost of painting a digit (i+1) is given by cost[i] (0 indexed).
+     * The total cost used must be equal to target.
+     * Integer does not have digits 0.
+     * Since the answer may be too large, return it as string.
+     *
+     * If there is no way to paint any integer given the condition, return "0".
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: cost = [4,3,2,5,6,7,2,5,5], target = 9
+     * Output: "7772"
+     * Explanation:  The cost to paint the digit '7' is 2, and the digit '2' is 3. Then cost("7772") = 2*3+ 3*1 = 9. You could also paint "977", but "7772" is the largest number.
+     * Digit    cost
+     *   1  ->   4
+     *   2  ->   3
+     *   3  ->   2
+     *   4  ->   5
+     *   5  ->   6
+     *   6  ->   7
+     *   7  ->   2
+     *   8  ->   5
+     *   9  ->   5
+     * Example 2:
+     *
+     * Input: cost = [7,6,5,5,5,6,8,7,8], target = 12
+     * Output: "85"
+     * Explanation: The cost to paint the digit '8' is 7, and the digit '5' is 5. Then cost("85") = 7 + 5 = 12.
+     * Example 3:
+     *
+     * Input: cost = [2,4,6,2,4,6,4,4,4], target = 5
+     * Output: "0"
+     * Explanation: It's not possible to paint any integer with total cost equal to target.
+     * Example 4:
+     *
+     * Input: cost = [6,10,15,40,40,40,40,40,40], target = 47
+     * Output: "32211"
+     *
+     *
+     * Constraints:
+     *
+     * cost.length == 9
+     * 1 <= cost[i] <= 5000
+     * 1 <= target <= 5000
+     */
+    public String largestNumber(int[] cost, int target) {
+        int[] dp = new int[target + 1]; // dp[i] = the max digits to reach i, dp[0] = 0
+        for (int t = 1; t <= target; t++) {
+            dp[t] = Integer.MIN_VALUE;
+            for (int n = 0; n < cost.length; n++) {
+                if (t >= cost[n])
+                    dp[t] = Math.max(dp[t], dp[t - cost[n]] + 1);
+            }
+        }
+        // if not possible to reach target
+        if (dp[target] < 0) return "0";
+        StringBuilder sb = new StringBuilder();
+        // now that we know the max digits, we add possible numbers from large to small to get largest combination
+        for (int n = 8; n >= 0; n--) {
+            // verify that we can indeed use this relatively large digit, as many times as possible
+            while (target >= cost[n] && dp[target] == dp[target - cost[n]] + 1) {
+                sb.append(n + 1);
+                target -= cost[n];
+            }
+        }
+        return sb.toString();
+    }
+
+    public String largestNumber_2(int[] cost, int target) {
+        String[] dp = new String[target + 1];
+        return dfs(cost, target, dp);
+    }
+
+    private String dfs(int[] cost, int target, String[] dp) {
+        if (target == 0) return "";
+        if (dp[target] != null) return dp[target];
+        String ans = "0";
+        for (int d = 9; d >= 1; d--) {
+            if (target >= cost[d - 1]) {
+                String curr = dfs(cost, target - cost[d - 1], dp);
+                if (curr.equals("0")) continue;
+                curr = d + curr;
+                if (ans.equals("0") || curr.length() > ans.length()) {
+                    ans = curr;
+                }
+            }
+        }
+        return dp[target] = ans;
+    }
+
 
     /**
      * https://leetcode.com/problems/max-dot-product-of-two-subsequences/
@@ -1190,9 +1285,6 @@ public class HardDPExe {
 
     /**
      * https://leetcode.com/problems/minimum-number-of-taps-to-open-to-water-a-garden/
-     * @param n
-     * @param A
-     * @return
      */
     //dp[i] is the minimum number of taps to water [0, i].
     //Initialize dp[i] with max = n + 2
@@ -1397,9 +1489,6 @@ public class HardDPExe {
      * nums.length will be between 1 and 20000.
      * nums[i] will be between 1 and 65535.
      * k will be between 1 and floor(nums.length / 3).
-     * @param nums
-     * @param k
-     * @return
      */
     //Trick: to find for each index, what's the max k sub array before or after it.
     //When we go through each k sub array, then we can concatenate the result for maximum.
@@ -1425,9 +1514,9 @@ public class HardDPExe {
             if (presum[i+k]-presum[i] >= tot) {
                 posRight[i] = i;
                 tot = presum[i+k]-presum[i];
+            } else {
+                posRight[i] = posRight[i + 1];
             }
-            else
-                posRight[i] = posRight[i+1];
         }
         // test all possible middle interval
         for (int i = k; i <= n-2*k; i++) {
