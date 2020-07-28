@@ -866,9 +866,6 @@ public class StringExe {
 
     /**
      * https://leetcode.com/problems/smallest-string-with-swaps/
-     * @param s
-     * @param pairs
-     * @return
      */
     public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
         char[] charr = s.toCharArray();
@@ -886,7 +883,6 @@ public class StringExe {
         while (needSwap) {
             boolean swapped = false;
             for (Map.Entry<Integer, List<Integer>> entry : map.entrySet()) {
-                System.out.println(entry.getKey());
                 char minChar = charr[entry.getKey()];
                 int toSwap = -1;
                 for (Integer val : entry.getValue()) {
@@ -911,9 +907,6 @@ public class StringExe {
 
     /**
      * https://leetcode.com/problems/swap-adjacent-in-lr-string/
-     * @param start
-     * @param end
-     * @return
      */
     public boolean canTransform(String start, String end) {
         if (!start.replace("X", "").equals(end.replace("X", ""))){
@@ -1233,7 +1226,7 @@ public class StringExe {
      *
      * Explanation: This is neither a IPv4 address nor a IPv6 address.
      */
-    public static String validIPAddress(String IP) {
+    public String validIPAddress(String IP) {
         String[] ipv4 = IP.split("\\.",-1);
         String[] ipv6 = IP.split("\\:",-1);
         if (IP.chars().filter(ch -> ch == '.').count() == 3){
@@ -1258,14 +1251,16 @@ public class StringExe {
         }
         return "Neither";
     }
-    public static boolean isIPv4 (String s){
+
+    private boolean isIPv4(String s){
         try {
             return String.valueOf(Integer.valueOf(s)).equals(s) && Integer.parseInt(s) >= 0 && Integer.parseInt(s) <= 255;
         } catch (NumberFormatException e){
             return false;
         }
     }
-    public static boolean isIPv6 (String s){
+
+    private boolean isIPv6(String s){
         if (s.length() > 4) {
             return false;
         }
@@ -2110,48 +2105,34 @@ public class StringExe {
      * A partition like "ababcbacadefegde", "hijhklij" is incorrect, because it splits S into less parts.
      *
      * https://leetcode.com/problems/partition-labels/
-     * @param S
-     * @return
      */
     public List<Integer> partitionLabels(String S) {
-        List<Integer> ret = new ArrayList<Integer>();
-        if (S == null || S.length() == 0) {
-            return ret;
-        }
-        int[][] idxDiffPerChar = new int[26][2];
+        List<Integer> ret = new ArrayList<>();
+        if (S == null || S.length() == 0) return ret;
+        int[][] idxSpan = new int[26][2];
         for (int i=0; i<26; i++) {
-            idxDiffPerChar[i][0] = -1;
+            idxSpan[i][0] = -1;
         }
         for (int i=0; i<S.length(); i++) {
-            if (idxDiffPerChar[S.charAt(i)-'a'][0] == -1) {
-                idxDiffPerChar[S.charAt(i)-'a'][0] = i;
-                idxDiffPerChar[S.charAt(i)-'a'][1] = i;
+            if (idxSpan[S.charAt(i)-'a'][0] == -1) {
+                idxSpan[S.charAt(i)-'a'][0] = i;
+                idxSpan[S.charAt(i)-'a'][1] = i;
             } else {
-                idxDiffPerChar[S.charAt(i)-'a'][1] = i;
+                idxSpan[S.charAt(i)-'a'][1] = i;
             }
         }
-        Arrays.sort(idxDiffPerChar, new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return o1[0] - o2[0];
-            }
-        });
+        Arrays.sort(idxSpan, (a, b) -> (Integer.compare(a[0], b[0])));
         int startIdx = 0;
-        while (idxDiffPerChar[startIdx][0] == -1) {
+        while (idxSpan[startIdx][0] == -1) {
             startIdx++;
         }
-        int[] prev = idxDiffPerChar[startIdx];
+        int[] prev = idxSpan[startIdx];
         for (int i=startIdx+1; i<26; i++) {
-            if (idxDiffPerChar[i][0] < prev[1]) {
-                //If there are overlap, extend prev's end.
-                if (idxDiffPerChar[i][1] > prev[1]) {
-                    prev[1] = idxDiffPerChar[i][1];
-                }
-                //Otherwise it is covered by prev's range, do nothing.
+            if (idxSpan[i][0] < prev[1]) {
+                prev[1] = Math.max(idxSpan[i][1], prev[1]);
             } else {
-                //Got an answer, record and reset the prev.
                 ret.add(prev[1] - prev[0] + 1);
-                prev = idxDiffPerChar[i];
+                prev = idxSpan[i];
             }
         }
         ret.add(prev[1] - prev[0] + 1);

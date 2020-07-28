@@ -197,6 +197,7 @@ public class BinarySearchTreeExe {
      * Each node's value is between [-4 * 10^4 , 4 * 10^4].
      */
     private int maxSum = 0;
+
     public int maxSumBST(TreeNode root) {
         postOrderTraverse(root);
         return maxSum;

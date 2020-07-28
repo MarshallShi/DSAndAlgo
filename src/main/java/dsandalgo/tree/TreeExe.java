@@ -54,6 +54,142 @@ public class TreeExe {
 
 
     /**
+     * https://leetcode.com/problems/diameter-of-n-ary-tree/
+     * Given a root of an N-ary tree, you need to compute the length of the diameter of the tree.
+     *
+     * The diameter of an N-ary tree is the length of the longest path between any two nodes in the tree. This path may or may not pass through the root.
+     *
+     * (Nary-Tree input serialization is represented in their level order traversal, each group of children is separated by the null value.)
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: root = [1,null,3,2,4,null,5,6]
+     * Output: 3
+     * Explanation: Diameter is shown in red color.
+     * Example 2:
+     *
+     *
+     *
+     * Input: root = [1,null,2,null,3,4,null,5,null,6]
+     * Output: 4
+     * Example 3:
+     *
+     *
+     *
+     * Input: root = [1,null,2,3,4,5,null,null,6,7,null,8,null,9,10,null,null,11,null,12,null,13,null,null,14]
+     * Output: 7
+     *
+     *
+     * Constraints:
+     *
+     * The depth of the n-ary tree is less than or equal to 1000.
+     * The total number of nodes is between [0, 10^4].
+     */
+//    public int diameter(Node root) {
+//        int[] res = new int[1];
+//        helper(root, res);
+//        return res[0];
+//    }
+//
+//    private int helper(Node root, int[] res) {
+//        if (root == null) return 0;
+//        int longest = 0, second = 0;
+//        for (Node child : root.children) {
+//            int dep = helper(child, res);
+//            if (dep > longest) {
+//                second = longest;
+//                longest = dep;
+//            } else if (dep > second) {
+//                second = dep;
+//            }
+//        }
+//        res[0] = Math.max(res[0], longest + second);
+//        return 1 + longest;
+//    }
+
+    /**
+     * https://leetcode.com/problems/number-of-good-leaf-nodes-pairs/
+     * Given the root of a binary tree and an integer distance. A pair of two different leaf nodes of a binary tree is said to be good if the length of the shortest path between them is less than or equal to distance.
+     *
+     * Return the number of good leaf node pairs in the tree.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     * Input: root = [1,2,3,null,4], distance = 3
+     * Output: 1
+     * Explanation: The leaf nodes of the tree are 3 and 4 and the length of the shortest path between them is 3. This is the only good pair.
+     * Example 2:
+     *
+     *
+     * Input: root = [1,2,3,4,5,6,7], distance = 3
+     * Output: 2
+     * Explanation: The good pairs are [4,5] and [6,7] with shortest path = 2. The pair [4,6] is not good because the length of ther shortest path between them is 4.
+     * Example 3:
+     *
+     * Input: root = [7,1,4,6,null,5,3,null,null,null,null,null,2], distance = 3
+     * Output: 1
+     * Explanation: The only good pair is [2,5].
+     * Example 4:
+     *
+     * Input: root = [100], distance = 1
+     * Output: 0
+     * Example 5:
+     *
+     * Input: root = [1,1,1], distance = 2
+     * Output: 1
+     *
+     *
+     * Constraints:
+     *
+     * The number of nodes in the tree is in the range [1, 2^10].
+     * Each node's value is between [1, 100].
+     * 1 <= distance <= 10
+     */
+    public int countPairs(TreeNode root, int d) {
+        int[] res = new int[1];
+        helper(root, d, res);
+        return res[0];
+    }
+
+    private Map<Integer, Integer> helper(TreeNode node, int d, int[] res) {
+        Map<Integer, Integer> map = new HashMap<>();
+        if (node == null) return map;
+        //Post order traversal
+        Map<Integer, Integer> leftDepMap = helper(node.left, d, res);
+        Map<Integer, Integer> rightDepMap = helper(node.right, d, res);
+        //Extract result from the children.
+        for (int lk : leftDepMap.keySet()) {
+            for (int rk : rightDepMap.keySet()) {
+                if (rk <= d - lk) {
+                    res[0] += leftDepMap.get(lk) * rightDepMap.get(rk);
+                }
+            }
+        }
+        //Update the current layer return values.
+        for (int lk : leftDepMap.keySet()) {
+            if (lk + 1 < d) {
+                map.put(lk + 1, leftDepMap.get(lk));
+            }
+        }
+        for (int rk : rightDepMap.keySet()) {
+            if (rk + 1 < d) {
+                map.put(rk + 1, map.getOrDefault(rk + 1, 0) + rightDepMap.get(rk));
+            }
+        }
+        if (node.left == null && node.right == null) {
+            map.put(1, 1);
+        }
+        return map;
+    }
+
+    /**
      * https://leetcode.com/problems/count-good-nodes-in-binary-tree/
      * Given a binary tree root, a node X in the tree is named good if in the path from root to X there are no nodes with a value greater than X.
      *
@@ -260,25 +396,24 @@ public class TreeExe {
      * Therefore, you need to return above trees' root in the form of a list.
      */
     public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
-        List<TreeNode> res = new LinkedList<>();
-        Map<String, Integer> nodeAsStringCount = new HashMap<>();
-        if (root == null) {
-            return res;
-        }
-        dupFinder(root, res, nodeAsStringCount);
-        return res;
+        Map<String, Integer> treePathCount = new HashMap<>();
+        Map<String, TreeNode> res = new HashMap<>();
+        if (root == null) return new ArrayList<>();
+        helper(root, treePathCount, res);
+        return new ArrayList<>(res.values());
     }
 
-    private String dupFinder(TreeNode node, List<TreeNode> res, Map<String, Integer> map) {
-        if (node == null) {
+    private String helper(TreeNode root, Map<String, Integer> treePathCount, Map<String, TreeNode> res) {
+        if (root == null) {
             return "&";
         }
-        String cur = node.val + "&" + dupFinder(node.left, res, map) + "&" + dupFinder(node.right, res, map);
-        map.put(cur, map.getOrDefault(cur, 0) + 1);
-        if (map.get(cur) > 1 && !res.contains(node)) {
-            res.add(node);
+        String curPath = root.val + "&" + helper(root.left, treePathCount, res) + "&" + helper(root.right, treePathCount, res);
+
+        treePathCount.put(curPath, treePathCount.getOrDefault(curPath, 0) + 1);
+        if (treePathCount.get(curPath) > 1 && !res.containsKey(curPath)) {
+            res.put(curPath, root);
         }
-        return cur;
+        return curPath;
     }
 
     /**
@@ -427,6 +562,7 @@ public class TreeExe {
      */
     public String tree2str(TreeNode t) {
         StringBuilder sb = new StringBuilder();
+        if (t == null) return sb.toString();
         tree2strHelper(t, sb);
         return sb.toString();
     }
@@ -1578,29 +1714,30 @@ public class TreeExe {
      * The number of nodes in the tree is between 1 and 10^4.
      * The tree nodes will have distinct values between 1 and 10^5.
      */
-    private List<Integer> nums;
     public TreeNode balanceBST(TreeNode root) {
-        nums = new ArrayList<>();
-        inorderTraverse(root);
-        return createBalancedBST(0, nums.size() - 1);
+        List<Integer> nums = new ArrayList<>();
+        inorderTraverse(nums, root);
+        return createBalancedBST(nums, 0, nums.size() - 1);
     }
-    private void inorderTraverse(TreeNode root) {
+
+    private void inorderTraverse(List<Integer> nums, TreeNode root) {
         if (root == null) return;
-        inorderTraverse(root.left);
+        inorderTraverse(nums, root.left);
         nums.add(root.val);
-        inorderTraverse(root.right);
+        inorderTraverse(nums, root.right);
     }
-    private TreeNode createBalancedBST(int start, int end) {
+
+    private TreeNode createBalancedBST(List<Integer> nums, int start, int end) {
         if (start > end) {
             return null;
         }
         if (start == end) {
             return new TreeNode(nums.get(start));
         } else {
-            int mid = start + (end - start)/2;
+            int mid = start + (end - start) / 2;
             TreeNode r = new TreeNode(nums.get(mid));
-            r.left = createBalancedBST(start, mid - 1);
-            r.right = createBalancedBST(mid + 1, end);
+            r.left = createBalancedBST(nums, start, mid - 1);
+            r.right = createBalancedBST(nums, mid + 1, end);
             return r;
         }
     }
@@ -1669,10 +1806,9 @@ public class TreeExe {
     //left is the maximum length in direction of root.left
     //right is the maximum length in direction of root.right
     //result is the maximum length in the whole sub tree.
-    private int max;
+    private int max = 0;
     public int longestZigZag(TreeNode root) {
         if (root == null) return -1;// if null return -1
-        max = 0;
         longestZigZagHelper(root.right, 1, true);// go right
         longestZigZagHelper(root.left, 1, false);// go left
         return max;
@@ -2438,7 +2574,48 @@ public class TreeExe {
 
     /**
      * https://leetcode.com/problems/delete-leaves-with-a-given-value/
+     * Given a binary tree root and an integer target, delete all the leaf nodes with value target.
      *
+     * Note that once you delete a leaf node with value target, if it's parent node becomes a leaf node and has the value target, it should also be deleted (you need to continue doing that until you can't).
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: root = [1,2,3,2,null,2,4], target = 2
+     * Output: [1,null,3,null,4]
+     * Explanation: Leaf nodes in green with value (target = 2) are removed (Picture in left).
+     * After removing, new nodes become leaf nodes with value (target = 2) (Picture in center).
+     * Example 2:
+     *
+     *
+     *
+     * Input: root = [1,3,3,3,2], target = 3
+     * Output: [1,3,null,null,2]
+     * Example 3:
+     *
+     *
+     *
+     * Input: root = [1,2,null,2,null,2], target = 2
+     * Output: [1]
+     * Explanation: Leaf nodes in green with value (target = 2) are removed at each step.
+     * Example 4:
+     *
+     * Input: root = [1,1,1], target = 1
+     * Output: []
+     * Example 5:
+     *
+     * Input: root = [1,2,3], target = 1
+     * Output: [1,2,3]
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= target <= 1000
+     * The given binary tree will have between 1 and 3000 nodes.
+     * Each node's value is between [1, 1000].
      */
 
     public TreeNode removeLeafNodes(TreeNode root, int target) {
@@ -2449,39 +2626,6 @@ public class TreeExe {
             root.right = removeLeafNodes(root.right, target);
         }
         return root.left == root.right && root.val == target ? null : root;
-    }
-
-    public TreeNode removeLeafNodes_SLOW(TreeNode root, int target) {
-        if (root == null) {
-            return null;
-        }
-        boolean result = removeLeafHelper(root, null, null, target);
-        while (result) {
-            result = removeLeafHelper(root, null, null, target);
-            if (root != null && root.left == null && root.right == null && root.val == target) {
-                return null;
-            }
-        }
-        return root;
-    }
-
-    private boolean removeLeafHelper(TreeNode node, TreeNode parent, String leftOrRight, int target) {
-        if (node == null) {
-            return false;
-        }
-        if (node.left == null && node.right == null && node.val == target) {
-            if (parent != null) {
-                if (leftOrRight == "L") {
-                    parent.left = null;
-                } else {
-                    parent.right = null;
-                }
-            } else {
-                return true;
-            }
-            return true;
-        }
-        return removeLeafHelper(node.left, node, "L", target) || removeLeafHelper(node.right, node, "R", target);
     }
 
     /**

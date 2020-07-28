@@ -50,7 +50,7 @@ import java.util.PriorityQueue;
 public class Leaderboard {
 
 
-    int[] scores;
+    private int[] scores;
 
     public Leaderboard() {
         scores = new int[10001];
@@ -64,13 +64,9 @@ public class Leaderboard {
         PriorityQueue<Integer> pq = new PriorityQueue<>();
         for (int i=0; i<scores.length; i++) {
             if (scores[i] != 0) {
-                if (pq.size() < K) {
-                    pq.offer(scores[i]);
-                } else {
-                    if (pq.peek() < scores[i]) {
-                        pq.poll();
-                        pq.offer(scores[i]);
-                    }
+                pq.offer(scores[i]);
+                if (pq.size() > K) {
+                    pq.poll();
                 }
             }
         }

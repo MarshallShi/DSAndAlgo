@@ -98,9 +98,6 @@ public class SubStringQuestionsExe {
      * The longest substring is "ababb", as 'a' is repeated 2 times and 'b' is repeated 3 times.
      *
      * https://leetcode.com/problems/longest-substring-with-at-least-k-repeating-characters/
-     * @param s
-     * @param k
-     * @return
      */
     public int longestSubstring(String s, int k) {
         int ret = 0;

@@ -885,13 +885,10 @@ public class SortingExe {
 
     /**
      * https://leetcode.com/problems/global-and-local-inversions/
-     * @param A
-     * @return
      */
     public boolean isIdealPermutation(int[] A) {
         for (int i = 0; i < A.length; i++) {
-            if (Math.abs(i - A[i]) > 1)
-                return false;
+            if (Math.abs(i - A[i]) > 1) return false;
         }
         return true;
     }

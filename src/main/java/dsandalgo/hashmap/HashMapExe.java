@@ -431,9 +431,6 @@ public class HashMapExe {
 
     /**
      * https://leetcode.com/problems/queries-on-a-permutation-with-key/
-     * @param queries
-     * @param m
-     * @return
      */
     public int[] processQueries(int[] queries, int m) {
         Map<Integer,Integer> map = new HashMap<>();
@@ -945,89 +942,35 @@ public class HashMapExe {
      * richer[i][0] != richer[i][1]
      * richer[i]'s are all different.
      * The observations in richer are all logically consistent.
-     *
-     * @param richer
-     * @param quiet
-     * @return
      */
-
-    Map<Integer, List<Integer>> richer2 = new HashMap<>();
-    int res[];
-
     public int[] loudAndRich(int[][] richer, int[] quiet) {
         int n = quiet.length;
+        Map<Integer, List<Integer>> richer2 = new HashMap<>();
         for (int i = 0; i < n; ++i) {
             richer2.put(i, new ArrayList<Integer>());
         }
         for (int[] v : richer) {
             richer2.get(v[1]).add(v[0]);
         }
-        res = new int[n];
+        int[] res = new int[n];
         Arrays.fill(res, -1);
         for (int i = 0; i < n; i++) {
-            dfs(i, quiet);
+            dfs(i, quiet, richer2, res);
         }
         return res;
     }
 
-    private int dfs(int i, int[] quiet) {
-        if (res[i] >= 0) {
-            return res[i];
+    private int dfs(int x, int[] quiet, Map<Integer, List<Integer>> richer2, int[] res) {
+        if (res[x] >= 0) {
+            return res[x];
         }
-        res[i] = i;
-        for (int j : richer2.get(i)) {
-            if (quiet[res[i]] > quiet[dfs(j, quiet)]) {
-                res[i] = res[j];
+        res[x] = x;
+        for (int j : richer2.get(x)) {
+            if (quiet[res[x]] > quiet[dfs(j, quiet, richer2, res)]) {
+                res[x] = res[j];
             }
         }
-        return res[i];
-    }
-
-    public int[] loudAndRich_TLE(int[][] richer, int[] quiet) {
-        int n = quiet.length;
-        Map<Integer, List<Integer>> richerMap = new HashMap<Integer, List<Integer>>();
-        for (int[] r : richer) {
-            richerMap.putIfAbsent(r[1], new ArrayList<Integer>());
-            richerMap.get(r[1]).add(r[0]);
-        }
-        //int[] in the list will be [0]: idex of person, [1]: quiet value.
-        Map<Integer, List<int[]>> data = new HashMap<Integer, List<int[]>>();
-        for (int i=0; i<n; i++) {
-            List<int[]> lst = new ArrayList<int[]>();
-            findRicher(i, richerMap, quiet, lst);
-            int[] a = new int[2];
-            a[0] = i;
-            a[1] = quiet[i];
-            lst.add(a);
-            Collections.sort(lst, new Comparator<int[]>() {
-                @Override
-                public int compare(int[] o1, int[] o2) {
-                    return o1[1] - o2[1];
-                }
-            });
-            data.put(i, lst);
-        }
-        int[] ans = new int[n];
-        for (int i=0; i<n; i++) {
-            List<int[]> lst = data.get(i);
-            ans[i] = lst.get(0)[0];
-        }
-        return ans;
-    }
-
-    private void findRicher(int x, Map<Integer, List<Integer>> richerMap, int[] quiet, List<int[]> res) {
-        if (richerMap.containsKey(x)) {
-            List<Integer> ls = richerMap.get(x);
-            for (Integer v : ls) {
-                int[] a = new int[2];
-                a[0] = v;
-                a[1] = quiet[v];
-                res.add(a);
-            }
-            for (Integer val : ls) {
-                findRicher(val, richerMap, quiet, res);
-            }
-        }
+        return res[x];
     }
 
     /**

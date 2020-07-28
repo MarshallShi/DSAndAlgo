@@ -342,6 +342,8 @@ https://leetcode.com/problems/factor-combinations/
 
 https://leetcode.com/problems/expression-add-operators/
 
+https://leetcode.com/problems/confusing-number-ii/
+
 Greedy:
 
 https://leetcode.com/problems/gas-station/

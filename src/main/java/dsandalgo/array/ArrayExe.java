@@ -1376,8 +1376,6 @@ public class ArrayExe {
 
     /**
      * https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/
-     * @param nums
-     * @return
      */
     public int[] smallerNumbersThanCurrent(int[] nums) {
         PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
@@ -2046,12 +2044,12 @@ public class ArrayExe {
         return leftToRight(n);
     }
 
-    private static int leftToRight(int n) {
+    private int leftToRight(int n) {
         if(n <= 2) return n;
         return 2 * rightToLeft(n / 2);
     }
 
-    private static int rightToLeft(int n) {
+    private int rightToLeft(int n) {
         if(n <= 2) return 1;
         if(n % 2 == 1) return 2 * leftToRight(n / 2);
         return 2 * leftToRight(n / 2) - 1;

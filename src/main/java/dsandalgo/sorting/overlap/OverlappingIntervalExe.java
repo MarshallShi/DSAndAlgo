@@ -1,7 +1,5 @@
 package dsandalgo.sorting.overlap;
 
-import sun.util.resources.cldr.vai.CalendarData_vai_Latn_LR;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -934,8 +932,6 @@ public class OverlappingIntervalExe {
      * Input: [[1,2],[2,3]]
      * Output: 0
      * Explanation: You don't need to remove any of the intervals since they're already non-overlapping.
-     * @param intervals
-     * @return
      */
     public int eraseOverlapIntervals(int[][] intervals) {
         if (intervals.length == 0) {
@@ -994,6 +990,9 @@ public class OverlappingIntervalExe {
         Arrays.sort(intervals, new Comparator<int[]>() {
             @Override
             public int compare(int[] o1, int[] o2) {
+                if (o1[0] == o2[0]) {
+                    return o2[1] - o1[1];
+                }
                 return o1[0] - o2[0];
             }
         });

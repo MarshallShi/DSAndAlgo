@@ -688,70 +688,54 @@ public class HardBFSExe {
      * 0 <= heightMap[i][j] <= 20000
      */
     class Cell {
-        int row;
-        int col;
-        int height;
-
-        public Cell(int row, int col, int height) {
-            this.row = row;
-            this.col = col;
-            this.height = height;
+        public int row;
+        public int col;
+        public int height;
+        public Cell(int _r, int _c, int _h) {
+            this.col = _c;
+            this.row = _r;
+            this.height = _h;
         }
     }
 
-    //Intuition: the border will determine the amout, so keep borders as boundary in the Priority Queue, and keep updating it.
-    //Start from the boundary, BFS the grid
-    public int trapRainWater(int[][] heights) {
-        if (heights == null || heights.length == 0 || heights[0].length == 0) {
-            return 0;
-        }
+    public int trapRainWater(int[][] A) {
+        if (A == null || A.length == 0 || A[0].length == 0) return 0;
 
-        PriorityQueue<Cell> pq = new PriorityQueue<>(new Comparator<Cell>() {
-            public int compare(Cell a, Cell b) {
-                return a.height - b.height;
+        PriorityQueue<Cell> pq = new PriorityQueue<>((a, b) -> (Integer.compare(a.height, b.height)));
+
+        int m = A.length;
+        int n = A[0].length;
+        boolean[][] seen = new boolean[m][n];
+
+        //push the four edges to the priority queue
+        for (int i=0; i<m; i++) {
+            for (int j=0; j<n; j++) {
+                if (i == 0 || j == 0 || i == m-1 || j == n - 1) {
+                    seen[i][j] = true;
+                    pq.offer(new Cell(i, j, A[i][j]));
+                }
             }
-        });
-
-        int m = heights.length;
-        int n = heights[0].length;
-        boolean[][] visited = new boolean[m][n];
-
-        // Initially, add all the Cells which are on borders to the PQ.
-        for (int i = 0; i < m; i++) {
-            visited[i][0] = true;
-            visited[i][n - 1] = true;
-            pq.offer(new Cell(i, 0, heights[i][0]));
-            pq.offer(new Cell(i, n - 1, heights[i][n - 1]));
-        }
-
-        for (int i = 0; i < n; i++) {
-            visited[0][i] = true;
-            visited[m - 1][i] = true;
-            pq.offer(new Cell(0, i, heights[0][i]));
-            pq.offer(new Cell(m - 1, i, heights[m - 1][i]));
         }
 
         // from the borders, pick the shortest cell visited and check its neighbors:
         // if the neighbor is shorter, collect the water it can trap.
         // if the neighbor is higher, no water to collect.
         // in both cases, add the higher into the border cells in the PQ.
-        int[][] dirs = new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int[][] dirs = {{0,1},{1,0},{-1,0},{0,-1}};
         int res = 0;
         while (!pq.isEmpty()) {
             Cell cur = pq.poll();
             for (int[] dir : dirs) {
                 int nx = cur.row + dir[0];
                 int ny = cur.col + dir[1];
-                if (nx >= 0 && nx < m && ny >= 0 && ny < n && !visited[nx][ny]) {
-                    visited[nx][ny] = true;
-                    int nextHeight = heights[nx][ny];
-                    if (cur.height > nextHeight) {
-                        //if the neighbor is shorter, collect the water it can trap.
+                if (nx >= 0 && nx < m && ny >= 0 && ny < n && !seen[nx][ny]) {
+                    seen[nx][ny] = true;
+                    int nextHeight = A[nx][ny];
+                    if (nextHeight > cur.height) {
+                        pq.offer(new Cell(nx, ny, nextHeight));
+                    } else {
                         res += cur.height - nextHeight;
                         pq.offer(new Cell(nx, ny, cur.height));
-                    } else {
-                        //if the neighbor is higher, no water to collect.
-                        pq.offer(new Cell(nx, ny, nextHeight));
                     }
                 }
             }
@@ -1645,21 +1629,21 @@ public class HardBFSExe {
      */
     public int[] shortestAlternatingPaths(int n, int[][] red_edges, int[][] blue_edges) {
         //Initialize all the edges into map for fast query.
-        Map<Integer, Set<Integer>> blueEdges = new HashMap<Integer,Set<Integer>>();
+        Map<Integer, Set<Integer>> blueEdges = new HashMap<>();
         for (int[] bEdge : blue_edges) {
-            blueEdges.putIfAbsent(bEdge[0], new HashSet<Integer>());
+            blueEdges.putIfAbsent(bEdge[0], new HashSet<>());
             blueEdges.get(bEdge[0]).add(bEdge[1]);
         }
-        Map<Integer, Set<Integer>> redEdges = new HashMap<Integer,Set<Integer>>();
+        Map<Integer, Set<Integer>> redEdges = new HashMap<>();
         for (int[] rEdge : red_edges) {
-            redEdges.putIfAbsent(rEdge[0], new HashSet<Integer>());
+            redEdges.putIfAbsent(rEdge[0], new HashSet<>());
             redEdges.get(rEdge[0]).add(rEdge[1]);
         }
         //int[0] : the node id;
         //int[1] : the color of the edge to node int[0] : 0:no color, 1: red, 2: blue.
         int[] initState = {0, 0};
-        Set<String> visited = new HashSet<String>();
-        Queue<int[]> queue = new LinkedList<int[]>();
+        Set<String> visited = new HashSet<>();
+        Queue<int[]> queue = new LinkedList<>();
         visited.add("0" + "&" + "0");
         queue.offer(initState);
         int[] res = new int[n];

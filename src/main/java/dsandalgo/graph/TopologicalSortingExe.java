@@ -408,6 +408,7 @@ public class TopologicalSortingExe {
      */
     public int minimumSemesters(int N, int[][] relations) {
         int[] inDegree = new int[N];
+        boolean[] seen = new boolean[N];
         List<List<Integer>> adjs = new ArrayList<>();
         for (int i=0; i<N; i++) {
             adjs.add(new ArrayList<Integer>());
@@ -416,22 +417,20 @@ public class TopologicalSortingExe {
             inDegree[relations[i][1]-1]++;
             adjs.get(relations[i][0]-1).add(relations[i][1]- 1);
         }
-        int count = 0;
+        int studied = 0;
         int ret = 0;
-        boolean canMove = true;
-        while (canMove) {
+        while (true) {
             List<Integer> canStudyList = new ArrayList<>();
             for (int i=0; i<N; i++) {
-                if (inDegree[i] == 0) {
-                    inDegree[i] = -1;
+                if (inDegree[i] == 0 && !seen[i]) {
                     canStudyList.add(i);
+                    seen[i] = true;
                 }
             }
             if (canStudyList.size() == 0) {
-                canMove = false;
                 break;
             } else {
-                count += canStudyList.size();
+                studied += canStudyList.size();
                 for (int i=0; i<canStudyList.size(); i++) {
                     List<Integer> unblock = adjs.get(canStudyList.get(i));
                     for (Integer v : unblock) {
@@ -440,14 +439,11 @@ public class TopologicalSortingExe {
                 }
             }
             ret++;
-            if (count == N) {
+            if (studied == N) {
                 break;
             }
         }
-        if (count == N) {
-            return ret;
-        }
-        return -1;
+        return studied == N ? ret : -1;
     }
 
     /**
@@ -641,12 +637,16 @@ public class TopologicalSortingExe {
      */
     public String alienOrder(String[] words) {
         String result = "";
-        if (words == null || words.length == 0) return result;
+        if (words == null || words.length == 0) {
+            return result;
+        }
 
-        Map<Character, Set<Character>> map = new HashMap<Character, Set<Character>>();
-        Map<Character, Integer> indegree = new HashMap<Character, Integer>();
+        Map<Character, Set<Character>> map = new HashMap<>();
+        Map<Character, Integer> indegree = new HashMap<>();
         for (String s : words) {
-            for (char c : s.toCharArray()) indegree.put(c, 0);
+            for (char c : s.toCharArray()) {
+                indegree.put(c, 0);
+            }
         }
         //input words are sorted already, so compare the two, build the in degree
         for (int i = 0; i < words.length - 1; i++) {
@@ -660,8 +660,10 @@ public class TopologicalSortingExe {
                 char c1 = cur.charAt(j);
                 char c2 = next.charAt(j);
                 if (c1 != c2) {
-                    Set<Character> set = new HashSet<Character>();
-                    if (map.containsKey(c1)) set = map.get(c1);
+                    Set<Character> set = new HashSet<>();
+                    if (map.containsKey(c1)) {
+                        set = map.get(c1);
+                    }
                     if (!set.contains(c2)) {
                         set.add(c2);
                         map.put(c1, set);
@@ -671,9 +673,11 @@ public class TopologicalSortingExe {
                 }
             }
         }
-        Queue<Character> q = new LinkedList<Character>();
+        Queue<Character> q = new LinkedList<>();
         for (char c : indegree.keySet()) {
-            if (indegree.get(c) == 0) q.add(c);
+            if (indegree.get(c) == 0) {
+                q.add(c);
+            }
         }
         //bfs
         while (!q.isEmpty()) {
@@ -682,11 +686,15 @@ public class TopologicalSortingExe {
             if (map.containsKey(c)) {
                 for (char c2 : map.get(c)) {
                     indegree.put(c2, indegree.get(c2) - 1);
-                    if (indegree.get(c2) == 0) q.add(c2);
+                    if (indegree.get(c2) == 0) {
+                        q.add(c2);
+                    }
                 }
             }
         }
-        if (result.length() != indegree.size()) return "";
+        if (result.length() != indegree.size()) {
+            return "";
+        }
         return result;
     }
 

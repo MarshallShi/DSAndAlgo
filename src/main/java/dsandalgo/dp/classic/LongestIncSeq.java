@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class LongestIncSeq {
@@ -15,6 +17,66 @@ public class LongestIncSeq {
         LongestIncSeq exe = new LongestIncSeq();
         int[] a = {10,9,2,5,3,7,101,18};
         System.out.println(exe.lengthOfLIS(a));
+    }
+
+    /**
+     * https://leetcode.com/problems/length-of-longest-fibonacci-subsequence/
+     * A sequence X_1, X_2, ..., X_n is fibonacci-like if:
+     *
+     * n >= 3
+     * X_i + X_{i+1} = X_{i+2} for all i + 2 <= n
+     * Given a strictly increasing array A of positive integers forming a sequence, find the length of the longest fibonacci-like subsequence of A.  If one does not exist, return 0.
+     *
+     * (Recall that a subsequence is derived from another sequence A by deleting any number of elements (including none) from A, without changing the order of the remaining elements.  For example, [3, 5, 8] is a subsequence of [3, 4, 5, 6, 7, 8].)
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: [1,2,3,4,5,6,7,8]
+     * Output: 5
+     * Explanation:
+     * The longest subsequence that is fibonacci-like: [1,2,3,5,8].
+     * Example 2:
+     *
+     * Input: [1,3,7,11,12,14,18]
+     * Output: 3
+     * Explanation:
+     * The longest subsequence that is fibonacci-like:
+     * [1,11,12], [3,11,14] or [7,11,18].
+     *
+     *
+     * Note:
+     *
+     * 3 <= A.length <= 1000
+     * 1 <= A[0] < A[1] < ... < A[A.length - 1] <= 10^9
+     * (The time limit has been reduced by 50% for submissions in Java, C, and C++.)
+     */
+    //if 2 elements A[l] and A[r] sum up to A[i], l and r are on the left side of i.
+    //dp[r][i]: length of longest fib sequence end with A[r], A[i]
+    //dp[r][i] = dp[l][r] + 1
+    //return the max(all posible dp[r][i])
+    public int lenLongestFibSubseq(int[] A) {
+        int n = A.length;
+        int max = 0;
+        int[][] dp = new int[n][n];
+        for (int i = 2; i < n; i++) {
+            int l = 0, r = i - 1;
+            while (l < r) {
+                int sum = A[l] + A[r];
+                if (sum > A[i]) {
+                    r--;
+                } else if (sum < A[i]) {
+                    l++;
+                } else {
+                    dp[r][i] = dp[l][r] + 1;
+                    max = Math.max(max, dp[r][i]);
+                    r--;
+                    l++;
+                }
+            }
+        }
+        return max == 0 ? 0 : max + 2;
     }
 
     /**

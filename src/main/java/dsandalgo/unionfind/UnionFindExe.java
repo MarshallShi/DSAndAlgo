@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 public class UnionFindExe {
@@ -19,9 +20,94 @@ public class UnionFindExe {
     }
 
     /**
+     * https://leetcode.com/problems/smallest-string-with-swaps/
+     * You are given a string s, and an array of pairs of indices in the string pairs where pairs[i] = [a, b] indicates 2 indices(0-indexed) of the string.
+     *
+     * You can swap the characters at any pair of indices in the given pairs any number of times.
+     *
+     * Return the lexicographically smallest string that s can be changed to after using the swaps.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: s = "dcab", pairs = [[0,3],[1,2]]
+     * Output: "bacd"
+     * Explaination:
+     * Swap s[0] and s[3], s = "bcad"
+     * Swap s[1] and s[2], s = "bacd"
+     * Example 2:
+     *
+     * Input: s = "dcab", pairs = [[0,3],[1,2],[0,2]]
+     * Output: "abcd"
+     * Explaination:
+     * Swap s[0] and s[3], s = "bcad"
+     * Swap s[0] and s[2], s = "acbd"
+     * Swap s[1] and s[2], s = "abcd"
+     * Example 3:
+     *
+     * Input: s = "cba", pairs = [[0,1],[1,2]]
+     * Output: "abc"
+     * Explaination:
+     * Swap s[0] and s[1], s = "bca"
+     * Swap s[1] and s[2], s = "bac"
+     * Swap s[0] and s[1], s = "abc"
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= s.length <= 10^5
+     * 0 <= pairs.length <= 10^5
+     * 0 <= pairs[i][0], pairs[i][1] < s.length
+     * s only contains lower case English letters.
+     */
+    public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
+        if (pairs.size() == 0) return s;
+        if (s == null || s.length() <= 1) return s;
+        UFSwap uf = new UFSwap(s.length());
+        for (List<Integer> lst : pairs) {
+            uf.union(lst.get(0), lst.get(1));
+        }
+        Map<Integer, PriorityQueue<Character>> map = new HashMap<>();
+        for (int i=0; i<s.length(); i++) {
+            int root = uf.find(i);
+            map.putIfAbsent(root, new PriorityQueue<>());
+            map.get(root).offer(s.charAt(i));
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            sb.append(map.get(uf.find(i)).poll());
+        }
+        return sb.toString();
+    }
+
+    class UFSwap{
+        public int[] parent;
+        public UFSwap(int n) {
+            parent = new int[n];
+            for (int i=0; i<n; i++) {
+                parent[i] = i;
+            }
+        }
+        public void union(int x, int y){
+            int aParent = find(x);
+            int bParent = find(y);
+            if (aParent < bParent) {
+                parent[bParent] = aParent;
+            } else {
+                parent[aParent] = bParent;
+            }
+        }
+        public int find(int x) {
+            if (x != parent[x]) {
+                x = find(parent[x]);
+            }
+            return parent[x];
+        }
+    }
+
+    /**
      * https://leetcode.com/problems/is-graph-bipartite/
-     * @param graph
-     * @return
      */
     public boolean isBipartite(int[][] graph) {
         BipartiteUnionFind uf = new BipartiteUnionFind(graph.length);
@@ -851,11 +937,6 @@ public class UnionFindExe {
      * String A, B and S consist of only lowercase English letters from 'a' - 'z'.
      * The lengths of string A, B and S are between 1 and 1000.
      * String A and B are of the same length.
-     *
-     * @param A
-     * @param B
-     * @param S
-     * @return
      */
     public String smallestEquivalentString(String A, String B, String S) {
         int[] graph = new int[26];
@@ -1067,14 +1148,10 @@ public class UnionFindExe {
     /**
      * https://leetcode.com/problems/the-earliest-moment-when-everyone-become-friends/
      *
-     * @param logs
-     * @param N
-     * @return
      */
     public int earliestAcq(int[][] logs, int N) {
         UnionFindEarliestAcq uf = new UnionFindEarliestAcq(N);
         Arrays.sort(logs, new Comparator<int[]>() {
-            @Override
             public int compare(int[] o1, int[] o2) {
                 return o1[0] - o2[0];
             }

@@ -1109,7 +1109,19 @@ public class DFSExe {
         if (sum % 4 != 0) {
             return false;
         }
+        Arrays.sort(nums);
+        reverse(nums);
         return makesquareDFS(nums, new int[4], 0, sum / 4);
+    }
+
+    private void reverse(int[] nums) {
+        int i = 0, j = nums.length - 1;
+        while (i < j) {
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+            i++; j--;
+        }
     }
 
     private boolean makesquareDFS(int[] nums, int[] sums, int index, int target) {

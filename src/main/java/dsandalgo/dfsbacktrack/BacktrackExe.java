@@ -443,30 +443,28 @@ public class BacktrackExe {
      * ["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
      *
      */
-    //for every character, we can keep it or abbreviate it.
-    // To keep it, we add it to the current solution and carry on backtracking.
-    // To abbreviate it, we omit it in the current solution, but increment the count, which indicates how many characters have we abbreviated.
-    // When we reach the end or need to put a character in the current solution, and count is bigger than zero, we add the number into the solution.
-    public List<String> generateAbbreviations_1(String word){
-        List<String> ret = new ArrayList<String>();
-        genAbbrBacktrack(ret, word, 0, "", 0);
-        return ret;
-    }
-    private void genAbbrBacktrack(List<String> ret, String word, int pos, String temp, int count){
-        if (pos == word.length()) {
-            if (count > 0) {
-                temp += count;
-            }
-            ret.add(temp);
-        } else {
-            //append the current char.
-            genAbbrBacktrack(ret, word, pos + 1, temp + (count>0 ? count : "") + word.charAt(pos), 0);
-            //abbreviate curreht char, but not appending number yet, till the end.
-            genAbbrBacktrack(ret, word, pos + 1, temp, count + 1);
-        }
+    public List<String> generateAbbreviations(String word) {
+        List<String> res = new ArrayList<>();
+        genDFS(res, new StringBuilder(), word.toCharArray(), 0, 0);
+        return res;
     }
 
-    public List<String> generateAbbreviations(String word) {
+    public void genDFS(List<String> res, StringBuilder sb, char[] c, int i, int num) {
+        int len = sb.length();
+        if(i == c.length) {
+            if (num != 0) sb.append(num);
+            res.add(sb.toString());
+        } else {
+            // abbr c[i]
+            genDFS(res, sb, c, i + 1, num + 1);
+            // not abbr c[i]
+            if (num != 0) sb.append(num);
+            genDFS(res, sb.append(c[i]), c, i + 1, 0);
+        }
+        sb.setLength(len);
+    }
+
+    public List<String> generateAbbreviations_2(String word) {
         List<String> res = new ArrayList<>();
         genBacktrack(res, "", word, 0);
         return res;
@@ -905,11 +903,39 @@ public class BacktrackExe {
      * Letters in all strings will be chosen from the set {'A', 'B', 'C', 'D', 'E', 'F', 'G'}.
      *
      */
+
+    public boolean pyramidTransition(String bottom, List<String> allowed) {
+        int[][] tr = new int[7][7];
+        for (String s : allowed) {
+            tr[s.charAt(0) - 'A'][s.charAt(1) - 'A'] |= 1 << (s.charAt(2) - 'A');
+        }
+        return pyramidTransitionDFS(bottom.toCharArray(), tr, 0, new char[bottom.length() - 1]);
+    }
+
+    private boolean pyramidTransitionDFS(char[] row, int[][] tr, int pos, char[] nextRow) {
+        if (row.length == 1) {
+            return true;
+        }
+        if (pos == row.length - 1) {
+            return pyramidTransitionDFS(nextRow, tr, 0, new char[nextRow.length - 1]);
+        }
+        int bit = tr[row[pos] - 'A'][row[pos + 1] - 'A'];
+        for (int j = 0; j < 7; j++) {
+            if ((bit & (1 << j)) != 0) {
+                nextRow[pos] = (char) ('A' + j);
+                if (pyramidTransitionDFS(row, tr, pos + 1, nextRow)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     //Steps for the solution:
     //1. Build all the allowed triple into a map, Key: first two chars, value bing a list of third char.
     //2. Build level by level, DFS, one success path found we return true.
     //3. In the DFS, for each level use Backtrack to find all possible next level string.
-    public boolean pyramidTransition(String bottom, List<String> allowed) {
+    public boolean pyramidTransition_2(String bottom, List<String> allowed) {
         Map<String, List<String>> map = new HashMap<>();
         for (String s : allowed) {
             String key = s.substring(0,2);

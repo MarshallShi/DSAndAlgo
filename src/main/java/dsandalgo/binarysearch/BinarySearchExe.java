@@ -1177,10 +1177,6 @@ public class BinarySearchExe {
      * 1 <= piles.length <= 10^4
      * piles.length <= H <= 10^9
      * 1 <= piles[i] <= 10^9
-     *
-     * @param piles
-     * @param H
-     * @return
      */
     public int minEatingSpeed(int[] piles, int H) {
         //eating speed from 1 to maxPile, ie, each the max pile in one hour.

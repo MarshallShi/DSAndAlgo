@@ -646,8 +646,6 @@ public class StackExe {
      *
      * S is a balanced parentheses string, containing only ( and ).
      * 2 <= S.length <= 50
-     * @param s
-     * @return
      */
     //https://leetcode.com/problems/score-of-parentheses/discuss/141777/C%2B%2BJavaPython-O(1)-Space
     public int scoreOfParentheses(String s) {
@@ -673,9 +671,6 @@ public class StackExe {
 
     /**
      * https://leetcode.com/problems/longest-absolute-file-path/
-     *
-     * @param input
-     * @return
      */
     public int lengthLongestPath(String input) {
         Stack<Integer> stack = new Stack<Integer>();

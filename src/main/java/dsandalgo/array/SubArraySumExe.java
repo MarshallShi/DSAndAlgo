@@ -499,25 +499,16 @@ public class SubArraySumExe {
      *
      */
     public int maxSubArrayLen(int[] nums, int k) {
-        Map<Integer, Integer> preSumIdx = new HashMap<>();
-        int[] presumArr = new int[nums.length];
-        int res = 0;
+        int s = 0, res = 0;
+        Map<Integer, Integer> presumIdx = new HashMap<>();
+        presumIdx.put(0, -1);
         for (int i=0; i<nums.length; i++) {
-            int preSum = 0;
-            if (i == 0) {
-                preSum = nums[i];
-            } else {
-                preSum = nums[i] + presumArr[i-1];
+            s += nums[i];
+            if (presumIdx.containsKey(s - k)) {
+                res = Math.max(res, i - presumIdx.get(s - k));
             }
-            presumArr[i] = preSum;
-            if (!preSumIdx.containsKey(preSum)) {
-                preSumIdx.put(preSum, i);
-            }
-            if (preSum == k) {
-                res = Math.max(res, i+1);
-            }
-            if (preSumIdx.containsKey(preSum - k)) {
-                res = Math.max(res, i - preSumIdx.get(preSum - k));
+            if (!presumIdx.containsKey(s)) {
+                presumIdx.put(s, i);
             }
         }
         return res;
