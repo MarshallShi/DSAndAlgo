@@ -431,33 +431,35 @@ public class HardDFSExe {
      * k^n will be at most 4096.
      */
     public String crackSafe(int n, int k) {
-        StringBuilder sb = new StringBuilder();
-        int total = (int) (Math.pow(k, n));
-        for (int i = 0; i < n; i++) {
-            sb.append('0');
-        }
-        Set<String> visited = new HashSet<>();
-        visited.add(sb.toString());
-        crackSafeDFS(sb, total, visited, n, k);
-        return sb.toString();
+        // Initialize pwd to n repeated 0's as the start node of DFS.
+        String strPwd = String.join("", Collections.nCopies(n, "0"));
+        StringBuilder sbPwd = new StringBuilder(strPwd);
+        Set<String> visitedComb = new HashSet<>();
+        visitedComb.add(strPwd);
+        // target number of possible password, must all being visited and in the answer
+        int targetNumVisited = (int) Math.pow(k, n);
+        crackSafeAfter(sbPwd, visitedComb, targetNumVisited, n, k);
+        return sbPwd.toString();
     }
 
-    private boolean crackSafeDFS(StringBuilder sb, int goal, Set<String> visited, int n, int k) {
-        if (visited.size() == goal) {
+    private boolean crackSafeAfter(StringBuilder pwd, Set<String> visitedComb, int targetNumVisited, int n, int k) {
+        if (visitedComb.size() == targetNumVisited) {
             return true;
         }
-        String prev = sb.substring(sb.length() - n + 1, sb.length());
-        for (int i = 0; i < k; i++) {
-            String next = prev + i;
-            if (!visited.contains(next)) {
-                visited.add(next);
-                sb.append(i);
-                if (crackSafeDFS(sb, goal, visited, n, k)) {
+        // Last n-1 digits of pwd.
+        String lastDigits = pwd.substring(pwd.length() - n + 1);
+        for (char ch = '0'; ch < '0' + k; ch++) {
+            String newComb = lastDigits + ch;
+            if (!visitedComb.contains(newComb))  {
+                visitedComb.add(newComb);
+                pwd.append(ch);
+                // if this choice lead to final target, return true
+                if (crackSafeAfter(pwd, visitedComb, targetNumVisited, n, k)) {
                     return true;
-                } else {
-                    visited.remove(next);
-                    sb.delete(sb.length() - 1, sb.length());
                 }
+                // otherwise, this choice need to be reverted.
+                visitedComb.remove(newComb);
+                pwd.deleteCharAt(pwd.length() - 1);
             }
         }
         return false;

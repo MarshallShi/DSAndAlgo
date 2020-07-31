@@ -1,5 +1,7 @@
 package dsandalgo.array;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,11 +20,29 @@ public class ArrayExe {
     public static void main(String[] args) {
         ArrayExe exe = new ArrayExe();
         int[] c = {1,3,2,3,5,0};
-        String a = "3";
-        String b = "4";
-        String aa = "30";
-        System.out.println(a.compareTo(b));
-        System.out.println(a.compareTo(aa));
+        String test = "app,ice,group";
+        String[] a1 = test.split(",");
+        test = "app";
+        String[] a2 = test.split(",");
+        System.out.println(a1[2]);
+        System.out.println(a2[0]);
+    }
+
+    /**
+     * https://leetcode.com/problems/add-to-array-form-of-integer/
+     */
+    //Trick: apply K as a 'carrier'
+    public List<Integer> addToArrayForm(int[] A, int K) {
+        List<Integer> res = new LinkedList<>();
+        for (int i = A.length - 1; i >= 0; i--) {
+            res.add(0, (A[i] + K) % 10);
+            K = (A[i] + K) / 10;
+        }
+        while (K > 0) {
+            res.add(0, K % 10);
+            K /= 10;
+        }
+        return res;
     }
 
     /**
@@ -1614,15 +1634,6 @@ public class ArrayExe {
     }
 
     /**
-     * https://leetcode.com/problems/longest-line-of-consecutive-one-in-matrix/
-     * @param M
-     * @return
-     */
-    public int longestLine(int[][] M) {
-        return 0;
-    }
-
-    /**
      * https://leetcode.com/problems/squirrel-simulation/
      *
      * There's a tree, a squirrel, and several nuts. Positions are represented by the cells in a 2D grid. Your goal is to find the minimal
@@ -2701,36 +2712,50 @@ public class ArrayExe {
      * @return
      */
     public int findRadius(int[] houses, int[] heaters) {
-        if(houses == null || heaters == null)
-            return Integer.MAX_VALUE;
         Arrays.sort(heaters);
         int result = Integer.MIN_VALUE;
-        for(int house : houses){
+        for (int house : houses) {
+            int index = Arrays.binarySearch(heaters, house);
+            if (index < 0) {
+                index = -(index + 1);
+            }
+            int dist1 = index - 1 >= 0 ? house - heaters[index - 1] : Integer.MAX_VALUE;
+            int dist2 = index < heaters.length ? heaters[index] - house : Integer.MAX_VALUE;
+            result = Math.max(result, Math.min(dist1, dist2));
+        }
+        return result;
+    }
+
+    public int findRadius_1(int[] houses, int[] heaters) {
+        if (houses == null || heaters == null) return Integer.MAX_VALUE;
+        Arrays.sort(heaters);
+        int result = Integer.MIN_VALUE;
+        for (int house : houses) {
             int rad = findRad(house, heaters);
             result = Math.max(rad, result);
         }
         return result;
     }
 
-    private int findRad(int house, int[] heaters){
-        int low = 0, high = heaters.length-1;
-        int left = Integer.MAX_VALUE , right = Integer.MAX_VALUE ;
-        while (low <= high){
-            int mid = low + (high - low)/2;
+    private int findRad(int house, int[] heaters) {
+        int low = 0, high = heaters.length - 1;
+        int left = Integer.MAX_VALUE, right = Integer.MAX_VALUE;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
             int heater = heaters[mid];
             if (heater == house) {
                 return 0;
             } else {
-                if(heater > house){
-                    right = heater-house;
-                    high = mid-1;
-                } else{
-                    left = house-heater;
-                    low = mid+1;
+                if (heater > house) {
+                    right = heater - house;
+                    high = mid - 1;
+                } else {
+                    left = house - heater;
+                    low = mid + 1;
                 }
             }
         }
-        return  Math.min(left, right);
+        return Math.min(left, right);
     }
 
 

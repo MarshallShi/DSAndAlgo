@@ -1,6 +1,7 @@
 package dsandalgo.unionfind;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,124 @@ public class UnionFindHardExe {
         //System.out.println(exe.minCostToSupplyWater(3, wells, pipes));
     }
 
+    /**
+     * https://leetcode.com/problems/bricks-falling-when-hit/
+     * We have a grid of 1s and 0s; the 1s in a cell represent bricks.  A brick will not drop if and only if it is directly connected to the top of the grid, or at least one of its (4-way) adjacent bricks will not drop.
+     *
+     * We will do some erasures sequentially. Each time we want to do the erasure at the location (i, j), the brick (if it exists) on that location will disappear, and then some other bricks may drop because of that erasure.
+     *
+     * Return an array representing the number of bricks that will drop after each erasure in sequence.
+     *
+     * Example 1:
+     * Input:
+     * grid = [[1,0,0,0],[1,1,1,0]]
+     * hits = [[1,0]]
+     * Output: [2]
+     * Explanation:
+     * If we erase the brick at (1, 0), the brick at (1, 1) and (1, 2) will drop. So we should return 2.
+     * Example 2:
+     * Input:
+     * grid = [[1,0,0,0],[1,1,0,0]]
+     * hits = [[1,1],[1,0]]
+     * Output: [0,0]
+     * Explanation:
+     * When we erase the brick at (1, 0), the brick at (1, 1) has already disappeared due to the last move. So each erasure will cause no bricks dropping.  Note that the erased brick (1, 0) will not be counted as a dropped brick.
+     *
+     *
+     * Note:
+     *
+     * The number of rows and columns in the grid will be in the range [1, 200].
+     * The number of erasures will not exceed the area of the grid.
+     * It is guaranteed that each erasure will be different from any other erasure, and located inside the grid.
+     * An erasure may refer to a location with no brick - if it does, no bricks drop.
+     */
+    private int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    private int[][] grid;
+    private int rows, cols;
+
+    public int[] hitBricks(int[][] grid, int[][] hits) {
+        rows = grid.length;
+        cols = grid[0].length;
+        this.grid = grid;
+
+        UFBrickHit uf = new UFBrickHit(rows * cols + 1);
+
+        /** Mark cells to hit as 2. */
+        for (int[] hit : hits) {
+            if (grid[hit[0]][hit[1]] == 1) grid[hit[0]][hit[1]] = 2;
+        }
+
+        /** Union around 1 cells. */
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j ++) {
+                if (grid[i][j] == 1) unionAround(i, j, uf);
+            }
+        }
+
+        int numBricksLeft = uf.size[uf.find(0)]; // numBricksLeft after the last erasure.
+        int i = hits.length - 1; // Index of erasure.
+        int[] numBricksDropped = new int[hits.length]; // Number of bricks that will drop after each erasure.
+
+        while (i >= 0) {
+            int x = hits[i][0];
+            int y = hits[i][1];
+            if (grid[x][y] == 2) {
+                grid[x][y] = 1; // Restore to last erasure.
+                unionAround(x, y, uf);
+                int newNumBricksLeft = uf.size[uf.find(0)];
+                numBricksDropped[i] = Math.max(newNumBricksLeft - numBricksLeft - 1, 0); // Excluding the brick to erase.
+                numBricksLeft = newNumBricksLeft;
+            }
+            i--;
+        }
+
+        return numBricksDropped;
+    }
+
+    private void unionAround(int x, int y, UFBrickHit uf) {
+        int curMark = mark(x, y);
+
+        for (int[] direction : directions) {
+            int nx = x + direction[0];
+            int ny = y + direction[1];
+            if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && grid[nx][ny] == 1) {
+                uf.union(curMark, mark(nx, ny));
+            }
+        }
+        // Connect to the top of the grid.
+        if(x == 0) uf.union(0, curMark);
+    }
+
+    private int mark(int x, int y) {
+        return x * cols + y + 1;
+    }
+
+    class UFBrickHit {
+        public int[] parent, size;
+
+        public UFBrickHit(int n) {
+            parent = new int[n];
+            size = new int[n];
+            Arrays.fill(size, 1);
+            for (int i = 0; i < n; i++) { // 0 indicates top of the grid.
+                parent[i] = i;
+            }
+        }
+
+        public int find(int x) {
+            if (x == parent[x]) return x;
+            return parent[x] = find(parent[x]);
+        }
+
+        public void union(int x, int y) {
+            int rootX = find(x);
+            int rootY = find(y);
+            if (rootX != rootY) {
+                parent[rootX] = rootY;
+                size[rootY] += size[rootX];
+            }
+        }
+    }
 
     /**
      * https://leetcode.com/problems/similar-string-groups/

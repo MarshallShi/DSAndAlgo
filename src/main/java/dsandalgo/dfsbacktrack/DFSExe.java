@@ -20,6 +20,53 @@ public class DFSExe {
     }
 
     /**
+     * https://leetcode.com/problems/binary-tree-coloring-game/
+     */
+    private int left, right, val;
+
+    public boolean btreeGameWinningMove(TreeNode root, int n, int x) {
+        val = x;
+        count(root);
+        return Math.max(Math.max(left, right), n - left - right - 1) > n / 2;
+    }
+
+    private int count(TreeNode node) {
+        if (node == null) return 0;
+        int l = count(node.left), r = count(node.right);
+        if (node.val == val) {
+            left = l;
+            right = r;
+        }
+        return l + r + 1;
+    }
+
+    /**
+     * https://leetcode.com/problems/reorder-routes-to-make-all-paths-lead-to-the-city-zero/
+     */
+    public int minReorder(int n, int[][] connections) {
+        //ajdacency list where int[] will be [dest,cost]
+        List<int[]>[] cons = new List[n];
+        for(int[] con : connections) {
+            if (cons[con[0]] == null) cons[con[0]] = new ArrayList<int[]>();
+            if (cons[con[1]] == null) cons[con[1]] = new ArrayList<int[]>();
+            cons[con[0]].add(new int[]{con[1],1});//original direction, costs 1
+            cons[con[1]].add(new int[]{con[0],0});//oposite directions, costs 0
+        }
+        return dfs(0,cons,new boolean[n]);
+    }
+    private int dfs(int curr, List<int[]>[] cons, boolean[] visited) {
+        int cost = 0;
+        visited[curr]=true;
+        for(int[] neigh : cons[curr]) {
+            if (!visited[neigh[0]]) {
+                cost += neigh[1];
+                cost += dfs(neigh[0],cons,visited);
+            }
+        }
+        return cost;
+    }
+
+    /**
      * https://leetcode.com/problems/minimum-time-to-collect-all-apples-in-a-tree/
      */
     public int minTime(int n, int[][] edges, List<Boolean> hasApple) {

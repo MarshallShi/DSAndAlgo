@@ -493,11 +493,10 @@ public class HardDPExe {
      * 1 <= values.length <= 50000
      * -1000 <= values[i] <= 1000
      */
-    private int[] memStoneGameIII;
     public String stoneGameIII(int[] stoneValue) {
-        memStoneGameIII = new int[50001];
+        int[] memStoneGameIII = new int[50001];
         Arrays.fill(memStoneGameIII, Integer.MIN_VALUE);
-        int res = stoneGameIIIDFS(stoneValue, 0);
+        int res = stoneGameIIIDFS(stoneValue, 0, memStoneGameIII);
         if (res > 0) {
             return "Alice";
         } else {
@@ -509,7 +508,7 @@ public class HardDPExe {
         }
     }
 
-    private int stoneGameIIIDFS(int[] s, int pos){
+    private int stoneGameIIIDFS(int[] s, int pos, int[] memStoneGameIII){
         if (pos >= s.length) {
             return 0;
         }
@@ -521,7 +520,7 @@ public class HardDPExe {
         for (int i=0; i<3; i++) {
             if (pos + i <s.length) {
                 sum += s[pos + i];
-                res = Math.max(res, sum - stoneGameIIIDFS(s, pos + i + 1));
+                res = Math.max(res, sum - stoneGameIIIDFS(s, pos + i + 1, memStoneGameIII));
             }
         }
         return memStoneGameIII[pos] = res;
@@ -1819,32 +1818,6 @@ public class HardDPExe {
         }
         return (int) res;
     }
-
-//    private int res = 0;
-//    private char[] chars = {'A', 'L', 'P'};
-//    public int checkRecord(int n) {
-//        StringBuilder sb = new StringBuilder();
-//        checkRecordHelper(n, sb, 0);
-//        return res;
-//    }
-//
-//    private void checkRecordHelper(int n, StringBuilder sb, int pos) {
-//        if (pos == n) {
-//            res = (res + 1) % 1000000007;
-//            return;
-//        }
-//        for (int i=0; i<3; i++) {
-//            if (i==0 && sb.indexOf("A") != -1) {
-//                continue;
-//            }
-//            if (i==1 && (sb.length() >= 2 && sb.charAt(sb.length() -1) == 'L' && sb.charAt(sb.length() - 2) == 'L')) {
-//                continue;
-//            }
-//            sb.append(chars[i]);
-//            checkRecordHelper(n, sb, pos+1);
-//            sb.setLength(sb.length() - 1);
-//        }
-//    }
 
     /**
      * https://leetcode.com/problems/stickers-to-spell-word/

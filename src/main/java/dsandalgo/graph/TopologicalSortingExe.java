@@ -516,74 +516,45 @@ public class TopologicalSortingExe {
      * Output:true
      */
     public boolean sequenceReconstruction(int[] org, List<List<Integer>> seqs) {
-        if (seqs.size() == 0) {
-            return false;
-        }
-        int[] indegrees = new int[org.length + 1];
-        Map<Integer, List<Integer>> map = new HashMap<Integer, List<Integer>>();
-        boolean allEmpty = true;
-        for (int i=0; i<seqs.size(); i++) {
-            if (!seqs.get(i).isEmpty()) {
-                allEmpty = false;
-            }
-            if (seqs.get(i).size() > 1) {
-                for (int j=0; j<seqs.get(i).size()-1; j++) {
-                    if (seqs.get(i).get(j) > org.length) {
-                        return false;
-                    }
-                    map.putIfAbsent(seqs.get(i).get(j), new ArrayList<Integer>());
-                    map.get(seqs.get(i).get(j)).add(seqs.get(i).get(j+1));
-                    indegrees[seqs.get(i).get(j+1)]++;
-                }
-            } else {
-                if (seqs.get(i).size() == 1) {
-                    if (seqs.get(i).get(0) > org.length) {
-                        return false;
-                    }
+        Map<Integer, Set<Integer>> map = new HashMap<>();
+        int[] degree = new int[org.length];
+
+        // for(int i = 1; i<=org.length; i++) map.put(i, new HashSet<>());
+        //cannot init map with org, has to do with seqs, to avoid case like [1], [], expected: false
+
+        for (List<Integer> list : seqs) {
+            if (list.size() == 1) map.computeIfAbsent(list.get(0), k -> new HashSet<Integer>()); //dont forget
+            for (int i = 1; i < list.size(); i++) {
+                int pre = list.get(i - 1);
+                int cur = list.get(i);
+                map.computeIfAbsent(pre, k -> new HashSet<Integer>());
+                map.computeIfAbsent(cur, k -> new HashSet<Integer>());
+                if (pre > org.length || cur > org.length || pre < 1 || cur < 1) return false;
+                //dont forget. or degree array can "ArrayIndexOutOfBoundsException"
+
+                if (!map.get(pre).contains(cur)) {
+                    degree[cur - 1]++;
+                    map.get(pre).add(cur);
                 }
             }
         }
-        if (allEmpty) {
-            return false;
+
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < degree.length; i++) {
+            if (degree[i] == 0) q.add(i + 1);
         }
-        Queue<Integer> queue = new LinkedList<Integer>();
-        int counterInDegree0 = 0;
-        for (int i=1; i<indegrees.length; i++) {
-            if (indegrees[i] == 0) {
-                counterInDegree0++;
-                queue.add(i);
+        int index = 0;
+        while (!q.isEmpty()) {
+            if (q.size() > 1) return false; //check with org
+            int cur = q.poll();
+            if (org[index++] != cur) return false; //check with org
+            if (!map.containsKey(cur)) continue; //don't forget
+            for (int ii : map.get(cur)) {
+                degree[ii - 1]--;
+                if (degree[ii - 1] == 0) q.add(ii);
             }
         }
-        if (counterInDegree0 > 1 || queue.isEmpty()) {
-            return false;
-        }
-        int idxInOrig = 0;
-        while (!queue.isEmpty()) {
-            int cur = queue.poll();
-            if (cur != org[idxInOrig]) {
-                return false;
-            }
-            indegrees[cur] = -1;
-            List<Integer> curChildren = map.get(cur);
-            counterInDegree0 = 0;
-            if (curChildren != null && !curChildren.isEmpty()) {
-                for (Integer child: curChildren) {
-                    indegrees[child]--;
-                    if (indegrees[child] == 0) {
-                        queue.add(child);
-                        counterInDegree0++;
-                    }
-                }
-            }
-            if (counterInDegree0 > 1) {
-                return false;
-            }
-            idxInOrig++;
-        }
-        if (idxInOrig != org.length) {
-            return false;
-        }
-        return true;
+        return index == org.length && index == map.size();//has to check with map size
     }
 
     /**

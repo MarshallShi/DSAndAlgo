@@ -2,6 +2,7 @@ package dsandalgo.graph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -181,36 +182,44 @@ public class GraphExe {
      * Here is a diagram of the above graph.
      */
     public List<Integer> eventualSafeNodes(int[][] graph) {
-        Map<Integer, List<Integer>> mapGraph = new HashMap<Integer, List<Integer>>();
-        for (int i=0; i<graph.length; i++) {
-            mapGraph.putIfAbsent(i, new ArrayList<Integer>());
-            for (int j=0; j<graph[i].length; j++) {
-                mapGraph.get(i).add(graph[i][j]);
+        List<Integer> res = new ArrayList<>();
+        if (graph == null || graph.length == 0) return res;
+        int n = graph.length;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i=0; i<n; i++) {
+            map.putIfAbsent(i, new ArrayList<>());
+            for (int v : graph[i]) {
+                map.get(i).add(v);
             }
         }
-        List<Integer> ans = new ArrayList<Integer>();
-        for (int i=0; i<graph.length; i++) {
-            boolean[] seen = new boolean[graph.length];
-            seen[i] = true;
-            if (isSafeDFS(i, mapGraph, seen)) {
-                ans.add(i);
+        boolean[] visited = new boolean[n];
+        for (int i=0; i<n; i++) {
+            if (!visited[i]) {
+                dfs(map, i, visited, res);
             }
         }
-        return ans;
+        Collections.sort(res);
+        return res;
     }
 
-    private boolean isSafeDFS(int node, Map<Integer, List<Integer>> mapGraph, boolean[] seen) {
-        if (mapGraph.get(node).size() == 0) {
+    private boolean dfs(Map<Integer, List<Integer>> map, int cur, boolean[] visited, List<Integer> res) {
+        visited[cur] = true;
+        if (map.get(cur).size() == 0) {
+            res.add(cur);
             return true;
         } else {
             boolean ret = true;
-            for (Integer neigh : mapGraph.get(node)) {
-                if (seen[neigh] && mapGraph.get(node).size() != 0) {
-                    return false;
+            for (int nx : map.get(cur)) {
+                if (res.contains(Integer.valueOf(nx))) {
+                    continue;
                 }
-                seen[neigh] = true;
-                ret = ret && isSafeDFS(neigh, mapGraph, seen);
-                seen[neigh] = false;
+                if (visited[nx] || !dfs(map, nx, visited, res)) {
+                    ret = false;
+                    break;
+                }
+            }
+            if (ret) {
+                res.add(cur);
             }
             return ret;
         }
