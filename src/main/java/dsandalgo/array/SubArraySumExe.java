@@ -209,9 +209,6 @@ public class SubArraySumExe {
      * Note:
      * 1 <= n <= 2000.
      * Elements in the given array will be in range [-1,000,000, 1,000,000].
-     *
-     * @param nums
-     * @return
      */
     public boolean splitArray(int[] nums) {
         if (nums.length < 7) {
@@ -306,6 +303,33 @@ public class SubArraySumExe {
             }
         }
         return res;
+    }
+    public int maxSumSubmatrix_2(int[][] matrix, int target) {
+        int row = matrix.length, col = matrix[0].length, ans = Integer.MIN_VALUE;
+        //2D version of kadane
+        for (int left = 0; left < col; left++) {
+            int[] sum = new int[row];
+            for (int right = left; right < col; right++) {
+                //Get the presum of all cols
+                for (int r = 0; r < row; r++) {
+                    sum[r] += matrix[r][right];
+                }
+                //Find a candidate answer based on kadane's algo
+                TreeSet<Integer> curSums = new TreeSet<>();
+                curSums.add(0);
+                int curMax = Integer.MIN_VALUE, cum = 0;
+                for (int s : sum) {
+                    cum += s;
+                    Integer val = curSums.ceiling(cum - target);
+                    if (val != null) {
+                        curMax = Math.max(curMax, cum - val);
+                    }
+                    curSums.add(cum);
+                }
+                ans = Math.max(ans, curMax);
+            }
+        }
+        return ans;
     }
 
     public int maxSumSubmatrix_1(int[][] matrix, int target) {

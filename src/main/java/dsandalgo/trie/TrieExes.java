@@ -666,7 +666,6 @@ public class TrieExes {
     class TrieNode1 {
         TrieNode1[] links;
         String word;
-
         TrieNode1() {
             links = new TrieNode1[26];
         }
@@ -733,9 +732,6 @@ public class TrieExes {
         visited[i][j] = false;
     }
 
-
-    private TrieNode tire;
-
     /**
      * https://leetcode.com/problems/concatenated-words/
      * Input: ["cat","cats","catsdogcats","dog","dogcatsdog","hippopotamuses","rat","ratcatdogcat"]
@@ -749,10 +745,11 @@ public class TrieExes {
      * @param words
      * @return
      */
+    private TrieNode tire;
     public List<String> findAllConcatenatedWordsInADict(String[] words) {
         tire = new TrieNode();
         buildDict(words);
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         for (String str : words) {
             if (isConcatenated(str.toCharArray(), 0, tire, 0)) {
                 ret.add(str);

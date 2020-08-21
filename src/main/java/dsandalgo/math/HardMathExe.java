@@ -1,16 +1,13 @@
 package dsandalgo.math;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 public class HardMathExe {
 
@@ -21,7 +18,6 @@ public class HardMathExe {
         int[] digits = {8,6,7,1,0};
         System.out.println(exe.superpalindromesInRange("4", "1000"));
     }
-
 
     /**
      * https://leetcode.com/problems/probability-of-a-two-boxes-having-the-same-number-of-distinct-balls/

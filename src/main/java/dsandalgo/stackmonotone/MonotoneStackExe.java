@@ -308,7 +308,6 @@ public class MonotoneStackExe {
      * 1 <= A[i] <= 30000
      *
      */
-    //https://leetcode.com/problems/sum-of-subarray-minimums/discuss/178876/stack-solution-with-very-detailed-explanation-step-by-step
     public int sumSubarrayMins(int[] A) {
         // initialize previous less element and next less element of
         // each element in the array
@@ -317,16 +316,18 @@ public class MonotoneStackExe {
         int[] leftDistance = new int[A.length];
         int[] rightDistance = new int[A.length];
 
-        for (int i=0; i<A.length; i++) {
+        //Find the length of left side
+        for (int i = 0; i < A.length; i++) {
             // use ">=" to deal with duplicate elements
             while (!previousLess.isEmpty() && previousLess.peek()[0] >= A[i]) {
                 previousLess.pop();
             }
-            leftDistance[i] = previousLess.isEmpty() ? i+1 : i - previousLess.peek()[1];
+            leftDistance[i] = previousLess.isEmpty() ? i + 1 : i - previousLess.peek()[1];
             previousLess.push(new int[]{A[i], i});
         }
 
-        for (int i=A.length-1; i>=0; i--) {
+        //Find the length of right side
+        for (int i = A.length - 1; i >= 0; i--) {
             while (!nextLess.isEmpty() && nextLess.peek()[0] > A[i]) {
                 nextLess.pop();
             }
@@ -336,7 +337,7 @@ public class MonotoneStackExe {
 
         int ans = 0;
         int mod = 1000000007;
-        for(int i=0; i<A.length; i++) {
+        for (int i = 0; i < A.length; i++) {
             ans = (ans + A[i] * leftDistance[i] * rightDistance[i]) % mod;
         }
         return ans;
@@ -771,27 +772,21 @@ public class MonotoneStackExe {
         return 0;
     }
 
-    public int findUnsortedSubarray_2(int[] nums) {
-        int len = nums.length;
-        int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
-        int start = -1, end = -1;
-        for (int i = 0; i < len; i++) {
-            //from left to right, search the current max
-            max = Math.max(max, nums[i]);
-            //from right to left, search the current min
-            min = Math.min(min, nums[len - i - 1]);
-            if (nums[i] < max) {
+    public int findUnsortedSubarray_2(int[] A) {
+        int n = A.length, beg = -1, end = -2, min = A[n - 1], max = A[0];
+        //Find the index start decreasing from left
+        //Find the index start increasing from right
+        for (int i = 1; i < n; i++) {
+            max = Math.max(max, A[i]);
+            min = Math.min(min, A[n - 1 - i]);
+            if (A[i] < max) {
                 end = i;
             }
-            if (nums[len - i - 1] > min) {
-                start = len - i - 1;
+            if (A[n - 1 - i] > min) {
+                beg = n - 1 - i;
             }
         }
-        if (start == -1) {
-            //the entire array is already sorted
-            return 0;
-        }
-        return end - start + 1;
+        return end - beg + 1;
     }
 
     /**

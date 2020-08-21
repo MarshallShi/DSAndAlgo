@@ -29,14 +29,14 @@ public class Knapsack {
         for (int i = 1; i <= n / 2; ++i) {
             //i is the length of the smaller split array with same average.
             //converted the problem to target sum, with i numbers.
-            if (s * i % n == 0 && splitArraySameAverageDFS(A, s * i / n, i, 0)) {
+            if (s * i % n == 0 && dfs(A, s * i / n, i, 0)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean splitArraySameAverageDFS(int[] A, int target, int k, int pos) {
+    private boolean dfs(int[] A, int target, int k, int pos) {
         if (k == 0) {
             return target == 0;
         }
@@ -44,7 +44,7 @@ public class Knapsack {
             if (j != pos && A[j] == A[j - 1]) {
                 continue;
             }
-            if (splitArraySameAverageDFS(A, target - A[j], k - 1, j + 1)) {
+            if (dfs(A, target - A[j], k - 1, j + 1)) {
                 return true;
             }
         }

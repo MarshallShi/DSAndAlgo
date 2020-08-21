@@ -101,8 +101,6 @@ public class BinarySearchTreeExe {
      *
      * https://leetcode.com/problems/reverse-pairs/discuss/97268/General-principles-behind-problems-similar-to-%22Reverse-Pairs%22
      *
-     * @param nums
-     * @return
      */
     public int reversePairs(int[] nums) {
         int result = 0;

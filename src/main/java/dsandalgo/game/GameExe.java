@@ -44,7 +44,6 @@ public class GameExe {
      * Same with other integers chosen by the first player, the second player will always win.
      */
     //DFS approach.
-    private Map<String, Boolean> memo; // key: chosen[] to string, value: canIWinWithSituation return value when chosen to string is key
     public boolean canIWin(int maxChoosableInteger, int desiredTotal) {
         if (desiredTotal <= maxChoosableInteger) {
             return true;
@@ -52,11 +51,11 @@ public class GameExe {
         if (((1 + maxChoosableInteger) / 2 * maxChoosableInteger) < desiredTotal) {
             return false;
         }
-        memo = new HashMap<String, Boolean>();
-        return canIWinWithSituation(maxChoosableInteger, desiredTotal, new boolean[maxChoosableInteger + 1]);
+        Map<String, Boolean> memo = new HashMap<String, Boolean>();
+        return canIWinWithSituation(maxChoosableInteger, desiredTotal, new boolean[maxChoosableInteger + 1], memo);
     }
 
-    private boolean canIWinWithSituation(int maxChoosableInteger, int curDesiredTotal, boolean[] chosen) {
+    private boolean canIWinWithSituation(int maxChoosableInteger, int curDesiredTotal, boolean[] chosen, Map<String, Boolean> memo) {
         if (curDesiredTotal <= 0) {
             return false;
         }
@@ -70,7 +69,7 @@ public class GameExe {
             }
             chosen[i] = true;
             //Here is the trick: if opponent is going to fail, then I win!!! Return true.
-            if (!canIWinWithSituation(maxChoosableInteger, curDesiredTotal - i, chosen)) {
+            if (!canIWinWithSituation(maxChoosableInteger, curDesiredTotal - i, chosen, memo)) {
                 memo.put(chosenSerialization, true);
                 chosen[i] = false;
                 return true;

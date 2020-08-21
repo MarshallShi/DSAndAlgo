@@ -20,28 +20,21 @@ public class Misc {
 
     public static Map<String, Integer> ret = new HashMap<String, Integer>();
 
+    /**
+     * https://leetcode.com/problems/longest-harmonious-subsequence/
+     */
     public int findLHS(int[] nums) {
-        if (nums == null || nums.length == 0) {
-            return 0;
+        Map<Long, Integer> map = new HashMap<>();
+        for (long num : nums) {
+            map.put(num, map.getOrDefault(num, 0) + 1);
         }
-        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-        for (int i=0; i<nums.length; i++) {
-            map.putIfAbsent(nums[i],0);
-            map.put(nums[i],map.get(nums[i]) + 1);
-        }
-        if (map.size() == 1) {
-            return 0;
-        }
-        int ret = 0;
-        for (Map.Entry entry : map.entrySet()) {
-            if (map.containsKey((Integer)entry.getKey() + 1)) {
-                ret = Math.max(ret, (Integer)entry.getValue() + map.get((Integer)entry.getKey() + 1));
-            }
-            if (map.containsKey((Integer)entry.getKey() - 1)) {
-                ret = Math.max(ret, (Integer)entry.getValue() + map.get((Integer)entry.getKey() - 1));
+        int result = 0;
+        for (long key : map.keySet()) {
+            if (map.containsKey(key + 1)) {
+                result = Math.max(result, map.get(key + 1) + map.get(key));
             }
         }
-        return ret;
+        return result;
     }
 
     private void populateSet(Map<String, Integer> set, String[] arr) {
@@ -282,51 +275,6 @@ public class Misc {
             n = n>>1;
         }
         return counter;
-    }
-
-    public List<List<String>> printTree(TreeNode root) {
-        int level = getLevel(root);
-        int total = 1;
-        for (int i=0; i<level; i++) {
-            total = 2*total;
-        }
-        total--;
-        List<List<String>> ret = new ArrayList<List<String>>();
-        for (int i=0; i<level; i++) {
-            ret.add(createDefault(total));
-        }
-        helper(root, ret, 0, 0, total - 1);
-        return ret;
-    }
-
-    public void helper(TreeNode node, List<List<String>> ret, int level, int low, int high) {
-        if (node == null) {
-            return;
-        }
-        List curLevel = ret.get(level);
-        int curIdx = (low+(high-low))/2;
-        curLevel.set(curIdx, node.val+"");
-        int nextLevel = level + 1;
-        helper(node.left, ret, nextLevel,low, curIdx-1);
-        helper(node.right, ret, nextLevel,curIdx+1, high);
-    }
-
-    public List<String> createDefault(int total){
-        List<String> ret = new ArrayList<String>();
-        for (int i = 0; i<total; i++) {
-            ret.add("");
-        }
-        return ret;
-    }
-
-    public int getLevel(TreeNode root) {
-        if (root == null) {
-            return 0;
-        }
-        if (root.left == null  && root.right == null) {
-            return 1;
-        }
-        return 1 + Math.max(getLevel(root.left), getLevel(root.right));
     }
 
     public TreeNode constructMaximumBinaryTree(int[] nums) {

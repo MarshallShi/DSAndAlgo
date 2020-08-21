@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
 public class GreedyExe{
@@ -490,35 +492,24 @@ public class GreedyExe{
      */
     //Greedy strategy is to ban the next opponent right after current
     public String predictPartyVictory(String senate) {
-        int r = 0, d = 0, start = 0;
-        char[] arr = senate.toCharArray();
-        for (char c : arr) {
-            if (c == 'R') {
-                r++;
+        Queue<Integer> q1 = new LinkedList<Integer>(), q2 = new LinkedList<Integer>();
+        int n = senate.length();
+        for (int i = 0; i < n; i++) {
+            if (senate.charAt(i) == 'R') {
+                q1.add(i);
             } else {
-                d++;
+                q2.add(i);
             }
         }
-        while (r > 0 && d > 0) {
-            while (arr[start] != 'R' && arr[start] != 'D') {
-                //avoid arr idx overflow
-                start = (start + 1) % arr.length;
-            }
-            char ban = 'R';
-            if (arr[start] == 'R') {
-                ban = 'D';
-                d--;
+        while (!q1.isEmpty() && !q2.isEmpty()) {
+            int r_index = q1.poll(), d_index = q2.poll();
+            if (r_index < d_index) {
+                q1.add(r_index + n);
             } else {
-                r--;
+                q2.add(d_index + n);
             }
-            int idx = (start + 1) % arr.length;
-            while (arr[idx] != ban) {
-                idx = (idx + 1) % arr.length;
-            }
-            arr[idx] = ' ';
-            start = (start + 1) % arr.length;
         }
-        return d == 0 ? "Radiant" : "Dire";
+        return (q1.size() > q2.size()) ? "Radiant" : "Dire";
     }
 
     /**

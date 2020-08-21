@@ -1535,12 +1535,12 @@ public class ArrayExe {
     //Case 3: max subarray is at the end of the array and the head of second repeat can offer some help. ex. arr = [1, -4, 1],
     // repeat twice, arr2 = [1, -4, 1, 1, -4, 1], max subarray increases from 1 to 2; This is a special case which will not be affected by more repeated arrays.
     public int kConcatenationMaxSum(int[] arr, int k) {
-        long result = 0, cur_max = 0, sum = 0;
+        long result = 0, curMax = 0, sum = 0;
         int M = 1000000007;
         // basic solution from Leetcode 53
         for (int i = 0; i < arr.length; i++) {
-            cur_max = Math.max(cur_max + arr[i], (long)arr[i]);
-            result = Math.max(result, cur_max);
+            curMax = Math.max(curMax + arr[i], (long)arr[i]);
+            result = Math.max(result, curMax);
             sum += arr[i];
         }
         // k < 2, return result from basic solution
@@ -1551,14 +1551,51 @@ public class ArrayExe {
         if (sum > 0) {
             return (int)((result + (k - 1) * sum) % M);
         }
-        // another round to catch case 3
+        // in case max value is comprised of previsou suffix and current prefix.
         for (int i = 0; i < arr.length; i++) {
-            cur_max = Math.max(cur_max + arr[i], (long)arr[i]);
-            result = Math.max(result, cur_max);
+            curMax = Math.max(curMax + arr[i], (long)arr[i]);
+            result = Math.max(result, curMax);
         }
         return (int)(result % M);
     }
 
+    /**
+     * https://leetcode.com/problems/friends-of-appropriate-ages/
+     * Some people will make friend requests. The list of their ages is given and ages[i] is the age of the ith person.
+     *
+     * Person A will NOT friend request person B (B != A) if any of the following conditions are true:
+     *
+     * age[B] <= 0.5 * age[A] + 7
+     * age[B] > age[A]
+     * age[B] > 100 && age[A] < 100
+     * Otherwise, A will friend request B.
+     *
+     * Note that if A requests B, B does not necessarily request A.  Also, people will not friend request themselves.
+     *
+     * How many total friend requests are made?
+     *
+     * Example 1:
+     *
+     * Input: [16,16]
+     * Output: 2
+     * Explanation: 2 people friend request each other.
+     * Example 2:
+     *
+     * Input: [16,17,18]
+     * Output: 2
+     * Explanation: Friend requests are made 17 -> 16, 18 -> 17.
+     * Example 3:
+     *
+     * Input: [20,30,100,110,120]
+     * Output: 3
+     * Explanation: Friend requests are made 110 -> 100, 120 -> 110, 120 -> 100.
+     *
+     *
+     * Notes:
+     *
+     * 1 <= ages.length <= 20000.
+     * 1 <= ages[i] <= 120.
+     */
     public int numFriendRequests(int[] ages) {
         Map<Integer, Integer> count = new HashMap<>();
         for (int age : ages) {
@@ -2484,69 +2521,6 @@ public class ArrayExe {
             }
         }
         return ans;
-    }
-
-    /**
-     * https://leetcode.com/problems/distribute-candies-to-people/
-     * We distribute some number of candies, to a row of n = num_people people in the following way:
-     *
-     * We then give 1 candy to the first person, 2 candies to the second person, and so on until we
-     * give n candies to the last person.
-     *
-     * Then, we go back to the start of the row, giving n + 1 candies to the first person, n + 2 candies to
-     * the second person, and so on until we give 2 * n candies to the last person.
-     *
-     * This process repeats (with us giving one more candy each time, and moving to the start of the row after
-     * we reach the end) until we run out of candies.  The last person will receive all of our remaining candies
-     * (not necessarily one more than the previous gift).
-     *
-     * Return an array (of length num_people and sum candies) that represents the final distribution of candies.
-     *
-     *
-     *
-     * Example 1:
-     *
-     * Input: candies = 7, num_people = 4
-     * Output: [1,2,3,1]
-     * Explanation:
-     * On the first turn, ans[0] += 1, and the array is [1,0,0,0].
-     * On the second turn, ans[1] += 2, and the array is [1,2,0,0].
-     * On the third turn, ans[2] += 3, and the array is [1,2,3,0].
-     * On the fourth turn, ans[3] += 1 (because there is only one candy left), and the final array is [1,2,3,1].
-     *
-     * Example 2:
-     *
-     * Input: candies = 10, num_people = 3
-     * Output: [5,2,3]
-     * Explanation:
-     * On the first turn, ans[0] += 1, and the array is [1,0,0].
-     * On the second turn, ans[1] += 2, and the array is [1,2,0].
-     * On the third turn, ans[2] += 3, and the array is [1,2,3].
-     * On the fourth turn, ans[0] += 4, and the final array is [5,2,3].
-     *
-     * @param candies
-     * @param num_people
-     * @return
-     */
-    public int[] distributeCandies(int candies, int num_people) {
-        int[] ret = new int[num_people];
-        int nextAllocation = 1;
-        int i = 0;
-        while (candies > 0) {
-            if (i >= num_people) {
-                i = i%num_people;
-            }
-            if (candies > nextAllocation) {
-                ret[i] = ret[i] + nextAllocation;
-                candies = candies - nextAllocation;
-            } else {
-                ret[i] = ret[i] + candies;
-                break;
-            }
-            i++;
-            nextAllocation++;
-        }
-        return ret;
     }
 
     /**

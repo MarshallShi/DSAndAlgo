@@ -139,6 +139,15 @@ https://leetcode.com/problems/pancake-sorting/
 https://leetcode.com/problems/add-bold-tag-in-string/
 
 
+Binary Search Tree application
+
+https://leetcode.com/problems/reverse-pairs/
+
+https://leetcode.com/problems/count-of-smaller-numbers-after-self/
+
+https://leetcode.com/problems/count-of-range-sum/
+
+
 Overlap
 
 https://leetcode.com/problems/video-stitching/
@@ -383,7 +392,6 @@ https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/
 Monotonestack:
 
 https://leetcode.com/problems/sum-of-subarray-minimums/
-
 https://leetcode.com/problems/largest-rectangle-in-histogram/
 https://leetcode.com/problems/maximal-rectangle/
 https://leetcode.com/problems/trapping-rain-water/
@@ -398,9 +406,6 @@ https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/
 https://leetcode.com/problems/sum-of-subsequence-widths/
 https://leetcode.com/problems/count-unique-characters-of-all-substrings-of-a-given-string/
 https://leetcode.com/problems/remove-duplicate-letters/
-https://leetcode.com/problems/removPeekingIteratore-k-digits/
-https://leetcode.com/problems/sum-of-subarray-minimums/
-https://leetcode.com/problems/max-chunks-to-make-sorted-ii/
 https://leetcode.com/problems/create-maximum-number/
 https://leetcode.com/problems/minimum-cost-tree-from-leaf-values/
 https://leetcode.com/problems/sliding-window-maximum/
@@ -443,3 +448,5 @@ Bit
 https://leetcode.com/problems/bitwise-and-of-numbers-range/
 
 https://leetcode.com/problems/counting-bits/
+
+https://leetcode.com/problems/convert-a-number-to-hexadecimal/

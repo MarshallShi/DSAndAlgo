@@ -47,7 +47,7 @@ public class FileSystem {
         String content = "";
     }
 
-    File root;
+    private File root;
 
     public FileSystem() {
         root = new File();

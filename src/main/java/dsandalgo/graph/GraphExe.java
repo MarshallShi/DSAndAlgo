@@ -50,6 +50,32 @@ public class GraphExe {
         exe.criticalConnections(4, connections);
     }
 
+    /**
+     * https://leetcode.com/problems/critical-connections-in-a-network/
+     * There are n servers numbered from 0 to n-1 connected by undirected server-to-server connections forming a network where connections[i] = [a, b] represents a connection between servers a and b. Any server can reach any other server directly or indirectly through the network.
+     *
+     * A critical connection is a connection that, if removed, will make some server unable to reach some other server.
+     *
+     * Return all critical connections in the network in any order.
+     *
+     *
+     *
+     * Example 1:
+     *
+     *
+     *
+     * Input: n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]
+     * Output: [[1,3]]
+     * Explanation: [[3,1]] is also accepted.
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= n <= 10^5
+     * n-1 <= connections.length <= 10^5
+     * connections[i][0] != connections[i][1]
+     * There are no repeated connections.
+     */
     public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
         Map<Integer, List<Integer>> graph = new HashMap<>();
         for (List<Integer> lst : connections) {
@@ -65,15 +91,31 @@ public class GraphExe {
         return ret;
     }
 
+    /**
+     * One graph traversal to find earliest time to visit each node.
+     * The time is defined as: the smallest time from all its children.
+     * If there is a->b, if original timers[a] < timers[b] then it is a critical connection.
+     * @param graph The graph.
+     * @param timers To track the earliest time current node can be visited. The compare of time should exclude from node.
+     * @param from The from node when current node is visited.
+     * @param node The current node
+     * @param curTime The cur time
+     * @param ret The result
+     * @return the earliest time current node is being visited.
+     */
     private int dfsHelper(Map<Integer, List<Integer>> graph, int[] timers, int from, int node, int curTime, List<List<Integer>> ret){
         timers[node] = curTime;
         for (Integer nextNode : graph.getOrDefault(node, new ArrayList<>())) {
+            //Skip the from node
             if (nextNode == from) continue;
             if (timers[nextNode] == 0) {
+                //if the node hasn't been visited, let's visit it vis dfsHelper, but once returned a value, update the current node earliest time.
                 timers[node] = Math.min(timers[node], dfsHelper(graph, timers, node, nextNode, curTime + 1, ret));
             } else {
+                //if the node has been visited, update the current node earliest time.
                 timers[node] = Math.min(timers[node], timers[nextNode]);
             }
+            //The nextNode can't access any of current node's ancestors, hence it is a critical connection.
             if (curTime < timers[nextNode]) {
                 ret.add(Arrays.asList(node, nextNode));
             }

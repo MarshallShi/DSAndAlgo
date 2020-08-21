@@ -838,8 +838,6 @@ public class BitExe {
 
     /**
      * https://leetcode.com/problems/convert-a-number-to-hexadecimal/
-     * @param num
-     * @return
      */
     public String toHex(int num) {
         if (num == 0) return "0";

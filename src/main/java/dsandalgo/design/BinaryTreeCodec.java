@@ -31,9 +31,10 @@ public class BinaryTreeCodec {
         } else {
             sb.append(node.val).append(spliter);
             buildString(node.left, sb);
-            buildString(node.right,sb);
+            buildString(node.right, sb);
         }
     }
+
     // Decodes your encoded data to tree.
     public TreeNode deserialize(String data) {
         Deque<String> nodes = new LinkedList<>();

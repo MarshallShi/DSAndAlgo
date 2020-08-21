@@ -46,13 +46,14 @@ public class MoreStateExe {
     }
 
     private int cherryPickup(int[][] grid, int n, int r1, int c1, int r2, int c2, Integer[][][][] cache) {
-        if (cache[r1][c1][r2][c2] != null) {
-            return cache[r1][c1][r2][c2];
-        }
         // since we're only going down and to the right, no need to check for < 0
         // if we went out of the grid or hit a thorn, discourage this path by returning Integer.MIN_VALUE
         if(r1 >= n || c1 >= n || r2 >= n || c2 >= n || grid[r1][c1] == -1 || grid[r2][c2] == -1)
             return Integer.MIN_VALUE;
+
+        if (cache[r1][c1][r2][c2] != null) {
+            return cache[r1][c1][r2][c2];
+        }
 
         // if person 1 reached the bottom right, return what's in there (could be 1 or 0)
         if(r1 == n - 1 && c1 == n - 1)
@@ -81,7 +82,7 @@ public class MoreStateExe {
                 Math.max(cherryPickup(grid, n, r1 + 1, c1, r2 + 1, c2, cache), cherryPickup(grid, n, r1 + 1, c1, r2, c2 + 1, cache)),
                 Math.max(cherryPickup(grid, n, r1, c1 + 1, r2 + 1, c2, cache), cherryPickup(grid, n, r1, c1 + 1, r2, c2 + 1, cache)));
 
-        cache[r1][c1][r2][c2] = new Integer(cherries);
+        cache[r1][c1][r2][c2] = cherries;
         return cache[r1][c1][r2][c2];
     }
 

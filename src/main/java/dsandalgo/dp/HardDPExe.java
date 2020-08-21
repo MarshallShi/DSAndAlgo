@@ -2185,59 +2185,37 @@ public class HardDPExe {
      * 1 <= k <= s.length <= 100.
      * s only contains lowercase English letters.
      */
-    private int[][] cache;
-    private int[][] memoPP;
+
     public int palindromePartition(String s, int k) {
-        cache = new int[s.length()][s.length()];
-        memoPP = new int[101][101];
-        for (int i=0; i<cache.length; i++) {
-            Arrays.fill(cache[i],  -1);
-        }
-        for (int i=0; i<cache.length; i++) {
-            cache[i][i] = 0;
-        }
-        for (int i=0; i<memoPP.length; i++) {
-            Arrays.fill(memoPP[i],  -1);
-        }
-        return palindromePartitionHelper(s, k, 0, 0);
+        Integer[][] memo = new Integer[s.length()][k+1];
+        char[] arr = s.toCharArray();
+        return dfs(arr, 0, k, memo);
     }
 
-    private int palindromePartitionHelper(String s, int k, int kth, int pos) {
-        if (memoPP[pos][kth] != -1) {
-            return memoPP[pos][kth];
+    private int dfs(char[] arr, int pos, int k, Integer[][] memo) {
+        if (k == 1 && pos <= arr.length - 1) {
+            return getNumChanged(arr, pos, arr.length - 1);
         }
-        if (k == kth + 1 && pos <= s.length() - 1) {
-            return getPalin(s, pos, s.length() - 1);
+        if (memo[pos][k] != null) return memo[pos][k];
+        int res = Integer.MAX_VALUE;
+        for (int i=pos; i<arr.length - k + 1; i++) {
+            res = Math.min(res, getNumChanged(arr, pos, i) + dfs(arr, i+1, k-1, memo));
         }
-        int curMin = Integer.MAX_VALUE;
-        for (int i=pos; i<s.length(); i++) {
-            int fix = getPalin(s, pos, i);
-            int rest = palindromePartitionHelper(s, k, kth+1, i+1);
-            if (rest != Integer.MAX_VALUE) {
-                curMin = Math.min(curMin, fix + rest);
-            }
-        }
-        memoPP[pos][kth] = curMin;
-        return curMin;
+        memo[pos][k] = res;
+        return res;
     }
 
-    private int getPalin(String s, int start, int end){
-        if (start == end) {
-            return 0;
-        } else {
-            if (cache[start][end] == -1) {
-                int counter = 0;
-                while (start < end) {
-                    if (s.charAt(start) != s.charAt(end)) {
-                        counter++;
-                    }
-                    start++;
-                    end--;
-                }
-                cache[start][end] = counter;
+    private int getNumChanged(char[] arr, int low, int high) {
+        if (low == high) return 0;
+        int ret = 0;
+        while (low < high) {
+            if (arr[low]!=arr[high]) {
+                ret++;
             }
-            return cache[start][end];
+            low++;
+            high--;
         }
+        return ret;
     }
 
     /**

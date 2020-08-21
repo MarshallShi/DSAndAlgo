@@ -1,5 +1,9 @@
 package dsandalgo.sorting;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,83 +22,88 @@ public class SortingExe {
 
     public static void main(String[] args) {
         SortingExe exe = new SortingExe();
-        int[] input = {1,2,3};
 
         int[] difficulty = {85,47,57};
         int[] profit = {24,66,99};
         int[] worker = {1,3,-1,-3,5,3,6,7};
+
+//        File file = new File("C:/file/tables.txt");
+//        String lineSeparator = System.getProperty("line.separator");
+//        BufferedReader input = null;
+//        try {
+//            input = new java.io.BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+//            StringBuffer stringBuffer = new StringBuffer();
+//            String line = input.readLine();
+//            if (line != null && line.length() > 0 && line.charAt(0) == 0xfeff) {
+//                line = line.substring(1);
+//            }
+//            while (line != null) {
+//                stringBuffer.append(line);
+//                stringBuffer.append(",");
+//                line = input.readLine();
+//            }
+//            System.out.println(stringBuffer.toString());
+//        } catch (Exception e) {
+//
+//        } finally {
+//            //input.close();
+//        }
         System.out.println(exe.maxSlidingWindow(worker, 3));
     }
 
     /**
      * https://leetcode.com/problems/analyze-user-website-visit-pattern/
      */
-    class VisitedTime{
-        String website;
+    class Pair {
         int time;
-        public VisitedTime(String _website, int _time){
-            website = _website;
-            time = _time;
+        String web;
+
+        public Pair(int time, String web) {
+            this.time = time;
+            this.web = web;
         }
     }
-    class Pair{
-        String threeSequence;
-        int counter;
-        public Pair(String _threeSequence, int _counter){
-            threeSequence = _threeSequence;
-            counter = _counter;
-        }
-    }
+
     public List<String> mostVisitedPattern(String[] username, int[] timestamp, String[] website) {
-        Map<String, List<VisitedTime>> userVisitWebsiteMap = new HashMap<String, List<VisitedTime>>();
+        Map<String, List<Pair>> map = new HashMap<>();
         int n = username.length;
-        for (int i=0; i<n; i++) {
-            userVisitWebsiteMap.putIfAbsent(username[i], new ArrayList<VisitedTime>());
-            userVisitWebsiteMap.get(username[i]).add(new VisitedTime(website[i], timestamp[i]));
+        // collect the website info for every user, key: username, value: (timestamp, website)
+        for (int i = 0; i < n; i++) {
+            map.putIfAbsent(username[i], new ArrayList<>());
+            map.get(username[i]).add(new Pair(timestamp[i], website[i]));
         }
-        Map<String, Integer> threeSequenceCounter = new HashMap<String, Integer>();
-        PriorityQueue<Pair> pq = new PriorityQueue<Pair>(new Comparator<Pair>() {
-            @Override
-            public int compare(Pair o1, Pair o2) {
-                if (o1.counter == o2.counter) {
-                    return o1.threeSequence.compareTo(o2.threeSequence);
-                }
-                return o2.counter - o1.counter;
-            }
-        });
-        for (Map.Entry<String, List<VisitedTime>> entry : userVisitWebsiteMap.entrySet()) {
-            List<VisitedTime> data = entry.getValue();
-            Collections.sort(data, new Comparator<VisitedTime>() {
-                @Override
-                public int compare(VisitedTime o1, VisitedTime o2) {
-                    return o1.time - o2.time;
-                }
-            });
-            int s = data.size();
-            Set<String> visited = new HashSet<String>();
-            for (int i=0; i<s-2; i++) {
-                for (int j=i+1; j<s-1; j++) {
-                    for (int k=j+1; k<s; k++) {
-                        String threeSeq = data.get(i).website + "," + data.get(j).website + "," + data.get(k).website;
-                        if (visited.contains(threeSeq)) {
-                            continue;
+        // count map to record every 3 combination occuring time for the different user.
+        Map<String, Integer> count = new HashMap<>();
+        String res = "";
+        for (String key : map.keySet()) {
+            Set<String> set = new HashSet<>();
+            // this set is to avoid visit the same 3-seq in one user
+            List<Pair> list = map.get(key);
+            Collections.sort(list, (a, b) -> (a.time - b.time)); // sort by time
+            // brutal force O(N ^ 3)
+            for (int i = 0; i < list.size(); i++) {
+                for (int j = i + 1; j < list.size(); j++) {
+                    for (int k = j + 1; k < list.size(); k++) {
+                        String str = list.get(i).web + " " + list.get(j).web + " " + list.get(k).web;
+                        if (!set.contains(str)) {
+                            count.put(str, count.getOrDefault(str, 0) + 1);
+                            set.add(str);
                         }
-                        threeSequenceCounter.putIfAbsent(threeSeq, 0);
-                        threeSequenceCounter.put(threeSeq, threeSequenceCounter.get(threeSeq) + 1);
-                        visited.add(threeSeq);
+                        if (res.equals("") || count.get(res) < count.get(str) || (count.get(res) == count.get(str) && res.compareTo(str) > 0)) {
+                            // make sure the right lexi order
+                            res = str;
+                        }
                     }
                 }
             }
         }
-        for (Map.Entry<String,Integer> entry : threeSequenceCounter.entrySet()) {
-            pq.offer(new Pair(entry.getKey(), entry.getValue()));
+        // grab the right answer
+        String[] r = res.split(" ");
+        List<String> result = new ArrayList<>();
+        for (String str : r) {
+            result.add(str);
         }
-        String[] ret = pq.poll().threeSequence.split(",");
-        List<String> ans = new ArrayList<String>();
-        for (String str : ret) {
-            ans.add(str);
-        }
-        return ans;
+        return result;
     }
 
     /**
@@ -235,8 +244,6 @@ public class SortingExe {
 
     /**
      * https://leetcode.com/problems/diagonal-traverse-ii/
-     * @param nums
-     * @return
      */
     public int[] findDiagonalOrder(List<List<Integer>> nums) {
         int n = 0, i = 0, maxKey = 0;
@@ -514,7 +521,9 @@ public class SortingExe {
     private boolean bigger(String s1, String s2) {
         int n = s1.length(), m = s2.length();
         for (int i = 0; i < n && i < m; ++i) {
-            if (s1.charAt(i) != s2.charAt(i)) return mapping[s1.charAt(i) - 'a'] > mapping[s2.charAt(i) - 'a'];
+            if (s1.charAt(i) != s2.charAt(i)) {
+                return mapping[s1.charAt(i) - 'a'] > mapping[s2.charAt(i) - 'a'];
+            }
         }
         return n > m;
     }
@@ -522,8 +531,6 @@ public class SortingExe {
 
     /**
      * https://leetcode.com/problems/bulb-switcher-iii/
-     * @param light
-     * @return
      */
     public int numTimesAllBlue(int[] light) {
         int right = 0, res = 0, n = light.length;

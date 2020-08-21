@@ -1,5 +1,8 @@
 package dsandalgo.trie;
 
+/**
+ * https://leetcode.com/problems/implement-magic-dictionary/
+ */
 public class MagicDictionary {
 
     class TrieNode {

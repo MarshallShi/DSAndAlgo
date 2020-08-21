@@ -24,9 +24,24 @@ import java.util.Map;
  */
 public class LFUCache {
 
+    class DataNode {
+        int key;
+        int value;
+        int times;
+        DataNode prev;
+        DataNode next;
+        public DataNode(int key, int value, int times) {
+            this.key = key;
+            this.value = value;
+            this.times = times;
+        }
+    }
+
     private int capacity;
     private int count;
+    //key is the 'key' of put and get.
     private Map<Integer, DataNode> data;
+    //key is freq
     private Map<Integer, DataNode> finalNodes;
     private DataNode dummyHead;
     private DataNode dummyEnd;
@@ -113,18 +128,5 @@ public class LFUCache {
     public void removeNode(DataNode node) {
         node.next.prev = node.prev;
         node.prev.next = node.next;
-    }
-
-    class DataNode {
-        int key;
-        int value;
-        int times;
-        DataNode prev;
-        DataNode next;
-        public DataNode(int key, int value, int times) {
-            this.key = key;
-            this.value = value;
-            this.times = times;
-        }
     }
 }

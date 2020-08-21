@@ -16,12 +16,40 @@ public class MathExe {
 
     public static void main(String[] args) {
         MathExe exe = new MathExe();
-        int[][] points = {{0,0},{94911151,94911150},{94911152,94911151}};
-        int[] rec1 = {0,0,0};
-        int[] rec2 = {2,2,3,3};
-        int[][] shape = {{1,2},{3,4}};
-        int[] a = {1,1,0};
-        System.out.println(exe.multiply("12","23"));
+        String a = "resource:/test";
+    }
+
+    /**
+     * https://leetcode.com/problems/path-in-zigzag-labelled-binary-tree/
+     *
+     * Example 1:
+     *
+     * Input: label = 14
+     * Output: [1,3,4,14]
+     * Example 2:
+     *
+     * Input: label = 26
+     * Output: [1,2,6,10,26]
+     *
+     */
+    public List<Integer> pathInZigZagTree1(int label) {
+        LinkedList<Integer> result = new LinkedList<>();
+        if (label <= 0) return result;
+        int level = 0;
+        while (Math.pow(2, level) - 1 < label) {
+            level++;
+        }
+        // calculate the depth, 0 indexed, 0 is odd
+        level--;
+        while (level != 0) {
+            result.addFirst(label);
+            // calculate the position, 0 indexed
+            int pos = label - (int) Math.pow(2, level);
+            label = label - (pos + 1) - pos / 2;
+            level--;
+        }
+        result.addFirst(1);
+        return result;
     }
 
     /**
@@ -1299,9 +1327,39 @@ public class MathExe {
 
     /**
      * https://leetcode.com/problems/bulb-switcher-ii/
-     * @param n
-     * @param m
-     * @return
+     * There is a room with n lights which are turned on initially and 4 buttons on the wall.
+     * After performing exactly m unknown operations towards buttons, you need to return how many different kinds of status of the n lights could be.
+     *
+     * Suppose n lights are labeled as number [1, 2, 3 ..., n], function of these 4 buttons are given below:
+     *
+     * Flip all the lights.
+     * Flip lights with even numbers.
+     * Flip lights with odd numbers.
+     * Flip lights with (3k + 1) numbers, k = 0, 1, 2, ...
+     *
+     *
+     * Example 1:
+     *
+     * Input: n = 1, m = 1.
+     * Output: 2
+     * Explanation: Status can be: [on], [off]
+     *
+     *
+     * Example 2:
+     *
+     * Input: n = 2, m = 1.
+     * Output: 3
+     * Explanation: Status can be: [on, off], [off, on], [off, off]
+     *
+     *
+     * Example 3:
+     *
+     * Input: n = 3, m = 1.
+     * Output: 4
+     * Explanation: Status can be: [off, on, off], [on, off, on], [off, off, off], [off, on, on].
+     *
+     *
+     * Note: n and m both fit in range [0, 1000].
      */
     public int flipLights(int n, int m) {
         if (m == 0 || n == 0) return 1;
@@ -2521,7 +2579,11 @@ public class MathExe {
      * @return
      */
     public int[] distributeCandies(int candies, int num_people) {
-        return null;
+        int[] people = new int[num_people];
+        for (int give = 0; candies > 0; candies -= give) {
+            people[give % num_people] +=  Math.min(candies, ++give);
+        }
+        return people;
     }
 
     /**
@@ -2552,35 +2614,53 @@ public class MathExe {
      * @return
      */
     public boolean divisorGame(int N) {
-        return N %2 == 0;
+        return N % 2 == 0;
     }
 
 
     /**
      * https://leetcode.com/problems/prime-palindrome/
      * A number is divisible by 11 if sum(even digits) - sum(odd digits) is divisible by 11.
-     * @param N
-     * @return
      */
     public int primePalindrome(int N) {
-        int i = N;
-        while (i <= 100000000) {
-            StringBuilder s1 = new StringBuilder();
-            s1.append(i);
-            if (s1.toString().equals(s1.reverse().toString()) && isPrime(i)) {
-                return i;
+        while (N < Integer.MAX_VALUE) {
+            N = nextPalin("" + N);
+            if (isPrime(N)) {
+                return N;
             }
-            i++;
+            N++;
         }
         return -1;
     }
 
-    public Boolean isPrime(int x) {
-        if (x < 2 || x % 2 == 0) {
-            return x == 2;
+    private int nextPalin(String n) {
+        int l = n.length();
+        List<Integer> cands = new LinkedList<>();
+        int half = Integer.valueOf(n.substring(0, (l + 1) / 2));
+        for (int i = half; i <= half + 1; i++) {
+            String halfString = "" + i;
+            if (l % 2 == 1) {
+                halfString = halfString.substring(0, halfString.length() - 1);
+            }
+            String newString = "" + i + new StringBuilder(halfString).reverse().toString();
+            cands.add(Integer.valueOf(newString));
         }
-        for (int i = 3; i * i <= x; i += 2) {
-            if (x % i == 0){
+        int ori = Integer.valueOf(n), result = Integer.MAX_VALUE;
+        for (int cand : cands) {
+            if (cand >= ori && cand < result) {
+                result = cand;
+            }
+        }
+        return result;
+    }
+
+    private boolean isPrime(int n) {
+        if (n <= 1) {
+            return false;
+        }
+        long l = (long)n;
+        for (long i = 2; i * i <= l; i++) {
+            if (l % i == 0) {
                 return false;
             }
         }

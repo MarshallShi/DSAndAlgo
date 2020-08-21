@@ -202,10 +202,6 @@ public class DPOnGrid {
      * mines will have length at most 5000.
      * mines[i] will be length 2 and consist of integers in the range [0, N-1].
      * (Additionally, programs submitted in C, C++, or C# will be judged with a slightly smaller time limit.)
-     *
-     * @param N
-     * @param mines
-     * @return
      */
     public int orderOfLargestPlusSign(int N, int[][] mines) {
         int[][] grid = new int[N][N];
@@ -218,14 +214,14 @@ public class DPOnGrid {
             grid[m[0]][m[1]] = 0;
         }
 
-        for(int i = 0; i < N; i++){
-            for(int j = 0; j < N; j++){
-                if(grid[i][j] == 1){
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (grid[i][j] == 1) {
                     int count = 1;
                     int dir = 1;
-                    while(j-dir >= 0 && j+dir < N  && i-dir >= 0 && i+dir < N  &&
-                            grid[i][j-dir] == 1 && grid[i][j+dir] == 1 &&
-                            grid[i-dir][j] == 1 && grid[i+dir][j] == 1){
+                    while (j - dir >= 0 && j + dir < N && i - dir >= 0 && i + dir < N &&
+                            grid[i][j - dir] == 1 && grid[i][j + dir] == 1 &&
+                            grid[i - dir][j] == 1 && grid[i + dir][j] == 1) {
                         count++;
                         dir++;
                     }

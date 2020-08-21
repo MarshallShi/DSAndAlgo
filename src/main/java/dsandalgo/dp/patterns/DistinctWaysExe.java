@@ -730,10 +730,6 @@ public class DistinctWaysExe {
 
     /**
      * https://leetcode.com/problems/build-array-where-you-can-find-the-maximum-exactly-k-comparisons/
-     * @param n
-     * @param m
-     * @param k
-     * @return
      */
     public int numOfArrays(int n, int m, int k) {
         Integer[][][] dp = new Integer[n + 1][m + 1][k + 1];
@@ -756,13 +752,13 @@ public class DistinctWaysExe {
         }
         int ans = 0;
         // Case 1: num in range [1, currMax], newMax = currMax, newCost = currCost
-        ans += (long) curMax * numOfArraysDFS(n, m, k, i + 1, curMax, curCost, dp) % 1_000_000_007;
+        ans += (long) curMax * numOfArraysDFS(n, m, k, i + 1, curMax, curCost, dp) % 1000000007;
 
         // Case 2: num in range [currMax+1, m], newMax = num, newCost = currCost + 1
         if (curCost + 1 <= k) {
             for (int num = curMax + 1; num <= m; num++) {
                 ans += numOfArraysDFS(n, m, k, i + 1, num, curCost + 1, dp);
-                ans %= 1_000_000_007;
+                ans %= 1000000007;
             }
         }
         return dp[i][curMax][curCost] = ans;

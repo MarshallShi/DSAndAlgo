@@ -118,7 +118,7 @@ public class AutocompleteSystem {
     }
 
     public List<String> input(char c) {
-        List<String> lst = new ArrayList<String>();
+        List<String> lst = new ArrayList<>();
         if (c == '#') {
             insert(curInput.toString(), 1);
             curInput = new StringBuilder();

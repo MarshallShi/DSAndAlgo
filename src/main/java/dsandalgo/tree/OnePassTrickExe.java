@@ -29,11 +29,12 @@ public class OnePassTrickExe {
      * parent.length == nodes
      * parent[0] == -1 which indicates that 0 is the root.
      *
-     * DFS on the tree node.
      */
     public int deleteTreeNodes(int n, int[] parent, int[] value) {
         List<List<Integer>> graph = new ArrayList<>(n); // Create graph for the tree
-        for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
         for (int i = 0; i < n; i++) {
             if (parent[i] != -1) {
                 //add the index as child.

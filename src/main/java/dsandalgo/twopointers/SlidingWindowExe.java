@@ -598,7 +598,6 @@ public class SlidingWindowExe {
      * s contain upper-case English letters only.
      */
     //https://leetcode.com/problems/count-unique-characters-of-all-substrings-of-a-given-string/discuss/128952/C%2B%2BJavaPython-One-pass-O(N)
-    //Trick: count the individual char, times showing in different substring.
     public int uniqueLetterString(String S) {
         List<Integer>[] record = new List[128];
         int M = 1000000007;
@@ -610,6 +609,7 @@ public class SlidingWindowExe {
             record[S.charAt(i)].add(i);
         }
         long result = 0;
+        //Trick: count the individual char, times showing in different substring.
         for (int i = 0; i < 128; i++) {
             int size = record[i].size();
             for (int j = 0; j < size; j++) {

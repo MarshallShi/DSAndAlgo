@@ -1089,18 +1089,16 @@ public class DFSExe {
      * rollMax.length == 6
      * 1 <= rollMax[i] <= 15
      */
-
-    private int[][][] dp = new int[5000][6][16];
-    private final int M = 1000000007;
     public int dieSimulator(int n, int[] rollMax) {
-        return dieSimulatorDFS(n, rollMax, -1, 0);
+        int[][][] dp = new int[5000][6][16];
+        return dieSimulatorDFS(n, rollMax, -1, 0, dp);
     }
 
     // dieLeft : the number of dies
     // last : last number we rolled
     // curlen : current len of same number
     // This function trys to traval all the valid permutation
-    private int dieSimulatorDFS(int dieLeft, int[] rollMax, int last, int curlen){
+    private int dieSimulatorDFS(int dieLeft, int[] rollMax, int last, int curlen, int[][][] dp){
         if (dieLeft == 0) {
             return 1;
         }
@@ -1112,7 +1110,7 @@ public class DFSExe {
             if (i == last && curlen == rollMax[i]) {
                 continue;
             }
-            ans = (ans + dieSimulatorDFS(dieLeft - 1, rollMax, i, i == last ? curlen + 1 : 1)) % M;
+            ans = (ans + dieSimulatorDFS(dieLeft - 1, rollMax, i, i == last ? curlen + 1 : 1, dp)) % 1000000007;
         }
         if (last >= 0) {
             dp[dieLeft][last][curlen] = ans;

@@ -1,6 +1,7 @@
 package dsandalgo.stack;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -715,45 +716,20 @@ public class StackExe {
      * @return
      */
     public String reverseParentheses(String s) {
-        char[] arr = s.toCharArray();
-        StringBuilder sb = new StringBuilder();
-        Stack<Character> stack = new Stack<Character>();
-        int j = 0, firstIdx = -1;
-        while (arr[j] != '(') {
-            sb.append(arr[j]);
-            j++;
-        }
-        if (j != arr.length) {
-            firstIdx = j;
-        }
-        for (int i = j; i<arr.length; i++) {
-            if (arr[i] != ')') {
-                stack.push(arr[i]);
+        Stack<Character> st = new Stack<>();
+        for (char c: s.toCharArray()) {
+            if (c == ')') {
+                List<Character> list = new ArrayList<>();
+                while (!st.isEmpty() && st.peek() != '(') list.add(st.pop());
+                if (!st.isEmpty()) st.pop();
+                for (char ch: list) st.push(ch);
             } else {
-                int poppoedChars = 0;
-                while (!stack.isEmpty()) {
-                    if (stack.peek() != '(') {
-                        sb.append(stack.pop());
-                        poppoedChars++;
-                    } else {
-                        stack.pop();
-                        if (!stack.isEmpty() && stack.size() > firstIdx) {
-                            for (int k = poppoedChars; k>0; k--) {
-                                stack.push(sb.charAt(sb.length() - k));
-                            }
-                            sb.setLength(sb.length() - poppoedChars);
-                        }
-                        break;
-                    }
-                }
+                st.push(c);
             }
         }
-        StringBuilder temp = new StringBuilder();
-        while (!stack.isEmpty()){
-            temp.append(stack.pop());
-        }
-        sb.append(temp.reverse());
-        return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        while (!st.isEmpty()) sb.append(st.pop());
+        return sb.reverse().toString();
     }
 
 

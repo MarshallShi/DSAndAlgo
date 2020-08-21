@@ -23,6 +23,160 @@ public class StringExe {
     }
 
     /**
+     * https://leetcode.com/problems/reorder-data-in-log-files/
+     * You have an array of logs.  Each log is a space delimited string of words.
+     *
+     * For each log, the first word in each log is an alphanumeric identifier.  Then, either:
+     *
+     * Each word after the identifier will consist only of lowercase letters, or;
+     * Each word after the identifier will consist only of digits.
+     * We will call these two varieties of logs letter-logs and digit-logs.  It is guaranteed that each log has at least one word after its identifier.
+     *
+     * Reorder the logs so that all of the letter-logs come before any digit-log.  The letter-logs are ordered lexicographically ignoring identifier, with the identifier used in case of ties.  The digit-logs should be put in their original order.
+     *
+     * Return the final order of the logs.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: logs = ["dig1 8 1 5 1","let1 art can","dig2 3 6","let2 own kit dig","let3 art zero"]
+     * Output: ["let1 art can","let3 art zero","let2 own kit dig","dig1 8 1 5 1","dig2 3 6"]
+     *
+     *
+     * Constraints:
+     *
+     * 0 <= logs.length <= 100
+     * 3 <= logs[i].length <= 100
+     * logs[i] is guaranteed to have an identifier, and a word after the identifier.
+     */
+    //compare(a, b) compares objects a and b.
+    //If the returned value is < 0, then a is lower than b.
+    //If it is 0, both objects are equal.
+    //If it is > 0, a is greater than b.
+    public String[] reorderLogFiles(String[] logs) {
+        Comparator<String> myComp = new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                int s1SpaceIndex = s1.indexOf(' ');
+                int s2SpaceIndex = s2.indexOf(' ');
+
+                char s1FirstCharacter = s1.charAt(s1SpaceIndex + 1);
+                char s2FirstCharacter = s2.charAt(s2SpaceIndex + 1);
+
+                //s1 is digit-logs
+                if (s1FirstCharacter <= '9') {
+                    if (s2FirstCharacter <= '9') {
+                        //s2 is also digit-logs, stay in original order
+                        return 0;
+                    } else {
+                        //s2 is letter-log, s1 should be greater than s2, so s2 will be before s1, return 1
+                        return 1;
+                    }
+                }
+
+                //s1 is letter-log
+                if (s2FirstCharacter <= '9') {
+                    //s2 is digit-logs, s1 should be smaller than s2, so s1 will be before s2, return -1
+                    return -1;
+                }
+
+                //both are letter-log, use string.compareTo
+                int preCompute = s1.substring(s1SpaceIndex + 1).compareTo(s2.substring(s2SpaceIndex + 1));
+                if (preCompute == 0) {
+                    return s1.substring(0, s1SpaceIndex).compareTo(s2.substring(0, s2SpaceIndex));
+                }
+                return preCompute;
+            }
+        };
+        Arrays.sort(logs, myComp);
+        return logs;
+    }
+
+    /**
+     * https://leetcode.com/problems/valid-word-square/
+     * Given a sequence of words, check whether it forms a valid word square.
+     *
+     * A sequence of words forms a valid word square if the kth row and column read the exact same string, where 0 ≤ k < max(numRows, numColumns).
+     *
+     * Note:
+     * The number of words given is at least 1 and does not exceed 500.
+     * Word length will be at least 1 and does not exceed 500.
+     * Each word contains only lowercase English alphabet a-z.
+     * Example 1:
+     *
+     * Input:
+     * [
+     *   "abcd",
+     *   "bnrt",
+     *   "crmy",
+     *   "dtye"
+     * ]
+     *
+     * Output:
+     * true
+     *
+     * Explanation:
+     * The first row and first column both read "abcd".
+     * The second row and second column both read "bnrt".
+     * The third row and third column both read "crmy".
+     * The fourth row and fourth column both read "dtye".
+     *
+     * Therefore, it is a valid word square.
+     * Example 2:
+     *
+     * Input:
+     * [
+     *   "abcd",
+     *   "bnrt",
+     *   "crm",
+     *   "dt"
+     * ]
+     *
+     * Output:
+     * true
+     *
+     * Explanation:
+     * The first row and first column both read "abcd".
+     * The second row and second column both read "bnrt".
+     * The third row and third column both read "crm".
+     * The fourth row and fourth column both read "dt".
+     *
+     * Therefore, it is a valid word square.
+     * Example 3:
+     *
+     * Input:
+     * [
+     *   "ball",
+     *   "area",
+     *   "read",
+     *   "lady"
+     * ]
+     *
+     * Output:
+     * false
+     *
+     * Explanation:
+     * The third row reads "read" while the third column reads "lead".
+     *
+     * Therefore, it is NOT a valid word square.
+     */
+    public boolean validWordSquare(List<String> words) {
+        if (words == null || words.size() == 0) {
+            return true;
+        }
+        int n = words.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < words.get(i).length(); j++) {
+                if (j >= n || words.get(j).length() <= i || words.get(j).charAt(i) != words.get(i).charAt(j)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * https://leetcode.com/problems/magical-string/
      * A magical string S consists of only '1' and '2' and obeys the following rules:
      *
@@ -1676,28 +1830,25 @@ public class StringExe {
      * Output: []
      */
     public List<Integer> findSubstring(String s, String[] words) {
-        List<Integer> res = new ArrayList<Integer>();
+        List<Integer> res = new ArrayList<>();
         int wordNum = words.length;
         if (wordNum == 0) {
             return res;
         }
         int wordLen = words[0].length();
-        //HashMap to save all the words
-        HashMap<String, Integer> allWords = new HashMap<String, Integer>();
+        Map<String, Integer> allWords = new HashMap<>();
         for (String w : words) {
-            int value = allWords.getOrDefault(w, 0);
-            allWords.put(w, value + 1); //may have duplicates.
+            allWords.put(w, allWords.getOrDefault(w, 0) + 1);
         }
         //Scan all the substring, with the length of all word length
         for (int i = 0; i < s.length() - wordNum * wordLen + 1; i++) {
             //another hashmap to store the current window result.
-            HashMap<String, Integer> hasWords = new HashMap<String, Integer>();
+            Map<String, Integer> hasWords = new HashMap<>();
             int num = 0;
             while (num < wordNum) {
                 String word = s.substring(i + num * wordLen, i + (num + 1) * wordLen);
                 if (allWords.containsKey(word)) {
-                    int value = hasWords.getOrDefault(word, 0);
-                    hasWords.put(word, value + 1);
+                    hasWords.put(word, hasWords.getOrDefault(word, 0) + 1);
                     if (hasWords.get(word) > allWords.get(word)) {
                         break;
                     }
@@ -2155,6 +2306,29 @@ public class StringExe {
      * https://leetcode.com/problems/partition-labels/
      */
     public List<Integer> partitionLabels(String S) {
+        if(S == null || S.length() == 0){
+            return null;
+        }
+        List<Integer> list = new ArrayList<>();
+        int[] map = new int[26];  // record the last index of the each char
+
+        for(int i = 0; i < S.length(); i++){
+            map[S.charAt(i)-'a'] = i;
+        }
+        // record the end index of the current sub string
+        int last = 0;
+        int start = 0;
+        for(int i = 0; i < S.length(); i++){
+            last = Math.max(last, map[S.charAt(i)-'a']);
+            if(last == i){
+                list.add(last - start + 1);
+                start = last + 1;
+            }
+        }
+        return list;
+    }
+
+    public List<Integer> partitionLabels_1(String S) {
         List<Integer> ret = new ArrayList<>();
         if (S == null || S.length() == 0) return ret;
         int[][] idxSpan = new int[26][2];
