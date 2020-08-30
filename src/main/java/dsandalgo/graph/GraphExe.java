@@ -411,29 +411,27 @@ public class GraphExe {
      * The number of nodes in the graph will be in the range [2, 15].
      * You can print different paths in any order, but you should keep the order of nodes inside one path.
      *
-     * @param graph
-     * @return
      */
     public List<List<Integer>> allPathsSourceTarget(int[][] graph) {
-        List<List<Integer>> result = new ArrayList<List<Integer>>();
+        List<List<Integer>> result = new ArrayList<>();
         if (graph == null || graph.length == 0) {
             return result;
         }
-        List<Integer> temp = new ArrayList<Integer>();
+        List<Integer> temp = new ArrayList<>();
         temp.add(0);
-        dfsHelper(temp, result, graph, 0);
+        backtrackHelper(temp, result, graph, 0);
         return result;
     }
 
-    private void dfsHelper(List<Integer> temp, List<List<Integer>> result, int[][] graph, int from) {
+    private void backtrackHelper(List<Integer> temp, List<List<Integer>> result, int[][] graph, int from) {
         if (from == graph.length - 1) {
-            result.add(new ArrayList<Integer>(temp));
+            result.add(new ArrayList<>(temp));
             return;
         }
         for (int i=0; i<graph[from].length; i++) {
             int nextNode = graph[from][i];
             temp.add(nextNode);
-            dfsHelper(temp, result, graph, nextNode);
+            backtrackHelper(temp, result, graph, nextNode);
             temp.remove(temp.size() - 1);
         }
     }
@@ -460,28 +458,22 @@ public class GraphExe {
      * Output: ["JFK","ATL","JFK","SFO","ATL","SFO"]
      * Explanation: Another possible reconstruction is ["JFK","SFO","ATL","JFK","ATL","SFO"].
      *              But it is larger in lexical order.
-     * @param tickets
-     * @return
      */
-    private Map<String, PriorityQueue<String>> flights;
-
-    private LinkedList<String> path;
-
     public List<String> findItinerary(List<List<String>> tickets) {
-        flights = new HashMap<>();
-        path = new LinkedList<>();
+        Map<String, PriorityQueue<String>> flights = new HashMap<>();
+        LinkedList<String> path = new LinkedList<>();
         for (List<String> ticket : tickets) {
             flights.putIfAbsent(ticket.get(0), new PriorityQueue<>());
             flights.get(ticket.get(0)).add(ticket.get(1));
         }
-        findItineraryDFS("JFK");
+        findItineraryDFS("JFK", flights, path);
         return path;
     }
 
-    public void findItineraryDFS(String departure) {
+    private void findItineraryDFS(String departure, Map<String, PriorityQueue<String>> flights, LinkedList<String> path) {
         PriorityQueue<String> arrivals = flights.get(departure);
         while (arrivals != null && !arrivals.isEmpty()) {
-            findItineraryDFS(arrivals.poll());
+            findItineraryDFS(arrivals.poll(), flights, path);
         }
         path.addFirst(departure);
     }

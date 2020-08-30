@@ -165,40 +165,22 @@ public class KthLargestNumber {
      * Explanation: All possible pairs are returned from the sequence: [1,3],[2,3]
      */
     public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
-        PriorityQueue<List<Integer>> maxHeap = new PriorityQueue<List<Integer>>(new Comparator<List<Integer>>() {
-            @Override
-            public int compare(List<Integer> o1, List<Integer> o2) {
-                return (o2.get(0) + o2.get(1)) - (o1.get(0) + o1.get(1));
-            }
-        });
-        for (int i = 0; i < nums1.length; i++) {
-            for (int j = 0; j < nums2.length; j++) {
-                if (maxHeap.size() < k) {
-                    List<Integer> obj = new ArrayList<Integer>();
-                    obj.add(nums1[i]);
-                    obj.add(nums2[j]);
-                    maxHeap.offer(obj);
-                } else {
-                    List<Integer> curMax = maxHeap.peek();
-                    if (nums1[i] + nums2[j] < curMax.get(0) + curMax.get(1)) {
-                        maxHeap.poll();
-                        List<Integer> toputin = new ArrayList<Integer>();
-                        toputin.add(nums1[i]);
-                        toputin.add(nums2[j]);
-                        maxHeap.offer(toputin);
-                    }
-                }
-            }
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums1.length == 0 || nums2.length == 0 || k == 0) return res;
+        //the int[] 0: value from nums1, 1: value from nums2, 2: cur index of number from nums2.
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] + a[1] - b[0] - b[1]);
+        for (int i = 0; i < nums1.length && i < k; i++) {
+            pq.offer(new int[]{nums1[i], nums2[0], 0});
         }
-
-        List<List<Integer>> resArr = new ArrayList<List<Integer>>();
-        while (!maxHeap.isEmpty()) {
-            List<Integer> max = maxHeap.poll();
-            resArr.add(max);
-        }
-        List<List<Integer>> res = new ArrayList<List<Integer>>();
-        for (int i = resArr.size() - 1; i >= 0; i--) {
-            res.add(resArr.get(i));
+        while (k-- > 0 && !pq.isEmpty()) {
+            int[] cur = pq.poll();
+            List<Integer> one = new ArrayList<>();
+            one.add(cur[0]);
+            one.add(cur[1]);
+            res.add(one);
+            //get the next bigger value to push to pq.
+            if (cur[2] == nums2.length - 1) continue;
+            pq.offer(new int[]{cur[0], nums2[cur[2] + 1], cur[2] + 1});
         }
         return res;
     }

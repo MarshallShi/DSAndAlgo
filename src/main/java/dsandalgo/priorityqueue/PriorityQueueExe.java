@@ -257,31 +257,21 @@ public class PriorityQueueExe {
 
     /**
      * https://leetcode.com/problems/last-stone-weight/
-     * @param stones
-     * @return
      */
     public int lastStoneWeight(int[] stones) {
-        Queue<Integer> pq = new PriorityQueue<Integer>(10, Collections.reverseOrder());
-        for (int i=0; i<stones.length; i++) {
-            pq.offer(stones[i]);
+        Queue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+        for (int v : stones) {
+            pq.offer(v);
         }
-        while (!pq.isEmpty()) {
-            if (pq.size() >= 2) {
-                int top = pq.poll();
-                int second = pq.poll();
-                if (top != second) {
-                    int delta = top - second;
-                    pq.offer(delta);
-                }
-            } else {
-                break;
+        while (pq.size() >= 2) {
+            int top = pq.poll();
+            int second = pq.poll();
+            if (top != second) {
+                int delta = top - second;
+                pq.offer(delta);
             }
         }
-        if (!pq.isEmpty()) {
-            return pq.peek();
-        } else {
-            return 0;
-        }
+        return pq.isEmpty() ? 0 : pq.poll();
     }
 
     /**
@@ -534,11 +524,11 @@ public class PriorityQueueExe {
         while (!minHeap.isEmpty()) {
             int[] next = minHeap.poll();
             if (next[0] + duration <= prev[1]) {
-                return new ArrayList<Integer>(Arrays.asList(next[0], next[0] + duration));
+                return new ArrayList<>(Arrays.asList(next[0], next[0] + duration));
             }
             prev = next;
         }
-        return new ArrayList<Integer>();
+        return new ArrayList<>();
     }
 
     /**

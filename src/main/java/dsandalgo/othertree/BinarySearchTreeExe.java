@@ -194,31 +194,41 @@ public class BinarySearchTreeExe {
      * Each tree has at most 40000 nodes..
      * Each node's value is between [-4 * 10^4 , 4 * 10^4].
      */
-    private int maxSum = 0;
-
-    public int maxSumBST(TreeNode root) {
-        postOrderTraverse(root);
-        return maxSum;
+    class State{
+        public int leftMin;
+        public int rightMax;
+        public int curSum;
+        public State(int _l, int _r, int _s) {
+            this.leftMin = _l;
+            this.rightMax = _r;
+            this.curSum = _s;
+        }
     }
-    private int[] postOrderTraverse(TreeNode root) {
+    public int maxSumBST(TreeNode root) {
+        int[] maxSum = new int[1];
+        postOrderTraverse(root, maxSum);
+        return maxSum[0];
+    }
+    private State postOrderTraverse(TreeNode root, int[] maxSum) {
         if (root == null) {
             // {min, max, sum}, initialize min=MAX_VALUE, max=MIN_VALUE
-            return new int[]{Integer.MAX_VALUE, Integer.MIN_VALUE, 0};
+            State state = new State(Integer.MAX_VALUE, Integer.MIN_VALUE, 0);
+            return state;
         }
-        int[] left = postOrderTraverse(root.left);
-        int[] right = postOrderTraverse(root.right);
+        State left = postOrderTraverse(root.left, maxSum);
+        State right = postOrderTraverse(root.right, maxSum);
         // The BST is the tree:
-        if (!(left != null && right != null && root.val > left[1] && root.val < right[0])) {
+        if (!(left != null && right != null && root.val > left.rightMax && root.val < right.leftMin)) {
             return null;
         }
         // now it's a BST make `root` as root
-        int sum = root.val + left[2] + right[2];
-        maxSum = Math.max(maxSum, sum);
+        int sum = root.val + left.curSum + right.curSum;
+        maxSum[0] = Math.max(maxSum[0], sum);
         //current tree min
-        int min = Math.min(root.val, left[0]);
+        int min = Math.min(root.val, left.leftMin);
         //current tree max
-        int max = Math.max(root.val, right[1]);
-        return new int[]{min, max, sum};
+        int max = Math.max(root.val, right.rightMax);
+        return new State(min, max, sum);
     }
 
     /**
@@ -245,7 +255,7 @@ public class BinarySearchTreeExe {
      * Follow up:
      * Can you figure out ways to solve it with O(n) time complexity?
      */
-    class Result {  // (size, rangeLower, rangeUpper) -- size of current tree, range of current tree [rangeLower, rangeUpper]
+    class Result {
         int size;
         int lower;
         int upper;
@@ -255,21 +265,26 @@ public class BinarySearchTreeExe {
             this.upper = upper;
         }
     }
-    int max = 0;
+
     public int largestBSTSubtree(TreeNode root) {
-        if (root == null) { return 0; }
-        traverse(root);
-        return max;
+        if (root == null) return 0;
+        int[] res = new int[1];
+        traverse(root, res);
+        return res[0];
     }
-    private Result traverse(TreeNode root) {
-        if (root == null) { return new Result(0, Integer.MAX_VALUE, Integer.MIN_VALUE); }
-        Result left = traverse(root.left);
-        Result right = traverse(root.right);
+
+    private Result traverse(TreeNode root, int[] res) {
+        if (root == null) {
+            return new Result(0, Integer.MAX_VALUE, Integer.MIN_VALUE);
+        }
+        Result left = traverse(root.left, res);
+        Result right = traverse(root.right, res);
         if (left.size == -1 || right.size == -1 || root.val <= left.upper || root.val >= right.lower) {
+            //skip the invalid sub tree, which also cause the current tree as invalid, don't bother udpate the res.
             return new Result(-1, 0, 0);
         }
-        int size = left.size + 1 + right.size;
-        max = Math.max(size, max);
+        int size = 1 + left.size + right.size;
+        res[0] = Math.max(size, res[0]);
         return new Result(size, Math.min(left.lower, root.val), Math.max(right.upper, root.val));
     }
 
@@ -305,6 +320,7 @@ public class BinarySearchTreeExe {
      * Explanation: The root node's value is 5 but its right child's value is 4.
      */
     public boolean isValidBST(TreeNode root) {
+
         return isValidBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
     }
     private boolean isValidBST(TreeNode root, long minVal, long maxVal) {

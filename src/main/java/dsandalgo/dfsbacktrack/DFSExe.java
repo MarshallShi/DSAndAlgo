@@ -19,6 +19,68 @@ public class DFSExe {
         System.out.println(dfs.numOfMinutes(7, 6, mang, info));
     }
 
+    /**Given a 2D board containing 'X' and 'O' (the letter O), capture all regions surrounded by 'X'.
+
+     A region is captured by flipping all 'O's into 'X's in that surrounded region.
+
+     Example:
+
+     X X X X
+     X O O X
+     X X O X
+     X O X X
+     After running your function, the board should be:
+
+     X X X X
+     X X X X
+     X X X X
+     X O X X
+     *
+     * https://leetcode.com/problems/surrounded-regions/
+     */
+    public void solve(char[][] board) {
+        if (board.length == 0 || board[0].length == 0) return;
+        if (board.length < 2 || board[0].length < 2) return;
+        int m = board.length, n = board[0].length;
+        //Any 'O' connected to a boundary can't be turned to 'X', so ...
+        //Start from first and last column, turn 'O' to '*'.
+        for (int i = 0; i < m; i++) {
+            if (board[i][0] == 'O')  boundaryDFS(board, i, 0);
+            if (board[i][n-1] == 'O') boundaryDFS(board, i, n-1);
+        }
+        //Start from first and last row, turn '0' to '*'
+        for (int j = 0; j < n; j++) {
+            if (board[0][j] == 'O') boundaryDFS(board, 0, j);
+            if (board[m-1][j] == 'O') boundaryDFS(board, m-1, j);
+        }
+        //post-prcessing, turn 'O' to 'X', '*' back to 'O', keep 'X' intact.
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == 'O') {
+                    board[i][j] = 'X';
+                } else {
+                    if (board[i][j] == '*') {
+                        board[i][j] = 'O';
+                    }
+                }
+            }
+        }
+    }
+
+    private int[][] dirsSurRegions = {{0,1},{1,0},{-1,0},{0,-1}};
+
+    //Use DFS algo to turn internal however boundary-connected 'O' to '*';
+    private void boundaryDFS(char[][] board, int x, int y) {
+        board[x][y] = '*';
+        for (int[] dir : dirsSurRegions) {
+            int nx = dir[0] + x;
+            int ny = dir[1] + y;
+            if (nx >= 0 && nx < board.length && ny >= 0 && ny < board[0].length && board[nx][ny] == 'O') {
+                boundaryDFS(board, nx, ny);
+            }
+        }
+    }
+
     /**
      * https://leetcode.com/problems/binary-tree-coloring-game/
      */
@@ -1594,28 +1656,25 @@ public class DFSExe {
             board[x][y] = 'X';
             return board;
         }
-
-        dfs(board, x, y);
+        mineSeeperdfs(board, x, y);
         return board;
     }
 
     int[] dx = {-1, 0, 1, -1, 1, 0, 1, -1};
     int[] dy = {-1, 1, 1, 0, -1, -1, 0, 1};
-    private void dfs(char[][] board, int x, int y) {
+
+    private void mineSeeperdfs(char[][] board, int x, int y) {
         if (x < 0 || x >= board.length || y < 0 || y >= board[0].length || board[x][y] != 'E')  return;
-
         int num = getNumsOfBombs(board, x, y);
-
         if (num == 0) {
             board[x][y] = 'B';
             for (int i = 0; i < 8; i++) {
                 int nx = x + dx[i], ny = y + dy[i];
-                dfs(board, nx, ny);
+                mineSeeperdfs(board, nx, ny);
             }
         } else {
             board[x][y] = (char)('0' + num);
         }
-
     }
 
     private int getNumsOfBombs(char[][] board, int x, int y) {
@@ -1663,14 +1722,13 @@ public class DFSExe {
      * Input: 3
      * Output: 46
      */
-    public static final int MOD = 1000000007;
     public int knightDialer(int N) {
         //possible jumping target..., from the index to.
         int[][] graph = new int[][]{{4,6},{6,8},{7,9},{4,8},{3,9,0},{},{1,7,0},{2,6},{1,3},{2,4}};
         int cnt = 0;
         Integer[][] memo = new Integer[N+1][10];
         for (int i = 0; i <= 9; i++) {
-            cnt = (cnt + helper(N-1, i, graph, memo)) % MOD;
+            cnt = (cnt + helper(N-1, i, graph, memo)) % 1000000007;
         }
         return cnt;
     }
@@ -1683,53 +1741,10 @@ public class DFSExe {
         }
         int cnt = 0;
         for (int nei : graph[cur]) {
-            cnt = (cnt + helper(N-1, nei, graph, memo)) % MOD;
+            cnt = (cnt + helper(N-1, nei, graph, memo)) % 1000000007;
         }
         memo[N][cur] = cnt;
         return cnt;
-    }
-
-    public int knightDialer_logn(int N) {
-        if (N == 1) return 10;
-        long mod = 1000000007;
-        long[] pre = new long[10];  // to record previous result. It is needed because if we only use cur, the cur array itself is changed during calculation.
-        long[] cur = new long[10];  // to record current result.
-        Arrays.fill(pre,1);
-        while (--N > 0) {
-            cur[0]=(pre[4] + pre[6])%mod;
-            cur[1]=(pre[6] + pre[8])%mod;
-            cur[2]=(pre[7] + pre[9])%mod;
-            cur[3]=(pre[4] + pre[8])%mod;
-            cur[4]=(pre[3] + pre[9] + pre[0])%mod;
-            cur[6]=(pre[1] + pre[7] + pre[0])%mod;
-            cur[7]=(pre[2] + pre[6])%mod;
-            cur[8]=(pre[1] + pre[3])%mod;
-            cur[9]=(pre[2] + pre[4])%mod;
-            for(int i=0; i<10; i++) {
-                pre[i] = cur[i];
-            }
-        }
-        long sum = 0;
-        for(int i=0; i<10; i++){
-            sum = (sum + cur[i])%mod;
-        }
-        return (int)sum;
-    }
-
-
-    public TreeNode creaeBOneTree(){
-        TreeNode node1 = new TreeNode(1);
-        TreeNode node2 = new TreeNode(2);
-        TreeNode node3 = new TreeNode(3);
-        node1.left = node2;
-        node1.right = node3;
-
-        TreeNode node4 = new TreeNode(4);
-        TreeNode node5 = new TreeNode(5);
-        node2.left = node4;
-        node2.right = node5;
-
-        return node1;
     }
 
     /**
@@ -1749,9 +1764,6 @@ public class DFSExe {
      *       4   5
      *
      * Output: [[4,5,3],[2],[1]]
-     *
-     * @param root
-     * @return
      */
     public List<List<Integer>> findLeaves(TreeNode root) {
         List<List<Integer>> list = new ArrayList<>();

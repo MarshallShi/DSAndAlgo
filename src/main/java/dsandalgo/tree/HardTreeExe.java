@@ -200,7 +200,9 @@ public class HardTreeExe {
      */
     private TreeNode firstDisorder = null;
     private TreeNode secondDisorder = null;
+
     private TreeNode prev = null;
+
     public void recoverTree(TreeNode root) {
         //inorder traverse, the pre being set to the min value to avoid first compare error.
         inorderTraverse(root);

@@ -25,31 +25,21 @@ public class LinkedListExe {
      * https://leetcode.com/problems/odd-even-linked-list/
      */
     public ListNode oddEvenList(ListNode head) {
-        if (head == null || head.next == null) {
-            return head;
-        }
-        ListNode oddHead = head;
-        ListNode evenHead = head.next;
-        ListNode evenNext = head.next;
-        while (oddHead != null && oddHead.next != null) {
-            oddHead.next = oddHead.next.next;
-            if (oddHead.next != null) {
-                oddHead = oddHead.next;
+        if (head != null) {
+            ListNode odd = head, even = head.next, evenHead = even;
+            while (even != null && even.next != null) {
+                odd.next = odd.next.next;
+                even.next = even.next.next;
+                odd = odd.next;
+                even = even.next;
             }
-            if (oddHead != null) {
-                evenNext.next = oddHead.next;
-                evenNext = evenNext.next;
-            }
+            odd.next = evenHead;
         }
-        oddHead.next = evenHead;
         return head;
     }
 
     /**
      * https://leetcode.com/problems/rotate-list/
-     * @param head
-     * @param k
-     * @return
      */
     public ListNode rotateRight(ListNode head, int k) {
         if (head == null || head.next == null) {
@@ -138,8 +128,6 @@ public class LinkedListExe {
      * https://leetcode.com/problems/asteroid-collision/
      * asteroids = [5, 10, -5]
      * Output: [5, 10]
-     * @param asteroids
-     * @return
      */
     public int[] asteroidCollision(int[] asteroids) {
         LinkedList<Integer> s = new LinkedList<>();
@@ -445,6 +433,25 @@ public class LinkedListExe {
         return res;
     }
 
+    /**
+     * https://leetcode.com/problems/reverse-nodes-in-k-group/
+     * Given a linked list, reverse the nodes of a linked list k at a time and return its modified list.
+     *
+     * k is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of k then left-out nodes in the end should remain as it is.
+     *
+     * Example:
+     *
+     * Given this linked list: 1->2->3->4->5
+     *
+     * For k = 2, you should return: 2->1->4->3->5
+     *
+     * For k = 3, you should return: 3->2->1->4->5
+     *
+     * Note:
+     *
+     * Only constant extra memory is allowed.
+     * You may not alter the values in the list's nodes, only nodes itself may be changed.
+     */
     public ListNode reverseKGroup(ListNode head, int k) {
         //find k nodes and reverse.
         if (k<=1) {
@@ -691,11 +698,6 @@ public class LinkedListExe {
      *
      * Input: 1->2->3->4->5->NULL, m = 2, n = 4
      * Output: 1->4->3->2->5->NULL
-     *
-     * @param head
-     * @param m
-     * @param n
-     * @return
      */
     public ListNode reverseBetween(ListNode head, int m, int n) {
         if (head == null) {
@@ -728,8 +730,6 @@ public class LinkedListExe {
 
     /**
      * https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
-     * @param head
-     * @return
      */
     public ListNode deleteDuplicates(ListNode head) {
         ListNode dummy = new ListNode(0);
@@ -751,9 +751,6 @@ public class LinkedListExe {
 
     /**
      * https://leetcode.com/problems/partition-list/
-     * @param head
-     * @param x
-     * @return
      */
     public ListNode partition(ListNode head, int x) {
         ListNode smallerHead = new ListNode(0), biggerHead = new ListNode(0);

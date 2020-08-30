@@ -53,6 +53,54 @@ public class TreeExe {
     }
 
     /**
+     * https://leetcode.com/problems/flatten-binary-tree-to-linked-list/
+     * Given a binary tree, flatten it to a linked list in-place.
+     *
+     * For example, given the following tree:
+     *
+     *     1
+     *    / \
+     *   2   5
+     *  / \   \
+     * 3   4   6
+     * The flattened tree should look like:
+     *
+     * 1
+     *  \
+     *   2
+     *    \
+     *     3
+     *      \
+     *       4
+     *        \
+     *         5
+     *          \
+     *           6
+     */
+    public void flatten(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        if (root.left == null && root.right == null) {
+            return;
+        }
+        while (root != null) {
+            if (root.left == null) {
+                root = root.right;
+                continue;
+            }
+            TreeNode left = root.left;
+            while (left.right != null) {
+                left = left.right;
+            }
+            left.right = root.right;
+            root.right = root.left;
+            root.left = null;
+            root = root.right;
+        }
+    }
+
+    /**
      * https://leetcode.com/problems/print-binary-tree/
      */
     public List<List<String>> printTree(TreeNode root) {
@@ -915,10 +963,6 @@ public class TreeExe {
     }
     /**
      * https://leetcode.com/problems/range-sum-of-bst/
-     * @param root
-     * @param L
-     * @param R
-     * @return
      */
     public int rangeSumBST(TreeNode root, int L, int R) {
         if (root == null) return 0;
@@ -930,7 +974,6 @@ public class TreeExe {
     /**
      * https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
      */
-    //Recursive solution
     public TreeNode sortedArrayToBST(int[] nums) {
         if (nums == null || nums.length ==0) {
             return null;
@@ -987,9 +1030,6 @@ public class TreeExe {
 
     /**
      * https://leetcode.com/problems/delete-nodes-and-return-forest/
-     * @param root
-     * @param to_delete
-     * @return
      */
     public List<TreeNode> delNodes(TreeNode root, int[] to_delete) {
         List<TreeNode> forest = new ArrayList<>();
@@ -1157,8 +1197,9 @@ public class TreeExe {
      * ]
      */
     public List<List<Integer>> pathSum_ii(TreeNode root, int sum) {
-        List<List<Integer>> pathSumPathList = new ArrayList<List<Integer>>();
-        pathSumDFS(pathSumPathList, new ArrayList<Integer>(), root, sum);
+        List<List<Integer>> pathSumPathList = new ArrayList<>();
+        if (root == null) return pathSumPathList;
+        pathSumDFS(pathSumPathList, new ArrayList<>(), root, sum);
         return pathSumPathList;
     }
 
@@ -3616,43 +3657,17 @@ public class TreeExe {
      *
      * Input: [8,5,1,7,10,12]
      * Output: [8,5,10,1,7,null,12]
-     *
-     * @param preorder
-     * @return
      */
-    public TreeNode bstFromPreorder(int[] preorder) {
-        if (preorder == null || preorder.length == 0) {
-            return null;
-        }
-        return bstHelper(preorder, 0, preorder.length - 1);
+    public TreeNode bstFromPreorder(int[] A) {
+        return bstFromPreorder(A, Integer.MAX_VALUE, new int[]{0});
     }
 
-    private TreeNode bstHelper(int[] preorder, int start, int end) {
-        TreeNode node = new TreeNode(preorder[start]);
-        if (start == end) {
-            return node;
-        }
-        int leftIdx = -1, rightIdx = -1;
-        if (preorder[start] > preorder[start+1]) {
-            leftIdx = start + 1;
-        }
-        for (int i = start+1; i<=end; i++) {
-            if (preorder[i] > preorder[start]) {
-                rightIdx = i;
-                break;
-            }
-        }
-        if (leftIdx == -1 && rightIdx != -1) {
-            node.right = bstHelper(preorder, rightIdx, end);
-        } else {
-            if (leftIdx != -1 && rightIdx == -1) {
-                node.left = bstHelper(preorder, leftIdx, end);
-            } else {
-                node.left = bstHelper(preorder, leftIdx, rightIdx-1);
-                node.right = bstHelper(preorder, rightIdx, end);
-            }
-        }
-        return node;
+    public TreeNode bstFromPreorder(int[] A, int bound, int[] i) {
+        if (i[0] == A.length || A[i[0]] > bound) return null;
+        TreeNode root = new TreeNode(A[i[0]++]);
+        root.left = bstFromPreorder(A, root.val, i);
+        root.right = bstFromPreorder(A, bound, i);
+        return root;
     }
 
     /**

@@ -79,21 +79,20 @@ public class BFSExes {
      * The cells are adjacent in only four directions: up, down, left and right.
      */
     public int[][] updateMatrix(int[][] matrix) {
-        int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
+        int[][] dirs = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
         int m = matrix.length;
         int n = matrix[0].length;
         boolean[][] visited = new boolean[m][n];
-        Queue<int[]> queue = new LinkedList<int[]>();
+        Queue<int[]> q = new LinkedList<int[]>();
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (matrix[i][j] == 1) {
-                    for (int k = 0; k < directions.length; k++) {
-                        int newX = i + directions[k][0];
-                        int newY = j + directions[k][1];
+                    for (int[] dir : dirs) {
+                        int newX = i + dir[0];
+                        int newY = j + dir[1];
                         if (newX < m && newX >= 0 && newY < n && newY >= 0 && matrix[newX][newY] == 0 && !visited[i][j]) {
-                            int[] pos = {i, j};
                             visited[i][j] = true;
-                            queue.add(pos);
+                            q.add(new int[]{i, j});
                             break;
                         }
                     }
@@ -102,21 +101,20 @@ public class BFSExes {
         }
         int[][] res = new int[m][n];
         int level = 0;
-        while (!queue.isEmpty()) {
+        while (!q.isEmpty()) {
             level++;
-            int s = queue.size();
+            int s = q.size();
             for (int i = 0; i < s; i++) {
-                int[] pos = queue.poll();
+                int[] pos = q.poll();
                 int x = pos[0], y = pos[1];
                 matrix[x][y] = 0;
                 res[x][y] = level;
-                for (int k = 0; k < directions.length; k++) {
-                    int newX = x + directions[k][0];
-                    int newY = y + directions[k][1];
-                    if (newX < m && newX >= 0 && newY < n && newY >= 0 && matrix[newX][newY] == 1 && !visited[newX][newY]) {
-                        int[] nextpos = {newX, newY};
-                        queue.offer(nextpos);
-                        visited[newX][newY] = true;
+                for (int[] dir : dirs) {
+                    int nx = x + dir[0];
+                    int ny = y + dir[1];
+                    if (nx < m && nx >= 0 && ny < n && ny >= 0 && matrix[nx][ny] == 1 && !visited[nx][ny]) {
+                        q.offer(new int[]{nx, ny});
+                        visited[nx][ny] = true;
                     }
                 }
             }
@@ -126,8 +124,6 @@ public class BFSExes {
 
     /**
      * https://leetcode.com/problems/binary-tree-level-order-traversal/
-     * @param root
-     * @return
      */
     public List<List<Integer>> levelOrder(TreeNode root) {
         Queue<TreeNode> queue = new LinkedList<TreeNode>();
@@ -156,24 +152,22 @@ public class BFSExes {
 
     /**
      * https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
-     * @param root
-     * @return
      */
     public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
-        List<List<Integer>> res = new LinkedList<List<Integer>>();
+        List<List<Integer>> res = new LinkedList<>();
         if (root == null) {
             return res;
         }
-        LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+        LinkedList<TreeNode> queue = new LinkedList<>();
         queue.add(root);
         int level = 1;
         while (!queue.isEmpty()) {
             int n = queue.size();
-            List<Integer> list = new LinkedList<Integer>();
+            LinkedList<Integer> list = new LinkedList<>();
             for (int i=0; i<n; i++) {
                 TreeNode node = queue.pop();
                 if (level % 2 == 0) {
-                    ((LinkedList<Integer>) list).addFirst(node.val);
+                    list.addFirst(node.val);
                 } else {
                     list.add(node.val);
                 }
@@ -184,6 +178,7 @@ public class BFSExes {
                     queue.add(node.right);
                 }
             }
+            res.add(list);
             level++;
         }
         return res;
@@ -760,17 +755,13 @@ public class BFSExes {
      *
      *
      * Constraints:
-     *
      * |x| + |y| <= 300
-     * @param x
-     * @param y
-     * @return
      */
     public int minKnightMoves(int x, int y) {
         //Leverage the symetric, always go with the positive coordinates
         x = Math.abs(x);
         y = Math.abs(y);
-        Set<String> seenSet = new HashSet<String>();
+        Set<String> seenSet = new HashSet<>();
         int[][] directions = {{1,2},{1,-2},{2,1},{2,-1},{-1,2},{-1,-2},{-2,1},{-2,-1}};
         int level = 0;
         Queue<int[]> q = new LinkedList<int[]>();
@@ -822,9 +813,7 @@ public class BFSExes {
      *   2   2   1  -1
      *   1  -1   2  -1
      *   0  -1   3   4
-     * @param rooms
      */
-    //instead, just push all the gates into the queue first, then bfs.
     public int[][] dirPA = {{0,1},{0,-1},{1,0},{-1,0}};
 
     public void wallsAndGates(int[][] rooms) {
@@ -1225,91 +1214,6 @@ public class BFSExes {
         }
     }
 
-    /**Given a 2D board containing 'X' and 'O' (the letter O), capture all regions surrounded by 'X'.
-
-     A region is captured by flipping all 'O's into 'X's in that surrounded region.
-
-     Example:
-
-     X X X X
-     X O O X
-     X X O X
-     X O X X
-     After running your function, the board should be:
-
-     X X X X
-     X X X X
-     X X X X
-     X O X X
-     *
-     * https://leetcode.com/problems/surrounded-regions/
-     * @param board
-     */
-    public void solve(char[][] board) {
-        int m = board.length;
-        int n = board[0].length;
-        Queue<int[]> queue = new LinkedList<int[]>();
-        boolean[][] visited = new boolean[m][n];
-        for (int i=0; i<m; i++) {
-            if (board[i][0] == 'O') {
-                int[] pos = {i, 0};
-                ((LinkedList<int[]>) queue).push(pos);
-                visited[i][0] = true;
-            }
-            if (n>1) {
-                if (board[i][n-1] == 'O') {
-                    int[] pos = {i, n-1};
-                    ((LinkedList<int[]>) queue).push(pos);
-                    visited[i][n-1] = true;
-                }
-            }
-        }
-        for (int j=1; j<n-1; j++) {
-            if (board[0][j] == 'O') {
-                int[] pos = {0, j};
-                ((LinkedList<int[]>) queue).push(pos);
-                visited[0][j] = true;
-            }
-            if (m>1) {
-                if (board[m-1][j] == 'O') {
-                    int[] pos = {m-1, j};
-                    ((LinkedList<int[]>) queue).push(pos);
-                    visited[m-1][j] = true;
-                }
-            }
-        }
-        bfsHelper(queue, board, visited);
-        for (int i=0; i<m; i++) {
-            for (int j=0; j<n; j++) {
-                if (!visited[i][j] && board[i][j] == 'O') {
-                    board[i][j] = 'X';
-                }
-            }
-        }
-    }
-
-
-    public void bfsHelper(Queue<int[]> queue, char[][] board, boolean[][] visited) {
-        int[][] directions = {{0,1},{0,-1},{1,0},{-1,0}};
-        int m = board.length;
-        int n = board[0].length;
-        while (!queue.isEmpty()) {
-            int s = queue.size();
-            for (int i=0; i<s; i++) {
-                int[] cur = queue.poll();
-                for(int[] dir : directions){
-                    int newX = cur[0] + dir[0];
-                    int newY = cur[1] + dir[1];
-                    if (newX < m && newX >= 0 && newY < n && newY >= 0 && !visited[newX][newY] && board[newX][newY] == 'O'){
-                        int[] newPos = {newX, newY};
-                        queue.offer(newPos);
-                        visited[newX][newY] = true;
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Example 1:
      * Input:
@@ -1581,14 +1485,8 @@ public class BFSExes {
     }
 
     /**
-     * Input: [[0,0,0],[1,1,0],[1,1,0]]
-     *
-     * Output: 4
      * https://leetcode.com/problems/shortest-path-in-binary-matrix/
-     * @param grid
-     * @return
      */
-    private int[][] directions = {{0,1},{0,-1},{1,0},{-1,0},{1,1},{1,-1},{-1,1},{-1,-1}};
     public int shortestPathBinaryMatrix(int[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
@@ -1603,6 +1501,7 @@ public class BFSExes {
             return -1;
         }
         int level = 1;
+        int[][] directions = {{0,1},{0,-1},{1,0},{-1,0},{1,1},{1,-1},{-1,1},{-1,-1}};
         while (!queue.isEmpty()) {
             int s = queue.size();
             for (int i=0; i<s; i++) {

@@ -1578,25 +1578,23 @@ public class MathExe {
 
     /**
      * https://leetcode.com/problems/line-reflection/
-     * @param points
-     * @return
      */
     //Main trick is the sum of the x for any two reflected points will be the same.
     //Choose the max and min which must be the reflected, so we get the sum.
     public boolean isReflected(int[][] points) {
         int max = Integer.MIN_VALUE;
         int min = Integer.MAX_VALUE;
-        HashSet<String> set = new HashSet<>();
-        for (int[] p : points){
-            max = Math.max(max,p[0]);
-            min = Math.min(min,p[0]);
-            String str = p[0] + "a" + p[1];
+        Set<String> set = new HashSet<>();
+        for (int[] p : points) {
+            max = Math.max(max, p[0]);
+            min = Math.min(min, p[0]);
+            String str = p[0] + "&" + p[1];
             set.add(str);
         }
         int sum = max + min;
         for (int[] p : points) {
-            String str = (sum-p[0]) + "a" + p[1];
-            if( !set.contains(str)) {
+            String str = (sum - p[0]) + "&" + p[1];
+            if (!set.contains(str)) {
                 return false;
             }
         }
@@ -2732,9 +2730,6 @@ public class MathExe {
      * https://leetcode.com/problems/max-points-on-a-line/
      *
      * https://www.jianshu.com/p/5432c35fbd44
-     *
-     * @param points
-     * @return
      */
 
     class Point {
@@ -2748,7 +2743,7 @@ public class MathExe {
         if (points == null) return 0;
         if (points.length <= 2) return points.length;
 
-        Map<Integer, Map<Integer, Integer>> map = new HashMap<Integer, Map<Integer, Integer>>();
+        Map<Integer, Map<Integer, Integer>> map = new HashMap<>();
         int result = 0;
         for (int i = 0; i < points.length; i++) {
             map.clear();
@@ -2773,7 +2768,7 @@ public class MathExe {
                         map.get(x).put(y, 1);
                     }
                 } else {
-                    Map<Integer, Integer> m = new HashMap<Integer, Integer>();
+                    Map<Integer, Integer> m = new HashMap<>();
                     m.put(y, 1);
                     map.put(x, m);
                 }
@@ -2782,14 +2777,11 @@ public class MathExe {
             result = Math.max(result, max + overlap + 1);
         }
         return result;
-
-
     }
 
     private int generateGCD(int a, int b) {
         if (b == 0) return a;
-        else return generateGCD(b, a % b);
-
+        return generateGCD(b, a % b);
     }
 
     /**

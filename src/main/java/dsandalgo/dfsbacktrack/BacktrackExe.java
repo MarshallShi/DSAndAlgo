@@ -185,27 +185,26 @@ public class BacktrackExe {
      * ]
      */
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
-        List<List<Integer>> ret = new ArrayList<List<Integer>>();
+        List<List<Integer>> ret = new ArrayList<>();
         if (candidates != null && candidates.length > 0) {
             Arrays.sort(candidates);
-            comSum2Backtrack(ret, new ArrayList<Integer>(), candidates, target, 0);
+            comSum2Backtrack(ret, new ArrayList<>(), candidates, target, 0);
         }
         return ret;
     }
 
-    public void comSum2Backtrack(List<List<Integer>> ret, List<Integer> temp, int[] candidates, int target, int start) {
-        if (target < 0) {
-            return;
-        }
+    private void comSum2Backtrack(List<List<Integer>> ret, List<Integer> temp, int[] candidates, int target, int start) {
         if (target == 0) {
             ret.add(new ArrayList<>(temp));
             return;
         }
         for (int i = start; i < candidates.length; i++) {
+            //Attention: skip the duplicates.
             if (i > start && candidates[i] == candidates[i - 1]) continue;
+            if (target < candidates[i]) continue;
             temp.add(candidates[i]);
             comSum2Backtrack(ret, temp, candidates, target - candidates[i], i + 1);
-            temp.remove(Integer.valueOf(candidates[i]));
+            temp.remove(temp.size() - 1);
         }
     }
 
@@ -990,59 +989,30 @@ public class BacktrackExe {
      *
      * Input: "25525511135"
      * Output: ["255.255.11.135", "255.255.111.35"]
-     *
-     * @param s
-     * @return
      */
     public List<String> restoreIpAddresses(String s) {
-        List<String> ans = new ArrayList<String>(); //final answer
-        if (s.length() < 4 || s.length() > 12) {
-            return ans;
-        }
-        List<String> temp = new ArrayList<String>(); //list of xx,yy,oo,zz where ip is formated as xx.yy.oo.zz
-        backtrackRIP(s, 0, ans, temp);
-        return ans;
+        List<String> list = new ArrayList();
+        if (s.length() > 12) return list;
+
+        dfsRIP(s, list, 0, "", 0);
+        return list;
     }
 
-    private void backtrackRIP(String s, int begin, List<String> ans, List<String> temp) {
-        if (temp.size() == 4 && begin == s.length()) {
-            if (!ans.contains(getIP(temp))) {
-                ans.add(getIP(temp));
-            }
+    private void dfsRIP(String s, List<String> list, int pos, String res, int sec) {
+        if (sec == 4 && pos == s.length()) {
+            list.add(res);
             return;
         }
-        if (temp.size() >= 4 && begin != s.length() ) {
-            return;
-        }
-        for (int i=begin; i<s.length(); i++) {
-            for (int j=0; j<3; j++) {
-                if (begin+j+1 > s.length()) {
-                    continue;
-                }
-                String t = s.substring(begin, begin+j+1);
-                if (t.length() > 1 && t.charAt(0) == '0') {
-                    continue;
-                }
-                int val = Integer.parseInt(t);
-                if (val > 255) {
-                    continue;
-                }
-                temp.add(t);
-                backtrackRIP(s, begin+j+1, ans, temp);
-                temp.remove(temp.size() - 1);
+        for (int i = 1; i <= 3; i++) {
+            if (pos + i > s.length()) {
+                break;
             }
-        }
-    }
-
-    private String getIP(List<String> lst) {
-        String ret = "";
-        for (int i=0; i<4; i++) {
-            ret = ret + lst.get(i);
-            if (i != 3) {
-                ret = ret + ".";
+            String section = s.substring(pos, pos + i);
+            if (section.length() > 1 && section.startsWith("0") || Integer.parseInt(section) >= 256) {
+                break;
             }
+            dfsRIP(s, list, pos + i, sec == 0 ? section : res + "." + section, sec + 1);
         }
-        return ret;
     }
 
 

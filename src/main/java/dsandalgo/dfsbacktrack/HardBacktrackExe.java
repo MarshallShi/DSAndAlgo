@@ -199,8 +199,7 @@ public class HardBacktrackExe {
                 chess[i][j] = '.';
             }
         }
-        List<List<String>> res = new ArrayList<List<String>>();
-
+        List<List<String>> res = new ArrayList<>();
         solve(res, chess, 0);
         return res;
     }

@@ -507,18 +507,18 @@ public class SortingExe {
     /**
      * https://leetcode.com/problems/verifying-an-alien-dictionary/
      */
-    private int[] mapping = new int[26];
     public boolean isAlienSorted(String[] words, String order) {
+        int[] mapping = new int[26];
         for (int i = 0; i < order.length(); i++) {
             mapping[order.charAt(i) - 'a'] = i;
         }
         for (int i = 1; i < words.length; i++) {
-            if (bigger(words[i - 1], words[i])) return false;
+            if (bigger(words[i - 1], words[i], mapping)) return false;
         }
         return true;
     }
 
-    private boolean bigger(String s1, String s2) {
+    private boolean bigger(String s1, String s2, int[] mapping) {
         int n = s1.length(), m = s2.length();
         for (int i = 0; i < n && i < m; ++i) {
             if (s1.charAt(i) != s2.charAt(i)) {

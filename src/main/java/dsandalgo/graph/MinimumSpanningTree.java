@@ -87,12 +87,15 @@ public class MinimumSpanningTree {
             org.put(i, edges[i]);
         }
         Arrays.sort(edges, (a, b) -> (a[2] - b[2]));
+        //build the mst first.
         int minCostMST = buildMST(n, edges, null, null, idxMap, org);
         for (int i=0; i<edges.length; i++) {
+            // if skip this i's edge, and cost is greater than mst, it is critical.
             int skipCur = buildMST(n, edges, i, null, idxMap, org);
             if (skipCur > minCostMST) {
                 criList.add(i);
             } else {
+                // if enforce to pick i's edge, and cost is same as mst, it is optional.
                 int costPick = buildMST(n, edges, null, i, idxMap, org);
                 if (costPick == minCostMST) {
                     psedo.add(i);

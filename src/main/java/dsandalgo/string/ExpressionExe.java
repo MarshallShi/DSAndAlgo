@@ -494,7 +494,7 @@ public class ExpressionExe {
     }
 
     public int calculate_iii_2(String s) {
-        s = s.replaceAll("\\s+", "");
+        s = s.replaceAll(" ", "");
         Stack<Integer> stack = new Stack<>();
         char sign = '+';
         for (int i = 0; i < s.length(); ) {

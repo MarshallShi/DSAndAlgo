@@ -84,9 +84,6 @@ public class DPOnStringExe {
      * 1 <= words.length <= 1000
      * 1 <= words[i].length <= 16
      * words[i] only consists of English lowercase letters.
-     *
-     * @param words
-     * @return
      */
     public int longestStrChain(String[] words) {
         //dp map store for each word, the longest str chain.

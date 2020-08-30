@@ -213,9 +213,9 @@ public class MonotoneStackExe {
         if (k == num.length()) {
             return "0";
         }
-        Stack<Character> stack = new Stack<Character>();
-        for (int i=0; i<num.length(); i++) {
-            while (k>0 && !stack.isEmpty()) {
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < num.length(); i++) {
+            while (k > 0 && !stack.isEmpty()) {
                 //whenever meet a digit which is less than the previous digit, discard the previous one
                 if (stack.peek() > num.charAt(i)) {
                     stack.pop();
@@ -227,7 +227,7 @@ public class MonotoneStackExe {
             stack.push(num.charAt(i));
         }
         // corner case like "1111"
-        while (k>0) {
+        while (k > 0) {
             stack.pop();
             k--;
         }
@@ -599,7 +599,7 @@ public class MonotoneStackExe {
     }
 
     /**
-     * https://leetcode.com/problems/remove-duplicate-letters/description/
+     * https://leetcode.com/problems/remove-duplicate-letters
      *
      * Given a string which contains only lowercase letters, remove duplicate letters so that every letter
      * appears once and only once. You must make sure your result is the smallest in lexicographical order among all possible results.
@@ -613,19 +613,16 @@ public class MonotoneStackExe {
      *
      * Input: "cbacdcbc"
      * Output: "acdb"
-     *
-     * @param sr
-     * @return
      */
     public String removeDuplicateLetters(String sr) {
         int[] res = new int[26]; //will contain number of occurences of character (i+'a')
         boolean[] visited = new boolean[26]; //will contain if character (i+'a') is present in current result Stack
         char[] ch = sr.toCharArray();
-        for(char c : ch){  //count number of occurences of character
+        for (char c : ch) {  //count number of occurences of character
             res[c - 'a']++;
         }
         Stack<Character> stack = new Stack<>(); // answer stack
-        for(char s : ch){
+        for (char s : ch) {
             int index = s - 'a';
             //decrement number of characters remaining in the string to be analysed, will use this info later.
             res[index]--;
@@ -636,19 +633,19 @@ public class MonotoneStackExe {
             //we do the swap of char position in the stack.
             //if current character is smaller than last character in stack which occurs later in the string again
             //it can be removed and  added later e.g stack = bc remaining string abc then a can pop b and then c
-            while(!stack.isEmpty() && s < stack.peek() && res[stack.peek() - 'a']!=0){
+            while (!stack.isEmpty() && s < stack.peek() && res[stack.peek() - 'a'] != 0) {
                 char popped = stack.pop();
-                visited[popped - 'a']=false;
+                visited[popped - 'a'] = false;
             }
             //add current character and mark it as visited
             stack.push(s);
-            visited[index]=true;
+            visited[index] = true;
         }
 
         StringBuilder sb = new StringBuilder();
         //pop character from stack and build answer string from back
-        while(!stack.isEmpty()){
-            sb.insert(0,stack.pop());
+        while (!stack.isEmpty()) {
+            sb.insert(0, stack.pop());
         }
         return sb.toString();
     }
@@ -799,14 +796,12 @@ public class MonotoneStackExe {
      *
      * Note: The length of temperatures will be in the range [1, 30000]. Each temperature will be an integer in the range [30, 100].
      *
-     * @param T
-     * @return
      */
     public int[] dailyTemperatures(int[] T) {
         Stack<Integer> stack = new Stack<>();
         int[] ret = new int[T.length];
-        for(int i = 0; i < T.length; i++) {
-            while(!stack.isEmpty() && T[i] > T[stack.peek()]) {
+        for (int i = 0; i < T.length; i++) {
+            while (!stack.isEmpty() && T[i] > T[stack.peek()]) {
                 int idx = stack.pop();
                 ret[idx] = i - idx;
             }

@@ -1,5 +1,7 @@
 package dsandalgo.sorting.overlap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -38,66 +40,30 @@ public class SummaryRanges {
         System.out.println(sr.getIntervals());
     }
 
-    private TreeMap<Integer, Integer> map;
+    private TreeMap<Integer, int[]> tree;
 
-    /** Initialize your data structure here. */
     public SummaryRanges() {
-        map = new TreeMap<Integer, Integer>();
+        tree = new TreeMap<>();
     }
 
     public void addNum(int val) {
-        Integer start = map.floorKey(val);
-        Integer end = map.ceilingKey(val);
-        if (start == null && end == null) {
-            map.put(val, val);
+        if (tree.containsKey(val)) return;
+        Integer l = tree.lowerKey(val);
+        Integer h = tree.higherKey(val);
+        if (l != null && h != null && tree.get(l)[1] + 1 == val && h == val + 1) {
+            tree.get(l)[1] = tree.get(h)[1];
+            tree.remove(h);
+        } else if (l != null && tree.get(l)[1] + 1 >= val) {
+            tree.get(l)[1] = Math.max(tree.get(l)[1], val);
+        } else if (h != null && h == val + 1) {
+            tree.put(val, new int[]{val, tree.get(h)[1]});
+            tree.remove(h);
         } else {
-            if (start == null && end != null) {
-                if (val == end - 1) {
-                    map.put(val, map.get(end));
-                    map.remove(end);
-                } else {
-                    if (val != end) map.put(val, val);
-                }
-            } else {
-                if (start != null && end == null) {
-                    if (map.get(start) + 1 == val) {
-                        map.put(start, map.get(start) + 1);
-                    } else {
-                        if (val > map.get(start) + 1) {
-                            map.put(val,val);
-                        }
-                    }
-                } else {
-                    if (val == end - 1 && map.get(start) + 1 == val) {
-                        map.put(start, map.get(end));
-                        map.remove(end);
-                    } else {
-                        if (val == end - 1) {
-                            map.put(val, map.get(end));
-                            map.remove(end);
-                        } else {
-                            if (map.get(start) + 1 == val) {
-                                map.put(start, map.get(start) + 1);
-                            } else {
-                                if (val > map.get(start) + 1) {
-                                    map.put(val,val);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            tree.put(val, new int[]{val, val});
         }
     }
 
-    public int[][] getIntervals() {
-        int[][] ans = new int[map.size()][2];
-        int i = 0;
-        for (Map.Entry<Integer,Integer> entry : map.entrySet()) {
-            ans[i][0] = entry.getKey();
-            ans[i][1] = entry.getValue();
-            i++;
-        }
-        return ans;
+    public List<int[]> getIntervals() {
+        return new ArrayList<>(tree.values());
     }
 }

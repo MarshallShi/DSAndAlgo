@@ -62,7 +62,9 @@ public class MyHashSet {
     public void remove(int key) {
         int i = hashing(key);
         if (buckets[i] == null) return;
-        if (buckets[i].indexOf(key) != -1) buckets[i].remove(buckets[i].indexOf(key));
+        if (buckets[i].indexOf(key) != -1) {
+            buckets[i].remove(buckets[i].indexOf(key));
+        }
     }
 
     //time: O(L)

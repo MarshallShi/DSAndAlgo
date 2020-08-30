@@ -716,19 +716,15 @@ public class OverlappingIntervalExe {
      * Input: intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
      * Output: [[1,2],[3,10],[12,16]]
      * Explanation: Because the new interval [4,8] overlaps with [3,5],[6,7],[8,10].
-     *
-     * @param intervals
-     * @param newInterval
-     * @return
      */
     public int[][] insert(int[][] intervals, int[] newInterval) {
-        List<int[]> ret = new ArrayList<int[]>();
-        int i=0;
-        while (i<intervals.length && intervals[i][1]<newInterval[0]) {
+        List<int[]> ret = new ArrayList<>();
+        int i = 0;
+        while (i < intervals.length && intervals[i][1] < newInterval[0]) {
             ret.add(intervals[i]);
             i++;
         }
-        while (i<intervals.length && intervals[i][0]<=newInterval[1]) {
+        while (i < intervals.length && intervals[i][0] <= newInterval[1]) {
             int[] temp = new int[2];
             temp[0] = Math.min(intervals[i][0], newInterval[0]);
             temp[1] = Math.max(intervals[i][1], newInterval[1]);
@@ -736,12 +732,12 @@ public class OverlappingIntervalExe {
             i++;
         }
         ret.add(newInterval);
-        while (i<intervals.length) {
+        while (i < intervals.length) {
             ret.add(intervals[i]);
             i++;
         }
         int[][] ans = new int[ret.size()][2];
-        for (int j=0; j<ans.length; j++) {
+        for (int j = 0; j < ans.length; j++) {
             ans[j] = ret.get(j);
         }
         return ans;

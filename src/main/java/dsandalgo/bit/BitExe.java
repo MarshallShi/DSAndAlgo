@@ -337,9 +337,6 @@ public class BitExe {
 	
 	/**
      * https://leetcode.com/problems/k-th-symbol-in-grammar/
-     * @param N
-     * @param K
-     * @return
      */
     public int kthGrammar(int N, int K) {
         if (N == 1 && K == 1) {
@@ -789,7 +786,9 @@ public class BitExe {
      *
      * The two numbers that appear only once must differ at some bit, this is how we can distinguish between them. Otherwise, they will be one of the duplicate numbers.
      *
-     * One important point is that by XORing all the numbers, we actually get the XOR of the two target numbers (because XORing two duplicate numbers always results in 0). Consider the XOR result of the two target numbers; if some bit of the XOR result is 1, it means that the two target numbers differ at that location.
+     * One important point is that by XORing all the numbers, we actually get the XOR of the two target numbers (because XORing two duplicate numbers always results in 0).
+     *
+     * Consider the XOR result of the two target numbers; if some bit of the XOR result is 1, it means that the two target numbers differ at that location.
      *
      * Let’s say the at the ith bit, the two desired numbers differ from each other. which means one number has bit i equaling: 0, the other number has bit i equaling 1.
      *
@@ -797,13 +796,12 @@ public class BitExe {
      * the first group consists of all numbers whose bits at i is 0.
      * the second group consists of all numbers whose bits at i is 1.
      *
-     * Notice that, if a duplicate number has bit i as 0, then, two copies of it will belong to the first group. Similarly, if a duplicate number has bit i as 1, then, two copies of it will belong to the second group.
+     * Notice that, if a duplicate number has bit i as 0, then, two copies of it will belong to the first group. Similarly, if a duplicate number has bit i as 1,
+     * then, two copies of it will belong to the second group.
      *
      * by XoRing all numbers in the first group, we can get the first number.
      * by XoRing all numbers in the second group, we can get the second number.
      *
-     * @param nums
-     * @return
      */
     public int[] singleNumber(int[] nums) {
         // Pass 1 :
@@ -1047,17 +1045,13 @@ public class BitExe {
      * Let's count # of neighbors from 1st state and set 2nd state bit.
      * Since every 2nd state is by default dead, no need to consider transition 01 -> 00.
      * In the end, delete every cell's 1st state by doing >> 1.
-     *
-     * @param board
      */
     public void gameOfLife(int[][] board) {
         if (board == null || board.length == 0) return;
         int m = board.length, n = board[0].length;
-
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 int lives = liveNeighbors(board, m, n, i, j);
-
                 // In the beginning, every 2nd bit is 0;
                 // So we only need to care about when will the 2nd bit become 1.
                 if (board[i][j] == 1 && lives >= 2 && lives <= 3) {
@@ -1076,14 +1070,17 @@ public class BitExe {
         }
     }
 
+    public int[][] dirs = {{0,1},{1,0},{-1,0},{0,-1},{1,1},{-1,-1},{1,-1},{-1,1}};
+
     public int liveNeighbors(int[][] board, int m, int n, int i, int j) {
         int lives = 0;
-        for (int x = Math.max(i - 1, 0); x <= Math.min(i + 1, m - 1); x++) {
-            for (int y = Math.max(j - 1, 0); y <= Math.min(j + 1, n - 1); y++) {
-                lives += board[x][y] & 1;
+        for (int[] dir : dirs) {
+            int nx = dir[0] + i;
+            int ny = dir[1] + j;
+            if (nx >=0 && nx < m && ny >= 0 && ny < n) {
+                lives += board[nx][ny] & 1;
             }
         }
-        lives -= board[i][j] & 1;
         return lives;
     }
 

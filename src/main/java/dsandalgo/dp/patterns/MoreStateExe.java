@@ -163,7 +163,7 @@ public class MoreStateExe {
     //buy[i] represents the max profit at day i in buy status,
     //sell[i] represents the max profit at day i in sell status
     //State transform:
-    //buy[i] = Math.max(buy[i - 1], sell[i - 1] - prices[i]);
+    //buy[i] = Math.max(buy[i - 1], sell[i - 1] - prices[i] - fee);
     //sell[i] = Math.max(sell[i - 1], buy[i - 1] + prices[i]);
     public int maxProfit_fee(int[] prices, int fee) {
         if (prices.length <= 1) {

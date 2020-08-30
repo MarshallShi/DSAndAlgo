@@ -438,24 +438,18 @@ public class TwoPointers {
     }
 
     public int lengthOfLongestSubstring_2(String s) {
-        if (s == null || s.length() == 0) {
-            return 0;
-        }
-        if (s.length() == 1) {
-            return 1;
-        }
-        int slow = 0, fast = 0;
-        Map<Character, Integer> map = new HashMap<Character, Integer>();
-        int maxLen = 0;
-        while (fast < s.length() && slow <= fast) {
-            if(map.containsKey(s.charAt(fast))) {
-                slow = Math.max(slow,map.get(s.charAt(fast)) + 1);
+        if (s.length() == 0) return 0;
+        int[] map = new int[128];
+        Arrays.fill(map, -1);
+        int max = 0, j = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (map[s.charAt(i)] != -1) {
+                j = Math.max(j, map[s.charAt(i)] + 1);
             }
-            map.put(s.charAt(fast), fast);
-            maxLen = Math.max(fast - slow + 1, maxLen);
-            fast++;
+            map[s.charAt(i)] = i;
+            max = Math.max(max, i - j + 1);
         }
-        return maxLen;
+        return max;
     }
 
     /**

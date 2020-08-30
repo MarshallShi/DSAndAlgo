@@ -139,6 +139,7 @@ public class Misc {
         if (root == null) {
             return -1;
         }
+
         Stack<TreeNode> stack = new Stack<TreeNode>();
         stack.push(root);
         while (root.left != null) {
@@ -738,34 +739,6 @@ public class Misc {
             }
         }
         return idx;
-    }
-
-    public int jump(int[] nums) {
-        Map<Integer, Integer> cachedResult = new HashMap<Integer, Integer>();
-        return helper(0, nums, cachedResult);
-    }
-
-    public int helper(int idx, int[] nums, Map<Integer, Integer> cachedResult) {
-        if (idx == nums.length - 1) {
-            return 0;
-        }
-        int cur = nums[idx];
-        int min = Integer.MAX_VALUE;
-        if (cur == 0) {
-            return min;
-        }
-        for (int i=1; i<=cur; i++) {
-            if (idx + i < nums.length) {
-                if (!cachedResult.containsKey(idx+i)) {
-                    cachedResult.put(idx+i, helper(idx+i, nums, cachedResult));
-                }
-                min = Math.min(min, cachedResult.get(idx+i));
-            }
-        }
-        if (min == Integer.MAX_VALUE) {
-            return min;
-        }
-        return 1 + min;
     }
 
     public String longestDupSubstring(String S) {

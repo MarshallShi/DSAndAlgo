@@ -34,6 +34,39 @@ public class StackExe {
     }
 
     /**
+     * https://leetcode.com/problems/baseball-game/
+     */
+    public int calPoints(String[] ops) {
+        int sum = 0;
+        Stack<Integer> stack = new Stack<Integer>();
+        for (int i = 0; i < ops.length; i++) {
+            if (ops[i].equals("+")) {
+                int temp1 = stack.pop();
+                int temp2 = stack.pop();
+                int temp_sum = temp1 + temp2;
+                sum += temp_sum;
+                stack.push(temp2);
+                stack.push(temp1);
+                stack.push(temp_sum);
+            } else if (ops[i].equals("D")) {
+                int temp = stack.pop();
+                int temp_d = 2 * temp;
+                sum += temp_d;
+                stack.push(temp);
+                stack.push(temp_d);
+            } else if (ops[i].equals("C")) {
+                int cancel = stack.pop();
+                sum -= cancel;
+            } else {
+                int temp = Integer.parseInt(ops[i]);
+                sum += temp;
+                stack.push(temp);
+            }
+        }
+        return sum;
+    }
+
+    /**
      * https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/
      * @param S
      * @return
@@ -161,6 +194,7 @@ public class StackExe {
      * s = "2[abc]3[cd]ef", return "abcabccdcdcdef".
      */
     public String decodeString(String s) {
+        //Trick: use two stack to store the prev state: prev number, prev in built string.
         Stack<Integer> intStack = new Stack<>();
         Stack<StringBuilder> strStack = new Stack<>();
         StringBuilder cur = new StringBuilder();
@@ -168,23 +202,19 @@ public class StackExe {
         for (char ch : s.toCharArray()) {
             if (Character.isDigit(ch)) {
                 k = k * 10 + ch - '0';
-            } else {
-                if (ch == '[') {
-                    intStack.push(k);
-                    strStack.push(cur);
-                    cur = new StringBuilder();
-                    k = 0;
-                } else {
-                    if (ch == ']') {
-                        StringBuilder tmp = cur;
-                        cur = strStack.pop();
-                        for (k = intStack.pop(); k > 0; --k) {
-                            cur.append(tmp);
-                        }
-                    } else {
-                        cur.append(ch);
-                    }
+            } else if (ch == '[') {
+                intStack.push(k);
+                strStack.push(cur);
+                cur = new StringBuilder();
+                k = 0;
+            } else if (ch == ']') {
+                StringBuilder tmp = cur;
+                cur = strStack.pop();
+                for (k = intStack.pop(); k > 0; --k) {
+                    cur.append(tmp);
                 }
+            } else {
+                cur.append(ch);
             }
         }
         return cur.toString();
@@ -508,8 +538,6 @@ public class StackExe {
 
     /**
      * https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/
-     * @param text
-     * @return
      */
     public String smallestSubsequence(String text) {
         int[] count = new int[26];

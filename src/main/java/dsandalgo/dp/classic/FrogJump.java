@@ -3,6 +3,7 @@ package dsandalgo.dp.classic;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class FrogJump {
 
@@ -49,8 +50,34 @@ public class FrogJump {
      * Return false. There is no way to jump to the last stone as
      * the gap between the 5th and 6th stone is too large.
      */
-
     public boolean canCross(int[] stones) {
+        if (stones[1] != 1) return false;
+        // stone locations
+        Set<Integer> units = new HashSet<>();
+        for (int i = 0; i < stones.length; i++) {
+            if (i > 0 && stones[i] - stones[i - 1] > i) {
+                // necessary!
+                return false;
+            }
+            units.add(stones[i]);
+        }
+        return cross(units, 1, 1, stones[stones.length - 1]);
+    }
+
+    private boolean cross(Set<Integer> units, int unit, int preStep, int destination) {
+        if (preStep <= 0) return false;
+        if (!units.contains(unit)) return false;
+        if (unit == destination) return true;
+        if (destination <= unit + preStep + 1 && destination >= unit + preStep - 1) {
+            return true;
+        }
+
+        return cross(units, unit + preStep + 1, preStep + 1, destination) ||
+                cross(units, unit + preStep, preStep, destination) ||
+                cross(units, unit + preStep - 1, preStep - 1, destination);
+    }
+
+    public boolean canCross_topDown(int[] stones) {
         return stones[1] == 1 && canCrossDFS(1, 1, stones, new Boolean[1100][stones.length - 1]);
     }
 
@@ -81,7 +108,7 @@ public class FrogJump {
         if (stones.length == 0) {
             return true;
         }
-        HashMap<Integer, HashSet<Integer>> map = new HashMap<>(stones.length);
+        Map<Integer, HashSet<Integer>> map = new HashMap<>(stones.length);
         map.put(0, new HashSet<>());
         map.get(0).add(1);
         for (int i = 1; i < stones.length; i++) {

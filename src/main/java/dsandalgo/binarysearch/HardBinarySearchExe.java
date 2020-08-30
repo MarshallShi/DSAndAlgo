@@ -292,16 +292,18 @@ public class HardBinarySearchExe {
         return i;
     }
 
-    //https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/discuss/256729/JavaC%2B%2BPython-Binary-Search
+    /**
+     * https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/
+     */
     public int shipWithinDays(int[] weights, int D) {
         //Intuition is the low end capacity is the maxium weight, the high end is the total weight where D is 1.
         int high = 0, low = Integer.MIN_VALUE;
-        for (int i=0; i<weights.length; i++) {
+        for (int i = 0; i < weights.length; i++) {
             high = high + weights[i];
             low = Math.max(low, weights[i]);
         }
         while (low < high) {
-            int mid = low + (high - low)/2;
+            int mid = low + (high - low) / 2;
             //start custom logic for the binary search template.
             int res = getDays(weights, mid);
             //end custome logic, continue with the binary search
@@ -324,7 +326,6 @@ public class HardBinarySearchExe {
                 currentWeight = 0;
             }
             currentWeight += weights[i];
-
         }
         if (currentWeight > 0) {
             numberOfDays++;

@@ -825,6 +825,34 @@ public class DistinctWaysExe {
         return dp[dp.length - 1][dp[0].length - 1];
     }
 
+    public boolean canPartition_2(int[] nums) {
+        int sum = 0;
+
+        for (int num : nums) {
+            sum += num;
+        }
+
+        if ((sum & 1) == 1) {
+            return false;
+        }
+        sum /= 2;
+
+        int n = nums.length;
+        boolean[] dp = new boolean[sum+1];
+        Arrays.fill(dp, false);
+        dp[0] = true;
+
+        for (int num : nums) {
+            for (int i = sum; i > 0; i--) {
+                if (i >= num) {
+                    dp[i] = dp[i] || dp[i-num];
+                }
+            }
+        }
+
+        return dp[sum];
+    }
+
     /**
      * https://leetcode.com/problems/soup-servings/
      * There are two types of soup: type A and type B. Initially we have N ml of each type of soup. There are four kinds of operations:

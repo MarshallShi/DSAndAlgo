@@ -70,6 +70,7 @@ public class DijkstrasExe {
             this.prob = _p;
         }
     }
+
     public double maxProbability(int n, int[][] edges, double[] succProb, int start, int end) {
         Map<Integer, Map<Integer, Double>> graph = new HashMap<>();
         for (int i=0; i<edges.length; i++) {
@@ -127,6 +128,60 @@ public class DijkstrasExe {
      * All edges times[i] = (u, v, w) will have 1 <= u, v <= N and 0 <= w <= 100.
      */
     public int networkDelayTime(int[][] times, int N, int K) {
+        if (times == null || times.length == 0) {
+            return -1;
+        }
+        //Store the source node as key. The value is another map of the neighbor nodes and distance.
+        Map<Integer, Map<Integer, Integer>> data = new HashMap<>();
+        for (int[] time : times) {
+            data.putIfAbsent(time[0], new HashMap<>());
+            data.get(time[0]).put(time[1], time[2]);
+        }
+        //Use PriorityQueue to get the node with shortest absolute distance
+        //and calculate the absolute distance of its neighbor nodes.
+        int[] dist = new int[N + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[K] = 0;
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> (Integer.compare(a[1], b[1])));
+        pq.offer(new int[]{K, 0});
+
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int node = cur[0];
+            int distance = cur[1];
+
+            // Ignore processed nodes
+            if (dist[node] < distance) {
+                continue;
+            }
+
+            Map<Integer, Integer> sourceMap = data.get(node);
+            if (sourceMap == null) {
+                continue;
+            }
+            for (Map.Entry<Integer, Integer> entry : sourceMap.entrySet()) {
+                int absoluteDistence = distance + entry.getValue();
+                int targetNode = entry.getKey();
+                if (dist[targetNode] <= absoluteDistence){
+                    continue;
+                }
+                dist[targetNode] = absoluteDistence;
+                pq.offer(new int[]{targetNode, absoluteDistence});
+            }
+        }
+        // get the largest absolute distance.
+        int max = -1;
+        for (int i=1; i<=N; i++) {
+            if (dist[i] == Integer.MAX_VALUE) return -1;
+            if (dist[i] > max) {
+                max = dist[i];
+            }
+        }
+        return max;
+    }
+
+    public int networkDelayTime_2(int[][] times, int N, int K) {
         Map<Integer, List<int[]>> graph = new HashMap<>();
         for (int i=0; i<times.length; i++) {
             List<int[]> adj = graph.getOrDefault(times[i][0], new ArrayList<>());
@@ -176,7 +231,7 @@ public class DijkstrasExe {
      *
      * and n is the total number of new nodes on that edge.
      *
-     * Then, the edge (i, j) is deleted from the original graph, n new nodes (x_1, x_2, ..., x_n) are added to the original graph,
+     * Then, the edge (i, j) is dellongestPalindromeeted from the original graph, n new nodes (x_1, x_2, ..., x_n) are added to the original graph,
      *
      * and n+1 new edges (i, x_1), (x_1, x_2), (x_2, x_3), ..., (x_{n-1}, x_n), (x_n, j) are added to the original graph.
      *

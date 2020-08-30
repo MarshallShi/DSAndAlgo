@@ -380,3 +380,29 @@ https://www.geeksforgeeks.org/shuffle-a-given-array-using-fisher-yates-shuffle-a
         }
         return arr;
     }
+    
+    
+Eulerian Path/Circuit algorithm (Hierholzer's algorithm) | Graph Theory
+https://www.youtube.com/watch?v=8MpoO2zA2l4
+https://leetcode.com/problems/reconstruct-itinerary/
+The algo will do dfs, but trick is when the node get added to the result. In a backtrack way, 
+only when there is no further available next node, add it to the result, but always add to the first.
+
+    public List<String> findItinerary(List<List<String>> tickets) {
+        Map<String, PriorityQueue<String>> flights = new HashMap<>();
+        LinkedList<String> path = new LinkedList<>();
+        for (List<String> ticket : tickets) {
+            flights.putIfAbsent(ticket.get(0), new PriorityQueue<>());
+            flights.get(ticket.get(0)).add(ticket.get(1));
+        }
+        findItineraryDFS("JFK", flights, path);
+        return path;
+    }
+
+    private void findItineraryDFS(String departure, Map<String, PriorityQueue<String>> flights, LinkedList<String> path) {
+        PriorityQueue<String> arrivals = flights.get(departure);
+        while (arrivals != null && !arrivals.isEmpty()) {
+            findItineraryDFS(arrivals.poll(), flights, path);
+        }
+        path.addFirst(departure);
+    }

@@ -5,14 +5,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.TreeMap;
 
-public class TreeMapExe {
+public class TreeMapSkylineExe {
 
     public static void main(String[] args) {
-        TreeMapExe exe = new TreeMapExe();
+        TreeMapSkylineExe exe = new TreeMapSkylineExe();
         //[ [2 9 10], [3 7 15], [5 12 12], [15 20 10], [19 24 8] ]
         int[][] buildings = {{2,9,10},{3,7,15},{5,12,12},{15,20,10}, {19,24,8}};
         System.out.println(exe.getSkyline(buildings));
@@ -121,12 +119,11 @@ public class TreeMapExe {
         }
     }
 
-    public List<int[]> getSkyline_1(int[][] buildings) {
-
+    public List<List<Integer>> getSkyline_2(int[][] buildings) {
         //for all start and end of building put them into List of BuildingPoint
-        BuildingPoint[] buildingPoints = new BuildingPoint[buildings.length*2];
+        BuildingPoint[] buildingPoints = new BuildingPoint[buildings.length * 2];
         int index = 0;
-        for(int building[] : buildings) {
+        for (int building[] : buildings) {
             buildingPoints[index] = new BuildingPoint();
             buildingPoints[index].x = building[0];
             buildingPoints[index].isStart = true;
@@ -142,39 +139,35 @@ public class TreeMapExe {
 
         //using TreeMap because it gives log time performance.
         //PriorityQueue in java does not support remove(object) operation in log time.
-        TreeMap<Integer, Integer> queue = new TreeMap<>();
-        //PriorityQueue<Integer> queue1 = new PriorityQueue<>(Collections.reverseOrder());
-        queue.put(0, 1);
-        //queue1.add(0);
+        //Key: height, Value: number of times the height is showing.
+        TreeMap<Integer, Integer> map = new TreeMap<>();
+        map.put(0, 1);
         int prevMaxHeight = 0;
-        List<int[]> result = new ArrayList<>();
-        for(BuildingPoint buildingPoint : buildingPoints) {
+        List<List<Integer>> result = new ArrayList<>();
+        for (BuildingPoint buildingPoint : buildingPoints) {
             //if it is start of building then add the height to map. If height already exists then increment
             //the value
             if (buildingPoint.isStart) {
-                queue.compute(buildingPoint.height, (key, value) -> {
-                    if (value != null) {
-                        return value + 1;
+                //start: add points into it.
+                map.put(buildingPoint.height, map.getOrDefault(buildingPoint.height, 0) + 1);
+            } else {
+                //end: remove points
+                if (map.containsKey(buildingPoint.height)) {
+                    if (map.get(buildingPoint.height) == 1) {
+                        map.remove(buildingPoint.height);
+                    } else {
+                        map.put(buildingPoint.height, map.get(buildingPoint.height) - 1);
                     }
-                    return 1;
-                });
-                //  queue1.add(cp.height);
-            } else { //if it is end of building then decrement or remove the height from map.
-                queue.compute(buildingPoint.height, (key, value) -> {
-                    if (value == 1) {
-                        return null;
-                    }
-                    return value - 1;
-                });
-                // queue1.remove(cp.height);
+                }
             }
             //peek the current height after addition or removal of building x.
-            int currentMaxHeight = queue.lastKey();
-            //int currentMaxHeight = queue1.peek();
-            //if height changes from previous height then this building x becomes critcal x.
-            // So add it to the result.
+            int currentMaxHeight = map.lastKey();
+            //if height changes from previous height then this building x becomes critical x. so add it to the result.
             if (prevMaxHeight != currentMaxHeight) {
-                result.add(new int[]{buildingPoint.x, currentMaxHeight});
+                List<Integer> one = new ArrayList<>();
+                one.add(buildingPoint.x);
+                one.add(currentMaxHeight);
+                result.add(one);
                 prevMaxHeight = currentMaxHeight;
             }
         }

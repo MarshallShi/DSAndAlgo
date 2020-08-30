@@ -29,6 +29,74 @@ public class ArrayExe {
     }
 
     /**
+     * https://leetcode.com/problems/rotate-image/
+     * You are given an n x n 2D matrix representing an image.
+     *
+     * Rotate the image by 90 degrees (clockwise).
+     *
+     * Note:
+     *
+     * You have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation.
+     *
+     * Example 1:
+     *
+     * Given input matrix =
+     * [
+     *   [1,2,3],
+     *   [4,5,6],
+     *   [7,8,9]
+     * ],
+     *
+     * rotate the input matrix in-place such that it becomes:
+     * [
+     *   [7,4,1],
+     *   [8,5,2],
+     *   [9,6,3]
+     * ]
+     * Example 2:
+     *
+     * Given input matrix =
+     * [
+     *   [ 5, 1, 9,11],
+     *   [ 2, 4, 8,10],
+     *   [13, 3, 6, 7],
+     *   [15,14,12,16]
+     * ],
+     *
+     * rotate the input matrix in-place such that it becomes:
+     * [
+     *   [15,13, 2, 5],
+     *   [14, 3, 4, 1],
+     *   [12, 6, 8, 9],
+     *   [16, 7,10,11]
+     * ]
+     */
+    /*
+     * clockwise rotate
+     * first reverse up to down, then swap the symmetry
+     * 1 2 3     7 8 9     7 4 1
+     * 4 5 6  => 4 5 6  => 8 5 2
+     * 7 8 9     1 2 3     9 6 3
+     */
+    public void rotate(int[][] matrix) {
+        int s = 0, e = matrix.length - 1;
+        while(s < e){
+            int[] temp = matrix[s];
+            matrix[s] = matrix[e];
+            matrix[e] = temp;
+            s++; e--;
+        }
+
+        for(int i = 0; i < matrix.length; i++){
+            for(int j = i+1; j < matrix[i].length; j++){
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+    }
+
+    /**
      * https://leetcode.com/problems/add-to-array-form-of-integer/
      */
     //Trick: apply K as a 'carrier'
@@ -253,31 +321,29 @@ public class ArrayExe {
      * 1,1,5 → 1,5,1
      */
     public void nextPermutation(int[] nums) {
-        //Step 1: find the last incremental value idx.
+        //Step 1: find stop point of continue increasing idx.
         int lastIncrIdx = -1;
-        for (int i=nums.length-1; i>0; i--) {
-            if (nums[i] > nums[i-1]) {
+        for (int i = nums.length - 1; i > 0; i--) {
+            if (nums[i] > nums[i - 1]) {
                 lastIncrIdx = i;
                 break;
             }
         }
-        if (lastIncrIdx == -1) {
-            //Not found, then just reverse the array.
-            int low = 0, high = nums.length - 1;
-            reverseNP(nums, low, high);
-        } else {
-            //If found:
-            //Step 2: pick right value just above prev, use it as next permutation.
+        int low = 0, high = nums.length - 1;
+        if (lastIncrIdx > -1) {
+            //if found: the max point from right to left is not the first number
+            //Step 2: based on the max point, pick the furthest right hand value which is just greater than left hand value.
             int temp = nums[lastIncrIdx - 1];
             int idx = lastIncrIdx;
-            while (idx+1 <= nums.length - 1 && nums[idx+1] > temp) {
+            while (idx + 1 <= nums.length - 1 && nums[idx + 1] > temp) {
                 idx++;
             }
             swapNP(nums, lastIncrIdx - 1, idx);
-            //Step 3: reverse the rest array.
-            int low = lastIncrIdx, high = nums.length - 1;
-            reverseNP(nums, low, high);
+            low = lastIncrIdx;
         }
+        //Step 3: now from the max point, all the right hand numbers are decreasing,
+        //reverse the sub array to get lexico lowest so it is the right next permutation
+        reverseNP(nums, low, high);
     }
 
     private void swapNP(int[] A, int i, int j) {
@@ -878,22 +944,23 @@ public class ArrayExe {
 
     /**
      * https://leetcode.com/problems/majority-element-ii/
-     * @param nums
-     * @return
      */
     public List<Integer> majorityElement_II(int[] nums) {
         List<Integer> res = new ArrayList<>();
-        if(nums.length == 0) {
+        if (nums.length == 0) {
             return res;
         }
         //Majority Voting Algorithm
-        int num1 = nums[0]; int num2 = nums[0]; int count1 = 1; int count2 = 0;
+        int num1 = nums[0];
+        int num2 = nums[0];
+        int count1 = 1;
+        int count2 = 0;
         //Pass 1: find the potential majority numbers, in this case more than n/3, would be two numbers.
         for (int val : nums) {
-            if(val == num1) {
+            if (val == num1) {
                 count1++;
             } else {
-                if (val == num2){
+                if (val == num2) {
                     count2++;
                 } else {
                     if (count1 == 0) {
@@ -914,19 +981,19 @@ public class ArrayExe {
         //Pass 2: verify the two numbers.
         count1 = 0;
         count2 = 0;
-        for(int val : nums) {
-            if(val == num1) {
+        for (int val : nums) {
+            if (val == num1) {
                 count1++;
             } else {
-                if(val == num2){
+                if (val == num2) {
                     count2++;
                 }
             }
         }
-        if(count1 > nums.length/3) {
+        if (count1 > nums.length / 3) {
             res.add(num1);
         }
-        if(count2 > nums.length/3) {
+        if (count2 > nums.length / 3) {
             res.add(num2);
         }
         return res;
@@ -1398,30 +1465,19 @@ public class ArrayExe {
      * https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/
      */
     public int[] smallerNumbersThanCurrent(int[] nums) {
-        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return o1[0] - o2[0];
-            }
-        });
-        for (int i=0; i<nums.length; i++) {
-            pq.offer(new int[]{nums[i], i});
+        int[] count = new int[101];
+        int[] res = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            count[nums[i]]++;
         }
-        int counter = 0;
-        int prev = -1, prevCounter = 0;
-        int[] ans = new int[nums.length];
-        while (!pq.isEmpty()) {
-            int[] cur = pq.poll();
-            if (prev == cur[0]) {
-                ans[cur[1]] = prevCounter;
-            } else {
-                ans[cur[1]] = counter;
-                prev = cur[0];
-                prevCounter = counter;
-            }
-            counter++;
+        //presum of counting array
+        for (int i = 1; i <= 100; i++) {
+            count[i] += count[i - 1];
         }
-        return ans;
+        for (int i = 0; i < nums.length; i++) {
+            res[i] = nums[i] == 0 ? 0 : count[nums[i] - 1];
+        }
+        return res;
     }
 
     /**
@@ -1637,6 +1693,34 @@ public class ArrayExe {
      * Placing a bomb at (1,1) kills 3 enemies.
      */
     public int maxKilledEnemies(char[][] grid) {
+        int m = grid.length;
+        int n = m != 0 ? grid[0].length : 0;
+        int result = 0;
+        int rowhits = 0;
+        int[] colhits = new int[n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (j == 0 || grid[i][j - 1] == 'W') {
+                    rowhits = 0;
+                    for (int k = j; k < n && grid[i][k] != 'W'; k++) {
+                        rowhits += grid[i][k] == 'E' ? 1 : 0;
+                    }
+                }
+                if (i == 0 || grid[i - 1][j] == 'W') {
+                    colhits[j] = 0;
+                    for (int k = i; k < m && grid[k][j] != 'W'; k++) {
+                        colhits[j] += grid[k][j] == 'E' ? 1 : 0;
+                    }
+                }
+                if (grid[i][j] == '0') {
+                    result = Math.max(result, rowhits + colhits[j]);
+                }
+            }
+        }
+        return result;
+    }
+
+    public int maxKilledEnemies_2(char[][] grid) {
         int maxKilled = Integer.MIN_VALUE;
         int[][] dirs = {{0,1},{1,0},{0,-1},{-1,0}};
         for (int i=0; i<grid.length; i++) {
@@ -2144,9 +2228,6 @@ public class ArrayExe {
      * Explanation: [0, 1] (or [1, 0]) is a longest contiguous subarray with equal number of 0 and 1.
      *
      * Note: The length of the given binary array will not exceed 50,000.
-     *
-     * @param nums
-     * @return
      */
     public int findMaxLength(int[] nums) {
         for (int i = 0; i < nums.length; i++) {
@@ -2154,7 +2235,7 @@ public class ArrayExe {
                 nums[i] = -1;
             }
         }
-        Map<Integer, Integer> sumToIndex = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> sumToIndex = new HashMap<>();
         sumToIndex.put(0, -1); //To handle edge case where whole arr is contiguous
         int sum = 0, max = 0;
         for (int i = 0; i < nums.length; i++) {

@@ -374,8 +374,6 @@ public class HashMapExe {
 
     /**
      * https://leetcode.com/problems/valid-sudoku/
-     * @param board
-     * @return
      */
     //NOTE: HashSet.add() return false if the element already exist.
     public boolean isValidSudoku(char[][] board) {
