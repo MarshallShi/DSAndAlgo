@@ -819,33 +819,18 @@ public class BinarySearchExe {
      * nums.length <= threshold <= 10^6
      *
      */
-    public int smallestDivisor(int[] nums, int threshold) {
-        int maxNum = 0;
-        for (int i=0; i<nums.length; i++) {
-            maxNum = Math.max(nums[i], maxNum);
+    public int smallestDivisor(int[] A, int threshold) {
+        int left = 1, right = (int)1e6;
+        while (left < right) {
+            int m = (left + right) / 2, sum = 0;
+            for (int i : A)
+                sum += (i + m - 1) / m;
+            if (sum > threshold)
+                left = m + 1;
+            else
+                right = m;
         }
-        int low = 1, high = threshold;
-        while (low < high) {
-            int mid = low + (high - low)/2;
-            if (getDivSum(nums, mid) > threshold) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return high;
-    }
-
-    private int getDivSum(int[] nums, int div) {
-        int sum = 0;
-        for (int i=0; i<nums.length; i++) {
-            if (nums[i]%div != 0) {
-                sum += (nums[i]/div) + 1;
-            } else {
-                sum += nums[i]/div;
-            }
-        }
-        return sum;
+        return left;
     }
 
     /**

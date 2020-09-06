@@ -21,6 +21,7 @@ of call stacks, without impact on the result.
 
 Segment Trees
 
+https://www.youtube.com/watch?v=ZBHKZF5w4YU
 
 
 Fenwick Tree (Binary Index Tree)

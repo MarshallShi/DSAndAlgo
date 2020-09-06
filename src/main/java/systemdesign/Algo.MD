@@ -86,12 +86,18 @@ https://stackoverflow.com/questions/6811351/explaining-the-count-sketch-algorith
 
 
 **Merkle trees**
+Real world examples: 
+1. Git
+How to track file changes in the tree structure? File parent store the hash of children. If one file in leaf changed, will be propogated up.
+2. Amazon DynaDB
+3. Blockchain
 In distributed system, when we replicate large content among peers, individual chunk need to be hashed and verified for tamper 
 or corruption. Merkle tree is a data structure to link chunk hash with the root hash.
 The leaves of the tree correspond to hashes of the data chunks of a file, and the parents of these leaves being hashes of the concatenation.
 
 https://www.codementor.io/blog/merkle-trees-5h9arzd3n8
 https://hackernoon.com/merkle-tree-what-is-it-and-why-use-it-8m2a63xjd
+
 
 
 **B-Tree**

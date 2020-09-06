@@ -320,8 +320,6 @@ public class SortingExe {
 
     /**
      * https://leetcode.com/problems/squares-of-a-sorted-array/
-     * @param A
-     * @return
      */
     public int[] sortedSquares(int[] A) {
         int[] res = new int[A.length];
@@ -1057,10 +1055,6 @@ public class SortingExe {
 
     /**
      * https://leetcode.com/problems/next-greater-element-iii/
-     *
-     * @param n
-     * @return
-     */
     /**
      * Algo:
      * I) Traverse the given number from rightmost digit, keep traversing till you find a digit which is smaller than the previously traversed digit.

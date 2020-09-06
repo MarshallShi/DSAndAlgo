@@ -51,27 +51,27 @@ public class PartitionExe {
     //dp[i][j] = min(dp[i][j], dp[i][k] + dp[k+1][j]) or if we can find some pattern in string from i to j which will result in more less length.
     public String encode_bottomUp(String s) {
         String[][] dp = new String[s.length()][s.length()];
-        for(int l=0; l<s.length(); l++) {
-            for(int i=0; i<s.length()-l; i++) {
+        for (int l = 0; l < s.length(); l++) {
+            for (int i = 0; i < s.length() - l; i++) {
                 int j = i + l;
-                String substr = s.substring(i, j+1);
+                String substr = s.substring(i, j + 1);
                 // Checking if string length < 5. In that case, we know that encoding will not help.
                 dp[i][j] = substr;
                 if (j - i >= 4) {
                     // Loop for trying all results that we get after dividing the strings into 2 and combine the results of 2 substrings
-                    for (int k = i; k<j; k++) {
-                        if ((dp[i][k] + dp[k+1][j]).length() < dp[i][j].length()){
-                            dp[i][j] = dp[i][k] + dp[k+1][j];
+                    for (int k = i; k < j; k++) {
+                        if ((dp[i][k] + dp[k + 1][j]).length() < dp[i][j].length()) {
+                            dp[i][j] = dp[i][k] + dp[k + 1][j];
                         }
                     }
                     // Loop for checking if string can itself found some pattern in it which could be repeated.
-                    for(int k=0; k<substr.length(); k++) {
-                        String repeatStr = substr.substring(0, k+1);
+                    for (int k = 0; k < substr.length(); k++) {
+                        String repeatStr = substr.substring(0, k + 1);
                         if (repeatStr != null
-                                && substr.length()%repeatStr.length() == 0
+                                && substr.length() % repeatStr.length() == 0
                                 && substr.replaceAll(repeatStr, "").length() == 0) {
-                            String ss = substr.length()/repeatStr.length() + "[" + dp[i][i+k] + "]";
-                            if(ss.length() < dp[i][j].length()) {
+                            String ss = substr.length() / repeatStr.length() + "[" + dp[i][i + k] + "]";
+                            if (ss.length() < dp[i][j].length()) {
                                 dp[i][j] = ss;
                             }
                         }
@@ -79,27 +79,32 @@ public class PartitionExe {
                 }
             }
         }
-        return dp[0][s.length()-1];
+        return dp[0][s.length() - 1];
     }
 
     Map<String, String> map = new HashMap<String, String>();
+
     public String encode(String s) {
         if (s == null || s.length() == 0) return "";
         if (s.length() <= 4) return s;
         if (map.containsKey(s)) return map.get(s);
         String ret = s;
-        for (int k = s.length() / 2; k < s.length(); k ++) {
+        for (int k = s.length() / 2; k < s.length(); k++) {
             String pattern = s.substring(k);
             int times = countRepeat(s, pattern);
             if (times * pattern.length() != s.length()) continue;
             String candidate = Integer.toString(times) + "[" + encode(pattern) + "]";
-            if (candidate.length() < ret.length()) ret = candidate;
+            if (candidate.length() < ret.length()) {
+                ret = candidate;
+            }
         }
         for (int i = 1; i < s.length(); i++) {
             String left = encode(s.substring(0, i));
             String right = encode(s.substring(i));
             String candidate = left + right;
-            if (candidate.length() < ret.length()) ret = candidate;
+            if (candidate.length() < ret.length()) {
+                ret = candidate;
+            }
         }
         map.put(s, ret);
         return ret;
@@ -110,9 +115,11 @@ public class PartitionExe {
         while (s.length() >= pattern.length()) {
             String sub = s.substring(s.length() - pattern.length());
             if (sub.equals(pattern)) {
-                times ++;
+                times++;
                 s = s.substring(0, s.length() - pattern.length());
-            } else return times;
+            } else {
+                return times;
+            }
         }
         return times;
     }

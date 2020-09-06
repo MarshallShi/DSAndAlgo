@@ -371,13 +371,8 @@ public class OverlappingIntervalExe {
      *
      */
     public int videoStitching(int[][] clips, int T) {
-        int res = 0;
-        Arrays.sort(clips, new Comparator<int[]>() {
-            public int compare(int[] a, int[] b) {
-                return a[0] - b[0];
-            }
-        });
-        int st = 0, end = 0;
+        Arrays.sort(clips, (a, b) -> Integer.compare(a[0], b[0]));
+        int res = 0, st = 0, end = 0;
         for (int i = 0; st < T; ++res) {
             for (; i < clips.length && clips[i][0] <= st; ++i) {
                 end = Math.max(end, clips[i][1]);
@@ -676,9 +671,6 @@ public class OverlappingIntervalExe {
      *
      * 1 <= schedule.length , schedule[i].length <= 50
      * 0 <= schedule[i].start < schedule[i].end <= 10^8
-     *
-     * @param schedule
-     * @return
      */
     public List<Interval> employeeFreeTime(List<List<Interval>> schedule) {
         List<Interval> result = new ArrayList<Interval>();
@@ -698,6 +690,27 @@ public class OverlappingIntervalExe {
             }
         }
         return result;
+    }
+
+    public List<Interval> employeeFreeTime_2(List<List<Interval>> schedule) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> schedule.get(a[0]).get(a[1]).start - schedule.get(b[0]).get(b[1]).start);
+        for (int i = 0; i < schedule.size(); i++) {
+            pq.add(new int[] {i, 0});
+        }
+        List<Interval> res = new ArrayList<>();
+        int prev = schedule.get(pq.peek()[0]).get(pq.peek()[1]).start;
+        while (!pq.isEmpty()) {
+            int[] index = pq.poll();
+            Interval interval = schedule.get(index[0]).get(index[1]);
+            if (interval.start > prev) {
+                res.add(new Interval(prev, interval.start));
+            }
+            prev = Math.max(prev, interval.end);
+            if (schedule.get(index[0]).size() > index[1] + 1) {
+                pq.add(new int[] {index[0], index[1] + 1});
+            }
+        }
+        return res;
     }
 
 
@@ -878,9 +891,6 @@ public class OverlappingIntervalExe {
      *
      * Explanation:
      * One way is to shoot one arrow for example at x = 6 (bursting the balloons [2,8] and [1,6]) and another arrow at x = 11 (bursting the other two balloons).
-     *
-     * @param points
-     * @return
      */
     public int findMinArrowShots(int[][] points) {
         if (points.length == 0) {
@@ -1057,10 +1067,7 @@ public class OverlappingIntervalExe {
     }
 
     /**
-     * https://leetcode.com/problems/interval-list-intersections/
-     * @param A
-     * @param B
-     * @return
+     * https://leetcode.com/problems/interval-list-intersections
      */
     public int[][] intervalIntersection(int[][] A, int[][] B) {
         if (A == null || A.length == 0 || B == null || B.length == 0) {

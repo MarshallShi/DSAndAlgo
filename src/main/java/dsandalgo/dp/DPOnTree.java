@@ -143,8 +143,6 @@ public class DPOnTree {
      *
      * Output: 7
      * Explanation: Maximum amount of money the thief can rob = 3 + 3 + 1 = 7.
-     * @param root
-     * @return
      */
 
     //https://leetcode.com/problems/house-robber-iii/discuss/79330/Step-by-step-tackling-of-the-problem

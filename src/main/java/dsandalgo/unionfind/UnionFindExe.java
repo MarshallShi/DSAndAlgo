@@ -1225,8 +1225,6 @@ public class UnionFindExe {
      * 1 <= stones.length <= 1000
      * 0 <= stones[i][j] < 10000
      *
-     * @param stones
-     * @return
      */
     int countRS = 0;
     public int removeStones(int[][] stones) {
@@ -1287,69 +1285,32 @@ public class UnionFindExe {
      * The length of pairs will not exceed 2000.
      * The length of each pairs[i] will be 2.
      * The length of each words[i] and pairs[i][j] will be in the range [1, 20].
-     *
-     * @param words1
-     * @param words2
-     * @param pairs
-     * @return
      */
-    public boolean areSentencesSimilarTwo(String[] words1, String[] words2, List<List<String>> pairs) {
-        int n = words1.length;
-        int m = words2.length;
-        if (n != m) {
+    public boolean areSentencesSimilarTwo(String[] a, String[] b, List<List<String>> pairs) {
+        if (a.length != b.length) {
             return false;
         }
-        Map<String, Integer> wordsParent = new HashMap<String, Integer>();
-        int counter = 0;
-        for (List<String> lst : pairs) {
-            if (!wordsParent.containsKey(lst.get(0))) {
-                wordsParent.put(lst.get(0), counter);
-                counter++;
-            }
-            if (!wordsParent.containsKey(lst.get(1))) {
-                wordsParent.put(lst.get(1), counter);
-                counter++;
+        Map<String, String> m = new HashMap<>();
+        for (List<String> p : pairs) {
+            String parent1 = findUltimateParent(m, p.get(0)), parent2 = findUltimateParent(m, p.get(1));
+            if (!parent1.equals(parent2)) {
+                m.put(parent1, parent2);
             }
         }
-        UnionFindSentencesSimilar uf = new UnionFindSentencesSimilar(counter);
-        for (List<String> lst : pairs) {
-            uf.union(wordsParent.get(lst.get(0)), wordsParent.get(lst.get(1)));
-        }
-        for (int i=0; i<n; i++) {
-            if (words1[i].equals(words2[i])) {
-                continue;
-            }
-            if ( !wordsParent.containsKey(words1[i]) || !wordsParent.containsKey(words2[i])) {
-                return false;
-            }
-            if (uf.find(wordsParent.get(words1[i])) != uf.find(wordsParent.get(words2[i]))) {
+
+        for (int i = 0; i < a.length; i++) {
+            if (!a[i].equals(b[i]) && !findUltimateParent(m, a[i]).equals(findUltimateParent(m, b[i]))) {
                 return false;
             }
         }
         return true;
     }
 
-    class UnionFindSentencesSimilar {
-        int size;
-        int[] parent;
-        public UnionFindSentencesSimilar(int size) {
-            this.size = size;
-            this.parent = new int[size];
-            for (int i = 0; i < size; i++) {
-                parent[i] = i;
-            }
+    private String findUltimateParent(Map<String, String> m, String s) {
+        if (!m.containsKey(s)) {
+            m.put(s, s);
         }
-
-        public void union(int a, int b) {
-            parent[find(b)] = parent[find(a)];
-        }
-
-        public int find(int x) {
-            if (x != parent[x]) {
-                parent[x] = find(parent[x]);
-            }
-            return parent[x];
-        }
+        return s.equals(m.get(s)) ? s : findUltimateParent(m, m.get(s));
     }
 
     /**

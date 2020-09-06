@@ -5,8 +5,10 @@ package dsandalgo.twopointers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class SlidingWindowExe {
@@ -490,31 +492,20 @@ public class SlidingWindowExe {
      * https://leetcode.com/problems/find-k-length-substrings-with-no-repeated-characters/
      */
     public int numKLenSubstrNoRepeats(String S, int K) {
-        if (K > S.length()) {
-            return 0;
-        }
-        int[] charCount = new int[26];
-        for (int i=0; i<K; i++) {
-            charCount[S.charAt(i) - 'a']++;
-        }
-        int ret = isUnique(charCount, K) ? 1 : 0;
-        for (int i=K; i<S.length(); i++) {
-            charCount[S.charAt(i - K) - 'a']--;
-            charCount[S.charAt(i) - 'a']++;
-            if (isUnique(charCount, K)) {
-                ret++;
+        int ans = 0;
+        Set<Character> set = new HashSet<>();
+        int i = 0;
+        for (int j = 0; j < S.length(); j++) {
+            while (set.contains(S.charAt(j))) {
+                set.remove(S.charAt(i++));
+            }
+            set.add(S.charAt(j));
+            if (j - i + 1 == K) {
+                ans++;
+                set.remove(S.charAt(i++));
             }
         }
-        return ret;
-    }
-
-    private boolean isUnique(int[] charcnt, int K) {
-        for (int i=0; i<26; i++) {
-            if (charcnt[i] > 0) {
-                K--;
-            }
-        }
-        return K == 0;
+        return ans;
     }
 
     /**
@@ -648,10 +639,6 @@ public class SlidingWindowExe {
      * 1 <= A.length <= 20000
      * 1 <= A[i] <= A.length
      * 1 <= K <= A.length
-     *
-     * @param A
-     * @param K
-     * @return
      */
     public int subarraysWithKDistinct(int[] A, int K) {
         if (A == null || A.length == 0) {

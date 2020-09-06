@@ -187,9 +187,6 @@ public class HardDFSExe {
 
     /**
      * https://leetcode.com/problems/minimize-malware-spread-ii/
-     * @param graph
-     * @param initial
-     * @return
      */
     public int minMalwareSpread_II(int[][] graph, int[] initial) {
         //Sort to meet the order requirement..
@@ -204,15 +201,15 @@ public class HardDFSExe {
             Set<Integer> visited = new HashSet<>();
             //exclude current node.
             visited.add(n);
-            for (int i = 0; i<graph.length; i++) {
-                if(i != n && graph[n][i] == 1) {
+            for (int i = 0; i < graph.length; i++) {
+                if (i != n && graph[n][i] == 1) {
                     int temp = minMalwareSpreadDFSII(i, visited, mal, graph);
                     // encountered malware during exploration, meaning this whole branch doesn't count/contribute
                     if (temp < 0) continue;
                     save += temp;
                 }
             }
-            if(save > max){
+            if (save > max) {
                 ret = n;
                 max = save;
             }
@@ -220,7 +217,7 @@ public class HardDFSExe {
         return ret;
     }
 
-    private int minMalwareSpreadDFSII(int n, Set<Integer> visited, Set<Integer> mal, int[][] graph){
+    private int minMalwareSpreadDFSII(int n, Set<Integer> visited, Set<Integer> mal, int[][] graph) {
         if (visited.contains(n)) return 0;
         if (mal.contains(n)) return -1;
         visited.add(n);
@@ -882,37 +879,36 @@ public class HardDFSExe {
      * @param grid
      * @return
      */
-    int res = 0;
     public int uniquePathsIII(int[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
         boolean[][] visited = new boolean[m][n];
+        int[] res = new int[1];
         for (int i=0; i<m; i++) {
             for (int j=0; j<n; j++) {
                 if (grid[i][j] == 1) {
-                    dfsUniquePathIII(grid, i, j, visited);
+                    dfsUniquePathIII(grid, i, j, m, n, visited, res);
                 }
             }
         }
-        return res;
+        return res[0];
     }
 
-    private void dfsUniquePathIII(int[][] grid, int i, int j, boolean[][] visited) {
-        if(i < 0 || i == grid.length || j < 0 || j == grid[i].length
-                || grid[i][j] == -1 || visited[i][j]) {
+    private void dfsUniquePathIII(int[][] grid, int i, int j, int m, int n, boolean[][] visited, int[] res) {
+        if(i < 0 || i == m || j < 0 || j == n || grid[i][j] == -1 || visited[i][j]) {
             //Invalid cell.
             return;
         }
         if (grid[i][j] == 2 && visitedAllZero(grid, visited)) {
             //To the target, add to result.
-            res = res + 1;
+            res[0] = res[0] + 1;
             return;
         }
         visited[i][j] = true;
-        dfsUniquePathIII(grid, i-1, j, visited);
-        dfsUniquePathIII(grid, i+1, j, visited);
-        dfsUniquePathIII(grid, i, j-1, visited);
-        dfsUniquePathIII(grid, i, j+1, visited);
+        dfsUniquePathIII(grid, i-1, j, m, n, visited, res);
+        dfsUniquePathIII(grid, i+1, j, m, n, visited, res);
+        dfsUniquePathIII(grid, i, j-1, m, n, visited, res);
+        dfsUniquePathIII(grid, i, j+1, m, n, visited, res);
         visited[i][j] = false;
     }
 

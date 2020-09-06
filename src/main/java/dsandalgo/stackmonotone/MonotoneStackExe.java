@@ -575,12 +575,9 @@ public class MonotoneStackExe {
      * Note:
      * 1 <= node.val <= 10^9 for each node in the linked list.
      * The given list has length in the range [0, 10000].
-     * @param head
-     * @return
      */
-    //Trick is the stack...
     public int[] nextLargerNodes(ListNode head) {
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
         while (head != null) {
             list.add(head.val);
             head = head.next;
@@ -588,7 +585,7 @@ public class MonotoneStackExe {
         int[] res = new int[list.size()];
         //Stack going to track index the decreasing numbers, once have a bigger number,
         //We'll can conclude the stack top's element's next greater number is this bigger number, till we can't pop.
-        Stack<Integer> stack = new Stack<Integer>();
+        Stack<Integer> stack = new Stack<>();
         for (int i = 0; i < list.size(); ++i) {
             while (!stack.isEmpty() && list.get(stack.peek()) < list.get(i)) {
                 res[stack.pop()] = list.get(i);

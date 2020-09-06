@@ -904,11 +904,86 @@ public class DPOnStringsExe {
         return dp[m][n];
     }
 
+    public boolean isMatch_wild_topdown(String s, String p) {
+        return isMatchFrmIdx(0, s, 0, p, new Boolean[s.length() + 1][p.length() + 1]); // Need 1 more for "" & "".
+    }
+
+    private boolean isMatchFrmIdx(int sIdx, String s, int pIdx, String p, Boolean[][] strsFrmIdxMatchMemo) {
+        if(strsFrmIdxMatchMemo[sIdx][pIdx] != null) {
+            return strsFrmIdxMatchMemo[sIdx][pIdx];
+        }
+        boolean matchStatCurStage = false; // False picked up in memo @ end for else case when chars don't match.
+        if(s.equals(p)) {
+            matchStatCurStage = true;
+        } else if(sIdx == s.length() && pIdx == p.length()) {
+            // If this stage represents s & p as "".
+            matchStatCurStage = true;
+        } else if(pIdx == p.length()) {
+            // Reached here cuz either s or p is at least a char long string.
+            matchStatCurStage = false; // Can't have a non-empty s match an empty p.
+        } else if(sIdx == s.length()) {
+            // Try to see if p at or after this stage is only * or ** or *** etc. Only way to match an empty s.
+            matchStatCurStage = p.charAt(pIdx) == '*' && isMatchFrmIdx(sIdx, s, pIdx + 1, p, strsFrmIdxMatchMemo);
+        } else if(s.charAt(sIdx) == p.charAt(pIdx) || p.charAt(pIdx) == '?') {
+            // Here cuz s & p are at least a char long.
+            // Match here if strs from next index onward also are a match. Delegate job to recursive func for latter.
+            matchStatCurStage = isMatchFrmIdx(sIdx + 1, s, pIdx + 1, p, strsFrmIdxMatchMemo);
+        } else if(p.charAt(pIdx) == '*') {
+            // 1: When * matches an empty seq, it's work is done. Hence, the next stage to check match for is w/o *.
+            // Also, there could be *s in line. So, consuming this *, could exhibit new p with next fresh *.
+            // 2: * can match seq of chars. Hence, * kept. Further rec stages could use it to match more chars/empty.
+            matchStatCurStage = isMatchFrmIdx(sIdx, s, pIdx + 1, p, strsFrmIdxMatchMemo)
+                    || isMatchFrmIdx(sIdx + 1, s, pIdx, p, strsFrmIdxMatchMemo);
+        }
+        return strsFrmIdxMatchMemo[sIdx][pIdx] = matchStatCurStage;
+    }
+
     /**
      * https://leetcode.com/problems/regular-expression-matching/
-     * @param s
-     * @param p
-     * @return
+     * Given an input string (s) and a pattern (p), implement regular expression matching with support for '.' and '*'.
+     *
+     * '.' Matches any single character.
+     * '*' Matches zero or more of the preceding element.
+     * The matching should cover the entire input string (not partial).
+     *
+     * Note:
+     *
+     * s could be empty and contains only lowercase letters a-z.
+     * p could be empty and contains only lowercase letters a-z, and characters like . or *.
+     * Example 1:
+     *
+     * Input:
+     * s = "aa"
+     * p = "a"
+     * Output: false
+     * Explanation: "a" does not match the entire string "aa".
+     * Example 2:
+     *
+     * Input:
+     * s = "aa"
+     * p = "a*"
+     * Output: true
+     * Explanation: '*' means zero or more of the preceding element, 'a'. Therefore, by repeating 'a' once, it becomes "aa".
+     * Example 3:
+     *
+     * Input:
+     * s = "ab"
+     * p = ".*"
+     * Output: true
+     * Explanation: ".*" means "zero or more (*) of any character (.)".
+     * Example 4:
+     *
+     * Input:
+     * s = "aab"
+     * p = "c*a*b"
+     * Output: true
+     * Explanation: c can be repeated 0 times, a can be repeated 1 time. Therefore, it matches "aab".
+     * Example 5:
+     *
+     * Input:
+     * s = "mississippi"
+     * p = "mis*is*p*."
+     * Output: false
      */
     //1, If p.charAt(j) == s.charAt(i) :  dp[i][j] = dp[i-1][j-1];
     //2, If p.charAt(j) == '.' : dp[i][j] = dp[i-1][j-1];
@@ -950,6 +1025,34 @@ public class DPOnStringsExe {
             }
         }
         return dp[s.length()][p.length()];
+    }
+
+    public boolean isMatch_topdown(String s, String p) {
+        Boolean mem[][] = new Boolean[s.length() + 1][p.length() + 1];
+        return helper(0, 0, s, p, mem);
+    }
+
+    private boolean helper(int sPos, int pPos, String s, String p, Boolean[][] mem) {
+        int sLen = s.length(), pLen = p.length();
+        if (pPos == pLen) {
+            return sPos == sLen;
+        }
+        if (mem[sPos][pPos] != null) {
+            return mem[sPos][pPos];
+        }
+        if (pPos + 1 < pLen && p.charAt(pPos + 1) == '*') {
+            // 0 of preceding char.
+            if (helper(sPos, pPos + 2, s, p, mem)) {
+                return mem[sPos][pPos] = true;
+            }
+            //
+            if (sPos < sLen && (p.charAt(pPos) == '.' || s.charAt(sPos) == p.charAt(pPos))) {
+                if (helper(sPos + 1, pPos, s, p, mem)) return mem[sPos][pPos] = true;
+            }
+        } else if (sPos < sLen && (p.charAt(pPos) == '.' || s.charAt(sPos) == p.charAt(pPos))) {
+            return mem[sPos][pPos] = helper(sPos + 1, pPos + 1, s, p, mem);
+        }
+        return mem[sPos][pPos] = false;
     }
 
     public boolean isMatch_2(String s, String p) {

@@ -624,17 +624,17 @@ public class TreeExe {
      * Output: [1, 3, 9]
      */
     public List<Integer> largestValues(TreeNode root) {
-        List<Integer> res = new LinkedList<Integer>();
+        List<Integer> res = new LinkedList<>();
         if (root == null) {
             return res;
         }
-        LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+        Queue<TreeNode> queue = new LinkedList<>();
         queue.add(root);
         while (!queue.isEmpty()) {
             int n = queue.size();
             int max = Integer.MIN_VALUE;
             for (int i = 0; i < n; i++) {
-                TreeNode node = queue.pop();
+                TreeNode node = queue.poll();
                 max = Math.max(node.val, max);
                 if (node.left != null) {
                     queue.add(node.left);
@@ -724,9 +724,6 @@ public class TreeExe {
      *       2   3
      *
      * Output: [1]
-     * @param n
-     * @param edges
-     * @return
      */
     public List<Integer> findMinHeightTrees(int n, int[][] edges) {
         if (n == 1) {
@@ -2016,18 +2013,23 @@ public class TreeExe {
      * Each tree has at most 50000 nodes and at least 2 nodes.
      * Each node's value is between [1, 10000].
      */
-    private long resMaxProduct = 0, total = 0, sub;
     public int maxProduct(TreeNode root) {
-        total = getSumMaxProduct(root);
-        getSumMaxProduct(root);
-        return (int)(resMaxProduct % (int)(1e9 + 7));
+        long total = getSumFirst(root);
+        long[] res = new long[1];
+        getSumMaxProduct(root, total, res);
+        return (int)(res[0] % (int)(1e9 + 7));
     }
-    private long getSumMaxProduct(TreeNode root) {
+    private long getSumFirst(TreeNode root) {
+        if (root == null) return 0;
+        return root.val + getSumFirst(root.left) + getSumFirst(root.right);
+    }
+
+    private long getSumMaxProduct(TreeNode root, long total, long[] res) {
         if (root == null) {
             return 0;
         }
-        sub = root.val + getSumMaxProduct(root.left) + getSumMaxProduct(root.right);
-        resMaxProduct = Math.max(resMaxProduct, sub * (total - sub));
+        long sub = root.val + getSumMaxProduct(root.left, total, res) + getSumMaxProduct(root.right, total, res);
+        res[0] = Math.max(res[0], sub * (total - sub));
         return sub;
     }
 
@@ -2766,17 +2768,17 @@ public class TreeExe {
      * It's guaranteed that the values of the tree are unique.
      *
      */
-    //https://leetcode.com/problems/inorder-successor-in-bst/discuss/72653/Share-my-Java-recursive-solution
     public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
-        if (root == null) {
-            return null;
+        TreeNode res = null;
+        while (root != null) {
+            if (p.val < root.val) {
+                res = root;
+                root = root.left;
+            } else {
+                root = root.right;
+            }
         }
-        if (root.val <= p.val) {
-            return inorderSuccessor(root.right, p);
-        } else {
-            TreeNode left = inorderSuccessor(root.left, p);
-            return (left != null) ? left : root;
-        }
+        return res;
     }
 
     /**
@@ -2965,9 +2967,6 @@ public class TreeExe {
      *    -3   9
      *    /   /
      *  -10  5
-     *
-     * @param head
-     * @return
      */
     public TreeNode sortedListToBST(ListNode head) {
         if (head == null) return null;
@@ -2987,50 +2986,6 @@ public class TreeExe {
         thead.left = toBST(head, slow);
         thead.right = toBST(slow.next, tail);
         return thead;
-    }
-
-    public TreeNode sortedListToBST_1(ListNode head) {
-        ListNode root = head;
-        while (head.next != null) {
-            head = head.next;
-        }
-        return sortedListToBSTHelper(root, head);
-    }
-
-    private TreeNode sortedListToBSTHelper(ListNode head, ListNode tail) {
-        if (head == null && tail == null) {
-            return null;
-        }
-        if (head == tail) {
-            return new TreeNode(head.val);
-        } else {
-            if (head == null) {
-                return new TreeNode(tail.val);
-            } else {
-                if (tail == null) {
-                    return new TreeNode(head.val);
-                }
-            }
-        }
-        ListNode root = head;
-        ListNode mid = head;
-        ListNode pre = null;
-        while (head != null && head.next != null) {
-            head = head.next.next;
-            pre = mid;
-            mid = mid.next;
-        }
-        TreeNode ret = new TreeNode(mid.val);
-        if (pre != null) {
-            pre.next = null;
-            ret.left = sortedListToBSTHelper(root, pre);
-        }
-        ListNode head2nd = mid.next;
-        if (head2nd != null) {
-            mid.next = null;
-            ret.right = sortedListToBSTHelper(head2nd, tail);
-        }
-        return ret;
     }
 
     /**

@@ -1041,9 +1041,6 @@ public class BFSExes {
     }
     /**
      * https://leetcode.com/problems/web-crawler/
-     * @param startUrl
-     * @param htmlParser
-     * @return
      */
     //BFS solution
     public List<String> crawl(String startUrl, HtmlParser htmlParser) {
@@ -1064,7 +1061,7 @@ public class BFSExes {
                 }
             }
         }
-        return new ArrayList<String>(set);
+        return new ArrayList<>(set);
     }
 
     private String getHostname(String Url) {

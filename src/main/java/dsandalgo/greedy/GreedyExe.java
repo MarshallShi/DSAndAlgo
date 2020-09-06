@@ -1274,6 +1274,7 @@ public class GreedyExe{
     }
 
     /**
+     * https://leetcode.com/problems/lemonade-change/
      * Input: [5,5,10,10,20]
      * Output: false
      * Explanation:
@@ -1281,10 +1282,6 @@ public class GreedyExe{
      * For the next two customers in order, we collect a $10 bill and give back a $5 bill.
      * For the last customer, we can't give change of $15 back because we only have two $10 bills.
      * Since not every customer received correct change, the answer is false.
-     *
-     * https://leetcode.com/problems/lemonade-change/
-     * @param bills
-     * @return
      */
     public boolean lemonadeChange(int[] bills) {
         int five = 0, ten = 0, twenty = 0;

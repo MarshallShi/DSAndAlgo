@@ -1126,33 +1126,64 @@ public class HardMathExe {
      *              The point (0,2) is an ideal meeting point, as the total travel distance
      *              of 2+2+2=6 is minimal. So return 6.
      */
+//    public int minTotalDistance(int[][] grid) {
+//        int m = grid.length;
+//        int n = grid[0].length;
+//        List<Integer> xPosList = new ArrayList<>(m);
+//        List<Integer> yPosList = new ArrayList<>(n);
+//        for (int i = 0; i < m; i++) {
+//            for (int j = 0; j < n; j++) {
+//                if (grid[i][j] == 1) {
+//                    xPosList.add(i);
+//                    yPosList.add(j);
+//                }
+//            }
+//        }
+//        return getMinTotalDisInALine(xPosList) + getMinTotalDisInALine(yPosList);
+//    }
+//
+//    private int getMinTotalDisInALine(List<Integer> list) {
+//        int ret = 0;
+//        Collections.sort(list);
+//        int low = 0;
+//        int high = list.size() - 1;
+//        while (low < high) {
+//            ret += list.get(high) - list.get(low);
+//            high--;
+//            low++;
+//        }
+//        return ret;
+//    }
+
     public int minTotalDistance(int[][] grid) {
-        int m = grid.length;
-        int n = grid[0].length;
-        List<Integer> xPosList = new ArrayList<>(m);
-        List<Integer> yPosList = new ArrayList<>(n);
+        int m = grid.length, n = grid[0].length;
+
+        List<Integer> I = new ArrayList<Integer>();
+        List<Integer> J = new ArrayList<Integer>();
+
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 1) {
-                    xPosList.add(i);
-                    yPosList.add(j);
+                    I.add(i);
                 }
             }
         }
-        return getMinTotalDisInALine(xPosList) + getMinTotalDisInALine(yPosList);
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i < m; i ++) {
+                if (grid[i][j] == 1) {
+                    J.add(j);
+                }
+            }
+        }
+        return minTotalDistance(I) + minTotalDistance(J);
     }
 
-    private int getMinTotalDisInALine(List<Integer> list) {
-        int ret = 0;
-        Collections.sort(list);
-        int low = 0;
-        int high = list.size() - 1;
-        while (low < high) {
-            ret += list.get(high) - list.get(low);
-            high--;
-            low++;
+    public int minTotalDistance(List<Integer> grid) {
+        int i = 0, j = grid.size() - 1, sum = 0;
+        while (i < j) {
+            sum += grid.get(j--) - grid.get(i++);
         }
-        return ret;
+        return sum;
     }
 
     /**

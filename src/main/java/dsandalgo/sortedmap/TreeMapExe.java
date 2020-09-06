@@ -243,28 +243,19 @@ public class TreeMapExe {
      *
      * Input: trips = [[3,2,7],[3,7,9],[8,3,9]], capacity = 11
      * Output: true
-     * @param trips
-     * @param capacity
-     * @return
      */
     public boolean carPooling(int[][] trips, int capacity) {
-        if (trips == null || trips.length == 0) {
-            return true;
+        int stops[] = new int[1001];
+        for (int t[] : trips) {
+            stops[t[1]] += t[0];
+            stops[t[2]] -= t[0];
         }
-        TreeMap<Integer, Integer> map = new TreeMap<Integer,Integer>();
-        for (int i=0; i<trips.length; i++) {
-            map.putIfAbsent(trips[i][1], 0);
-            map.put(trips[i][1], map.get(trips[i][1]) + trips[i][0]);
-            map.putIfAbsent(trips[i][2], 0);
-            map.put(trips[i][2], map.get(trips[i][2]) - trips[i][0]);
-        }
-        int maxLoad = 0;
-        for (int val : map.values()) {
-            maxLoad = maxLoad + val;
-            if (maxLoad > capacity) {
+        for (int i = 0; i < 1001; i++) {
+            capacity -= stops[i];
+            if (capacity < 0) {
                 return false;
             }
         }
-        return true;
+        return capacity >= 0;
     }
 }

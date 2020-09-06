@@ -34,6 +34,90 @@ public class StackExe {
     }
 
     /**
+     * https://leetcode.com/problems/maximum-number-of-non-overlapping-substrings/
+     * Given a string s of lowercase letters, you need to find the maximum number of non-empty substrings of s that meet the following conditions:
+     *
+     * The substrings do not overlap, that is for any two substrings s[i..j] and s[k..l], either j < k or i > l is true.
+     * A substring that contains a certain character c must also contain all occurrences of c.
+     * Find the maximum number of substrings that meet the above conditions. If there are multiple solutions with the same number of substrings, return the one with minimum total length. It can be shown that there exists a unique solution of minimum total length.
+     *
+     * Notice that you can return the substrings in any order.
+     *
+     *
+     *
+     * Example 1:
+     *
+     * Input: s = "adefaddaccc"
+     * Output: ["e","f","ccc"]
+     * Explanation: The following are all the possible substrings that meet the conditions:
+     * [
+     *   "adefaddaccc"
+     *   "adefadda",
+     *   "ef",
+     *   "e",
+     *   "f",
+     *   "ccc",
+     * ]
+     * If we choose the first string, we cannot choose anything else and we'd get only 1. If we choose "adefadda", we are left with "ccc" which is the only one that doesn't overlap, thus obtaining 2 substrings. Notice also, that it's not optimal to choose "ef" since it can be split into two. Therefore, the optimal way is to choose ["e","f","ccc"] which gives us 3 substrings. No other solution of the same number of substrings exist.
+     * Example 2:
+     *
+     * Input: s = "abbaccd"
+     * Output: ["d","bb","cc"]
+     * Explanation: Notice that while the set of substrings ["d","abba","cc"] also has length 3, it's considered incorrect since it has larger total length.
+     *
+     *
+     * Constraints:
+     *
+     * 1 <= s.length <= 10^5
+     * s contains only lowercase English letters.
+     */
+    public List<String> maxNumOfSubstrings(String s) {
+        int[] l = new int[26];
+        int[] r = new int[26];
+        final int MAX = (int)1e5;
+        Arrays.fill(l, MAX);
+        Arrays.fill(r, -1);
+        char[] cs = s.toCharArray();
+        for (int i = 0; i < cs.length; i++) {
+            int index = cs[i] - 'a';
+            l[index] = Math.min(l[index], i);
+            r[index] = Math.max(r[index], i);
+        }
+        Stack<int[]> stack = new Stack<>();
+        for (int i = 0; i < cs.length; i++) {
+            if (i == l[s.charAt(i) - 'a']) {
+                int right = check(s, i, l, r);
+                if (right == -1) {
+                    continue;
+                }
+                int[] temp = new int[]{i, right};
+                while (!stack.isEmpty() && temp[0] >= stack.peek()[0] && temp[1] <= stack.peek()[1]) {
+                    stack.pop();
+                }
+                stack.push(temp);
+            }
+        }
+        List<String> res = new ArrayList<>();
+        while (!stack.isEmpty()) {
+            int[] temp = stack.pop();
+            res.add(s.substring(temp[0], temp[1] + 1));
+        }
+        return res;
+    }
+
+    private int check(String s, int i, int[] l, int[] r) {
+        int right = r[s.charAt(i) - 'a'];
+        for (int j = i + 1; j < right; j++) {
+            if (l[s.charAt(j) - 'a'] < i) {
+                return -1;
+            } else if (r[s.charAt(j) - 'a'] > right) {
+                right = r[s.charAt(j) - 'a'];
+            }
+        }
+        return right;
+    }
+
+    /**
      * https://leetcode.com/problems/baseball-game/
      */
     public int calPoints(String[] ops) {
@@ -149,9 +233,6 @@ public class StackExe {
      * Now function 1 starts at the beginning of time 2, executes 4 units of time and ends at time 5.
      * Function 0 is running again at the beginning of time 6, and also ends at the end of time 6, thus executing for 1 unit of time.
      * So function 0 spends 2 + 1 = 3 units of total time executing, and function 1 spends 4 units of total time executing.
-     * @param n
-     * @param logs
-     * @return
      */
     //stack based solution: push all the previous unfinished function id into the stack, when a new function start, or end, update the sum of total for
     //the stack top function id.
@@ -368,6 +449,50 @@ public class StackExe {
             }
         }
         return result;
+    }
+
+    /**
+     * The workflow of the solution is as below.
+     *
+     * 1. Scan the string from beginning to end.
+     * If current character is '(',
+     * push its index to the stack. If current character is ')' and the
+     * character at the index of the top of stack is '(', we just find a
+     * matching pair so pop from the stack. Otherwise, we push the index of
+     * ')' to the stack.
+     * 2. After the scan is done, the stack will only
+     * contain the indices of characters which cannot be matched. Then
+     * let's use the opposite side - substring between adjacent indices
+     * should be valid parentheses.
+     * 3. If the stack is empty, the whole input
+     * string is valid. Otherwise, we can scan the stack to get longest
+     * valid substring as described in step 3.
+     */
+    public int longestValidParentheses_2(String s) {
+        int n = s.length(), longest = 0;
+        Stack<Integer> st = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) == '(') st.push(i);
+            else {
+                if (!st.empty()) {
+                    if (s.charAt(st.peek()) == '(') st.pop();
+                    else st.push(i);
+                } else st.push(i);
+            }
+        }
+        if (st.empty()) {
+            longest = n;
+        } else {
+            int a = n, b = 0;
+            while (!st.empty()) {
+                b = st.peek();
+                st.pop();
+                longest = Math.max(longest, a - b - 1);
+                a = b;
+            }
+            longest = Math.max(longest, a);
+        }
+        return longest;
     }
 
     /**
@@ -676,26 +801,18 @@ public class StackExe {
      * S is a balanced parentheses string, containing only ( and ).
      * 2 <= S.length <= 50
      */
-    //https://leetcode.com/problems/score-of-parentheses/discuss/141777/C%2B%2BJavaPython-O(1)-Space
     public int scoreOfParentheses(String s) {
         Stack<Integer> stack = new Stack<>();
+        int cur = 0;
         for (char c : s.toCharArray()) {
             if (c == '(') {
-                stack.push(-1);
+                stack.push(cur);
+                cur = 0;
             } else {
-                int cur = 0;
-                while (stack.peek() != -1) {
-                    cur += stack.pop();
-                }
-                stack.pop();
-                stack.push(cur == 0 ? 1 : cur * 2);
+                cur = stack.pop() + Math.max(cur * 2, 1);
             }
         }
-        int sum = 0;
-        while (!stack.isEmpty()) {
-            sum += stack.pop();
-        }
-        return sum;
+        return cur;
     }
 
     /**

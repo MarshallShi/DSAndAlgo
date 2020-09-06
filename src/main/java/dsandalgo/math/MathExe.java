@@ -1224,10 +1224,6 @@ public class MathExe {
 
     /**
      * https://leetcode.com/problems/champagne-tower/
-     * @param poured
-     * @param query_row
-     * @param query_glass
-     * @return
      */
     public double champagneTower(int poured, int query_row, int query_glass) {
         double[][] result = new double[101][101];
@@ -1267,20 +1263,20 @@ public class MathExe {
      */
     public String nextClosestTime(String time) {
         char[] result = time.toCharArray();
-        char[] digits = new char[] {result[0], result[1], result[3], result[4]};
+        char[] digits = new char[]{result[0], result[1], result[3], result[4]};
         Arrays.sort(digits);
 
         // find next digit for HH:M_
-        result[4] = findNext(result[4], (char)('9' + 1), digits);  // no upperLimit for this digit, i.e. 0-9
-        if(result[4] > time.charAt(4)) return String.valueOf(result);  // e.g. 23:43 -> 23:44
+        result[4] = findNext(result[4], (char) ('9' + 1), digits);  // no upperLimit for this digit, i.e. 0-9
+        if (result[4] > time.charAt(4)) return String.valueOf(result);  // e.g. 23:43 -> 23:44
 
         // find next digit for HH:_M
         result[3] = findNext(result[3], '5', digits);
-        if(result[3] > time.charAt(3)) return String.valueOf(result);  // e.g. 14:29 -> 14:41
+        if (result[3] > time.charAt(3)) return String.valueOf(result);  // e.g. 14:29 -> 14:41
 
         // find next digit for H_:MM
-        result[1] = result[0] == '2' ? findNext(result[1], '3', digits) : findNext(result[1], (char)('9' + 1), digits);
-        if(result[1] > time.charAt(1)) return String.valueOf(result);  // e.g. 02:37 -> 03:00
+        result[1] = result[0] == '2' ? findNext(result[1], '3', digits) : findNext(result[1], (char) ('9' + 1), digits);
+        if (result[1] > time.charAt(1)) return String.valueOf(result);  // e.g. 02:37 -> 03:00
 
         // find next digit for _H:MM
         result[0] = findNext(result[0], '2', digits);
@@ -1292,8 +1288,7 @@ public class MathExe {
      * If no such digit exists in digits[], return the minimum one i.e. digits[0]
      */
     private char findNext(char current, char upperLimit, char[] digits) {
-        //System.out.println(current);
-        if(current == upperLimit) {
+        if (current == upperLimit) {
             return digits[0];
         }
         int pos = Arrays.binarySearch(digits, current) + 1;

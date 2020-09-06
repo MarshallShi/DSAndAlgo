@@ -296,17 +296,14 @@ public class TrieExes {
      * Input: ["bat","tab","cat"]
      * Output: [[0,1],[1,0]]
      * Explanation: The palindromes are ["battab","tabbat"]
-     *
-     * @param words
-     * @return
      */
-    //Solution 1: brute force, O(n2)
+    //Solution 1: brute force, O(n*k*k)
     public List<List<Integer>> palindromePairs_bruteforce(String[] words) {
         List<List<Integer>> ret = new ArrayList<>();
         if (words == null || words.length < 2) {
             return ret;
         }
-        Map<String, Integer> map = new HashMap<String, Integer>();
+        Map<String, Integer> map = new HashMap<>();
         for (int i = 0; i < words.length; i++) {
             map.put(words[i], i);
         }
@@ -318,20 +315,14 @@ public class TrieExes {
                 if (isPalindrome(str1)) {
                     String str2rvs = new StringBuilder(str2).reverse().toString();
                     if (map.containsKey(str2rvs) && map.get(str2rvs) != i) {
-                        List<Integer> list = new ArrayList<Integer>();
-                        list.add(map.get(str2rvs));
-                        list.add(i);
-                        ret.add(list);
+                        ret.add(Arrays.asList(map.get(str2rvs), i));
                     }
                 }
                 if (isPalindrome(str2)) {
                     String str1rvs = new StringBuilder(str1).reverse().toString();
                     // check "str.length() != 0" to avoid duplicates
                     if (map.containsKey(str1rvs) && map.get(str1rvs) != i && str2.length() != 0) {
-                        List<Integer> list = new ArrayList<Integer>();
-                        list.add(i);
-                        list.add(map.get(str1rvs));
-                        ret.add(list);
+                        ret.add(Arrays.asList(i, map.get(str1rvs)));
                     }
                 }
             }
@@ -355,7 +346,7 @@ public class TrieExes {
     //Case 1: the reverse of s2 is a suffix of s1 and the rest part of s1 is a palindrome (that is, the prefix of s1 excluding the previous suffix is a palindrome)
     //Case 2: the reverse of s1 is a suffix of s2 and the rest part of s2 is a palindrome (that is, the prefix of s2 excluding the previous suffix is a palindrome)
     //Solution steps:
-    //1. build each word into trie in reverse order, and add the index in the ending char, into the list for mutliple ending.
+    //1. build each word into trie in reverse order, and add the index in the ending char, into the list for multiple ending.
     //2. search, once find the position list not null, check if remaining chars form palindrome, if yes all position in the list will form a result pair.
     public List<List<Integer>> palindromePairs(String[] words) {
         List<List<Integer>> res = new ArrayList<>();

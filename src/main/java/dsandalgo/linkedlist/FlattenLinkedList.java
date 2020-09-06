@@ -4,8 +4,6 @@ public class FlattenLinkedList {
 
 
     public static void main(String[] args) {
-        FlattenLinkedList flatten = new FlattenLinkedList();
-        flatten.flatten(flatten.createTestData());
     }
 
     class Node {
@@ -25,9 +23,6 @@ public class FlattenLinkedList {
      *
      * Flatten the list so that all the nodes appear in a single-level, doubly linked list. You are
      * given the head of the first level of the list.
-     *
-     * @param head
-     * @return
      */
     public Node flatten(Node head) {
         if (head == null) {
@@ -58,9 +53,5 @@ public class FlattenLinkedList {
             p.child = null;
         }
         return head;
-    }
-
-    private Node createTestData() {
-        return null;
     }
 }

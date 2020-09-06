@@ -1203,8 +1203,6 @@ public class DFSExe {
      * Note:
      * The length sum of the given matchsticks is in the range of 0 to 10^9.
      * The length of the given matchstick array will not exceed 15.
-     * @param nums
-     * @return
      */
     //Trick is to use the four edges to try add each number, see which edge should have the number.!!!!
     public boolean makesquare(int[] nums) {
@@ -1474,10 +1472,6 @@ public class DFSExe {
 
     /**
      * https://leetcode.com/problems/minimum-knight-moves/
-     *
-     * @param x
-     * @param y
-     * @return
      */
     public int minKnightMoves(int x, int y) {
         int MOD = Math.abs(y) + 2;
@@ -1532,12 +1526,9 @@ public class DFSExe {
      * Return:
      *
      * [[0, 4], [1, 3], [1, 4], [2, 2], [3, 0], [3, 1], [4, 0]] (positions with parentheses in above matrix).
-     *
-     * @param matrix
-     * @return
      */
     public List<List<Integer>> pacificAtlantic(int[][] matrix) {
-        List<List<Integer>> res = new LinkedList<List<Integer>>();
+        List<List<Integer>> res = new LinkedList<>();
         if(matrix == null || matrix.length == 0 || matrix[0].length == 0){
             return res;
         }
@@ -1545,17 +1536,17 @@ public class DFSExe {
         boolean[][] pacific = new boolean[m][n];
         boolean[][] atlantic = new boolean[m][n];
         for (int i=0; i<m; i++){
-            dfs(matrix, pacific, Integer.MIN_VALUE, i, 0);
-            dfs(matrix, atlantic, Integer.MIN_VALUE, i, n-1);
+            padfs(matrix, pacific, Integer.MIN_VALUE, i, 0);
+            padfs(matrix, atlantic, Integer.MIN_VALUE, i, n-1);
         }
         for (int i=0; i<n; i++){
-            dfs(matrix, pacific, Integer.MIN_VALUE, 0, i);
-            dfs(matrix, atlantic, Integer.MIN_VALUE, m-1, i);
+            padfs(matrix, pacific, Integer.MIN_VALUE, 0, i);
+            padfs(matrix, atlantic, Integer.MIN_VALUE, m-1, i);
         }
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (pacific[i][j] && atlantic[i][j]) {
-                    List<Integer> oneRes = new ArrayList<Integer>();
+                    List<Integer> oneRes = new ArrayList<>();
                     oneRes.add(i);
                     oneRes.add(j);
                     res.add(oneRes);
@@ -1565,16 +1556,16 @@ public class DFSExe {
         return res;
     }
 
-    int[][] dirPA = new int[][]{{0,1},{0,-1},{1,0},{-1,0}};
+    private int[][] dirPA = {{0,1},{0,-1},{1,0},{-1,0}};
 
-    public void dfs(int[][]matrix, boolean[][]visited, int height, int x, int y){
+    public void padfs(int[][]matrix, boolean[][]visited, int height, int x, int y){
         int n = matrix.length, m = matrix[0].length;
         if (x<0 || x>=n || y<0 || y>=m || visited[x][y] || matrix[x][y] < height){
             return;
         }
         visited[x][y] = true;
         for (int[] d : dirPA) {
-            dfs(matrix, visited, matrix[x][y], x+d[0], y+d[1]);
+            padfs(matrix, visited, matrix[x][y], x+d[0], y+d[1]);
         }
     }
 
@@ -2175,6 +2166,8 @@ public class DFSExe {
     }
 
     /**
+     * https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
+     *
      * Example 1:
      *
      * Input: nums =
@@ -2185,11 +2178,9 @@ public class DFSExe {
      * ]
      * Output: 4
      * Explanation: The longest increasing path is [1, 2, 6, 9].
-     * https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
-     * @param matrix
-     * @return
      */
     public int[][] directions = {{0,1},{1,0},{-1,0},{0,-1}};
+
     public int longestIncreasingPath(int[][] matrix) {
         int max = 1;
         int m = matrix.length;
@@ -2198,8 +2189,8 @@ public class DFSExe {
         }
         int n = matrix[0].length;
         int[][] cache = new int[m][n];
-        for (int i=0; i<m; i++) {
-            for (int j=0; j<n; j++) {
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
                 max = Math.max(max, dfsHelper(matrix, m, n, i, j, cache));
             }
         }
@@ -2211,10 +2202,10 @@ public class DFSExe {
             return cache[x][y];
         }
         int max = 0;
-        for(int[] dir : directions){
+        for (int[] dir : directions) {
             int newX = x + dir[0];
             int newY = y + dir[1];
-            if (newX < m && newX >= 0 && newY < n && newY >= 0 && matrix[newX][newY] >  matrix[x][y]){
+            if (newX < m && newX >= 0 && newY < n && newY >= 0 && matrix[newX][newY] > matrix[x][y]) {
                 max = Math.max(dfsHelper(matrix, m, n, newX, newY, cache), max);
             }
         }

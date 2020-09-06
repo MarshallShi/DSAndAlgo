@@ -21,7 +21,7 @@ public class SubArraySumExe {
     }
 
     /**
-     * https://leetcode.com/problems/subarray-sum-equals-k/description/
+     * https://leetcode.com/problems/subarray-sum-equals-k
      *
      * Given an array of integers and an integer k, you need to find the total number of
      * continuous subarrays whose sum equals to k.
@@ -38,7 +38,6 @@ public class SubArraySumExe {
         int sum = 0, result = 0;
         Map<Integer, Integer> preSum = new HashMap<>();
         preSum.put(0, 1);
-
         for (int i = 0; i < nums.length; i++) {
             sum += nums[i];
             if (preSum.containsKey(sum - k)) {
@@ -46,7 +45,6 @@ public class SubArraySumExe {
             }
             preSum.put(sum, preSum.getOrDefault(sum, 0) + 1);
         }
-
         return result;
     }
 	

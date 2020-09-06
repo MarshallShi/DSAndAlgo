@@ -1,11 +1,7 @@
 package dsandalgo.trie;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 
 /**
  * https://leetcode.com/problems/stream-of-characters/
@@ -16,11 +12,13 @@ public class StreamChecker {
     class TrieNode {
         TrieNode[] nodes;
         boolean isWord;
+
         TrieNode() {
             nodes = new TrieNode[26];
             isWord = false;
         }
     }
+
     TrieNode root = null;
     Queue<TrieNode> validNode = null;
 
@@ -35,9 +33,9 @@ public class StreamChecker {
 
     public void insert(String word) {
         TrieNode node = root;
-        for(char c : word.toCharArray()){
+        for (char c : word.toCharArray()) {
             int index = c - 'a';
-            if(node.nodes[index] == null){
+            if (node.nodes[index] == null) {
                 node.nodes[index] = new TrieNode();
             }
             node = node.nodes[index];
@@ -48,15 +46,15 @@ public class StreamChecker {
     public boolean query(char letter) {
         boolean res = false;
         int n = validNode.size();
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             TrieNode node = validNode.poll();
-            if(node.nodes[letter - 'a'] != null) {
+            if (node.nodes[letter - 'a'] != null) {
                 validNode.offer(node.nodes[letter - 'a']);
-                if(node.nodes[letter - 'a'].isWord) {
+                if (node.nodes[letter - 'a'].isWord) {
                     res = true;
                 }
             }
-            if(node == root) {
+            if (node == root) {
                 validNode.add(root);
             }
         }

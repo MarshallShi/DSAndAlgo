@@ -46,6 +46,7 @@ public class SegmentTreeExe {
         stn.right = buildSegmentTree(valArr, mid+1, high);
         return stn;
     }
+
     private void updateSegmentTree(SegmentTreeNode stn, Long val) {
         if(stn == null) return;
         if(val >= stn.min && val <= stn.max) {
@@ -54,12 +55,14 @@ public class SegmentTreeExe {
             updateSegmentTree(stn.right, val);
         }
     }
+
     private int getCount(SegmentTreeNode stn, long min, long max) {
         if(stn == null) return 0;
         if(min > stn.max || max < stn.min) return 0;
         if(min <= stn.min && max >= stn.max) return stn.count;
         return getCount(stn.left, min, max) + getCount(stn.right, min, max);
     }
+
     public int countRangeSum(int[] nums, int lower, int upper) {
         if(nums == null || nums.length == 0) return 0;
         int ans = 0;

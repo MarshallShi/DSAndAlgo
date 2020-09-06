@@ -148,16 +148,12 @@ public class MergeSortExe {
         if (l >= r) {
             return 0;
         }
-
         int m = l + ((r - l) >> 1);
         //merge sort.
         int res = reversePairsSub(nums, l, m) + reversePairsSub(nums, m + 1, r);
-
         int i = l, j = m + 1, k = 0, p = m + 1;
-
         //merge
         int[] merge = new int[r - l + 1];
-
         while (i <= m) {
             while (p <= r && (long)nums[i] > 2L * nums[p]) {
                 p++;
@@ -168,13 +164,10 @@ public class MergeSortExe {
             }
             merge[k++] = nums[i++];
         }
-
         while (j <= r) {
             merge[k++] = nums[j++];
         }
-
         System.arraycopy(merge, 0, nums, l, merge.length);
-
         return res;
     }
 }

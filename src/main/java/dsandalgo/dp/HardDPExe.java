@@ -2,11 +2,9 @@ package dsandalgo.dp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 public class HardDPExe {
 
@@ -1343,16 +1341,13 @@ public class HardDPExe {
                 for (int i=0; i<cache.length; i++) {
                     Arrays.fill(cache[i], -1);
                 }
-                longestPalin = isValidPalindromeDFS(s, 0, s.length()-1, cache);
+                longestPalin = findPalinLen(s, 0, s.length()-1, cache);
             }
         }
-        if (s.length() - longestPalin <= k) {
-            return true;
-        }
-        return false;
+        return s.length() - longestPalin <= k;
     }
 
-    private int isValidPalindromeDFS(String s, int start, int end, int[][] cache){
+    private int findPalinLen(String s, int start, int end, int[][] cache){
         if (start > end) {
             return 0;
         }
@@ -1364,9 +1359,9 @@ public class HardDPExe {
         }
         int temp = 0;
         if (s.charAt(start) == s.charAt(end)) {
-            temp = 2 + isValidPalindromeDFS(s, start+1, end-1, cache);
+            temp = 2 + findPalinLen(s, start+1, end-1, cache);
         } else {
-            temp = Math.max(isValidPalindromeDFS(s, start+1, end, cache), isValidPalindromeDFS(s, start, end-1, cache));
+            temp = Math.max(findPalinLen(s, start+1, end, cache), findPalinLen(s, start, end-1, cache));
         }
         cache[start][end] = temp;
         return temp;

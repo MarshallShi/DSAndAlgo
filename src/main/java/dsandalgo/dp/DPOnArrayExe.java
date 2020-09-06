@@ -589,8 +589,6 @@ public class DPOnArrayExe {
      *
      * 1 <= A.length <= 40000
      * 0 <= A[i] <= 10^9
-     * @param A
-     * @return
      */
     /*
     Let's define: state[i]: longest turbulent subarray ending at A[i]

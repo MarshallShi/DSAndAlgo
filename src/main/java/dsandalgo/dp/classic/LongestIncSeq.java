@@ -20,6 +20,53 @@ public class LongestIncSeq {
     }
 
     /**
+     * https://leetcode.com/problems/largest-divisible-subset/
+     * Given a set of distinct positive integers, find the largest subset such that every pair (Si, Sj) of elements in this subset satisfies:
+     *
+     * Si % Sj = 0 or Sj % Si = 0.
+     *
+     * If there are multiple solutions, return any subset is fine.
+     *
+     * Example 1:
+     *
+     * Input: [1,2,3]
+     * Output: [1,2] (of course, [1,3] will also be ok)
+     * Example 2:
+     *
+     * Input: [1,2,4,8]
+     * Output: [1,2,4,8]
+     */
+    public List<Integer> largestDivisibleSubset(int[] nums) {
+        int[] dp = new int[nums.length]; // the length of largestDivisibleSubset that ends with element i
+        int[] prev = new int[nums.length]; // the previous index of element i in the largestDivisibleSubset ends with element i
+
+        Arrays.sort(nums);
+
+        int max = 0;
+        int index = -1;
+        for (int i = 0; i < nums.length; i++){
+            dp[i] = 1;
+            prev[i] = -1;
+            for (int j = i - 1; j >= 0; j--){
+                if (nums[i] % nums[j] == 0 && dp[j] + 1 > dp[i]){
+                    dp[i] = dp[j] + 1;
+                    prev[i] = j;
+                }
+            }
+            if (dp[i] > max){
+                max = dp[i];
+                index = i;
+            }
+        }
+        List<Integer> res = new ArrayList<Integer>();
+        while (index != -1){
+            res.add(nums[index]);
+            index = prev[index];
+        }
+        return res;
+    }
+
+    /**
      * https://leetcode.com/problems/length-of-longest-fibonacci-subsequence/
      * A sequence X_1, X_2, ..., X_n is fibonacci-like if:
      *
@@ -57,6 +104,32 @@ public class LongestIncSeq {
     //dp[r][i] = dp[l][r] + 1
     //return the max(all posible dp[r][i])
     public int lenLongestFibSubseq(int[] A) {
+        if (A == null || A.length == 0) return 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < A.length; i++) {
+            map.put(A[i], i);
+        }
+        int maxLen = 0;
+        for (int i = 0; i < A.length; i++) {
+            for (int j = i + 1; j < A.length; ++j) {
+                int left = i, right = j, count = 0;
+                while (map.containsKey(A[left] + A[right])) {
+                    int temp = right;
+                    right = map.get(A[left] + A[right]);
+                    left = temp;
+                    count++;
+                }
+                // if exists a sequence, add first 2 nums
+                if (count != 0) {
+                    count += 2;
+                    maxLen = Math.max(maxLen, count);
+                }
+            }
+        }
+        return maxLen;
+    }
+
+    public int lenLongestFibSubseq_1(int[] A) {
         int n = A.length;
         int max = 0;
         int[][] dp = new int[n][n];
@@ -155,57 +228,26 @@ public class LongestIncSeq {
      * There may be more than one LIS combination, it is only necessary for you to return the length.
      * Your algorithm should run in O(n2) complexity.
      * Follow up: Could you improve it to O(n log n) time complexity?
-     * @param nums
-     * @return
      */
-    //https://www.geeksforgeeks.org/longest-monotonically-increasing-subsequence-size-n-log-n/
-    //O(nlogn)
     public int lengthOfLIS(int[] nums) {
-        //Patience sorting algo implementation.
-        List<Integer> piles = new ArrayList<>(nums.length);
-        for (int num : nums) {
-            int pile = Collections.binarySearch(piles, num);
-            if (pile < 0) {
-                ////~(bitwise compliment)Binary Ones Complement Operator is unary and has the effect of 'flipping' bits.
-                pile = ~pile;
-            }
-            if (pile == piles.size()) {
-                piles.add(num);
-            } else {
-                piles.set(pile, num);
-            }
-        }
-        return piles.size();
-    }
-
-    public int lengthOfLIS_dp(int[] nums) {
-        if (nums == null) {
-            return 0;
-        }
-        if (nums.length == 0) {
-            return 0;
-        }
-        if (nums.length == 1) {
-            return 1;
-        }
-        int[] dp = new int[nums.length];
-        for (int i=0; i<nums.length; i++) {
-            dp[i] = 1;
-        }
-        int max = 0;
-        for (int i = 1; i<nums.length; i++) {
-            int cur = dp[i];
-            for (int j=0; j<i; j++) {
-                if (nums[i] > nums[j] && dp[j] + 1 > cur) {
-                    cur = dp[j] + 1;
+        int[] tails = new int[nums.length];
+        int size = 0;
+        for (int x : nums) {
+            int i = 0, j = size;
+            while (i < j) {
+                int m = i + (j - i) / 2;
+                if (tails[m] < x) {
+                    i = m + 1;
+                } else {
+                    j = m;
                 }
             }
-            dp[i] = cur;
-            if (dp[i] > max) {
-                max = dp[i];
+            tails[i] = x;
+            if (i == size) {
+                size++;
             }
         }
-        return max;
+        return size;
     }
 
     /**
